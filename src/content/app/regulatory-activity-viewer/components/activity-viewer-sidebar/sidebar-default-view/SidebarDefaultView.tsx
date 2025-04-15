@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { fetchRegionDetails } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
+import { calculateRequestLocation } from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
+
+import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
-import {
-  useRegionOverviewQuery,
-  stringifyLocation
-} from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import useRegionOverviewData from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
 
 import GeneName from 'src/shared/components/gene-name/GeneName';
 import TextButton from 'src/shared/components/text-button/TextButton';
@@ -38,6 +40,8 @@ import styles from './SidebarDefaultView.module.css';
 const SidebarDefaultView = () => {
   const {
     assemblyAccessionId,
+    activeGenomeId,
+    assemblyName,
     location,
     genomeIdForUrl,
     locationForUrl,
@@ -45,15 +49,42 @@ const SidebarDefaultView = () => {
   } = useActivityViewerIds();
   const navigate = useNavigate();
 
-  const { data } = useRegionOverviewQuery(
-    {
-      assemblyId: assemblyAccessionId || '',
-      location: location ? stringifyLocation(location) : ''
-    },
-    {
-      skip: !assemblyAccessionId || !location
+  const { data: karyotype } = useGenomeKaryotypeQuery(activeGenomeId ?? '', {
+    skip: !activeGenomeId
+  });
+
+  const regionOverviewDataParams = useMemo(() => {
+    return assemblyName && location
+      ? {
+          assemblyName,
+          regionName: location.regionName,
+          start: location.start,
+          end: location.end
+        }
+      : null;
+  }, [assemblyName, location]);
+
+  const { data } = useRegionOverviewData(regionOverviewDataParams);
+
+  useEffect(() => {
+    if (!assemblyName || !location || !karyotype) {
+      return;
     }
-  );
+
+    const regionInKaryotype = karyotype.find(
+      (region) => region.name === location.regionName
+    );
+
+    const regionDataRequestParams = calculateRequestLocation({
+      assemblyName,
+      regionName: location.regionName,
+      start: location.start,
+      end: location.end,
+      regionLength: regionInKaryotype?.length ?? 0
+    });
+
+    fetchRegionDetails(regionDataRequestParams);
+  }, [assemblyName, location, karyotype]);
 
   if (!data || !location) {
     return null;

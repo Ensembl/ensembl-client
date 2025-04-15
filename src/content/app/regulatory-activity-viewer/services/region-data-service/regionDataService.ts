@@ -131,8 +131,6 @@ export const fetchRegionDetails = (
 
 export const regionDetailsQuery$ = regionDetailQueryAction$
   .pipe(
-    // get karyotype
-
     filter((action) => {
       const { assemblyName, regionName, start, end } = action.payload;
       const currentState = regionDetailsStateSubject.getValue();
@@ -141,23 +139,22 @@ export const regionDetailsQuery$ = regionDetailQueryAction$
 
       // TODO: ideally, should be able to split the request into requesting the lower bins and the higher bins separately
       const haveAllBinsBeenRequested = binKeys.every((key) => {
-        return (
-          currentState.data?.bins[key] ||
-          currentState.loadingLocations?.some((loc) => {
-            return (
-              loc.assemblyName === assemblyName &&
-              loc.regionName === regionName &&
-              loc.bin === key
-            );
-          })
-        );
+        const isLoading = currentState.loadingLocations?.some((loc) => {
+          return (
+            loc.assemblyName === assemblyName &&
+            loc.regionName === regionName &&
+            loc.bin === key
+          );
+        });
+        const hasLoaded =
+          currentState.data?.bins[key] &&
+          currentState.data.assemblyName === assemblyName &&
+          currentState.data.region.name === regionName;
+
+        return isLoading || hasLoaded;
       });
 
-      if (
-        currentState.data?.assemblyName === assemblyName &&
-        currentState.data.region.name === regionName &&
-        haveAllBinsBeenRequested
-      ) {
+      if (haveAllBinsBeenRequested) {
         // region data has already been fetched and cached; no need to load again
         return false;
       }
