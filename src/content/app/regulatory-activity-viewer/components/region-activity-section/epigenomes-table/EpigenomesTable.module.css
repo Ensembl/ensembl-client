@@ -1,0 +1,65 @@
+.container {
+  --header-height: 30px;
+  position: absolute;
+  top: calc(-1 * var(--header-height));
+  left: 0;
+}
+
+/* this element contains the table and the close button */
+.tableContainerGrid {
+  margin-left: 150px; /* skip over the left column of the main grid */
+  display: grid;
+  column-gap: 1rem;
+  padding-right: 10px;
+  animation: animate-table-entry 0.2s ease-in-out;
+  background-color: white;
+}
+
+/* a wrapper for the table, whose purpose is to scroll on overflow-x */
+.tableContainer {
+  text-align: left;
+  overflow-x: auto;
+}
+
+@container main-content-container (min-width: 0) {
+  /* 
+  NOTE:
+  150px is the width of the left column of the main grid
+  another 150px is the width of the left column of the main grid
+  the width of CloseButton is 15px
+  FIXME: at least left and right main column widths should be extracted into css variables
+  */
+
+  .tableContainerGrid {
+    grid-template-columns: [table] minmax(min-content, calc(100cqi - 150px - 150px)) [close-button] auto;
+  }
+
+  .tableContainer {
+    max-width: calc(100cqi - 150px - 150px - 30px);
+  }
+}
+
+.table thead {
+  white-space: nowrap;
+}
+
+.openButton {
+  --chevron-fill: white;
+  padding: 3px 2px;
+  background-color: var(--color-blue);
+}
+
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+@keyframes animate-table-entry {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}

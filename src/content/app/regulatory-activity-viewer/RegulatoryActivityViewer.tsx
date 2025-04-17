@@ -85,7 +85,7 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
   }
 
   return (
-    <div>
+    <div className={styles.mainContentContainer}>
       Placeholder for focus feature information
       <RegionOverview />
       {/* The spacer divs below are temporary */}

@@ -23,6 +23,7 @@ import useRegionActivityData from './useRegionActivityData';
 import EpigenomeActivityImage from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
 import GeneExpressionLevels from 'src/content/app/regulatory-activity-viewer/components/gene-expression-levels/GeneExpressionLevels';
 import EpigenomeLabels from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomeLabels';
+import EpigenomesTable from './epigenomes-table/EpigenomesTable';
 import { CircleLoader } from 'src/shared/components/loader';
 
 // FIXME: promote these styles to the top level of region activity viewer
@@ -33,8 +34,11 @@ const RegionActivitySection = () => {
   // TODO: think about how best to handle width changes; maybe they should come from the parent
   const [width, setWidth] = useState(0);
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const { sortedCombinedEpigenomes, epigenomeSortingDimensions } =
-    useEpigenomes();
+  const {
+    sortedCombinedEpigenomes,
+    epigenomeSortingDimensions,
+    epigenomeMetadataDimensionsResponse
+  } = useEpigenomes();
 
   // TODO: width should be recalculated on resize
   // Consider if this is appropriate component for doing this.
@@ -70,11 +74,20 @@ const RegionActivitySection = () => {
           </div>
         )}
       </div>
-      <div className={regionOverviewStyles.leftColumn}>
-        {preparedData && (
+      <div
+        className={classNames(
+          regionOverviewStyles.leftColumn,
+          styles.positionRelative
+        )}
+      >
+        <EpigenomesTable />
+        {preparedData && epigenomeMetadataDimensionsResponse && (
           <EpigenomeLabels
             epigenomes={sortedCombinedEpigenomes ?? []}
             sortingDimensions={epigenomeSortingDimensions ?? []}
+            displayDimensions={
+              epigenomeMetadataDimensionsResponse.ui_spec.table_layout
+            }
           />
         )}
       </div>

@@ -4,3 +4,8 @@
   align-items: start;
   grid-template-rows: auto 1fr;
 }
+
+.mainContentContainer {
+  container-name: main-content-container;
+  container-type: size;
+}

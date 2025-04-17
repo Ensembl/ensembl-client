@@ -124,7 +124,7 @@ const isDimensionCollapsed = (
   return collapsedDimensions.includes(dimensionName);
 };
 
-const displayEpigenomeValue = (value?: Epigenome[keyof Epigenome]) => {
+export const displayEpigenomeValue = (value?: Epigenome[keyof Epigenome]) => {
   if (Array.isArray(value)) {
     return value.join(', ');
   } else if (typeof value === 'string') {
