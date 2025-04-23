@@ -21,8 +21,9 @@ import { TRACK_HEIGHT } from 'src/content/app/regulatory-activity-viewer/compone
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 
 import { displayEpigenomeValue } from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/SelectedEpigenomes';
+import { getEpigenomeLabels } from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomeLabels';
 
-import { Table, ColumnHead } from 'src/shared/components/table/';
+import { Table, ColumnHead } from 'src/shared/components/table';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import Chevron from 'src/shared/components/chevron/Chevron';
@@ -123,6 +124,11 @@ const EpigenomesTable = ({
 
   // FIXME: consider collapsed dimensions
 
+  const colorLabels = getEpigenomeLabels({
+    epigenomes: sortedCombinedEpigenomes,
+    sortingDimensions: epigenomeSortingDimensions
+  });
+
   return (
     <Table className={styles.table}>
       <thead>
@@ -145,9 +151,9 @@ const EpigenomesTable = ({
         </tr>
       </thead>
       <tbody>
-        {sortedCombinedEpigenomes.map((epigenome) => (
+        {sortedCombinedEpigenomes.map((epigenome, rowIndex) => (
           <tr key={epigenome.id}>
-            {tableColumns.map((tableColumn) => {
+            {tableColumns.map((tableColumn, columnIndex) => {
               if (isCombiningDimension(tableColumn.dimensionName)) {
                 return null;
               }
@@ -155,17 +161,19 @@ const EpigenomesTable = ({
               return (
                 <td key={tableColumn.dimensionName}>
                   <div
+                    className={styles.tableCellContent}
                     style={{
-                      height: `calc(${TRACK_HEIGHT}px - 18px - 1px)`, // track height minus vertical cell padding, minus table border height
-                      maxWidth: '150px',
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis'
+                      height: `calc(${TRACK_HEIGHT}px - 18px - 1px)` // track height minus vertical cell padding, minus table border height
                     }}
                   >
-                    {displayEpigenomeValue(
-                      epigenome[tableColumn.dimensionName]
-                    )}
+                    <ColorLabel
+                      color={colorLabels[rowIndex]?.[columnIndex]?.color}
+                    />
+                    <span>
+                      {displayEpigenomeValue(
+                        epigenome[tableColumn.dimensionName]
+                      )}
+                    </span>
                   </div>
                 </td>
               );
@@ -174,6 +182,16 @@ const EpigenomesTable = ({
         ))}
       </tbody>
     </Table>
+  );
+};
+
+const ColorLabel = ({ color }: { color?: string }) => {
+  if (!color) {
+    return null;
+  }
+
+  return (
+    <span className={styles.colorLabel} style={{ backgroundColor: color }} />
   );
 };
 
