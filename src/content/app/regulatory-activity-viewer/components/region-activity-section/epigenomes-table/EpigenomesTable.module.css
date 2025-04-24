@@ -43,6 +43,22 @@
   white-space: nowrap;
 }
 
+.tableCellContent {
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+  max-width: 150px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.colorLabel {
+  display: inline-block;
+  height: 10px;
+  aspect-ratio: 1;
+}
+
 .openButton {
   --chevron-fill: white;
   padding: 3px 2px;

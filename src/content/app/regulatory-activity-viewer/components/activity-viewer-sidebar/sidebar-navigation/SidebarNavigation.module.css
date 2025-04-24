@@ -1,4 +1,33 @@
 .container {
+  --text-button-disabled-color: var(--color-black);
   display: flex;
-  justify-content: space-evenly;
+}
+
+.tab {
+  padding: 0 18px;
+}
+
+.activeTab {
+  position: relative;
+}
+
+/*
+FIXME: The CSS below is copy-pasted from TrackPanelTabs css module
+(althought the 'top' rule has been updated)
+In the future, come up with a way to reuse it instead of copy-pasting.
+*/
+.activeTab::after {
+  border: 6px solid var(--color-grey);
+  border-color: transparent transparent var(--color-light-grey)
+    var(--color-light-grey);
+  box-shadow: -2px 2px 2px 0 var(--color-grey);
+  box-sizing: border-box;
+  content: '';
+  height: 0;
+  position: absolute;
+  right: calc(60% - 6px);
+  transform-origin: 0 0;
+  transform: rotate(-45deg);
+  top: 24px;
+  width: 0;
 }

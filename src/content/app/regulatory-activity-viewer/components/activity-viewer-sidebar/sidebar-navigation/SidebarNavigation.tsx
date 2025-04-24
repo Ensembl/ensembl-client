@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import classNames from 'classnames';
+
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getSidebarView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
@@ -51,17 +53,29 @@ const SidebarNavigation = (props: Props) => {
     );
   };
 
+  const isDefaultTabSelected = activeView === 'default';
+  const defaultTabClasses = classNames(styles.tab, {
+    [styles.activeTab]: isDefaultTabSelected
+  });
+
+  const isEpigenomeFiltersTabSelected = activeView === 'epigenome-filters';
+  const epigenomeFiltersTabClasses = classNames(styles.tab, {
+    [styles.activeTab]: isEpigenomeFiltersTabSelected
+  });
+
   return (
     <div className={styles.container}>
       <TextButton
         onClick={() => onViewChange('default')}
-        disabled={activeView === 'default'}
+        disabled={isDefaultTabSelected}
+        className={defaultTabClasses}
       >
         In this region
       </TextButton>
       <TextButton
         onClick={() => onViewChange('epigenome-filters')}
-        disabled={activeView === 'epigenome-filters'}
+        disabled={isEpigenomeFiltersTabSelected}
+        className={epigenomeFiltersTabClasses}
       >
         Region activity
       </TextButton>
