@@ -86,11 +86,19 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
 
   return (
     <div className={styles.mainContentContainer}>
-      Placeholder for focus feature information
-      <RegionOverview />
-      {/* The spacer divs below are temporary */}
-      <div style={{ margin: '0.6rem 0' }} />
-      <MainContentBottomViewControls genomeId={genomeId} />
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          backgroundColor: 'var(--color-white)'
+        }}
+      >
+        Placeholder for focus feature information
+        <RegionOverview />
+        {/* The spacer divs below are temporary */}
+        <div style={{ margin: '0.6rem 0' }} />
+        <MainContentBottomViewControls genomeId={genomeId} />
+      </div>
       <div style={{ margin: '0.6rem 0' }} />
       <MainContentBottom genomeId={genomeId} />
       <div style={{ margin: '4rem 0' }} />

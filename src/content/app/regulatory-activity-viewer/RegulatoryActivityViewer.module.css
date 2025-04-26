@@ -7,5 +7,7 @@
 
 .mainContentContainer {
   container-name: main-content-container;
+  height: 100%;
+  overflow: auto;
   container-type: size;
 }
