@@ -5,3 +5,13 @@
 .assemblyAccessionId {
   font-weight: var(--assembly-accession-table-font-weight, var(--font-weight-light));
 }
+
+.genomeRelease {
+  font-size: var(--genome-release-table-font-size, 12px);
+  font-weight: var(--genome-release-table-font-weight, var(--font-weight-light));
+}
+
+.genomeReleaseType {
+  font-size: var(--genome-release-table-font-size, 12px);
+  font-weight: var(--genome-release-table-font-weight, var(--font-weight-light));
+}

@@ -32,6 +32,7 @@ type SortableColumn =
   | 'type'
   | 'assembly_name'
   | 'assembly_accession_id'
+  | 'release_name'
   | 'coding_genes_count'
   | 'contig_n50';
 
@@ -113,6 +114,16 @@ const useOrderedGenomes = (genomes: SelectableGenome[]) => {
     } else {
       orderedGenomes = [...genomes].sort((a, b) => {
         return sortStringDesc(a.assembly.accession_id, b.assembly.accession_id);
+      });
+    }
+  } else if (sortRule?.column === 'release_name') {
+    if (sortRule.sortOrder === 'asc') {
+      orderedGenomes = [...genomes].sort((a, b) => {
+        return sortStringAsc(a.release.name, b.release.name);
+      });
+    } else {
+      orderedGenomes = [...genomes].sort((a, b) => {
+        return sortStringDesc(a.release.name, b.release.name);
       });
     }
   } else if (sortRule?.column === 'coding_genes_count') {

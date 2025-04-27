@@ -30,7 +30,9 @@ import {
   ScientificName,
   AssemblyName,
   AssemblyAccessionId,
-  SpeciesType
+  SpeciesType,
+  GenomeRelease,
+  GenomeReleaseType
 } from 'src/shared/components/species-name-parts-for-table';
 
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
@@ -111,6 +113,18 @@ const SpeciesSearchResultsTable = (props: Props) => {
           >
             Assembly
           </ColumnHead>
+
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('release_name', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('release_name', newOrder)
+            }
+          >
+            Release
+          </ColumnHead>
+
+          <ColumnHead>Release type</ColumnHead>
+
           <ColumnHead
             sortOrder={getSortOrderForColumn('assembly_accession_id', sortRule)}
             onSortOrderChange={(newOrder) =>
@@ -180,6 +194,12 @@ const SpeciesSearchResultsTable = (props: Props) => {
             </td>
             <td>
               <AssemblyName {...searchMatch} />
+            </td>
+            <td>
+              <GenomeRelease release={searchMatch.release} />
+            </td>
+            <td>
+              <GenomeReleaseType release={searchMatch.release} />
             </td>
             <td className={styles.assemblyAccessionId}>
               {!shouldDisableRow(searchMatch, canAddToStaged) ? (

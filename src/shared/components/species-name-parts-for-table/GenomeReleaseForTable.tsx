@@ -14,10 +14,27 @@
  * limitations under the License.
  */
 
-export { default as CommonName } from './SpeciesCommonNameForTable';
-export { default as ScientificName } from './SpeciesScientificNameForTable';
-export { default as AssemblyName } from './AssemblyNameForTable';
-export { default as AssemblyAccessionId } from './AssemblyAccessionIdForTable';
-export { default as SpeciesType } from './SpeciesTypeForTable';
-export { default as GenomeRelease } from './GenomeReleaseForTable';
-export { default as GenomeReleaseType } from './GenomeReleaseTypeForTable';
+import classNames from 'classnames';
+
+import type { Release } from 'src/shared/types/release';
+
+type Props = {
+  release: Release;
+  className?: string;
+};
+
+import styles from './SpeciesNamePartsForTable.module.css';
+
+/**
+ * In a table, release label is typically rendered with a light font and in a smaller size.
+ */
+
+const GenomeReleaseForTable = (props: Props) => {
+  const { release, className: classNameFromProps } = props;
+
+  const componentClasses = classNames(styles.genomeRelease, classNameFromProps);
+
+  return <span className={componentClasses}>{release.name}</span>;
+};
+
+export default GenomeReleaseForTable;

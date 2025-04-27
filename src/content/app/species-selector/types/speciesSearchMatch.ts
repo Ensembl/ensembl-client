@@ -24,7 +24,8 @@ type SearchMatchFieldsFromGenomeInfo =
   | 'species_taxonomy_id'
   | 'type'
   | 'is_reference'
-  | 'assembly';
+  | 'assembly'
+  | 'release';
 
 export type SpeciesSearchMatch = Pick<
   GenomeInfo,
