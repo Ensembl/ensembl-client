@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { map, filter } from 'rxjs';
 
 import { regionDetailsState$ } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
@@ -121,30 +121,31 @@ const createDataObservable = (query: QueryParams) => {
 
 const useRegionOverviewData = (params: QueryParams | null) => {
   const [data, setData] = useState<RegionData | null>(null);
-  const prevParams = useRef<typeof params>(null);
+
+  const assemblyName = params?.assemblyName;
+  const regionName = params?.regionName;
+  const start = params?.start;
+  const end = params?.end;
 
   useEffect(() => {
-    if (
-      !params ||
-      (params?.assemblyName === prevParams.current?.assemblyName &&
-        params?.regionName === prevParams.current?.regionName &&
-        params?.start === prevParams.current?.start &&
-        params?.end === prevParams.current?.end)
-    ) {
+    if (!assemblyName || !regionName || !start || !end) {
       return;
     }
 
-    const data$ = createDataObservable(params);
+    const data$ = createDataObservable({
+      assemblyName,
+      regionName,
+      start,
+      end
+    });
     const subscription = data$.subscribe((data) => {
       setData(data);
     });
 
-    prevParams.current = params;
-
     return () => {
       subscription.unsubscribe();
     };
-  }, [params]);
+  }, [assemblyName, regionName, start, end]);
 
   // FIXME: should somehow return the loading flag as well
   return {
