@@ -407,7 +407,7 @@ type LoadingLocation = {
   bin: string;
 };
 
-type RegionDetailsState = {
+export type RegionDetailsState = {
   data: RegionDetailsData | null;
   loadingLocations: LoadingLocation[] | null;
   // TODO: think of errors
