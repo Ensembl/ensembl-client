@@ -18,7 +18,7 @@
 }
 
 .assemblyAccessionId {
-  /* --assembly-accession-table-font-weight: var(--font-weight-normal); */
+  --assembly-accession-table-font-weight: var(--font-weight-normal);
 }
 
 .showMore {
