@@ -90,7 +90,8 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
         style={{
           position: 'sticky',
           top: 0,
-          backgroundColor: 'var(--color-white)'
+          backgroundColor: 'var(--color-white)',
+          zIndex: 1
         }}
       >
         Placeholder for focus feature information
