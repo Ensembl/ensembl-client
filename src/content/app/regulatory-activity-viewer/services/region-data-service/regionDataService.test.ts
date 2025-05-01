@@ -41,7 +41,7 @@ jest.mock('config', () => ({
 
 const server = setupServer(
   http.get(
-    `${mockRegulationApiRoot}/annotation/:version/assembly/:assembly_name`,
+    `${mockRegulationApiRoot}/annotation/:version/release/:release_name/assembly/:assembly_name`,
     ({ request }) => {
       const url = new URL(request.url);
       const locationString = url.searchParams.get('location') as string;
