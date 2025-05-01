@@ -44,6 +44,11 @@ type EpigenomesActivityRequestParams = {
   epigenomeIds: string[];
 };
 
+// A mock release string to use in regulation api endpoints.
+// Regulation team's apis now require a release string (although as of now, they don't care what that string is).
+// TODO: This should be replaced with the release specific for the genome
+const releaseName = '2025-02';
+
 export const stringifyLocation = (location: GenomicLocation) =>
   `${location.regionName}:${location.start}-${location.end}`;
 
@@ -53,13 +58,13 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       query: (params) => {
         const { assemblyName, location } = params;
         return {
-          url: `${config.regulationApiBaseUrl}/annotation/v0.4/assembly/${assemblyName}?location=${location}`
+          url: `${config.regulationApiBaseUrl}/annotation/v0.5/release/${releaseName}/assembly/${assemblyName}?location=${location}`
         };
       }
     }),
     baseEpigenomes: builder.query<Epigenome[], BaseEpigenomesRequestParams>({
       query: (params) => ({
-        url: `${config.regulationApiBaseUrl}/epigenomes/v0.3/base_epigenomes/assembly/${params.assemblyName}`
+        url: `${config.regulationApiBaseUrl}/epigenomes/v0.4/release/${releaseName}/base_epigenomes/assembly/${params.assemblyName}`
       })
     }),
     epigenomeMetadataDimensions: builder.query<
@@ -67,7 +72,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       EpigenomeMetadataRequestParams
     >({
       query: (params) => ({
-        url: `${config.regulationApiBaseUrl}/epigenomes/v0.3/metadata_dimensions/assembly/${params.assemblyName}`
+        url: `${config.regulationApiBaseUrl}/epigenomes/v0.4/release/${releaseName}/metadata_dimensions/assembly/${params.assemblyName}`
       })
     }),
     epigenomesActivity: builder.query<
@@ -77,7 +82,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       queryFn: async (params, _, __, baseQuery) => {
         const { assemblyAccessionId, epigenomeIds, locations, regionName } =
           params;
-        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.3/region_activity/assembly/${assemblyAccessionId}`;
+        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.4/release/${releaseName}/region_activity/assembly/${assemblyAccessionId}`;
         const requestBody = {
           region_name: regionName,
           locations,
