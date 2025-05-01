@@ -1,17 +1,18 @@
 .assemblyName {
+  font-size: var(--assembly-name-table-font-size, 11px);
   font-weight: var(--assembly-name-table-font-weight, var(--font-weight-light));
 }
 
 .assemblyAccessionId {
   font-weight: var(--assembly-accession-table-font-weight, var(--font-weight-light));
+  font-size: var(--assembly-accession-table-font-weight, 11px);
 }
 
 .genomeRelease {
-  font-size: var(--genome-release-table-font-size, 12px);
-  font-weight: var(--genome-release-table-font-weight, var(--font-weight-light));
+  font-size: var(--genome-release-table-font-size, 13px);
 }
 
 .genomeReleaseType {
-  font-size: var(--genome-release-table-font-size, 12px);
+  font-size: var(--genome-release-table-font-size, 11px);
   font-weight: var(--genome-release-table-font-weight, var(--font-weight-light));
 }
