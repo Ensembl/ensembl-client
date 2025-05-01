@@ -442,7 +442,8 @@ export const regionDetailsState$ = regionDetailsStateSubject.asObservable();
 const fetchLocation = (params: RegionDetailsQueryAction['payload']) => {
   const { assemblyName, regionName, start, end } = params;
   const locationForUrl = `${regionName}:${start}-${end}`;
-  const endpointUrl = `${config.regulationApiBaseUrl}/annotation/v0.4/assembly/${assemblyName}?location=${locationForUrl}`;
+  const releaseName = '2025-02'; // TODO: pass genome release with payload
+  const endpointUrl = `${config.regulationApiBaseUrl}/annotation/v0.5/release/${releaseName}/assembly/${assemblyName}?location=${locationForUrl}`;
 
   return observableFetch<OverviewRegion>(endpointUrl);
 };
