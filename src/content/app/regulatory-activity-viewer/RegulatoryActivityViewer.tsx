@@ -28,6 +28,7 @@ import ActivityViewerEpigenomesContextProvider from 'src/content/app/regulatory-
 import { StandardAppLayout } from 'src/shared/components/layout';
 import ActivityViewerAppBar from './components/activity-viewer-app-bar/ActivityViewerAppBar';
 import ActivityViewerInterstitial from './components/activity-viewer-interstitial/ActivityViewerInterstitial';
+import ActivityViewerFocusFeatureInfo from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-focus-feature-info/ActivityViewerFocusFeatureInfo';
 import RegionOverview from './components/region-overview/RegionOverview';
 import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
 import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
@@ -94,7 +95,7 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
           zIndex: 1
         }}
       >
-        Placeholder for focus feature information
+        <ActivityViewerFocusFeatureInfo />
         <RegionOverview />
         {/* The spacer divs below are temporary */}
         <div style={{ margin: '0.6rem 0' }} />

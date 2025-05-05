@@ -30,7 +30,7 @@ export type GeneInRegionOverview = {
   name?: {
     value: string;
     source?: string;
-    accession?: string;
+    accession_id?: string;
     url?: string;
   };
   biotype: string;
@@ -42,6 +42,21 @@ export type GeneInRegionOverview = {
   merged_exons: ExonInRegionOverview[];
   cds_counts: OverlappingCDSFragment[];
 };
+
+/**
+ * The focus gene fetched via a dedicated endpoint has a subset of fields of the GeneInRegionOverview type
+ */
+type FocusGeneFields =
+  | 'symbol'
+  | 'stable_id'
+  | 'unversioned_stable_id'
+  | 'biotype'
+  | 'name'
+  | 'start'
+  | 'end'
+  | 'strand';
+
+export type FocusGene = Pick<GeneInRegionOverview, FocusGeneFields>;
 
 type RepresentativeTranscriptInRegionOverview = {
   exons: ExonInRegionOverview[];

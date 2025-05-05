@@ -14,18 +14,37 @@
  * limitations under the License.
  */
 
+import { useNavigate } from 'react-router';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 import {
   useRegionOverviewQuery,
   stringifyLocation
 } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
+import GeneName from 'src/shared/components/gene-name/GeneName';
+import TextButton from 'src/shared/components/text-button/TextButton';
 import RegulatoryFeatureLegend from '../regulatory-feature-legend/RegulatoryFeatureLegend';
 
-import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type {
+  OverviewRegion,
+  GeneInRegionOverview
+} from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+
+import styles from './SidebarDefaultView.module.css';
 
 const SidebarDefaultView = () => {
-  const { assemblyName, location } = useActivityViewerIds();
+  const {
+    assemblyName,
+    location,
+    genomeIdForUrl,
+    locationForUrl,
+    focusGeneId
+  } = useActivityViewerIds();
+  const navigate = useNavigate();
+
   const { currentData } = useRegionOverviewQuery(
     {
       assemblyName: assemblyName || '',
@@ -40,9 +59,27 @@ const SidebarDefaultView = () => {
     return null;
   }
 
+  const onGeneFocus = (gene: GeneInRegionOverview) => {
+    if (!genomeIdForUrl || !locationForUrl) {
+      // this should not happen
+      return;
+    }
+
+    const newUrl = urlFor.regulatoryActivityViewer({
+      genomeId: genomeIdForUrl,
+      location: locationForUrl,
+      focusGeneId: gene.unversioned_stable_id
+    });
+    navigate(newUrl);
+  };
+
   return (
     <div>
-      <Genes genes={currentData.genes} />
+      <Genes
+        genes={currentData.genes}
+        onGeneFocus={onGeneFocus}
+        focusGeneId={focusGeneId}
+      />
       <RegulatoryFeatureLegendSection
         featureTypes={currentData.regulatory_features.feature_types}
       />
@@ -50,20 +87,36 @@ const SidebarDefaultView = () => {
   );
 };
 
-const Genes = (props: { genes: OverviewRegion['genes'] }) => {
-  const genes = props.genes.map((gene) => (
-    <div key={gene.stable_id}>
-      {gene.symbol}
-      {'  '}
-      {gene.stable_id}
-    </div>
-  ));
+const Genes = ({
+  genes,
+  onGeneFocus,
+  focusGeneId
+}: {
+  genes: GeneInRegionOverview[];
+  focusGeneId?: string | null;
+  onGeneFocus: (gene: GeneInRegionOverview) => void;
+}) => {
+  const geneElements = genes.map((gene) => {
+    const isFocusGene = gene.unversioned_stable_id === focusGeneId;
+
+    return (
+      <div key={gene.stable_id}>
+        <TextButton
+          onClick={() => onGeneFocus(gene)}
+          disabled={isFocusGene}
+          className={isFocusGene ? styles.activeFeature : undefined}
+        >
+          <GeneName symbol={gene.symbol} stable_id={gene.stable_id} />
+        </TextButton>
+      </div>
+    );
+  });
 
   // TODO: change this into an accordion
   return (
     <div>
       <div style={{ fontWeight: 'bold' }}>Genes</div>
-      {genes}
+      {geneElements}
     </div>
   );
 };

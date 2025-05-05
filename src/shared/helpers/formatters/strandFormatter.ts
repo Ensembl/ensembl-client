@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { Strand } from 'src/shared/types/core-api/strand';
-
-export function getStrandDisplayName(strandCode: Strand) {
-  if (strandCode === Strand.FORWARD) {
+export function getStrandDisplayName(strandCode: 'forward' | 'reverse') {
+  if (strandCode === 'forward') {
     return 'forward strand';
   } else {
     return 'reverse strand';

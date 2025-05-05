@@ -15,6 +15,9 @@
  */
 
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { useAppSelector } from 'src/store';
 
@@ -34,6 +37,7 @@ import RegionOverviewImage, {
 import RegionOverviewZoomButtons from './region-overview-zoom-buttons/RegionOverviewZoomButtons';
 
 import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { GenePopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
 
 import styles from './RegionOverview.module.css';
 
@@ -45,13 +49,20 @@ import styles from './RegionOverview.module.css';
  */
 
 const RegionOverview = () => {
-  const { activeGenomeId, assemblyName, location } = useActivityViewerIds();
+  const {
+    activeGenomeId,
+    assemblyName,
+    location,
+    genomeIdForUrl,
+    locationForUrl,
+    focusGeneId
+  } = useActivityViewerIds();
   const [width, setWidth] = useState(0);
-  // FIXME: this is temporary; focus can also be a regulatory feature; should probably be reflected in url, and should be set via redux
-  const [focusGeneId, setFocusGeneId] = useState<string | null>(null);
   const regionDetailLocation = useAppSelector((state) =>
     getRegionDetailSelectedLocation(state, activeGenomeId ?? '')
   );
+  const navigate = useNavigate();
+
   const { currentData } = useRegionOverviewQuery(
     {
       assemblyName: assemblyName || '',
@@ -77,8 +88,19 @@ const RegionOverview = () => {
   };
 
   const onFocusGeneChange = (event: Event) => {
-    const newFocusGeneId = (event as CustomEvent).detail as string;
-    setFocusGeneId(newFocusGeneId);
+    if (!genomeIdForUrl || !locationForUrl) {
+      // this should never happen; but will keep typescript happy
+      return;
+    }
+
+    const gene = (event as CustomEvent).detail as GenePopupMessage['content'];
+
+    const newUrl = urlFor.regulatoryActivityViewer({
+      genomeId: genomeIdForUrl,
+      location: locationForUrl,
+      focusGeneId: gene.unversioned_stable_id
+    });
+    navigate(newUrl);
   };
 
   const featureTracks = useMemo(() => {
