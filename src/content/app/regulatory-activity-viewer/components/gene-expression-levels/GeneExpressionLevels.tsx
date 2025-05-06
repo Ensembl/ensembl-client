@@ -27,6 +27,8 @@ import {
 } from './geneExpressionLevelConstants';
 
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
+import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
+import { useEpigenomesGeneActivityQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 /**
  * This component displays gene expression levels,
@@ -35,16 +37,28 @@ import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useE
 
 const GeneExpressionLevels = () => {
   const { sortedCombinedEpigenomes } = useEpigenomes();
+  const { assemblyAccessionId, focusGeneId } = useActivityViewerIds();
 
-  if (!sortedCombinedEpigenomes) {
+  const epigenomeIds = sortedCombinedEpigenomes?.map(
+    (epigenome) => epigenome.id
+  );
+
+  const { data } = useEpigenomesGeneActivityQuery(
+    {
+      assemblyAccessionId: assemblyAccessionId ?? '',
+      geneId: focusGeneId ?? '',
+      epigenomeIds: epigenomeIds ?? []
+    },
+    {
+      skip: !assemblyAccessionId || !focusGeneId || !epigenomeIds
+    }
+  );
+
+  if (!data) {
     return null;
   }
 
-  const mockExpressionData = getMockGeneExpressionData(
-    sortedCombinedEpigenomes
-  );
-
-  const totalHeight = mockExpressionData.per_epigenome.length * TRACK_HEIGHT;
+  const totalHeight = data.gene_activity.length * TRACK_HEIGHT;
 
   return (
     <svg
@@ -56,11 +70,14 @@ const GeneExpressionLevels = () => {
       }}
       width={TOTAL_WIDTH}
     >
-      <Heading medianValue={mockExpressionData.median} />
-      {mockExpressionData.per_epigenome.map(({ id, value }, index) => (
-        <GeneExpressionIndicator key={id} value={value} trackIndex={index} />
-      ))}
-      <MedianLine value={mockExpressionData.median} height={totalHeight} />
+      <Heading medianValue={data.median} />
+      {data.gene_activity.map(({ epigenome_ids, value }, index) => {
+        const id = epigenome_ids.join(', '); // FIXME: this should be a common function for generating combined epigenome id out of multiple base epigenome ids
+        return (
+          <GeneExpressionIndicator key={id} value={value} trackIndex={index} />
+        );
+      })}
+      <MedianLine value={data.median} height={totalHeight} />
     </svg>
   );
 };
@@ -147,31 +164,6 @@ const Heading = ({ medianValue }: { medianValue: number }) => {
       </text>
     </g>
   );
-};
-
-/**
- * Generate mock data:
- * - Receive a list of epignomes
- * - Generate some random number for each epigenome
- *  - Should be between 0 and 1, with 2 decimal places
- *  - Also, calculate an average of those numbers
- *    (it will likely be a median in the future, but doesn't matter now)
- */
-const getMockGeneExpressionData = (epigenomes: { id: string }[]) => {
-  const geneExpressionLevels = epigenomes.map(({ id }) => ({
-    id,
-    value: Math.round(Math.random() * 100) / 100
-  }));
-
-  const averageExpressionLevel =
-    geneExpressionLevels.reduce((acc, item) => {
-      return acc + item.value;
-    }, 0) / geneExpressionLevels.length;
-
-  return {
-    median: Math.round(averageExpressionLevel * 100) / 100,
-    per_epigenome: geneExpressionLevels
-  };
 };
 
 export default memo(GeneExpressionLevels);

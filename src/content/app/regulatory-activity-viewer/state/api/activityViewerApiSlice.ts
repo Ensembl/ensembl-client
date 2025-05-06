@@ -25,6 +25,7 @@ import type {
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { EpigenomeActivityResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeActivity';
+import type { EpigenomeGeneActivityResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeGeneActivity';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
 type RegionOverviewRequestParams = {
@@ -32,7 +33,7 @@ type RegionOverviewRequestParams = {
   location: string; // <-- as formatted by the stringifyLocation function
 };
 
-type FocusGeneParams = {
+type FocusGeneRequestParams = {
   assemblyName: string;
   geneId: string; // <-- versioned or unversioned gene stable id
 };
@@ -49,6 +50,12 @@ type EpigenomesActivityRequestParams = {
   assemblyAccessionId: string;
   regionName: string;
   locations: { start: number; end: number }[];
+  epigenomeIds: string[];
+};
+
+type EpigenomesGeneActivityRequestParams = {
+  assemblyAccessionId: string;
+  geneId: string;
   epigenomeIds: string[];
 };
 
@@ -70,7 +77,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
         };
       }
     }),
-    focusGene: builder.query<FocusGene, FocusGeneParams>({
+    focusGene: builder.query<FocusGene, FocusGeneRequestParams>({
       queryFn: async (params, _, __, baseQuery) => {
         const { assemblyName, geneId } = params;
         try {
@@ -133,6 +140,35 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
           return { data: data as EpigenomeActivityResponse };
         }
       }
+    }),
+    epigenomesGeneActivity: builder.query<
+      EpigenomeGeneActivityResponse,
+      EpigenomesGeneActivityRequestParams
+    >({
+      queryFn: async (params, _, __, baseQuery) => {
+        const { assemblyAccessionId, epigenomeIds, geneId } = params;
+        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.4/release/${releaseName}/gene_activity/assembly/${assemblyAccessionId}/gene/${geneId}`;
+        const requestBody = {
+          epigenome_ids: prepareEpigenomeIdsForRequest(epigenomeIds)
+        };
+
+        const { data, error } = await baseQuery({
+          url,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify(requestBody)
+        });
+
+        if (error) {
+          return {
+            error
+          };
+        } else {
+          return { data: data as EpigenomeGeneActivityResponse };
+        }
+      }
     })
   })
 });
@@ -148,5 +184,6 @@ export const {
   useFocusGeneQuery,
   useEpigenomeMetadataDimensionsQuery,
   useBaseEpigenomesQuery,
-  useEpigenomesActivityQuery
+  useEpigenomesActivityQuery,
+  useEpigenomesGeneActivityQuery
 } = activityViewerApiSlice;
