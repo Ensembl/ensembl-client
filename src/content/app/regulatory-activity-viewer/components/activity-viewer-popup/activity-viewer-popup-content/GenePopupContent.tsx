@@ -38,7 +38,7 @@ const GenePopupContent = (props: Props) => {
   const onFocus = () => {
     const event = new CustomEvent('focus-gene', {
       bubbles: true,
-      detail: gene.stable_id
+      detail: gene
     });
     componentRef.current?.dispatchEvent(event);
 

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { GeneInRegionOverview } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+
 type CommonMessageFields = {
   coordinates: {
     x: number;
@@ -23,15 +25,17 @@ type CommonMessageFields = {
 
 export type GenePopupMessage = CommonMessageFields & {
   type: 'gene';
-  content: {
-    stable_id: string;
-    unversioned_stable_id: string;
-    symbol?: string;
-    biotype: string;
+  content: Pick<
+    GeneInRegionOverview,
+    | 'symbol'
+    | 'stable_id'
+    | 'unversioned_stable_id'
+    | 'biotype'
+    | 'strand'
+    | 'start'
+    | 'end'
+  > & {
     region_name: string;
-    strand: string;
-    start: number;
-    end: number;
   };
 };
 

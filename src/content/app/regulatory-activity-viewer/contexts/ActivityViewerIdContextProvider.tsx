@@ -96,6 +96,8 @@ const ActivityViewerIdContextProvider = ({
     }
   }
 
+  const focusGeneId = urlSearchParams.get('focus-gene');
+
   const contextValue = {
     genomeIdInUrl,
     activeGenomeId,
@@ -105,6 +107,7 @@ const ActivityViewerIdContextProvider = ({
     assemblyName: assemblyName ?? null,
     location,
     locationForUrl: locationInUrl,
+    focusGeneId,
     isFetchingGenomeId: isFetchingGenomeSummaryInfo,
     isMissingGenomeId:
       !!genomeQueryError && isGenomeNotFoundError(genomeQueryError)

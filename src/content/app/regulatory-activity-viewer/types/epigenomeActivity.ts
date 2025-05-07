@@ -71,18 +71,3 @@ export type EpigenomeActivityResponse = {
   track_metadata: EpigenomeActivityMetadata;
   track_data: TrackData[];
 };
-
-/**
- * Currently, Regulation team's proposal is that the client sends
- * a GET request with a 'location' query parameter, and a body.
- * It is unconventional for GET requests to include a body;
- * so maybe Regulation team will change their mind.
- *
- * The body of the request contains an array of arrays of epigenome ids.
- * A single array of epigenome ids corresponds to one row (track) of activity data.
- * The reason one track corresponds to an array of epigenome ids is because
- * of the possibility to combine epigenomes.
- */
-export type EpigenomeActivityRequest = {
-  epigenome_ids: string[][];
-};

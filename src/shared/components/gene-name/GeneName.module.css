@@ -1,0 +1,9 @@
+.geneName {
+  display: inline-flex;
+  align-items: baseline;
+  column-gap: 10px;
+}
+
+.geneNamePrimary {
+  font-weight: var(--gene-name-primary-font-weight, var(--font-weight-bold));
+}

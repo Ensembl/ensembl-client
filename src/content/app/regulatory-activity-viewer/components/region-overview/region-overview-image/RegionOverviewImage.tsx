@@ -65,7 +65,7 @@ type Props = {
     start: number;
     end: number;
   } | null;
-  focusGeneId: string | null; // TODO: this will need to evolve, because focused feature does not have to be gene; also, focus object will probably come from redux
+  focusGeneId?: string | null;
 };
 
 /**
@@ -171,7 +171,7 @@ const GeneTracks = (props: {
   tracks: FeatureTracks['geneTracks'];
   scale: ScaleLinear<number, number>;
   width: number; // full svg width
-  focusGeneId: string | null;
+  focusGeneId?: string | null;
 }) => {
   const { forwardStrandTracks, reverseStrandTracks } = props.tracks;
   let tempY = GENE_TRACKS_TOP_OFFSET; // keep track of the y coordinate for subsequent shapes to be drawn
@@ -235,14 +235,14 @@ const GeneTrack = (props: {
   trackIndex: number;
   trackOffsetsTop: number[];
   scale: ScaleLinear<number, number>;
-  focusGeneId: string | null;
+  focusGeneId?: string | null;
 }) => {
   const { tracks, trackIndex, trackOffsetsTop, scale, focusGeneId } = props;
   const track = tracks[trackIndex];
   const offsetTop = trackOffsetsTop[trackIndex];
 
   const geneElements = track.map((gene) => {
-    const isFocusGene = focusGeneId === gene.data.stable_id;
+    const isFocusGene = focusGeneId === gene.data.unversioned_stable_id;
 
     return (
       <Fragment key={gene.data.stable_id}>

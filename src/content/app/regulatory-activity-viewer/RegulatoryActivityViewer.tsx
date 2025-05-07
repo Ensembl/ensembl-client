@@ -28,6 +28,7 @@ import ActivityViewerEpigenomesContextProvider from 'src/content/app/regulatory-
 import { StandardAppLayout } from 'src/shared/components/layout';
 import ActivityViewerAppBar from './components/activity-viewer-app-bar/ActivityViewerAppBar';
 import ActivityViewerInterstitial from './components/activity-viewer-interstitial/ActivityViewerInterstitial';
+import ActivityViewerFocusFeatureInfo from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-focus-feature-info/ActivityViewerFocusFeatureInfo';
 import RegionOverview from './components/region-overview/RegionOverview';
 import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
 import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
@@ -86,11 +87,20 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
 
   return (
     <div className={styles.mainContentContainer}>
-      Placeholder for focus feature information
-      <RegionOverview />
-      {/* The spacer divs below are temporary */}
-      <div style={{ margin: '0.6rem 0' }} />
-      <MainContentBottomViewControls genomeId={genomeId} />
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          backgroundColor: 'var(--color-white)',
+          zIndex: 1
+        }}
+      >
+        <ActivityViewerFocusFeatureInfo />
+        <RegionOverview />
+        {/* The spacer divs below are temporary */}
+        <div style={{ margin: '0.6rem 0' }} />
+        <MainContentBottomViewControls genomeId={genomeId} />
+      </div>
       <div style={{ margin: '0.6rem 0' }} />
       <MainContentBottom genomeId={genomeId} />
       <div style={{ margin: '4rem 0' }} />

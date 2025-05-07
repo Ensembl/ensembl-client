@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-export function getStrandDisplayName(strandCode: 'forward' | 'reverse') {
-  if (strandCode === 'forward') {
-    return 'forward strand';
-  } else {
-    return 'reverse strand';
-  }
-}
+export type EpigenomeGeneActivity = {
+  epigenome_ids: string[]; // <-- one or more epigenome id, corresponding to a track of epigenome activity data
+  value: number;
+};
+
+export type EpigenomeGeneActivityResponse = {
+  median: number;
+  gene_activity: EpigenomeGeneActivity[];
+};

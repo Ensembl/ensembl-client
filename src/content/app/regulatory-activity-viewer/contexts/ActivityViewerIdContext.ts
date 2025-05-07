@@ -27,6 +27,7 @@ type ActivityViewerIdContextType = {
   assemblyName: string | null; // <-- temporary data; won't be needed when all regulation endpoints switch to using assembly accession id
   location: GenomicLocation | null; // not quite sure if location belongs here; but provisionally placing it here
   locationForUrl?: string | null;
+  focusGeneId?: string | null;
   isFetchingGenomeId: boolean;
   isMissingGenomeId: boolean;
 };

@@ -34,6 +34,7 @@ type EntityViewerUrlParams = {
 type RegulatoryActivityViewerUrlParams = {
   genomeId?: string | null;
   location?: string | null;
+  focusGeneId?: string;
 };
 
 type SpeciesPageUrlParams = {
@@ -183,6 +184,9 @@ export const regulatoryActivityViewer = (
   const urlSearchParams = new URLSearchParams('');
   if (params?.location) {
     urlSearchParams.append('location', params.location);
+  }
+  if (params?.focusGeneId) {
+    urlSearchParams.append('focus-gene', params.focusGeneId);
   }
   const query = decodeURIComponent(urlSearchParams.toString());
 
