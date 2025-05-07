@@ -28,16 +28,6 @@
   column-gap: 10px;
 }
 
-.geneNamePrimary {
-  font-weight: var(--font-weight-bold);
-}
-
-.geneBiotype {
-  display: inline-flex;
-  align-items: baseline;
-  column-gap: 10px;
-}
-
 .geneFullName {
   display: inline-flex;
   align-items: baseline;
