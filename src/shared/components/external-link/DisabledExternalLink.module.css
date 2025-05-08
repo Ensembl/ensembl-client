@@ -15,4 +15,5 @@
 .text {
   grid-column: text;
   color: var(--disabled-external-link-text-color, var(--color-grey));
+  font-size: 12px; /* same as for external link */
 }

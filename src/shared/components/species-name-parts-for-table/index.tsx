@@ -19,3 +19,5 @@ export { default as ScientificName } from './SpeciesScientificNameForTable';
 export { default as AssemblyName } from './AssemblyNameForTable';
 export { default as AssemblyAccessionId } from './AssemblyAccessionIdForTable';
 export { default as SpeciesType } from './SpeciesTypeForTable';
+export { default as GenomeRelease } from './GenomeReleaseForTable';
+export { default as GenomeReleaseType } from './GenomeReleaseTypeForTable';

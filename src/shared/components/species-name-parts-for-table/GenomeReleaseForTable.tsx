@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
+import classNames from 'classnames';
+
 import type { Release } from 'src/shared/types/release';
 
-export type CommittedItem = {
-  genome_id: string;
-  genome_tag: string | null;
-  common_name: string | null;
-  scientific_name: string;
-  species_taxonomy_id: string;
-  type: {
-    kind: string; // e.g. "population"
-    value: string; // e.g. "European"
-  } | null;
-  is_reference: boolean;
-  assembly: {
-    accession_id: string;
-    name: string;
-  };
-  release?: Release; // Release is going to be mandatory; but making it optional temporarily for dev purposes
-  isEnabled: boolean;
+type Props = {
+  release: Release;
+  className?: string;
 };
+
+import styles from './SpeciesNamePartsForTable.module.css';
+
+/**
+ * In a table, release label is typically rendered with a light font and in a smaller size.
+ */
+
+const GenomeReleaseForTable = (props: Props) => {
+  const { release, className: classNameFromProps } = props;
+
+  const componentClasses = classNames(styles.genomeRelease, classNameFromProps);
+
+  return <span className={componentClasses}>{release.name}</span>;
+};
+
+export default GenomeReleaseForTable;

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { Release } from 'src/shared/types/release';
+
 export type ExampleFocusObject = {
   id: string;
   type: string;
@@ -41,6 +43,7 @@ export type GenomeInfo = {
     name: string;
     url: string;
   };
+  release: Release;
   assembly_provider: Provider | null;
   assembly_level: string;
   assembly_date: string | null;
