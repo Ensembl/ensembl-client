@@ -31,6 +31,6 @@ export type CommittedItem = {
     accession_id: string;
     name: string;
   };
-  release?: Release; // Release is going to be mandatory; but making it optional temporarily for dev purposes
+  release: Release;
   isEnabled: boolean;
 };
