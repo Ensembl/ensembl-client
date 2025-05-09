@@ -32,6 +32,10 @@ export const createSelectedSpecies = (
     accession_id: faker.lorem.word(),
     name: faker.lorem.word()
   },
+  release: {
+    name: '2025-02',
+    type: 'integrated'
+  },
   isEnabled: true,
   ...fragment
 });

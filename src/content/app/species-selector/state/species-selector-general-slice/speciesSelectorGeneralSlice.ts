@@ -122,6 +122,7 @@ const prepareSelectedSpeciesForCommit = (
       accession_id: species.assembly.accession_id,
       name: species.assembly.name
     },
+    release: species.release,
     is_reference: species.is_reference,
     type: species.type,
     isEnabled: true

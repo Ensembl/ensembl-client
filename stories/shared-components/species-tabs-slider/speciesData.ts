@@ -27,6 +27,10 @@ export default [
       accession_id: 'GCA_000001405.15',
       name: 'GRCh38'
     },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
+    },
     type: null,
     is_reference: true,
     isEnabled: true
@@ -40,6 +44,10 @@ export default [
     assembly: {
       accession_id: 'GCA_000001405.14',
       name: 'GRCh37.p13'
+    },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
     },
     type: null,
     is_reference: false,
@@ -55,6 +63,10 @@ export default [
       accession_id: 'GCA_001050555.1',
       name: 'ASM105055v1'
     },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
+    },
     type: null,
     is_reference: false,
     isEnabled: true
@@ -68,6 +80,10 @@ export default [
     assembly: {
       accession_id: 'GCA_000001735.2',
       name: 'TAIR10'
+    },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
     },
     type: null,
     is_reference: false,
@@ -83,6 +99,10 @@ export default [
       accession_id: 'GCA_000001215.4',
       name: 'BDGP6.22'
     },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
+    },
     type: null,
     is_reference: true,
     isEnabled: true
@@ -96,6 +116,10 @@ export default [
     assembly: {
       accession_id: 'GCA_000005975.1',
       name: 'dyak_caf1'
+    },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
     },
     type: null,
     is_reference: false,
@@ -111,6 +135,10 @@ export default [
       accession_id: 'GCA_000002985.3',
       name: 'WBcel235'
     },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
+    },
     type: null,
     is_reference: true,
     isEnabled: true
@@ -124,6 +152,10 @@ export default [
     assembly: {
       accession_id: 'GCA_000001635.9',
       name: 'WBcel235'
+    },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
     },
     type: null,
     is_reference: true,
@@ -139,6 +171,10 @@ export default [
       accession_id: 'GCA_014441545.1',
       name: 'ROS_Cfam_1.0'
     },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
+    },
     type: null,
     is_reference: true,
     isEnabled: true
@@ -153,6 +189,10 @@ export default [
       accession_id: 'GCA_000001635.9',
       name: 'B73_RefGen_v4'
     },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
+    },
     type: null,
     is_reference: true,
     isEnabled: true
@@ -166,6 +206,10 @@ export default [
     assembly: {
       accession_id: 'GCA_000006665',
       name: 'ASM666v1'
+    },
+    release: {
+      name: '2025-02',
+      type: 'integrated'
     },
     type: null,
     is_reference: true,
