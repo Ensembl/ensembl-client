@@ -14,6 +14,7 @@
 .epigenomeTextLabel {
   font-size: 11px;
   font-weight: var(--font-weight-light);
+  line-height: 1;
 }
 
 .epigenomeColorLabel {
@@ -24,4 +25,24 @@
 .coloredBlock {
   width: 6px;
   height: 25px;
+}
+
+.labelPopupContent {
+  --label-popup-content-padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.3em;
+  padding-left: var(--label-popup-content-padding-left); /* to create hanging indent effect */
+}
+
+.labelPopupContent p {
+  margin: 0;
+  text-indent: calc(-1 * var(--label-popup-content-padding-left)); /* to create hanging indent effect */
+  line-height: 1.2;
+}
+
+.labelPopupContent .dimensionName {
+  display: inline-block;
+  font-weight: var(--font-weight-light);
+  margin-right: 1ch;
 }

@@ -21,6 +21,7 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 import {
   setMainContentBottomView,
+  openEpigenomesSelector,
   setSidebarView,
   type MainContentBottomView
 } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
@@ -50,6 +51,26 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
   const activeView = useAppSelector((state) =>
     getMainContentBottomView(state, genomeId)
   );
+  const dispatch = useAppDispatch();
+
+  const changeView = (view: MainContentBottomView) => {
+    dispatch(
+      setMainContentBottomView({
+        genomeId,
+        view
+      })
+    );
+  };
+
+  const onConfigure = () => {
+    dispatch(openEpigenomesSelector({ genomeId }));
+    dispatch(
+      setSidebarView({
+        genomeId,
+        view: 'epigenome-filters'
+      })
+    );
+  };
 
   return (
     <div className={styles.viewButtons}>
@@ -57,6 +78,7 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
         view="epigenomes-list"
         activeView={activeView}
         genomeId={genomeId}
+        onClick={() => changeView('epigenomes-list')}
       >
         Table
       </ContentViewButton>
@@ -65,6 +87,7 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
         view="dataviz"
         activeView={activeView}
         genomeId={genomeId}
+        onClick={() => changeView('dataviz')}
       >
         Visualise
       </ContentViewButton>
@@ -73,6 +96,7 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
         view="epigenomes-selection"
         activeView={activeView}
         genomeId={genomeId}
+        onClick={onConfigure}
       >
         Configure
       </ContentViewButton>
@@ -81,37 +105,17 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
 };
 
 const ContentViewButton = ({
-  genomeId,
   view,
   activeView,
-  children
+  children,
+  onClick
 }: {
   genomeId: string;
   view: MainContentBottomView;
   activeView: MainContentBottomView;
+  onClick: () => void;
   children: ReactNode;
 }) => {
-  const dispatch = useAppDispatch();
-
-  const onClick = () => {
-    dispatch(
-      setMainContentBottomView({
-        genomeId,
-        view
-      })
-    );
-    // if the 'Configure' button is pressed,
-    // also change the sidebar contents
-    if (view === 'epigenomes-selection') {
-      dispatch(
-        setSidebarView({
-          genomeId,
-          view: 'epigenome-filters'
-        })
-      );
-    }
-  };
-
   const isActive = view === activeView;
 
   const buttonClassName = isActive ? styles.viewButtonActive : undefined;

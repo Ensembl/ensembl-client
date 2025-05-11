@@ -23,6 +23,7 @@ import { stringifyDimensionValue } from './sortEpigenomes';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
+import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 
 import styles from './EpigenomeLabels.module.css';
 
@@ -30,6 +31,7 @@ type Props = {
   epigenomes: Epigenome[];
   displayDimensions: string[];
   sortingDimensions: string[];
+  allDimensions: EpigenomeMetadataDimensions;
   className?: string;
 };
 
@@ -39,7 +41,8 @@ const colors2 = ['#0399ff', '#b6e1ff'];
 const colors3 = ['#024b02', '#cce5cd'];
 
 const EpigenomeLabels = (props: Props) => {
-  const { epigenomes, sortingDimensions, displayDimensions } = props;
+  const { epigenomes, sortingDimensions, displayDimensions, allDimensions } =
+    props;
 
   const epigenomeLabelsData = getEpigenomeLabels({
     epigenomes,
@@ -54,6 +57,7 @@ const EpigenomeLabels = (props: Props) => {
           epigenome={epigenomes[index]}
           data={labelData}
           displayDimensions={displayDimensions}
+          allDimensions={allDimensions}
         />
       ))}
     </div>
@@ -118,17 +122,20 @@ export const getEpigenomeLabels = ({
 const EpigenomeLabel = ({
   data,
   epigenome,
-  displayDimensions
+  displayDimensions,
+  allDimensions
 }: {
   data: ReturnType<typeof getEpigenomeLabels>[number];
   epigenome: Epigenome;
   displayDimensions: string[];
+  allDimensions: EpigenomeMetadataDimensions;
 }) => {
   return (
     <div className={styles.epigenomeLabel}>
       <EpigenomeTextLabel
         epigenome={epigenome}
         displayDimensions={displayDimensions}
+        allDimensions={allDimensions}
       />
       <EpigenomeColorLabel data={data} />
     </div>
@@ -137,10 +144,12 @@ const EpigenomeLabel = ({
 
 const EpigenomeTextLabel = ({
   epigenome,
-  displayDimensions
+  displayDimensions,
+  allDimensions
 }: {
   epigenome: Epigenome;
   displayDimensions: string[];
+  allDimensions: EpigenomeMetadataDimensions;
 }) => {
   const [hoverRef, isHovered] = useHover<HTMLSpanElement>();
 
@@ -153,10 +162,11 @@ const EpigenomeTextLabel = ({
       <span ref={hoverRef}>{epigenome[mainDimension]}</span>
 
       {isHovered && (
-        <Tooltip anchor={hoverRef.current}>
+        <Tooltip anchor={hoverRef.current} autoAdjust={true}>
           <LabelPopupContents
             epigenome={epigenome}
             displayDimensions={otherDimensions}
+            allDimensions={allDimensions}
           />
         </Tooltip>
       )}
@@ -166,10 +176,12 @@ const EpigenomeTextLabel = ({
 
 const LabelPopupContents = ({
   epigenome,
-  displayDimensions
+  displayDimensions,
+  allDimensions
 }: {
   epigenome: Epigenome;
   displayDimensions: string[];
+  allDimensions: EpigenomeMetadataDimensions;
 }) => {
   const lines = displayDimensions
     .map((dimension) => {
@@ -177,15 +189,21 @@ const LabelPopupContents = ({
         const line = Array.isArray(epigenome[dimension])
           ? epigenome[dimension].join(', ')
           : epigenome[dimension];
-        return line;
+        return {
+          label: allDimensions[dimension].name,
+          value: line
+        };
       }
     })
     .filter((line) => !!line);
 
   return (
-    <div>
+    <div className={styles.labelPopupContent}>
       {lines.map((line) => (
-        <div key={line}>{line}</div>
+        <p key={line.label}>
+          <span className={styles.dimensionName}>{line.label}:</span>
+          <span>{line.value}</span>
+        </p>
       ))}
     </div>
   );

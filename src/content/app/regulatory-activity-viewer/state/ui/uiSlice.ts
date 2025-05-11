@@ -25,6 +25,7 @@ export type SidebarView = 'default' | 'epigenome-filters';
 
 type StatePerGenome = {
   mainContentBottomView: MainContentBottomView;
+  isEpigenomesSelectorOpen: boolean;
   sidebarView: SidebarView;
 };
 
@@ -32,6 +33,7 @@ type State = Record<string, StatePerGenome>;
 
 const initialStateForGenome: StatePerGenome = {
   mainContentBottomView: 'epigenomes-list',
+  isEpigenomesSelectorOpen: false,
   sidebarView: 'default'
 };
 
@@ -53,6 +55,18 @@ const uiSlice = createSlice({
       ensureStateForGenome(state, genomeId);
       state[genomeId].mainContentBottomView = view;
     },
+    openEpigenomesSelector(state, action: PayloadAction<{ genomeId: string }>) {
+      const { genomeId } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].isEpigenomesSelectorOpen = true;
+    },
+    closeEpigenomesSelector(
+      state,
+      action: PayloadAction<{ genomeId: string }>
+    ) {
+      const { genomeId } = action.payload;
+      state[genomeId].isEpigenomesSelectorOpen = false;
+    },
     setSidebarView(
       state,
       action: PayloadAction<{ genomeId: string; view: SidebarView }>
@@ -64,6 +78,11 @@ const uiSlice = createSlice({
   }
 });
 
-export const { setMainContentBottomView, setSidebarView } = uiSlice.actions;
+export const {
+  setMainContentBottomView,
+  setSidebarView,
+  openEpigenomesSelector,
+  closeEpigenomesSelector
+} = uiSlice.actions;
 
 export default uiSlice.reducer;

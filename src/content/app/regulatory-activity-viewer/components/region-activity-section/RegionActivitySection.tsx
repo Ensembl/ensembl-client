@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import classNames from 'classnames';
 
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
@@ -88,6 +88,7 @@ const RegionActivitySection = () => {
             displayDimensions={
               epigenomeMetadataDimensionsResponse.ui_spec.table_layout
             }
+            allDimensions={epigenomeMetadataDimensionsResponse.dimensions}
           />
         )}
       </div>
@@ -107,4 +108,4 @@ const RegionActivitySection = () => {
   );
 };
 
-export default RegionActivitySection;
+export default memo(RegionActivitySection);
