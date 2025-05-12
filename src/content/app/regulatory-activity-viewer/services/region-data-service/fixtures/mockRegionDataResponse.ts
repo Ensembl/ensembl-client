@@ -88,7 +88,7 @@ export const createOverviewRegionPayload = (
     region: {
       name: '1',
       coordinate_system: 'chromosome',
-      length: 1_000_000
+      length: 240_000_000
     },
     locations: [{ start, end }],
     genes: [

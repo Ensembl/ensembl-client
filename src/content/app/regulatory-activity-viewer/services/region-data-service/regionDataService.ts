@@ -38,13 +38,25 @@ import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/
 import type { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 
 /**
+ * This is a service for fetching data about features (genes and regulatory features)
+ * within a region, to be displayed in the Regulatory Activity Viewer.
+ *
+ * The service is implemented as rxjs observable streams for two reasons:
+ *
+ * - It should be something capable of being subscribed to and notifying the subscriber
+ *   of the changes in its state
+ * - It implements its own simple caching mechanism,
+ *   which might be difficult to achieve with redux-toolkit-query
+ *   (our main library for data fetching)
+ *
+ */
+
+/**
  * - See example of useSyncExternalStore:
  *   https://codesandbox.io/p/sandbox/rxjs-uses-0okvz4?file=%2Fsrc%2Findex.js
  * - Create your own redux with rxjs
  *   https://geekyants.com/blog/create-your-own-redux-with-rxjs
  */
-
-// ============= Reading karyotype information =============
 
 // FIXME: replace enum in loading-state.ts with this
 type RequestStatus = 'not_requested' | 'loading' | 'success' | 'error';
@@ -69,25 +81,14 @@ export const karyotypeState$ = karyotypeStateSubject.asObservable();
 
 // =========================================================
 
-/**
- * This is a service for fetching data to display in region overview panel.
- *
- * LOCATION DATA STREAM
- *
- *
- * FULL REGION DATA STREAM
- *
- */
-
 // =====
 
 export type RegionDetailsData = {
   assemblyName: string;
   region: OverviewRegion['region'];
   bins: Record<
-    string,
+    string, // <-- using string of a format `${start}-${end}` as key
     {
-      // <-- using string of a format `${start}-${end}` as key
       genes: OverviewRegion['genes'];
       regulatory_features: OverviewRegion['regulatory_features']['data'];
     }
@@ -118,8 +119,6 @@ type RegionDetailsResponseAction = {
 
 const regionDetailQueryAction$ = new Subject<RegionDetailsQueryAction>();
 
-// FIXME:
-// probably merge with karyotype query here
 export const fetchRegionDetails = (
   params: RegionDetailsQueryAction['payload']
 ) => {
@@ -129,43 +128,37 @@ export const fetchRegionDetails = (
   });
 };
 
-export const regionDetailsQuery$ = regionDetailQueryAction$
-  .pipe(
-    filter((action) => {
-      const { assemblyName, regionName, start, end } = action.payload;
-      const currentState = regionDetailsStateSubject.getValue();
+const filteredRegionDetailQueryAction$ = regionDetailQueryAction$.pipe(
+  filter((action) => {
+    const { assemblyName, regionName, start, end } = action.payload;
+    const currentState = regionDetailsStateSubject.getValue();
 
-      const binKeys = createBins({ start, end }).map(createBinKey);
+    const binKeys = createBins({ start, end }).map(createBinKey);
 
-      // TODO: ideally, should be able to split the request into requesting the lower bins and the higher bins separately
-      const haveAllBinsBeenRequested = binKeys.every((key) => {
-        const isLoading = currentState.loadingLocations?.some((loc) => {
-          return (
-            loc.assemblyName === assemblyName &&
-            loc.regionName === regionName &&
-            loc.bin === key
-          );
-        });
-        const hasLoaded =
-          currentState.data?.bins[key] &&
-          currentState.data.assemblyName === assemblyName &&
-          currentState.data.region.name === regionName;
-
-        return isLoading || hasLoaded;
+    // TODO: ideally, should be able to split the request into requesting the lower bins and the higher bins separately
+    const haveAllBinsBeenRequested = binKeys.every((key) => {
+      const isLoading = currentState.loadingLocations?.some((loc) => {
+        return (
+          loc.assemblyName === assemblyName &&
+          loc.regionName === regionName &&
+          loc.bin === key
+        );
       });
+      const hasLoaded =
+        currentState.data?.bins[key] &&
+        currentState.data.assemblyName === assemblyName &&
+        currentState.data.region.name === regionName;
 
-      if (haveAllBinsBeenRequested) {
-        // region data has already been fetched and cached; no need to load again
-        return false;
-      }
+      return isLoading || hasLoaded;
+    });
 
-      // will need karyotype
+    // no need to load again if region data has already been fetched and cached
+    return !haveAllBinsBeenRequested;
+  })
+);
 
-      return true;
-    }),
-
-    // tap to send action to update state observable?
-
+export const regionDetailsQuery$ = filteredRegionDetailQueryAction$
+  .pipe(
     concatMap((action) => {
       return fetchLocation(action.payload).pipe(
         // tap to send action to update state observable?
@@ -197,7 +190,7 @@ export const regionDetailsQuery$ = regionDetailQueryAction$
   )
   .subscribe();
 
-const distributeAcrossBins = ({
+export const distributeAcrossBins = ({
   requestParams,
   response
 }: {
@@ -258,7 +251,7 @@ const distributeAcrossBins = ({
 const regionDetailsResponseAction$ = new Subject<RegionDetailsResponseAction>();
 
 const regionDetailsStateUpdate$ = merge(
-  regionDetailQueryAction$,
+  filteredRegionDetailQueryAction$,
   regionDetailsResponseAction$
 ).pipe(
   map((action) => {
@@ -308,28 +301,12 @@ const mergeRegionDetailsStateOnLoading = (
     bin: binKey
   }));
 
-  // if this is a new assembly or a new region, discard previous state
-  if (!state.loadingLocations) {
-    return {
-      ...state,
-      loadingLocations
-    };
-  }
+  const loadingLocationsInState = state.loadingLocations ?? [];
 
-  const isAlreadyLoadingLocation = state.loadingLocations.some((loc) => {
-    return loadingLocations.some((locFromPayload) =>
-      areSameLoadingLocations(locFromPayload, loc)
-    );
-  });
-
-  if (isAlreadyLoadingLocation) {
-    return state;
-  } else {
-    return {
-      ...state,
-      loadingLocations: [...state.loadingLocations, ...loadingLocations]
-    };
-  }
+  return {
+    ...state,
+    loadingLocations: [...loadingLocationsInState, ...loadingLocations]
+  };
 };
 
 /**
@@ -344,15 +321,13 @@ const mergeRegionDetailsState = (
   // remove the locations in payload from the loading list
   // if location does not exist among the state bins
   // add the bins
-  const updatedBins: RegionDetailsData['bins'] = {};
+  const updatedBins: RegionDetailsData['bins'] = {
+    ...currentState.data?.bins
+  };
   let loadingLocations = [...(currentState.loadingLocations ?? [])];
 
   for (const bin of Object.keys(payload.bins)) {
-    if (currentState.data?.bins[bin]) {
-      updatedBins[bin] = currentState.data.bins[bin];
-    } else {
-      updatedBins[bin] = payload.bins[bin];
-    }
+    updatedBins[bin] = payload.bins[bin];
     loadingLocations = loadingLocations.filter((location) => {
       return !(
         location.assemblyName === payload.assemblyName &&
@@ -379,26 +354,6 @@ const mergeRegionDetailsState = (
       regulatory_feature_types: regulatoryFeatureTypes
     }
   };
-
-  // assemblyName: string;
-  // regionName: string;
-  // coordinate_system: OverviewRegion['coordinate_system'];
-  // bins: Record<string, { // <-- using string of a format `${start}-${end}` as key
-  //   genes: OverviewRegion['genes'];
-  //   regulatory_features: OverviewRegion['regulatory_features']['data'];
-  // }>,
-  // regulatory_feature_types: OverviewRegion['regulatory_features']['feature_types'];
-};
-
-const areSameLoadingLocations = (
-  loc1: LoadingLocation,
-  loc2: LoadingLocation
-) => {
-  return (
-    loc1.assemblyName === loc2.assemblyName &&
-    loc1.regionName === loc2.regionName &&
-    loc1.bin === loc2.bin
-  );
 };
 
 type LoadingLocation = {
@@ -424,20 +379,6 @@ const regionDetailsStateSubject = new BehaviorSubject(
 );
 
 export const regionDetailsState$ = regionDetailsStateSubject.asObservable();
-
-// =====
-
-// const locationQuery$ = new Subject<LocationDataQueryParams>();
-
-// const regionQuery$ = new Subject<RegionQueryParams>();
-
-// export const queryLocation = (location: LocationDataQueryParams) => {
-//   locationQuery$.next(location);
-// };
-
-// const regionLocationData$ = locationQuery$.pipe(
-//   switchMap()
-// );
 
 const fetchLocation = (params: RegionDetailsQueryAction['payload']) => {
   const { assemblyName, regionName, start, end } = params;

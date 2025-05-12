@@ -21,14 +21,16 @@ import { waitFor } from '@testing-library/react';
 import {
   fetchRegionDetails,
   regionDetailsState$,
+  distributeAcrossBins,
   type RegionDetailsState
 } from './regionDataService';
-import { createBins, createBinKey } from './binsHelper';
+import { createBins, createBinKey, BIN_SIZE } from './binsHelper';
 
 import { getGenomicLocationFromString } from 'src/shared/helpers/genomicLocationHelpers';
 
 import {
   createGenePayload,
+  createRegulatoryFeaturePayload,
   createOverviewRegionPayload
 } from './fixtures/mockRegionDataResponse';
 
@@ -85,6 +87,11 @@ beforeAll(() =>
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
+/**
+ * NOTE: as regionDataService is currently implemented,
+ * its state persists between tests, which means tests aren't truly isolated from one another.
+ */
+
 describe('fetching data for a detailed slice', () => {
   test('request location smaller than bin size', async () => {
     const assemblyName = 'grch38';
@@ -93,10 +100,10 @@ describe('fetching data for a detailed slice', () => {
     const end = 20_000;
 
     fetchRegionDetails({
-      assemblyName: 'grch38',
-      regionName: '1',
-      start: 10000,
-      end: 20000
+      assemblyName,
+      regionName,
+      start,
+      end
     });
 
     const stateUpdates: RegionDetailsState[] = [];
@@ -124,17 +131,218 @@ describe('fetching data for a detailed slice', () => {
     });
   });
 
-  test.todo('request location larger than bin size');
+  test('sequential requests for same assembly and region', async () => {
+    const requestParams1 = {
+      assemblyName: 'grch38',
+      regionName: '2',
+      start: 10_000,
+      end: 20_000
+    };
+    const requestParams2 = {
+      assemblyName: 'grch38',
+      regionName: '2',
+      start: BIN_SIZE + 100_000,
+      end: BIN_SIZE + 120_000
+    };
 
-  test.todo('request location for which data is available locally');
+    fetchRegionDetails(requestParams1);
+    fetchRegionDetails(requestParams2);
 
-  test.todo('response contains a feature that spans more than one bin');
+    const stateUpdates: RegionDetailsState[] = [];
 
-  test.todo(
-    'order of queried regions/genomes should not be disrupted by slow responses'
-  );
+    // Observing state changes
+    regionDetailsState$.subscribe((state) => {
+      stateUpdates.push(state);
+    });
 
-  test.todo('switch assembly');
+    await waitFor(() => {
+      const finalState = stateUpdates.at(-1) as RegionDetailsState;
 
-  test.todo('switch region');
+      expect(finalState.loadingLocations).toBe(null);
+      expect(finalState.data?.assemblyName).toBe(requestParams1.assemblyName);
+      expect(finalState.data?.region.name).toBe(requestParams1.regionName);
+
+      const genes = [...Object.values(finalState.data!.bins)]
+        .map((bin) => bin.genes)
+        .flat();
+
+      // some genes should be from the first request; and others from the second
+      expect(genes.some((gene) => gene.start < requestParams1.end)).toBe(true); // genes from the first request
+      expect(genes.some((gene) => gene.start > requestParams2.start)).toBe(
+        true
+      ); // genes from the second request
+    });
+  });
+
+  test('switch assembly', async () => {
+    const requestParams1 = {
+      assemblyName: 'grch38',
+      regionName: '1',
+      start: 10_000,
+      end: 20_000
+    };
+    const requestParams2 = {
+      assemblyName: 'grch37',
+      regionName: '1',
+      start: 100_000,
+      end: 120_000
+    };
+
+    fetchRegionDetails(requestParams1);
+    fetchRegionDetails(requestParams2);
+
+    const stateUpdates: RegionDetailsState[] = [];
+
+    // Observing state changes
+    regionDetailsState$.subscribe((state) => {
+      stateUpdates.push(state);
+    });
+
+    await waitFor(() => {
+      const finalState = stateUpdates.at(-1) as RegionDetailsState;
+
+      expect(finalState.loadingLocations).toBe(null);
+      expect(finalState.data?.assemblyName).toBe(requestParams2.assemblyName);
+      expect(finalState.data?.region.name).toBe(requestParams2.regionName);
+
+      const genes = [...Object.values(finalState.data!.bins)]
+        .map((bin) => bin.genes)
+        .flat();
+
+      // make sure that all the genes are from the slice requested in the second request
+      expect(genes.every((gene) => gene.start > requestParams1.end)).toBe(true);
+    });
+  });
+
+  // Same as previous test; but checks that the service correctly switches from one region to another
+  test('switch region', async () => {
+    const requestParams1 = {
+      assemblyName: 'grch38',
+      regionName: '1',
+      start: 10_000,
+      end: 20_000
+    };
+    const requestParams2 = {
+      assemblyName: 'grch38',
+      regionName: '2',
+      start: 100_000,
+      end: 120_000
+    };
+
+    fetchRegionDetails(requestParams1);
+    fetchRegionDetails(requestParams2);
+
+    const stateUpdates: RegionDetailsState[] = [];
+
+    // Observing state changes
+    regionDetailsState$.subscribe((state) => {
+      stateUpdates.push(state);
+    });
+
+    await waitFor(() => {
+      const finalState = stateUpdates.at(-1) as RegionDetailsState;
+
+      expect(finalState.loadingLocations).toBe(null);
+      expect(finalState.data?.assemblyName).toBe(requestParams2.assemblyName);
+      expect(finalState.data?.region.name).toBe(requestParams2.regionName);
+
+      const genes = [...Object.values(finalState.data!.bins)]
+        .map((bin) => bin.genes)
+        .flat();
+
+      // make sure that all the genes are from the slice requested in the second request
+      expect(genes.every((gene) => gene.start > requestParams1.end)).toBe(true);
+    });
+  });
+});
+
+/**
+ * This is a helper function used by regionDataService.
+ * Its purpose is to distribute features, based on their start and end coordinates,
+ * across 'bins' of a certain size, for faster lookup.
+ * NOTE: If a feature starts within a slice covered by one bin,
+ * and ends within a slice covered by another bin,
+ * i.e. if it crosses a bin boundary,
+ * then it will be duplicated, such that it can be accessed from either one or the other bin.
+ */
+describe('distributeAcrossBins', () => {
+  it('distributes features across bins', () => {
+    const assemblyName = 'grch38';
+    const regionName = '1';
+    const start = 500_000;
+    const end = 1_500_000;
+
+    // lies completely within one bin
+    const gene1 = createGenePayload({
+      start,
+      end: start + 50_000
+    });
+    const regFeature1 = createRegulatoryFeaturePayload({
+      start,
+      end: start + 1_000
+    });
+
+    // crosses bins boundary
+    const gene2 = createGenePayload({
+      start: BIN_SIZE - 20_000,
+      end: BIN_SIZE + 20_000
+    });
+    const regFeature2 = createRegulatoryFeaturePayload({
+      start: BIN_SIZE - 1_000,
+      end: BIN_SIZE + 1_000
+    });
+
+    // lies completely within second bin
+    const gene3 = createGenePayload({
+      start: end - 20_000,
+      end: end
+    });
+    const regFeature3 = createRegulatoryFeaturePayload({
+      start: end - 1_000,
+      end: end
+    });
+
+    const regionOverviewPayload = createOverviewRegionPayload({
+      genes: [gene1, gene2, gene3],
+      regulatory_features: {
+        feature_types: {},
+        data: [regFeature1, regFeature2, regFeature3]
+      }
+    });
+
+    const requestParams = {
+      assemblyName,
+      regionName,
+      start,
+      end
+    };
+    const bins = distributeAcrossBins({
+      requestParams,
+      response: regionOverviewPayload
+    });
+
+    const expectedBinKeys = createBins({ start, end }).map(createBinKey);
+
+    expect(Object.keys(bins)).toEqual(expectedBinKeys);
+
+    const firstBin = bins[expectedBinKeys[0]];
+    expect(firstBin.genes.map((gene) => gene.stable_id)).toEqual([
+      gene1.stable_id,
+      gene2.stable_id
+    ]);
+    expect(firstBin.regulatory_features.map((feature) => feature.id)).toEqual([
+      regFeature1.id,
+      regFeature2.id
+    ]);
+
+    const secondBin = bins[expectedBinKeys[1]];
+    expect(secondBin.genes.map((gene) => gene.stable_id)).toEqual([
+      gene2.stable_id,
+      gene3.stable_id
+    ]);
+    expect(secondBin.regulatory_features.map((feature) => feature.id)).toEqual([
+      regFeature2.id,
+      regFeature3.id
+    ]);
+  });
 });
