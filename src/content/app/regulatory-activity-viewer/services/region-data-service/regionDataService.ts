@@ -41,21 +41,13 @@ import type { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
  * This is a service for fetching data about features (genes and regulatory features)
  * within a region, to be displayed in the Regulatory Activity Viewer.
  *
- * The service is implemented as rxjs observable streams for two reasons:
+ * The service is implemented as rxjs observable streams for the following reasons:
  *
- * - It should be something capable of being subscribed to and notifying the subscriber
- *   of the changes in its state
- * - It implements its own simple caching mechanism,
- *   which might be difficult to achieve with redux-toolkit-query
- *   (our main library for data fetching)
- *
- */
-
-/**
- * - See example of useSyncExternalStore:
- *   https://codesandbox.io/p/sandbox/rxjs-uses-0okvz4?file=%2Fsrc%2Findex.js
- * - Create your own redux with rxjs
- *   https://geekyants.com/blog/create-your-own-redux-with-rxjs
+ * - It should react to the changes in its state over time, and notify its subscribers
+ * - It implements its own simple caching mechanism that will avoid sending extra http requests
+ *   if the requested region slice is within previously requested slices.
+ *   This may be tricky to achieve with redux-toolkit-query, which we otherwise use
+ *   for data fetching.
  */
 
 // FIXME: replace enum in loading-state.ts with this
@@ -76,12 +68,6 @@ const karyotypeStateSubject = new BehaviorSubject<KaryotypeState>(
 );
 
 export const karyotypeState$ = karyotypeStateSubject.asObservable();
-
-// const karyotype
-
-// =========================================================
-
-// =====
 
 export type RegionDetailsData = {
   assemblyName: string;
@@ -190,6 +176,14 @@ export const regionDetailsQuery$ = filteredRegionDetailQueryAction$
   )
   .subscribe();
 
+/**
+ * The purpose of the function below is to distribute features,
+ * based on their start and end coordinates,
+ * across 'bins' of a certain size, for faster lookup.
+ * NOTE: If a feature's start coordinate falls within one bin,
+ * and its end coordinate falls within another bin (i.e. if a feature crosses a bin boundary),
+ * then it will be duplicated, such that it can be accessed from either one or the other bin.
+ */
 export const distributeAcrossBins = ({
   requestParams,
   response

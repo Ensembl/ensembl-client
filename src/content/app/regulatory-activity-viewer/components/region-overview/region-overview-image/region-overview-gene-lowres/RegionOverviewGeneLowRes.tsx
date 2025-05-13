@@ -31,7 +31,8 @@ type Props = {
 };
 
 /**
- * The low-resolution version
+ * At low resolution, genes are rendered as solid rectangles,
+ * without displaying the exonic structure of their transcripts
  */
 
 const RegionOverviewGeneLowRes = (props: Props) => {

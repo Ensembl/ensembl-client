@@ -22,6 +22,8 @@ import {
   getScaleForViewport
 } from './regionOverviewImageHelpers';
 
+import { MAX_SLICE_LENGTH_FOR_DETAILED_VIEW } from 'src/content/app/regulatory-activity-viewer/constants/activityViewerConstants';
+
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import RegionOverviewGene from './region-overview-gene/RegionOverviewGene';
@@ -49,7 +51,7 @@ import type {
   OverviewRegion,
   RegulatoryFeature
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
-import type { RegionData } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
+import type { RegionData } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/useRegionOverviewData';
 import type { PopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
@@ -243,7 +245,8 @@ const GeneTrack = (props: {
   const track = tracks[trackIndex];
   const offsetTop = trackOffsetsTop[trackIndex];
 
-  const shouldDisplayLowResGenes = location.end - location.start > 1_000_000;
+  const shouldDisplayLowResGenes =
+    location.end - location.start > MAX_SLICE_LENGTH_FOR_DETAILED_VIEW;
 
   const geneElements = track.map((gene) => {
     const isFocusGene = focusGeneId === gene.data.unversioned_stable_id;

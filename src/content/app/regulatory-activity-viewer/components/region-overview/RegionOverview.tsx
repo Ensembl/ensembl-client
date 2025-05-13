@@ -31,7 +31,7 @@ import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hoo
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useRegionOverviewData, {
   type RegionData
-} from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
+} from 'src/content/app/regulatory-activity-viewer/services/region-data-service/useRegionOverviewData';
 
 import RegionOverviewImage, {
   getImageHeightAndTopOffsets
@@ -47,20 +47,6 @@ import styles from './RegionOverview.module.css';
  * Distances:
  *  - Distance from the image to the left border and the the right border seems to be 150px
  *    => This means that the toggling of the sidebar will result in re-rendering of everything
- */
-
-/**
- * Locations that we need to consider:
- *  - Viewport location
- *  - Should be able to drag viewport contents left and right
- *    - Render excessively: current viewport, plus full viewport to the left and to the right
- *    - If data for three viewports hasn't loaded yet, show a spinner?
- *  - Re-render full image every time user either releases the dragged region, or presses the button?
- *
- * TODO:
- *  - remove calls for region data
- *  - fix zoom buttons
- *  - change gene rendering at 1MB and up
  */
 
 const RegionOverview = () => {
@@ -120,8 +106,6 @@ const RegionOverview = () => {
     if (!extendedLocation || !assemblyName || !regionLength) {
       return;
     }
-    // FIXME: also check latest requested location perhaps?
-    // or should this be done at the region data service level?
 
     const regionDataRequestParams = calculateRequestLocation({
       ...extendedLocation,

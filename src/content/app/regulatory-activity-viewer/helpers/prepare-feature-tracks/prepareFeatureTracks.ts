@@ -19,7 +19,7 @@ import type {
   GeneInRegionOverview,
   RegulatoryFeature
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
-import type { RegionData } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
+import type { RegionData } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/useRegionOverviewData';
 
 /**
  * The purpose of this helper is to accept data returned

@@ -19,12 +19,14 @@ import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { MAX_SLICE_LENGTH_FOR_DETAILED_VIEW } from 'src/content/app/regulatory-activity-viewer/constants/activityViewerConstants';
+
 import { fetchRegionDetails } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
 import { calculateRequestLocation } from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
 
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
-import useRegionOverviewData from 'src/content/app/regulatory-activity-viewer/services/region-data-service/test-component/useRegionOverviewData';
+import useRegionOverviewData from 'src/content/app/regulatory-activity-viewer/services/region-data-service/useRegionOverviewData';
 
 import GeneName from 'src/shared/components/gene-name/GeneName';
 import TextButton from 'src/shared/components/text-button/TextButton';
@@ -106,7 +108,7 @@ const SidebarDefaultView = () => {
 
   const { start, end } = location;
   const sliceLength = end - start + 1;
-  const isSliceTooLarge = sliceLength > 1_000_000; // FIXME: this should be imported as a constant
+  const isSliceTooLarge = sliceLength > MAX_SLICE_LENGTH_FOR_DETAILED_VIEW;
 
   return (
     <div>

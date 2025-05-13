@@ -17,6 +17,8 @@
 import { useState, useEffect, useRef, memo } from 'react';
 import classNames from 'classnames';
 
+import { MAX_SLICE_LENGTH_FOR_DETAILED_VIEW } from 'src/content/app/regulatory-activity-viewer/constants/activityViewerConstants';
+
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 import useRegionActivityData from './useRegionActivityData';
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
@@ -31,14 +33,6 @@ import { CircleLoader } from 'src/shared/components/loader';
 import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
 import styles from './RegionActivitySection.module.css';
 
-/**
- * The backend api would be too slow, and would also probably return too much data
- * for excessively large regions; so it makes sense to disable this view for slices larger
- * than a certain threshold. So far, this threshold is chosen to be 1MB
- */
-
-const MAX_SLICE_SIZE = 1_000_000; // <-- base pairs
-
 const RegionActivitySectionWrapper = () => {
   const { location } = useActivityViewerIds();
 
@@ -48,7 +42,7 @@ const RegionActivitySectionWrapper = () => {
 
   const sliceSize = location.end - location.start + 1;
 
-  if (sliceSize > MAX_SLICE_SIZE) {
+  if (sliceSize > MAX_SLICE_LENGTH_FOR_DETAILED_VIEW) {
     return <div>Please zoom in to view the details</div>;
   }
 
