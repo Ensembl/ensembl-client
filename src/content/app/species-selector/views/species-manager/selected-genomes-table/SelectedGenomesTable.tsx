@@ -40,7 +40,9 @@ import {
   ScientificName,
   AssemblyName,
   AssemblyAccessionId,
-  SpeciesType
+  SpeciesType,
+  GenomeRelease,
+  GenomeReleaseType
 } from 'src/shared/components/species-name-parts-for-table';
 
 import SpeciesSelectorIcon from 'static/icons/icon_launchbar_species_selector.svg';
@@ -221,6 +223,8 @@ const SelectedGenomesTable = (props: {
           <ColumnHead>Scientific name</ColumnHead>
           <ColumnHead>Type</ColumnHead>
           <ColumnHead>Assembly</ColumnHead>
+          <ColumnHead>Release</ColumnHead>
+          <ColumnHead>Release type</ColumnHead>
           <ColumnHead>Assembly accession</ColumnHead>
           <ColumnHead>Remove from list</ColumnHead>
           <ColumnHead>Use in apps</ColumnHead>
@@ -258,6 +262,12 @@ const SelectedGenomesTable = (props: {
               </td>
               <td>
                 <AssemblyName {...genome} />
+              </td>
+              <td>
+                <GenomeRelease release={genome.release} />
+              </td>
+              <td>
+                <GenomeReleaseType release={genome.release} />
               </td>
               <td>
                 <AssemblyAccessionId {...genome} />
@@ -353,7 +363,7 @@ const ConfirmDeletion = (props: {
 }) => {
   // this row will use the two rightmost columns of the table,
   // but will merge all the columns to the left
-  const tableColumnsCount = 8;
+  const tableColumnsCount = 10;
   const spanColumnsCount = tableColumnsCount - 2;
 
   const onDelete = () => {
