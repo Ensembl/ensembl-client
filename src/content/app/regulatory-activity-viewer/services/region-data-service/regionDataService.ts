@@ -200,7 +200,7 @@ export const distributeAcrossBins = ({
   const bins = createBins({ start, end });
   const binsMap = bins.reduce(
     (obj, { start, end }) => {
-      const key = `${start}-${end}`;
+      const key = createBinKey({ start, end });
       obj[key] = { genes: [], regulatory_features: [] };
       return obj;
     },
@@ -211,7 +211,7 @@ export const distributeAcrossBins = ({
   let regFeatureIndex = 0;
 
   for (const bin of bins) {
-    const binKey = `${bin.start}-${bin.end}`;
+    const binKey = createBinKey({ start: bin.start, end: bin.end });
 
     for (let i = geneIndex; i < genes.length; i++) {
       const gene = genes[i];
