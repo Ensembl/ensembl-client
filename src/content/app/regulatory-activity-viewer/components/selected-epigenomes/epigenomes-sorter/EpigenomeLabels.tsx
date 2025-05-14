@@ -153,7 +153,7 @@ const EpigenomeTextLabel = ({
 }) => {
   const [hoverRef, isHovered] = useHover<HTMLSpanElement>();
 
-  const [mainDimension, ...otherDimensions] = displayDimensions;
+  const [mainDimension] = displayDimensions;
 
   const labelHeight = 40; // FIXME: import the constant
 
@@ -165,7 +165,7 @@ const EpigenomeTextLabel = ({
         <Tooltip anchor={hoverRef.current} autoAdjust={true}>
           <LabelPopupContents
             epigenome={epigenome}
-            displayDimensions={otherDimensions}
+            displayDimensions={displayDimensions}
             allDimensions={allDimensions}
           />
         </Tooltip>
