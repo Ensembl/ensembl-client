@@ -61,22 +61,7 @@ const BlastAppBar = () => {
 
   const speciesLozengeClick = (species: CommittedItem) => {
     if (!speciesListIds.includes(species.genome_id)) {
-      dispatch(
-        addSelectedSpecies({
-          genome_id: species.genome_id,
-          genome_tag: species.genome_tag,
-          common_name: species.common_name,
-          scientific_name: species.scientific_name,
-          species_taxonomy_id: species.species_taxonomy_id,
-          assembly: {
-            accession_id: species.assembly.name,
-            name: species.assembly.name
-          },
-          is_reference: species.is_reference,
-          type: species.type,
-          isEnabled: true
-        })
-      );
+      dispatch(addSelectedSpecies(species));
     }
   };
 

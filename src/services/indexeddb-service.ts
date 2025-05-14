@@ -25,14 +25,16 @@ import { VEP_SUBMISSIONS_STORE_NAME } from 'src/content/app/tools/vep/services/v
 import { PREVIOUSLY_VIEWED_OBJECTS_STORE_NAME } from 'src/shared/services/previouslyViewedObjectsStorageConstants';
 import { NOTIFICATIONS_STORE_NAME } from 'src/shared/services/notificationsStorageConstants';
 
+import { migrateSpeciesStore } from './indexeddb-migrations/speciesStoreMigrations';
+
 const DB_NAME = 'ensembl-website';
-const DB_VERSION = 6;
+const DB_VERSION = 7;
 
 const getDbPromise = (params?: {
   onBlocking?: OpenDBCallbacks<unknown>['blocking'];
 }) => {
   return openDB(DB_NAME, DB_VERSION, {
-    upgrade(db) {
+    upgrade(db, oldVersion, _, transaction) {
       // FIXME use constants for object store names
       if (!db.objectStoreNames.contains('contact-forms')) {
         db.createObjectStore('contact-forms');
@@ -42,6 +44,8 @@ const getDbPromise = (params?: {
       }
       if (!db.objectStoreNames.contains(SELECTED_SPECIES_STORE_NAME)) {
         db.createObjectStore(SELECTED_SPECIES_STORE_NAME);
+      } else {
+        migrateSpeciesStore({ db, oldVersion, transaction });
       }
       if (!db.objectStoreNames.contains(BLAST_SUBMISSIONS_STORE_NAME)) {
         db.createObjectStore(BLAST_SUBMISSIONS_STORE_NAME);

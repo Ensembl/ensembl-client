@@ -144,6 +144,7 @@ const buildCommittedItemFromBriefGenomeSummary = (
       accession_id: genome.assembly.accession_id,
       name: genome.assembly.name
     },
+    release: genome.release,
     isEnabled: true
   };
 };

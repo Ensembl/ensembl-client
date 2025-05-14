@@ -50,17 +50,7 @@ const Content = (props: { onClose: () => void }) => {
 
   const onSpeciesAdd = (genomes: SpeciesSearchMatch[]) => {
     const preparedGenomes = genomes.map((genome) => ({
-      genome_id: genome.genome_id,
-      genome_tag: genome.genome_tag,
-      common_name: genome.common_name,
-      scientific_name: genome.scientific_name,
-      species_taxonomy_id: genome.species_taxonomy_id,
-      assembly: {
-        accession_id: genome.assembly.name,
-        name: genome.assembly.name
-      },
-      is_reference: genome.is_reference,
-      type: genome.type,
+      ...genome,
       isEnabled: true
     }));
     dispatch(addSelectedSpecies(preparedGenomes));
