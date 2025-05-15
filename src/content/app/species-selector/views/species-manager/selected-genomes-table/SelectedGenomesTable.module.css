@@ -16,10 +16,10 @@
 }
 
 /* two last columns contain only narrow icons; no need for a regular wide padding */
-.table th:nth-child(7),
-.table th:nth-child(8),
-.table td:nth-child(7),
-.table td:nth-child(8) {
+.table th:nth-child(9),
+.table th:nth-child(10),
+.table td:nth-child(9),
+.table td:nth-child(10) {
   --table-column-head-padding-right: 10px;
   --table-column-head-padding-left: 10px;
   --table-cell-padding-left: 0;
@@ -28,8 +28,8 @@
   background-color: var(--color-light-grey);
 }
 
-.table th:nth-child(8),
-.table td:nth-child(8) {
+.table th:nth-child(10),
+.table td:nth-child(10) {
   right: 0;
 }
 

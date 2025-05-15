@@ -98,6 +98,17 @@ const SpeciesPageSidebar = (props: Props) => {
         </div>
 
         <div className={styles.fieldsGroup}>
+          <div className={styles.field}>
+            <span className={styles.label}>Release</span>
+            <span>{data.release.name}</span>
+          </div>
+          <div className={styles.field}>
+            <span className={styles.label}>Release type</span>
+            <span>{data.release.type}</span>
+          </div>
+        </div>
+
+        <div className={styles.fieldsGroup}>
           <AnnotationDate {...data} />
           <AnnotationVersion {...data} />
         </div>
