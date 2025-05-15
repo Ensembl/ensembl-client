@@ -16,7 +16,7 @@
 
 import { useAppDispatch } from 'src/store';
 
-import { setMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
+import { closeEpigenomesSelector } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 
 import EpigenomeSelectionPanel from '../epigenome-selection-panel/EpigenomeSelectionPanel';
 import Modal from 'src/shared/components/modal/Modal';
@@ -31,9 +31,8 @@ const EpigenomeSelectionModal = (props: Props) => {
 
   const onClose = () => {
     dispatch(
-      setMainContentBottomView({
-        genomeId,
-        view: 'epigenomes-list'
+      closeEpigenomesSelector({
+        genomeId
       })
     );
   };

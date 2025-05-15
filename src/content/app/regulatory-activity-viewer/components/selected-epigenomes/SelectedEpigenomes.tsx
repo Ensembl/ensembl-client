@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { memo } from 'react';
 import { useAppSelector } from 'src/store';
 
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
@@ -182,4 +183,4 @@ const getTableColumns = (params: EpigenomeMetadataDimensionsResponse) => {
   }));
 };
 
-export default SelectedEpigenomes;
+export default memo(SelectedEpigenomes);

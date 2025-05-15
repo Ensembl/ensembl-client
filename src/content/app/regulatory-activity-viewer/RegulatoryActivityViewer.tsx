@@ -18,7 +18,10 @@ import noop from 'lodash/noop';
 
 import { useAppSelector } from 'src/store';
 
-import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
+import {
+  getMainContentBottomView,
+  getIsEpigenomeSelectorOpen
+} from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 
 import useActivityViewerIds from './hooks/useActivityViewerIds';
 import usePreselectedEpigenomes from './hooks/usePreselectedEpigenomes';
@@ -112,16 +115,19 @@ const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
   const activeView = useAppSelector((state) =>
     getMainContentBottomView(state, genomeId)
   );
+  const isEpigenomeSelectorOpen = useAppSelector((state) =>
+    getIsEpigenomeSelectorOpen(state, genomeId)
+  );
 
   return (
     <>
-      {['epigenomes-list', 'epigenomes-selection'].includes(activeView) && (
+      {activeView === 'epigenomes-list' && (
         <SelectedEpigenomes genomeId={genomeId} />
       )}
-      {activeView === 'epigenomes-selection' && (
+      {activeView === 'dataviz' && <RegionActivitySection />}
+      {isEpigenomeSelectorOpen && (
         <EpigenomeSelectionModal genomeId={genomeId} />
       )}
-      {activeView === 'dataviz' && <RegionActivitySection />}
     </>
   );
 };

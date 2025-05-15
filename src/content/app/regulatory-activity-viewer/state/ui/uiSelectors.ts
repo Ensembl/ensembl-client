@@ -20,5 +20,10 @@ export const getMainContentBottomView = (state: RootState, genomeId: string) =>
   state.regionActivityViewer.ui[genomeId]?.mainContentBottomView ??
   'epigenomes-list';
 
+export const getIsEpigenomeSelectorOpen = (
+  state: RootState,
+  genomeId: string
+) => state.regionActivityViewer.ui[genomeId]?.isEpigenomesSelectorOpen ?? false;
+
 export const getSidebarView = (state: RootState, genomeId: string) =>
   state.regionActivityViewer.ui[genomeId]?.sidebarView ?? 'default';
