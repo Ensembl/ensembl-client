@@ -28,6 +28,10 @@ import type { EpigenomeActivityResponse } from 'src/content/app/regulatory-activ
 import type { EpigenomeGeneActivityResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeGeneActivity';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
+type RegulatoryAvailabilityRequestParams = {
+  assemblyId: string;
+};
+
 type RegionOverviewRequestParams = {
   assemblyId: string;
   location: string; // <-- as formatted by the stringifyLocation function
@@ -59,6 +63,10 @@ type EpigenomesGeneActivityRequestParams = {
   epigenomeIds: string[];
 };
 
+type RegulatoryAvailabilityResponse = {
+  available: boolean;
+};
+
 // A mock release string to use in regulation api endpoints.
 // Regulation team's apis now require a release string (although as of now, they don't care what that string is).
 // TODO: This should be replaced with the release specific for the genome
@@ -69,6 +77,17 @@ export const stringifyLocation = (location: GenomicLocation) =>
 
 const activityViewerApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    regulatoryDataAvailability: builder.query<
+      RegulatoryAvailabilityResponse,
+      RegulatoryAvailabilityRequestParams
+    >({
+      query: (params) => {
+        const { assemblyId } = params;
+        return {
+          url: `${config.regulationApiBaseUrl}/annotation/v0.5/release/${releaseName}/assembly/${assemblyId}/availability`
+        };
+      }
+    }),
     regionOverview: builder.query<OverviewRegion, RegionOverviewRequestParams>({
       query: (params) => {
         const { assemblyId, location } = params;
@@ -179,6 +198,7 @@ const prepareEpigenomeIdsForRequest = (epigenomeIds: string[]) =>
   epigenomeIds.map((id) => id.split(', '));
 
 export const {
+  useRegulatoryDataAvailabilityQuery,
   useRegionOverviewQuery,
   useFocusGeneQuery,
   useEpigenomeMetadataDimensionsQuery,

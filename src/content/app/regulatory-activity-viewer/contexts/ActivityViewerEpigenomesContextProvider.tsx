@@ -51,15 +51,15 @@ const ActivityViewerEpigenomesContextProvider = ({
 };
 
 const useEpigenomesData = () => {
-  const { activeGenomeId, assemblyAccessionId } = useActivityViewerIds();
+  const { genomeId, assemblyAccessionId } = useActivityViewerIds();
   const epigenomeSelectionCriteria = useAppSelector((state) =>
-    getEpigenomeSelectionCriteria(state, activeGenomeId ?? '')
+    getEpigenomeSelectionCriteria(state, genomeId ?? '')
   );
   const epigenomeCombiningDimensions = useAppSelector((state) =>
-    getEpigenomeCombiningDimensions(state, activeGenomeId ?? '')
+    getEpigenomeCombiningDimensions(state, genomeId ?? '')
   );
   const storedEpigenomeSortingDimensions = useAppSelector((state) =>
-    getEpigenomeSortingDimensions(state, activeGenomeId ?? '')
+    getEpigenomeSortingDimensions(state, genomeId ?? '')
   );
 
   const {

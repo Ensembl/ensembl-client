@@ -26,11 +26,13 @@ import {
 import useActivityViewerIds from './hooks/useActivityViewerIds';
 import usePreselectedEpigenomes from './hooks/usePreselectedEpigenomes';
 import useActivityViewerRouting from './hooks/useActivityViewerRouting';
+import { useRegulatoryDataAvailabilityQuery } from './state/api/activityViewerApiSlice';
 
 import ActivityViewerEpigenomesContextProvider from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerEpigenomesContextProvider';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import ActivityViewerAppBar from './components/activity-viewer-app-bar/ActivityViewerAppBar';
 import ActivityViewerInterstitial from './components/activity-viewer-interstitial/ActivityViewerInterstitial';
+import NoActivityData from './components/no-activity-data/NoActivityData';
 import ActivityViewerFocusFeatureInfo from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-focus-feature-info/ActivityViewerFocusFeatureInfo';
 import RegionOverview from './components/region-overview/RegionOverview';
 import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
@@ -43,9 +45,24 @@ import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigeno
 import styles from './RegulatoryActivityViewer.module.css';
 
 const ActivityViewer = () => {
-  const { activeGenomeId, genomeIdInUrl, location } = useActivityViewerIds();
+  const { activeGenomeId, assemblyAccessionId, genomeIdInUrl, location } =
+    useActivityViewerIds();
   useActivityViewerRouting();
   usePreselectedEpigenomes();
+
+  const {
+    isFetching: isRegulatoryAvailabilityDataLoading,
+    currentData: regulatoryAvailabilityData
+  } = useRegulatoryDataAvailabilityQuery(
+    {
+      assemblyId: assemblyAccessionId ?? ''
+    },
+    {
+      skip: !assemblyAccessionId
+    }
+  );
+
+  const isRegulatoryDataAvailable = regulatoryAvailabilityData?.available;
 
   if (!genomeIdInUrl) {
     // TODO: add a proper component for this
@@ -53,6 +70,15 @@ const ActivityViewer = () => {
       <div className={styles.container}>
         <ActivityViewerAppBar />
         <div>Please select species.</div>
+      </div>
+    );
+  } else if (
+    isRegulatoryAvailabilityDataLoading ||
+    !isRegulatoryDataAvailable
+  ) {
+    return (
+      <div className={styles.container}>
+        <NoActivityData isLoading={isRegulatoryAvailabilityDataLoading} />
       </div>
     );
   } else if (!location) {
