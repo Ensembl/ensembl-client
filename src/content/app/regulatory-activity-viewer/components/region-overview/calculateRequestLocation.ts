@@ -22,13 +22,13 @@ import {
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
 export const calculateRequestLocation = ({
-  assemblyName,
+  assemblyId,
   regionName,
   start,
   end,
   regionLength
 }: {
-  assemblyName: string;
+  assemblyId: string;
   regionName: string;
   start: number;
   end: number;
@@ -45,7 +45,7 @@ export const calculateRequestLocation = ({
   }
 
   return {
-    assemblyName,
+    assemblyId,
     regionName,
     start: getBinStartForPosition(start),
     end: Math.min(getBinEndForPosition(end), regionLength)
@@ -78,13 +78,13 @@ export const getGreedyLocation = ({
 };
 
 export const calculateGreedyRequestLocation = ({
-  assemblyName,
+  assemblyId,
   regionName,
   start,
   end,
   regionLength
 }: {
-  assemblyName: string;
+  assemblyId: string;
   regionName: string;
   start: number;
   end: number;
@@ -95,7 +95,7 @@ export const calculateGreedyRequestLocation = ({
   const newEnd = Math.min(end + sliceLength, regionLength);
 
   return calculateRequestLocation({
-    assemblyName,
+    assemblyId,
     regionName,
     start: newStart,
     end: newEnd,

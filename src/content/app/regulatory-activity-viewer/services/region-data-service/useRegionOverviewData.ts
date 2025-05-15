@@ -31,7 +31,7 @@ import type {
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 export type RegionData = {
-  assembly_name: string;
+  assemblyId: string;
   region: OverviewRegion['region'];
   genes: OverviewRegion['genes'];
   regulatory_features: OverviewRegion['regulatory_features'];
@@ -45,7 +45,7 @@ const isInQueriedSlice = (
 };
 
 type QueryParams = {
-  assemblyName: string;
+  assemblyId: string;
   regionName: string;
   start: number;
   end: number;
@@ -61,7 +61,7 @@ const createDataObservable = (query: QueryParams) => {
 
       return (
         !!state.data &&
-        query.assemblyName === state.data.assemblyName &&
+        query.assemblyId === state.data.assemblyId &&
         query.regionName === state.data.region.name &&
         binKeys.every((key) => !!state.data!.bins[key])
       );
@@ -107,7 +107,7 @@ const createDataObservable = (query: QueryParams) => {
       }
 
       return {
-        assembly_name: stateData.assemblyName,
+        assemblyId: stateData.assemblyId,
         region: stateData.region,
         genes,
         regulatory_features: {
@@ -122,18 +122,18 @@ const createDataObservable = (query: QueryParams) => {
 const useRegionOverviewData = (params: QueryParams | null) => {
   const [data, setData] = useState<RegionData | null>(null);
 
-  const assemblyName = params?.assemblyName;
+  const assemblyId = params?.assemblyId;
   const regionName = params?.regionName;
   const start = params?.start;
   const end = params?.end;
 
   useEffect(() => {
-    if (!assemblyName || !regionName || !start || !end) {
+    if (!assemblyId || !regionName || !start || !end) {
       return;
     }
 
     const data$ = createDataObservable({
-      assemblyName,
+      assemblyId,
       regionName,
       start,
       end
@@ -145,7 +145,7 @@ const useRegionOverviewData = (params: QueryParams | null) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [assemblyName, regionName, start, end]);
+  }, [assemblyId, regionName, start, end]);
 
   // FIXME: should somehow return the loading flag as well
   return {

@@ -52,7 +52,7 @@ import styles from './RegionOverview.module.css';
 const RegionOverview = () => {
   const {
     activeGenomeId,
-    assemblyName,
+    assemblyAccessionId,
     location,
     genomeIdForUrl,
     locationForUrl,
@@ -90,9 +90,9 @@ const RegionOverview = () => {
   }, [location, regionLength]);
 
   const regionOverviewDataParams =
-    assemblyName && location && extendedLocation
+    assemblyAccessionId && location && extendedLocation
       ? {
-          assemblyName,
+          assemblyId: assemblyAccessionId,
           regionName: location.regionName,
           start: extendedLocation.start,
           end: extendedLocation.end
@@ -103,29 +103,29 @@ const RegionOverview = () => {
   const deferredData = useDeferredValue(currentData);
 
   useEffect(() => {
-    if (!extendedLocation || !assemblyName || !regionLength) {
+    if (!extendedLocation || !assemblyAccessionId || !regionLength) {
       return;
     }
 
     const regionDataRequestParams = calculateRequestLocation({
       ...extendedLocation,
-      assemblyName,
+      assemblyId: assemblyAccessionId,
       regionLength
     });
 
     fetchRegionDetails(regionDataRequestParams);
-  }, [assemblyName, location, regionLength, extendedLocation]);
+  }, [assemblyAccessionId, location, regionLength, extendedLocation]);
 
   // fetch data for the whole region
   useEffect(() => {
-    if (!location?.regionName || !assemblyName || !regionLength) {
+    if (!location?.regionName || !assemblyAccessionId || !regionLength) {
       return;
     }
 
     const { regionName } = location;
 
     const regionDataRequestParams = calculateRequestLocation({
-      assemblyName,
+      assemblyId: assemblyAccessionId,
       regionLength,
       regionName,
       start: 1,
@@ -133,7 +133,7 @@ const RegionOverview = () => {
     });
 
     fetchRegionDetails(regionDataRequestParams);
-  }, [assemblyName, location?.regionName, regionLength]);
+  }, [assemblyAccessionId, location?.regionName, regionLength]);
 
   // TODO: width should be recalculated on resize
   // Consider if this is appropriate component for doing this.

@@ -43,7 +43,6 @@ const SidebarDefaultView = () => {
   const {
     assemblyAccessionId,
     activeGenomeId,
-    assemblyName,
     location,
     genomeIdForUrl,
     locationForUrl,
@@ -56,20 +55,20 @@ const SidebarDefaultView = () => {
   });
 
   const regionOverviewDataParams = useMemo(() => {
-    return assemblyName && location
+    return assemblyAccessionId && location
       ? {
-          assemblyName,
+          assemblyId: assemblyAccessionId,
           regionName: location.regionName,
           start: location.start,
           end: location.end
         }
       : null;
-  }, [assemblyName, location]);
+  }, [assemblyAccessionId, location]);
 
   const { data } = useRegionOverviewData(regionOverviewDataParams);
 
   useEffect(() => {
-    if (!assemblyName || !location || !karyotype) {
+    if (!assemblyAccessionId || !location || !karyotype) {
       return;
     }
 
@@ -78,7 +77,7 @@ const SidebarDefaultView = () => {
     );
 
     const regionDataRequestParams = calculateRequestLocation({
-      assemblyName,
+      assemblyId: assemblyAccessionId,
       regionName: location.regionName,
       start: location.start,
       end: location.end,
@@ -86,7 +85,7 @@ const SidebarDefaultView = () => {
     });
 
     fetchRegionDetails(regionDataRequestParams);
-  }, [assemblyName, location, karyotype]);
+  }, [assemblyAccessionId, location, karyotype]);
 
   if (!data || !location) {
     return null;

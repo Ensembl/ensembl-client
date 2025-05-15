@@ -70,7 +70,7 @@ const karyotypeStateSubject = new BehaviorSubject<KaryotypeState>(
 export const karyotypeState$ = karyotypeStateSubject.asObservable();
 
 export type RegionDetailsData = {
-  assemblyName: string;
+  assemblyId: string;
   region: OverviewRegion['region'];
   bins: Record<
     string, // <-- using string of a format `${start}-${end}` as key
@@ -85,7 +85,7 @@ export type RegionDetailsData = {
 type RegionDetailsQueryAction = {
   type: 'region-details-query';
   payload: {
-    assemblyName: string;
+    assemblyId: string;
     regionName: string;
     start: number;
     end: number;
@@ -116,7 +116,7 @@ export const fetchRegionDetails = (
 
 const filteredRegionDetailQueryAction$ = regionDetailQueryAction$.pipe(
   filter((action) => {
-    const { assemblyName, regionName, start, end } = action.payload;
+    const { assemblyId, regionName, start, end } = action.payload;
     const currentState = regionDetailsStateSubject.getValue();
 
     const binKeys = createBins({ start, end }).map(createBinKey);
@@ -125,14 +125,14 @@ const filteredRegionDetailQueryAction$ = regionDetailQueryAction$.pipe(
     const haveAllBinsBeenRequested = binKeys.every((key) => {
       const isLoading = currentState.loadingLocations?.some((loc) => {
         return (
-          loc.assemblyName === assemblyName &&
+          loc.assemblyId === assemblyId &&
           loc.regionName === regionName &&
           loc.bin === key
         );
       });
       const hasLoaded =
         currentState.data?.bins[key] &&
-        currentState.data.assemblyName === assemblyName &&
+        currentState.data.assemblyId === assemblyId &&
         currentState.data.region.name === regionName;
 
       return isLoading || hasLoaded;
@@ -154,10 +154,10 @@ export const regionDetailsQuery$ = filteredRegionDetailQueryAction$
             return;
           }
 
-          const { assemblyName } = action.payload;
+          const { assemblyId } = action.payload;
 
           const payload = {
-            assemblyName: assemblyName,
+            assemblyId,
             region: data.region,
             bins: distributeAcrossBins({
               requestParams: action.payload,
@@ -281,16 +281,13 @@ const mergeRegionDetailsStateOnLoading = (
   state: RegionDetailsState,
   payload: RegionDetailsQueryAction['payload'] & { binKeys: string[] }
 ) => {
-  if (
-    state.data?.assemblyName &&
-    state.data.assemblyName !== payload.assemblyName
-  ) {
+  if (state.data?.assemblyId && state.data.assemblyId !== payload.assemblyId) {
     // clean up the state to start loading data for a new assembly
     state = { ...initialRegionDetailsState };
   }
 
   const loadingLocations = payload.binKeys.map((binKey) => ({
-    assemblyName: payload.assemblyName,
+    assemblyId: payload.assemblyId,
     regionName: payload.regionName,
     bin: binKey
   }));
@@ -324,7 +321,7 @@ const mergeRegionDetailsState = (
     updatedBins[bin] = payload.bins[bin];
     loadingLocations = loadingLocations.filter((location) => {
       return !(
-        location.assemblyName === payload.assemblyName &&
+        location.assemblyId === payload.assemblyId &&
         location.regionName === payload.region.name &&
         location.bin === bin
       );
@@ -342,7 +339,7 @@ const mergeRegionDetailsState = (
     loadingLocations: loadingLocations.length ? loadingLocations : null,
     data: {
       ...(currentState.data ?? {}),
-      assemblyName: payload.assemblyName,
+      assemblyId: payload.assemblyId,
       region: payload.region,
       bins: updatedBins,
       regulatory_feature_types: regulatoryFeatureTypes
@@ -351,7 +348,7 @@ const mergeRegionDetailsState = (
 };
 
 type LoadingLocation = {
-  assemblyName: string;
+  assemblyId: string;
   regionName: string;
   bin: string;
 };
@@ -375,10 +372,10 @@ const regionDetailsStateSubject = new BehaviorSubject(
 export const regionDetailsState$ = regionDetailsStateSubject.asObservable();
 
 const fetchLocation = (params: RegionDetailsQueryAction['payload']) => {
-  const { assemblyName, regionName, start, end } = params;
+  const { assemblyId, regionName, start, end } = params;
   const locationForUrl = `${regionName}:${start}-${end}`;
   const releaseName = '2025-02'; // TODO: pass genome release with payload
-  const endpointUrl = `${config.regulationApiBaseUrl}/annotation/v0.5/release/${releaseName}/assembly/${assemblyName}?location=${locationForUrl}`;
+  const endpointUrl = `${config.regulationApiBaseUrl}/annotation/v0.5/release/${releaseName}/assembly/${assemblyId}?location=${locationForUrl}`;
 
   return observableFetch<OverviewRegion>(endpointUrl);
 };

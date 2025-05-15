@@ -94,13 +94,13 @@ afterAll(() => server.close());
 
 describe('fetching data for a detailed slice', () => {
   test('request location smaller than bin size', async () => {
-    const assemblyName = 'grch38';
+    const assemblyId = 'grch38';
     const regionName = '1';
     const start = 10_000;
     const end = 20_000;
 
     fetchRegionDetails({
-      assemblyName,
+      assemblyId,
       regionName,
       start,
       end
@@ -118,14 +118,14 @@ describe('fetching data for a detailed slice', () => {
       const bins = createBins({ start, end });
       const binKey = createBinKey(bins[0]);
       expect(loadingState.loadingLocations?.[0]).toEqual({
-        assemblyName,
+        assemblyId,
         regionName,
         bin: binKey
       });
 
       const stateWithLoadedData = stateUpdates[1];
       expect(stateWithLoadedData.loadingLocations).toBe(null);
-      expect(stateWithLoadedData.data?.assemblyName).toBe(assemblyName);
+      expect(stateWithLoadedData.data?.assemblyId).toBe(assemblyId);
       expect(stateWithLoadedData.data?.region.name).toBe(regionName);
       expect(stateWithLoadedData.data?.bins[binKey]).not.toBeFalsy();
     });
@@ -133,13 +133,13 @@ describe('fetching data for a detailed slice', () => {
 
   test('sequential requests for same assembly and region', async () => {
     const requestParams1 = {
-      assemblyName: 'grch38',
+      assemblyId: 'grch38',
       regionName: '2',
       start: 10_000,
       end: 20_000
     };
     const requestParams2 = {
-      assemblyName: 'grch38',
+      assemblyId: 'grch38',
       regionName: '2',
       start: BIN_SIZE + 100_000,
       end: BIN_SIZE + 120_000
@@ -159,7 +159,7 @@ describe('fetching data for a detailed slice', () => {
       const finalState = stateUpdates.at(-1) as RegionDetailsState;
 
       expect(finalState.loadingLocations).toBe(null);
-      expect(finalState.data?.assemblyName).toBe(requestParams1.assemblyName);
+      expect(finalState.data?.assemblyId).toBe(requestParams1.assemblyId);
       expect(finalState.data?.region.name).toBe(requestParams1.regionName);
 
       const genes = [...Object.values(finalState.data!.bins)]
@@ -176,13 +176,13 @@ describe('fetching data for a detailed slice', () => {
 
   test('switch assembly', async () => {
     const requestParams1 = {
-      assemblyName: 'grch38',
+      assemblyId: 'grch38',
       regionName: '1',
       start: 10_000,
       end: 20_000
     };
     const requestParams2 = {
-      assemblyName: 'grch37',
+      assemblyId: 'grch37',
       regionName: '1',
       start: 100_000,
       end: 120_000
@@ -202,7 +202,7 @@ describe('fetching data for a detailed slice', () => {
       const finalState = stateUpdates.at(-1) as RegionDetailsState;
 
       expect(finalState.loadingLocations).toBe(null);
-      expect(finalState.data?.assemblyName).toBe(requestParams2.assemblyName);
+      expect(finalState.data?.assemblyId).toBe(requestParams2.assemblyId);
       expect(finalState.data?.region.name).toBe(requestParams2.regionName);
 
       const genes = [...Object.values(finalState.data!.bins)]
@@ -217,13 +217,13 @@ describe('fetching data for a detailed slice', () => {
   // Same as previous test; but checks that the service correctly switches from one region to another
   test('switch region', async () => {
     const requestParams1 = {
-      assemblyName: 'grch38',
+      assemblyId: 'grch38',
       regionName: '1',
       start: 10_000,
       end: 20_000
     };
     const requestParams2 = {
-      assemblyName: 'grch38',
+      assemblyId: 'grch38',
       regionName: '2',
       start: 100_000,
       end: 120_000
@@ -243,7 +243,7 @@ describe('fetching data for a detailed slice', () => {
       const finalState = stateUpdates.at(-1) as RegionDetailsState;
 
       expect(finalState.loadingLocations).toBe(null);
-      expect(finalState.data?.assemblyName).toBe(requestParams2.assemblyName);
+      expect(finalState.data?.assemblyId).toBe(requestParams2.assemblyId);
       expect(finalState.data?.region.name).toBe(requestParams2.regionName);
 
       const genes = [...Object.values(finalState.data!.bins)]
@@ -267,7 +267,7 @@ describe('fetching data for a detailed slice', () => {
  */
 describe('distributeAcrossBins', () => {
   it('distributes features across bins', () => {
-    const assemblyName = 'grch38';
+    const assemblyId = 'grch38';
     const regionName = '1';
     const start = 500_000;
     const end = 1_500_000;
@@ -311,7 +311,7 @@ describe('distributeAcrossBins', () => {
     });
 
     const requestParams = {
-      assemblyName,
+      assemblyId,
       regionName,
       start,
       end
