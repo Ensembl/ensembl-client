@@ -64,7 +64,7 @@ const useRegionActivityData = (props: Props) => {
   const [isTransitionPending, startTransition] = useTransition();
   const [regionActivityData, setRegionActivityData] =
     useState<RegionActivityData | null>(null);
-  const { activeGenomeId, assemblyName, assemblyAccessionId, location } =
+  const { activeGenomeId, assemblyAccessionId, location } =
     useActivityViewerIds();
   const { filteredCombinedEpigenomes, sortedCombinedEpigenomes } =
     useEpigenomes();
@@ -78,11 +78,11 @@ const useRegionActivityData = (props: Props) => {
     currentData: regionOverviewData
   } = useRegionOverviewQuery(
     {
-      assemblyName: assemblyName || '',
+      assemblyId: assemblyAccessionId || '',
       location: location ? stringifyLocation(location) : ''
     },
     {
-      skip: !assemblyName || !location
+      skip: !assemblyAccessionId || !location
     }
   );
   const {
@@ -90,7 +90,7 @@ const useRegionActivityData = (props: Props) => {
     currentData: epigenomeActivityData
   } = useEpigenomesActivityQuery(
     {
-      assemblyAccessionId: assemblyAccessionId ?? '',
+      assemblyId: assemblyAccessionId ?? '',
       epigenomeIds: epigenomeIds ?? [],
       regionName: location?.regionName ?? '',
       locations: location ? [{ start: location.start, end: location.end }] : []

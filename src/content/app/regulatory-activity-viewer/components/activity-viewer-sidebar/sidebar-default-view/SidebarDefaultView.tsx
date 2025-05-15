@@ -37,7 +37,7 @@ import styles from './SidebarDefaultView.module.css';
 
 const SidebarDefaultView = () => {
   const {
-    assemblyName,
+    assemblyAccessionId,
     location,
     genomeIdForUrl,
     locationForUrl,
@@ -47,11 +47,11 @@ const SidebarDefaultView = () => {
 
   const { currentData } = useRegionOverviewQuery(
     {
-      assemblyName: assemblyName || '',
+      assemblyId: assemblyAccessionId || '',
       location: location ? stringifyLocation(location) : ''
     },
     {
-      skip: !assemblyName || !location
+      skip: !assemblyAccessionId || !location
     }
   );
 

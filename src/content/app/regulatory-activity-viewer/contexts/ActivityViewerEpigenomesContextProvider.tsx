@@ -51,7 +51,7 @@ const ActivityViewerEpigenomesContextProvider = ({
 };
 
 const useEpigenomesData = () => {
-  const { activeGenomeId, assemblyName } = useActivityViewerIds();
+  const { activeGenomeId, assemblyAccessionId } = useActivityViewerIds();
   const epigenomeSelectionCriteria = useAppSelector((state) =>
     getEpigenomeSelectionCriteria(state, activeGenomeId ?? '')
   );
@@ -68,10 +68,10 @@ const useEpigenomesData = () => {
     currentData: baseEpigenomes
   } = useBaseEpigenomesQuery(
     {
-      assemblyName: assemblyName ?? ''
+      assemblyId: assemblyAccessionId ?? ''
     },
     {
-      skip: !assemblyName
+      skip: !assemblyAccessionId
     }
   );
   const {
@@ -80,10 +80,10 @@ const useEpigenomesData = () => {
     currentData: epigenomeMetadataDimensionsResponse
   } = useEpigenomeMetadataDimensionsQuery(
     {
-      assemblyName: assemblyName ?? ''
+      assemblyId: assemblyAccessionId ?? ''
     },
     {
-      skip: !assemblyName
+      skip: !assemblyAccessionId
     }
   );
 

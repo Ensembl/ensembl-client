@@ -51,7 +51,7 @@ import styles from './RegionOverview.module.css';
 const RegionOverview = () => {
   const {
     activeGenomeId,
-    assemblyName,
+    assemblyAccessionId,
     location,
     genomeIdForUrl,
     locationForUrl,
@@ -65,11 +65,11 @@ const RegionOverview = () => {
 
   const { currentData } = useRegionOverviewQuery(
     {
-      assemblyName: assemblyName || '',
+      assemblyId: assemblyAccessionId || '',
       location: location ? stringifyLocation(location) : ''
     },
     {
-      skip: !assemblyName || !location
+      skip: !assemblyAccessionId || !location
     }
   );
 

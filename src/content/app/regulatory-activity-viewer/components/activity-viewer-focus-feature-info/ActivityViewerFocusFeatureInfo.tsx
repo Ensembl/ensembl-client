@@ -26,13 +26,13 @@ import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import styles from './ActivityViewerFocusFeatureInfo.module.css';
 
 const ActivityViewerFocusFeatureInfo = () => {
-  const { assemblyName, focusGeneId, location } = useActivityViewerIds();
+  const { assemblyAccessionId, focusGeneId, location } = useActivityViewerIds();
 
   return (
     <div className={styles.container}>
-      {assemblyName && location && focusGeneId && (
+      {assemblyAccessionId && location && focusGeneId && (
         <ActivityViewerFocusGene
-          assemblyName={assemblyName}
+          assemblyId={assemblyAccessionId}
           geneId={focusGeneId}
           regionName={location.regionName}
         />
@@ -42,16 +42,16 @@ const ActivityViewerFocusFeatureInfo = () => {
 };
 
 const ActivityViewerFocusGene = ({
-  assemblyName,
+  assemblyId,
   geneId,
   regionName
 }: {
-  assemblyName: string;
+  assemblyId: string;
   geneId: string;
   regionName: string;
 }) => {
   const { data: gene } = useFocusGeneQuery({
-    assemblyName,
+    assemblyId,
     geneId
   });
 

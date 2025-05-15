@@ -18,25 +18,38 @@ import { Link } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { getGenomicLocationString } from 'src/shared/helpers/genomicLocationHelpers';
-
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
+import { useExampleObjectsForGenomeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import styles from './ActivityViewerInterstitial.module.css';
 
 /**
- * Component to display when url does not contain enough data
- * to display regulatory activity
+ * Component to display when there isn't enough information in the url
+ * to show a specific regulatory activity view
  */
 
 const ActivityViewerInterstitial = () => {
-  const { genomeIdForUrl, assemblyAccessionId } = useActivityViewerIds();
-  let location: string | null = null;
+  const { genomeId, genomeIdForUrl } = useActivityViewerIds();
+  const { data: exampleObjects } = useExampleObjectsForGenomeQuery(
+    genomeId ?? '',
+    {
+      skip: !genomeId
+    }
+  );
 
-  if (assemblyAccessionId === humanAssemblyId) {
-    location = getGenomicLocationString(mockHumanLocation);
-  } else if (assemblyAccessionId === mouseAssemblyId) {
-    location = getGenomicLocationString(mockMouseLocation);
+  let exampleLocationLink;
+
+  if (exampleObjects) {
+    const exampleLocation = exampleObjects.find(
+      (obj) => obj.type === 'location'
+    );
+
+    if (exampleLocation) {
+      exampleLocationLink = urlFor.regulatoryActivityViewer({
+        genomeId: genomeIdForUrl,
+        location: exampleLocation.id
+      });
+    }
   }
 
   if (!location) {
@@ -50,35 +63,16 @@ const ActivityViewerInterstitial = () => {
     );
   }
 
-  const url = urlFor.regulatoryActivityViewer({
-    genomeId: genomeIdForUrl,
-    location
-  });
-
   return (
     <div>
       <div className={styles.topPanel} />
       <div className={styles.main}>
-        <Link to={url}>Example location</Link>
+        {exampleLocationLink && (
+          <Link to={exampleLocationLink}>Example location</Link>
+        )}
       </div>
     </div>
   );
-};
-
-const humanAssemblyId = 'GCA_000001405.29';
-const mouseAssemblyId = 'GCA_000001635.9';
-
-const mockHumanLocation = {
-  regionName: '17',
-  start: 58190566,
-  end: 58290566 // <-- 100kB slice
-  // end: 59190566 // <-- 1MB slice; switch to it when backend apis get faster
-};
-
-const mockMouseLocation = {
-  regionName: '5',
-  start: 28645230,
-  end: 29636061
 };
 
 export default ActivityViewerInterstitial;
