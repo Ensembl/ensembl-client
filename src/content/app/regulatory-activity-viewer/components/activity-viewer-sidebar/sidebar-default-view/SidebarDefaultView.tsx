@@ -24,7 +24,6 @@ import { MAX_SLICE_LENGTH_FOR_DETAILED_VIEW } from 'src/content/app/regulatory-a
 import { fetchRegionDetails } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
 import { calculateRequestLocation } from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
 
-import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 import useRegionOverviewData from 'src/content/app/regulatory-activity-viewer/services/region-data-service/useRegionOverviewData';
 
@@ -42,17 +41,12 @@ import styles from './SidebarDefaultView.module.css';
 const SidebarDefaultView = () => {
   const {
     assemblyAccessionId,
-    activeGenomeId,
     location,
     genomeIdForUrl,
     locationForUrl,
     focusGeneId
   } = useActivityViewerIds();
   const navigate = useNavigate();
-
-  const { data: karyotype } = useGenomeKaryotypeQuery(activeGenomeId ?? '', {
-    skip: !activeGenomeId
-  });
 
   const regionOverviewDataParams = useMemo(() => {
     return assemblyAccessionId && location
@@ -68,24 +62,19 @@ const SidebarDefaultView = () => {
   const { data } = useRegionOverviewData(regionOverviewDataParams);
 
   useEffect(() => {
-    if (!assemblyAccessionId || !location || !karyotype) {
+    if (!assemblyAccessionId || !location) {
       return;
     }
-
-    const regionInKaryotype = karyotype.find(
-      (region) => region.name === location.regionName
-    );
 
     const regionDataRequestParams = calculateRequestLocation({
       assemblyId: assemblyAccessionId,
       regionName: location.regionName,
       start: location.start,
-      end: location.end,
-      regionLength: regionInKaryotype?.length ?? 0
+      end: location.end
     });
 
     fetchRegionDetails(regionDataRequestParams);
-  }, [assemblyAccessionId, location, karyotype]);
+  }, [assemblyAccessionId, location]);
 
   if (!data || !location) {
     return null;

@@ -28,7 +28,6 @@ import {
 } from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
-import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useRegionOverviewData, {
   type RegionData
 } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/useRegionOverviewData';
@@ -61,33 +60,12 @@ const RegionOverview = () => {
   const [width, setWidth] = useState(0);
   const navigate = useNavigate();
 
-  const { data: karyotype } = useGenomeKaryotypeQuery(activeGenomeId ?? '', {
-    skip: !activeGenomeId
-  });
-
-  const regionLength = useMemo(() => {
-    if (!karyotype || !location) {
-      return null;
-    }
-
-    const regionInKaryotype = karyotype.find(
-      (region) => region.name === location.regionName
-    );
-
-    if (!regionInKaryotype) {
-      // something went wrong
-      return null;
-    }
-
-    return regionInKaryotype.length;
-  }, [karyotype]);
-
   const extendedLocation = useMemo(() => {
-    if (!location || !regionLength) {
+    if (!location) {
       return null;
     }
-    return getGreedyLocation({ ...location, regionLength });
-  }, [location, regionLength]);
+    return getGreedyLocation({ ...location });
+  }, [location]);
 
   const regionOverviewDataParams =
     assemblyAccessionId && location && extendedLocation
@@ -101,39 +79,37 @@ const RegionOverview = () => {
 
   const { data: currentData } = useRegionOverviewData(regionOverviewDataParams);
   const deferredData = useDeferredValue(currentData);
+  const regionName = location?.regionName;
+  const regionLength = currentData?.region.length;
 
   useEffect(() => {
-    if (!extendedLocation || !assemblyAccessionId || !regionLength) {
+    if (!extendedLocation || !assemblyAccessionId) {
       return;
     }
 
     const regionDataRequestParams = calculateRequestLocation({
       ...extendedLocation,
-      assemblyId: assemblyAccessionId,
-      regionLength
+      assemblyId: assemblyAccessionId
     });
 
     fetchRegionDetails(regionDataRequestParams);
-  }, [assemblyAccessionId, location, regionLength, extendedLocation]);
+  }, [assemblyAccessionId, location, extendedLocation]);
 
   // fetch data for the whole region
   useEffect(() => {
-    if (!location?.regionName || !assemblyAccessionId || !regionLength) {
+    if (!assemblyAccessionId || !regionName || !regionLength) {
       return;
     }
 
-    const { regionName } = location;
-
     const regionDataRequestParams = calculateRequestLocation({
       assemblyId: assemblyAccessionId,
-      regionLength,
       regionName,
       start: 1,
       end: regionLength
     });
 
     fetchRegionDetails(regionDataRequestParams);
-  }, [assemblyAccessionId, location?.regionName, regionLength]);
+  }, [assemblyAccessionId, regionName, regionLength]);
 
   // TODO: width should be recalculated on resize
   // Consider if this is appropriate component for doing this.

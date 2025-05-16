@@ -25,30 +25,18 @@ export const calculateRequestLocation = ({
   assemblyId,
   regionName,
   start,
-  end,
-  regionLength
+  end
 }: {
   assemblyId: string;
   regionName: string;
   start: number;
   end: number;
-  regionLength: number;
 }) => {
-  const sliceLength = end - start + 1;
-
-  if (sliceLength / regionLength > 0.7) {
-    // if the slice is longer than a certain fraction of the region (say, 70%),
-    // then there is hardly any point in fetching them independently;
-    // just fetch the full region instead
-    start = 1;
-    end = regionLength;
-  }
-
   return {
     assemblyId,
     regionName,
     start: getBinStartForPosition(start),
-    end: Math.min(getBinEndForPosition(end), regionLength)
+    end: getBinEndForPosition(end)
   };
 };
 
@@ -61,14 +49,11 @@ export const calculateRequestLocation = ({
 export const getGreedyLocation = ({
   regionName,
   start,
-  end,
-  regionLength
-}: GenomicLocation & {
-  regionLength: number;
-}): GenomicLocation => {
+  end
+}: GenomicLocation): GenomicLocation => {
   const sliceLength = end - start + 1;
   const newStart = Math.max(start - sliceLength, 1);
-  const newEnd = Math.min(end + sliceLength, regionLength);
+  const newEnd = end + sliceLength;
 
   return {
     regionName,
@@ -81,8 +66,7 @@ export const calculateGreedyRequestLocation = ({
   assemblyId,
   regionName,
   start,
-  end,
-  regionLength
+  end
 }: {
   assemblyId: string;
   regionName: string;
@@ -92,13 +76,12 @@ export const calculateGreedyRequestLocation = ({
 }) => {
   const sliceLength = end - start + 1;
   const newStart = Math.max(start - sliceLength, 1);
-  const newEnd = Math.min(end + sliceLength, regionLength);
+  const newEnd = end + sliceLength;
 
   return calculateRequestLocation({
     assemblyId,
     regionName,
     start: newStart,
-    end: newEnd,
-    regionLength
+    end: newEnd
   });
 };
