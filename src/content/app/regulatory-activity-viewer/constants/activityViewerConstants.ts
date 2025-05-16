@@ -14,25 +14,9 @@
  * limitations under the License.
  */
 
-import React, { memo } from 'react';
-import useHasMounted from 'src/shared/hooks/useHasMounted';
-
-import ActivityViewerIdContextProvider from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerIdContextProvider';
-
-const LazilyLoadedActivityViewer = React.lazy(
-  () => import('./RegulatoryActivityViewer')
-);
-
-const ActivityViewerPage = memo(() => {
-  const hasMounted = useHasMounted();
-
-  return hasMounted ? <LazilyLoadedActivityViewer /> : null;
-});
-
-const WrappedActivityViewerPage = () => (
-  <ActivityViewerIdContextProvider>
-    <ActivityViewerPage />
-  </ActivityViewerIdContextProvider>
-);
-
-export default WrappedActivityViewerPage;
+/**
+ * The backend api would be too slow, and would also probably return too much data
+ * for excessively large region slices; so it makes sense to show detailed views
+ * only past a certain threshold. So far, this threshold is chosen to be 1MB
+ */
+export const MAX_SLICE_LENGTH_FOR_DETAILED_VIEW = 1_000_000;

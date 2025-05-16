@@ -16,3 +16,8 @@
 .rightColumn {
   grid-column: right;
 }
+
+.imageContainer {
+  position: relative;
+  min-height: 100px;
+}

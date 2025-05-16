@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment, useRef } from 'react';
+import { Fragment, useRef, memo } from 'react';
 import { type ScaleLinear } from 'd3';
 
 import {
@@ -22,9 +22,12 @@ import {
   getScaleForViewport
 } from './regionOverviewImageHelpers';
 
+import { MAX_SLICE_LENGTH_FOR_DETAILED_VIEW } from 'src/content/app/regulatory-activity-viewer/constants/activityViewerConstants';
+
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import RegionOverviewGene from './region-overview-gene/RegionOverviewGene';
+import RegionOverviewGeneLowRes from './region-overview-gene-lowres/RegionOverviewGeneLowRes';
 import RegionOverviewRegulatoryFeature from './region-overview-regulatory-feature/RegionOverviewRegulatoryFeature';
 import TranscriptionStartSites from './transcription-start-sites/TranscriptionStartSites';
 import RegionOverviewLocationSelector from './region-overview-location-selector/RegionOverviewLocationSelector';
@@ -48,24 +51,20 @@ import type {
   OverviewRegion,
   RegulatoryFeature
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { RegionData } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/useRegionOverviewData';
 import type { PopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
 import styles from './RegionOverviewImage.module.css';
 
 type Props = {
   activeGenomeId: string;
   width: number;
-  data: OverviewRegion;
+  data: RegionData;
   featureTracks: FeatureTracks;
-  location: {
-    start: number;
-    end: number;
-  };
-  regionDetailLocation: {
-    start: number;
-    end: number;
-  } | null;
-  focusGeneId?: string | null;
+  extendedLocation: GenomicLocation;
+  location: GenomicLocation;
+  focusGeneId?: string | null; // TODO: this will need to evolve, because focused feature does not have to be gene; also, focus object will probably come from redux
 };
 
 /**
@@ -83,7 +82,7 @@ const RegionOverviewImage = (props: Props) => {
     featureTracks,
     data,
     location,
-    regionDetailLocation,
+    extendedLocation,
     focusGeneId
   } = props;
   const [imageRef, setImageRef] = useRefWithRerender<SVGSVGElement>(null);
@@ -107,13 +106,13 @@ const RegionOverviewImage = (props: Props) => {
     getImageHeightAndTopOffsets(featureTracks);
 
   const scaleForWholeLocation = getScaleForWholeLocation({
-    location,
-    detailLocation: regionDetailLocation,
+    location: extendedLocation,
+    detailLocation: location,
     viewportWidth: width
   });
   const scaleForViewport = getScaleForViewport({
-    location,
-    detailLocation: regionDetailLocation,
+    location: extendedLocation,
+    detailLocation: location,
     viewportWidth: width
   });
 
@@ -134,15 +133,15 @@ const RegionOverviewImage = (props: Props) => {
     >
       <RegionOverviewLocationSelector
         activeGenomeId={activeGenomeId}
+        regionName={location.regionName}
         imageRef={imageRef}
         height={imageHeight}
         width={width}
         scale={scaleForViewport}
       >
         <TranslateRegionOverviewContents
-          genomeId={activeGenomeId}
-          location={location}
-          regionDetailLocation={regionDetailLocation}
+          location={extendedLocation}
+          regionDetailLocation={location}
           scale={scaleForWholeLocation}
         >
           <GeneTracks
@@ -151,6 +150,7 @@ const RegionOverviewImage = (props: Props) => {
             scale={scaleForWholeLocation}
             width={width}
             focusGeneId={focusGeneId}
+            location={location}
           />
           <RegulatoryFeatureTracks
             offsetTop={regulatoryFeatureTracksTopOffset}
@@ -168,6 +168,7 @@ const RegionOverviewImage = (props: Props) => {
 
 const GeneTracks = (props: {
   regionData: Props['data'];
+  location: Props['location'];
   tracks: FeatureTracks['geneTracks'];
   scale: ScaleLinear<number, number>;
   width: number; // full svg width
@@ -210,6 +211,7 @@ const GeneTracks = (props: {
     return tracks.map((_, index) => (
       <GeneTrack
         regionData={props.regionData}
+        location={props.location}
         tracks={tracks}
         trackIndex={index}
         trackOffsetsTop={yCoordLookup}
@@ -231,18 +233,36 @@ const GeneTracks = (props: {
 
 const GeneTrack = (props: {
   regionData: Props['data'];
+  location: Props['location'];
   tracks: GeneTrack[];
   trackIndex: number;
   trackOffsetsTop: number[];
   scale: ScaleLinear<number, number>;
   focusGeneId?: string | null;
 }) => {
-  const { tracks, trackIndex, trackOffsetsTop, scale, focusGeneId } = props;
+  const { location, tracks, trackIndex, trackOffsetsTop, scale, focusGeneId } =
+    props;
   const track = tracks[trackIndex];
   const offsetTop = trackOffsetsTop[trackIndex];
 
+  const shouldDisplayLowResGenes =
+    location.end - location.start > MAX_SLICE_LENGTH_FOR_DETAILED_VIEW;
+
   const geneElements = track.map((gene) => {
     const isFocusGene = focusGeneId === gene.data.unversioned_stable_id;
+
+    if (shouldDisplayLowResGenes) {
+      return (
+        <RegionOverviewGeneLowRes
+          key={gene.data.stable_id}
+          gene={gene}
+          region={props.regionData.region}
+          scale={scale}
+          offsetTop={offsetTop}
+          isFocused={isFocusGene}
+        />
+      );
+    }
 
     return (
       <Fragment key={gene.data.stable_id}>
@@ -275,10 +295,14 @@ const StrandDivider = (props: {
   const y = props.offsetTop;
   const color = '#ccd3d8';
 
+  // consider that the strand divider should span across not just the viewport,
+  // but also a hidden viewport to the left and to the right
+  const width = props.width * 3;
+
   return (
     <line
       x1="0"
-      x2={props.width}
+      x2={width}
       y1={y}
       y2={y}
       strokeDasharray="2"
@@ -343,7 +367,30 @@ const RegulatoryFeatureTrack = (props: {
 }) => {
   const { track, featureTypesMap, offsetTop, scale, regionData } = props;
 
-  const featureElements = track.map((feature) => {
+  const featureElements = track.map((feature, index) => {
+    const prevFeature = index > 0 ? track[index - 1] : null;
+
+    const featureGenomicStart = feature.extended_start ?? feature.start;
+    const featureGenomicEnd = feature.extended_end ?? feature.end;
+    const featureStart = scale(featureGenomicStart);
+    const featureEnd = scale(featureGenomicEnd);
+
+    const prevFeatureGenomicStart =
+      prevFeature?.extended_start ?? prevFeature?.start;
+    const prevFeatureGenomicEnd = prevFeature?.extended_end ?? prevFeature?.end;
+    const prevFeatureStart = prevFeatureGenomicStart
+      ? scale(prevFeatureGenomicStart)
+      : -1;
+    const prevFeatureEnd = prevFeatureGenomicEnd
+      ? scale(prevFeatureGenomicEnd)
+      : -1;
+
+    if (featureStart === prevFeatureStart && featureEnd === prevFeatureEnd) {
+      // TODO: we may want to apply a smarter strategy here,
+      // wherein 'more important' reg features, such as promoters, will win over less important ones
+      return null;
+    }
+
     return (
       <RegionOverviewRegulatoryFeature
         key={feature.id}
@@ -385,4 +432,4 @@ export const getImageHeightAndTopOffsets = (featureTracks: FeatureTracks) => {
   };
 };
 
-export default RegionOverviewImage;
+export default memo(RegionOverviewImage);

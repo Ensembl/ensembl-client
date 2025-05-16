@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { MAX_SLICE_LENGTH_FOR_DETAILED_VIEW } from 'src/content/app/regulatory-activity-viewer/constants/activityViewerConstants';
+
+import { fetchRegionDetails } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
+import { calculateRequestLocation } from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
+
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
-import {
-  useRegionOverviewQuery,
-  stringifyLocation
-} from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import useRegionOverviewData from 'src/content/app/regulatory-activity-viewer/services/region-data-service/useRegionOverviewData';
 
 import GeneName from 'src/shared/components/gene-name/GeneName';
 import TextButton from 'src/shared/components/text-button/TextButton';
@@ -45,17 +48,35 @@ const SidebarDefaultView = () => {
   } = useActivityViewerIds();
   const navigate = useNavigate();
 
-  const { currentData } = useRegionOverviewQuery(
-    {
-      assemblyId: assemblyAccessionId || '',
-      location: location ? stringifyLocation(location) : ''
-    },
-    {
-      skip: !assemblyAccessionId || !location
-    }
-  );
+  const regionOverviewDataParams = useMemo(() => {
+    return assemblyAccessionId && location
+      ? {
+          assemblyId: assemblyAccessionId,
+          regionName: location.regionName,
+          start: location.start,
+          end: location.end
+        }
+      : null;
+  }, [assemblyAccessionId, location]);
 
-  if (!currentData) {
+  const { data } = useRegionOverviewData(regionOverviewDataParams);
+
+  useEffect(() => {
+    if (!assemblyAccessionId || !location) {
+      return;
+    }
+
+    const regionDataRequestParams = calculateRequestLocation({
+      assemblyId: assemblyAccessionId,
+      regionName: location.regionName,
+      start: location.start,
+      end: location.end
+    });
+
+    fetchRegionDetails(regionDataRequestParams);
+  }, [assemblyAccessionId, location]);
+
+  if (!data || !location) {
     return null;
   }
 
@@ -73,15 +94,23 @@ const SidebarDefaultView = () => {
     navigate(newUrl);
   };
 
+  const { start, end } = location;
+  const sliceLength = end - start + 1;
+  const isSliceTooLarge = sliceLength > MAX_SLICE_LENGTH_FOR_DETAILED_VIEW;
+
   return (
     <div>
-      <Genes
-        genes={currentData.genes}
-        onGeneFocus={onGeneFocus}
-        focusGeneId={focusGeneId}
-      />
+      {isSliceTooLarge ? (
+        <SliceTooLargeNotice />
+      ) : (
+        <Genes
+          genes={data.genes}
+          onGeneFocus={onGeneFocus}
+          focusGeneId={focusGeneId}
+        />
+      )}
       <RegulatoryFeatureLegendSection
-        featureTypes={currentData.regulatory_features.feature_types}
+        featureTypes={data.regulatory_features.feature_types}
       />
     </div>
   );
@@ -131,6 +160,10 @@ const RegulatoryFeatureLegendSection = (props: {
       <RegulatoryFeatureLegend featureTypes={props.featureTypes} />
     </div>
   );
+};
+
+const SliceTooLargeNotice = () => {
+  return <div>Please zoom in into the region to see the list of genes</div>;
 };
 
 export default SidebarDefaultView;

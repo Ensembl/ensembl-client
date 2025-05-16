@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useTransition, useMemo } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { scaleLinear, type ScaleLinear } from 'd3';
-
-import { useAppSelector } from 'src/store';
-
-import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
@@ -29,9 +25,6 @@ import {
 } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 import { useEpigenomesActivityQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
-import prepareFeatureTracks, {
-  type FeatureTracks
-} from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
 import {
   prepareActivityDataForDisplay,
   type EpigenomicActivityForDisplay
@@ -50,7 +43,6 @@ import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/
 type RegionActivityData = {
   location: { start: number; end: number };
   regionOverviewData: OverviewRegion;
-  featureTracksData: FeatureTracks;
   epigenomeActivityData: EpigenomicActivityForDisplay;
   scale: ScaleLinear<number, number>;
 };
@@ -64,7 +56,7 @@ const useRegionActivityData = (props: Props) => {
   const [isTransitionPending, startTransition] = useTransition();
   const [regionActivityData, setRegionActivityData] =
     useState<RegionActivityData | null>(null);
-  const { activeGenomeId, assemblyAccessionId, location } =
+  const { assemblyName, assemblyAccessionId, location } =
     useActivityViewerIds();
   const { filteredCombinedEpigenomes, sortedCombinedEpigenomes } =
     useEpigenomes();
@@ -86,7 +78,7 @@ const useRegionActivityData = (props: Props) => {
     }
   );
   const {
-    isLoading: isEpigenomeActivityDataLoading,
+    isFetching: isEpigenomeActivityDataLoading,
     currentData: epigenomeActivityData
   } = useEpigenomesActivityQuery(
     {
@@ -100,51 +92,34 @@ const useRegionActivityData = (props: Props) => {
     }
   );
 
-  const selectedLocation = useRegionLocation({
-    genomeId: activeGenomeId,
-    regionOverviewData
-  });
-
   useEffect(() => {
-    if (
-      !width ||
-      !selectedLocation ||
-      !regionOverviewData ||
-      !epigenomeActivityData
-    ) {
+    if (!width || !location || !regionOverviewData || !epigenomeActivityData) {
       return;
     }
 
     const scale = scaleLinear()
-      .domain([selectedLocation.start, selectedLocation.end])
+      .domain([location.start, location.end])
       .rangeRound([0, Math.floor(width)]);
-
-    const featureTracksData = prepareFeatureTracks({
-      data: regionOverviewData,
-      start: selectedLocation.start,
-      end: selectedLocation.end
-    });
 
     const preparedEpigenomeActivityData = prepareActivityDataForDisplay({
       data: epigenomeActivityData,
-      location: selectedLocation,
+      location,
       sortedEpigenomes: sortedCombinedEpigenomes ?? [],
       scale
     });
 
     startTransition(() => {
       setRegionActivityData({
-        location: selectedLocation,
+        location,
         scale,
         regionOverviewData,
-        featureTracksData,
         epigenomeActivityData: preparedEpigenomeActivityData
       });
     });
   }, [
     width,
-    selectedLocation?.start,
-    selectedLocation?.end,
+    location?.start,
+    location?.end,
     regionOverviewData,
     epigenomeActivityData,
     sortedCombinedEpigenomes
@@ -155,36 +130,6 @@ const useRegionActivityData = (props: Props) => {
     isLoading: isRegionOverviewDataLoading || isEpigenomeActivityDataLoading,
     isTransitionPending
   };
-};
-
-// If user has narrowed down the location within the region, use that.
-// Otherwise, pick the location from the api response for the region.
-const useRegionLocation = ({
-  genomeId,
-  regionOverviewData
-}: {
-  genomeId: string | null;
-  regionOverviewData?: OverviewRegion;
-}) => {
-  const regionDetailLocation = useAppSelector((state) =>
-    getRegionDetailSelectedLocation(state, genomeId ?? '')
-  );
-
-  // NOTE: the purpose of this useMemo is not to save on expensive computations,
-  // but to return the same object that will be used as dependency array of useEffect
-  return useMemo(() => {
-    if (!regionOverviewData) {
-      return null;
-    }
-
-    // let's consider just a single contiguous slice without "boring" intervals
-    const location = regionOverviewData.locations[0];
-
-    return {
-      start: regionDetailLocation?.start ?? location.start,
-      end: regionDetailLocation?.end ?? location.end
-    };
-  }, [regionOverviewData, regionDetailLocation]);
 };
 
 export default useRegionActivityData;
