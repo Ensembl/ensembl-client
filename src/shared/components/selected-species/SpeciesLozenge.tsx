@@ -34,14 +34,14 @@ export type Props = DetailedHTMLProps<
 > & {
   species: CommittedItem;
   theme: SpeciesLozengeTheme;
-  isCurrent?: boolean;
+  withReleaseInfo?: boolean;
 };
 
 const SpeciesLozenge = (props: Props) => {
   const {
     species,
     theme,
-    isCurrent = true,
+    withReleaseInfo = false,
     className: classNameFromProps,
     ...otherProps
   } = props;
@@ -57,9 +57,7 @@ const SpeciesLozenge = (props: Props) => {
       <div className={styles.inner}>
         <SpeciesName species={species} />
       </div>
-      {!isCurrent && species.release && (
-        <ReleasePill release={species.release} />
-      )}
+      {withReleaseInfo && <ReleasePill release={species.release} />}
     </button>
   );
 };

@@ -22,6 +22,7 @@ export type Props = {
   species: CommittedItem;
   isActive?: boolean;
   disabled?: boolean;
+  withReleaseInfo?: boolean;
   onClick?: (species: CommittedItem) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -37,6 +38,7 @@ const SelectedSpecies = (props: Props) => {
     <SpeciesLozenge
       species={props.species}
       className={props.className}
+      withReleaseInfo={props.withReleaseInfo}
       onClick={onClick}
       {...getSpeciesLozengeProps(props)}
     />

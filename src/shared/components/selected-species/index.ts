@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { default as SelectedSpecies } from './SelectedSpecies';
+export { default as SelectedSpecies } from './ConnectedSelectedSpecies';
 export { default as SpeciesLozenge } from './SpeciesLozenge';
