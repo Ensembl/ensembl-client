@@ -25,5 +25,8 @@ export const getIsEpigenomeSelectorOpen = (
   genomeId: string
 ) => state.regionActivityViewer.ui[genomeId]?.isEpigenomesSelectorOpen ?? false;
 
+export const getIsSidebarOpen = (state: RootState, genomeId: string) =>
+  state.regionActivityViewer.ui[genomeId]?.isSidebarOpen ?? true;
+
 export const getSidebarView = (state: RootState, genomeId: string) =>
   state.regionActivityViewer.ui[genomeId]?.sidebarView ?? 'default';

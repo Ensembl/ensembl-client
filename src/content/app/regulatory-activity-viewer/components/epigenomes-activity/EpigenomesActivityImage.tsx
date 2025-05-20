@@ -49,7 +49,7 @@ const EpigenomeActivityImage = (props: Props) => {
     <svg
       viewBox={`0 0 ${width} ${imageHeight}`}
       style={{
-        width: `${width}px`,
+        width: '100%',
         height: `${imageHeight}px`
       }}
     >

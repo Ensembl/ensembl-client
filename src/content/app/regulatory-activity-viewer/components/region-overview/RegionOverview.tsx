@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo, useDeferredValue } from 'react';
+import {
+  useState,
+  useEffect,
+  useMemo,
+  useDeferredValue,
+  useTransition
+} from 'react';
 import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -41,13 +47,6 @@ import type { GenePopupMessage } from 'src/content/app/regulatory-activity-viewe
 
 import styles from './RegionOverview.module.css';
 
-/**
- * NOTES
- * Distances:
- *  - Distance from the image to the left border and the the right border seems to be 150px
- *    => This means that the toggling of the sidebar will result in re-rendering of everything
- */
-
 const RegionOverview = () => {
   const {
     activeGenomeId,
@@ -57,6 +56,7 @@ const RegionOverview = () => {
     locationForUrl,
     focusGeneId
   } = useActivityViewerIds();
+  const [, startWidthTransition] = useTransition();
   const [width, setWidth] = useState(0);
   const navigate = useNavigate();
 
@@ -115,17 +115,23 @@ const RegionOverview = () => {
     fetchRegionDetails(regionDataRequestParams);
   }, [assemblyAccessionId, regionName, regionLength]);
 
-  // TODO: width should be recalculated on resize
-  // Consider if this is appropriate component for doing this.
   const onImageContainerMount = (element: HTMLDivElement) => {
-    const { width: imageContainerWidth } = element.getBoundingClientRect();
-    setWidth(imageContainerWidth);
+    const resizeObserver = new ResizeObserver((entries) => {
+      const [imageContainer] = entries;
+      const { width: imageContainerWidth } = imageContainer.contentRect;
+      startWidthTransition(() => {
+        setWidth(imageContainerWidth);
+      });
+    });
+
+    resizeObserver.observe(element);
 
     // TODO: change to a more appropriate way of changing focus gene id
     document.addEventListener('focus-gene', onFocusGeneChange);
 
     return () => {
       document.removeEventListener('focus-gene', onFocusGeneChange);
+      resizeObserver.disconnect();
     };
   };
 
