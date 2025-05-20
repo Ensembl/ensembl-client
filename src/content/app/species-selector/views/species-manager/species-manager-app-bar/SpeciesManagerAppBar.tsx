@@ -24,7 +24,7 @@ import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
-import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
+import { SelectedSpecies } from 'src/shared/components/selected-species';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
