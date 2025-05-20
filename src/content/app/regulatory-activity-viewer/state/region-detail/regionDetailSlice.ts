@@ -36,6 +36,7 @@ const ensureStatePerGenome = (state: State, genomeId: string) => {
   }
 };
 
+// FIXME: is this state redundant?
 const regionDetailSlice = createSlice({
   name: 'regulatory-activity-viewer-region-in-detail',
   initialState: {} as State,

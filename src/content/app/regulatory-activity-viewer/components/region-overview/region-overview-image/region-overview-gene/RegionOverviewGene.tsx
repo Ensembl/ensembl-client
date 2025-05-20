@@ -220,7 +220,7 @@ const Introns = (props: {
         y2={y}
         stroke={color}
         strokeWidth="1"
-        key={intron.start}
+        key={`intron-${intron.start}-${intron.end}`}
       />
     );
   });

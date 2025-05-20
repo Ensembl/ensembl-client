@@ -136,7 +136,7 @@ const HistoneNarrowPeaks = ({
 
     return (
       <rect
-        key={`${peak.label}-${peak.x}-${peak.width}`}
+        key={`narrow-peak-${peak.label}-${peak.x}-${peak.width}`}
         x={peak.x}
         y={peakOffsetTop}
         width={peak.width}
@@ -166,7 +166,7 @@ const HistoneGappedPeaks = ({
 
   return data.histones.gappedPeaks.map((peak) => (
     <HistoneGappedPeak
-      key={`${peak.label}-${peak.blocks[0].x}-${peak.blocks[0].width}`}
+      key={`${peak.id}`}
       peakData={peak}
       trackOffsetTop={offsetTop}
       narrowPeakTracksCount={narrowPeakTracksCount}
@@ -197,7 +197,7 @@ const HistoneGappedPeak = ({
 
   const blocks = peakData.blocks.map((block) => (
     <rect
-      key={`${block.x}-${block.width}`}
+      key={`gapped-peak-block-${peakData.label}-${block.x}-${block.width}`}
       x={block.x}
       y={offsetTop}
       width={block.width}
@@ -209,7 +209,7 @@ const HistoneGappedPeak = ({
 
   const connectors = peakData.connectors.map((connector) => (
     <line
-      key={`${connector.x}-${connector.width}`}
+      key={`gapped-peak-connector-${connector.x}-${connector.width}`}
       x1={connector.x}
       x2={connector.x + connector.width}
       y1={connectorOffsetTop}

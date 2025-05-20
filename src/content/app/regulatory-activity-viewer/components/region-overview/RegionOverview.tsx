@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { useAppSelector } from 'src/store';
-
 import prepareFeatureTracks from 'src/content/app/regulatory-activity-viewer/helpers/prepare-feature-tracks/prepareFeatureTracks';
+import { fetchRegionDetails } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/regionDataService';
 
-import { getRegionDetailSelectedLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetaillSelectors';
+import {
+  getGreedyLocation,
+  calculateRequestLocation
+} from 'src/content/app/regulatory-activity-viewer/components/region-overview/calculateRequestLocation';
 
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
-import {
-  useRegionOverviewQuery,
-  stringifyLocation
-} from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import useRegionOverviewData, {
+  type RegionData
+} from 'src/content/app/regulatory-activity-viewer/services/region-data-service/useRegionOverviewData';
 
 import RegionOverviewImage, {
   getImageHeightAndTopOffsets
 } from './region-overview-image/RegionOverviewImage';
 import RegionOverviewZoomButtons from './region-overview-zoom-buttons/RegionOverviewZoomButtons';
 
-import type { OverviewRegion } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 import type { GenePopupMessage } from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-popup/activityViewerPopupMessageTypes';
 
 import styles from './RegionOverview.module.css';
@@ -58,20 +58,62 @@ const RegionOverview = () => {
     focusGeneId
   } = useActivityViewerIds();
   const [width, setWidth] = useState(0);
-  const regionDetailLocation = useAppSelector((state) =>
-    getRegionDetailSelectedLocation(state, activeGenomeId ?? '')
-  );
   const navigate = useNavigate();
 
-  const { currentData } = useRegionOverviewQuery(
-    {
-      assemblyId: assemblyAccessionId || '',
-      location: location ? stringifyLocation(location) : ''
-    },
-    {
-      skip: !assemblyAccessionId || !location
+  const extendedLocation = useMemo(() => {
+    if (!location) {
+      return null;
     }
-  );
+    return getGreedyLocation({ ...location });
+  }, [location]);
+
+  const regionOverviewDataParams =
+    assemblyAccessionId && location && extendedLocation
+      ? {
+          assemblyId: assemblyAccessionId,
+          regionName: location.regionName,
+          start: extendedLocation.start,
+          end: extendedLocation.end
+        }
+      : null;
+
+  const { data: currentData } = useRegionOverviewData(regionOverviewDataParams);
+  const deferredData = useDeferredValue(currentData);
+  const regionName = location?.regionName;
+  const regionLength = currentData?.region.length;
+
+  if (regionLength && extendedLocation) {
+    extendedLocation.end = Math.min(extendedLocation?.end, regionLength);
+  }
+
+  useEffect(() => {
+    if (!extendedLocation || !assemblyAccessionId) {
+      return;
+    }
+
+    const regionDataRequestParams = calculateRequestLocation({
+      ...extendedLocation,
+      assemblyId: assemblyAccessionId
+    });
+
+    fetchRegionDetails(regionDataRequestParams);
+  }, [assemblyAccessionId, location, extendedLocation]);
+
+  // fetch data for the whole region
+  useEffect(() => {
+    if (!assemblyAccessionId || !regionName || !regionLength) {
+      return;
+    }
+
+    const regionDataRequestParams = calculateRequestLocation({
+      assemblyId: assemblyAccessionId,
+      regionName,
+      start: 1,
+      end: regionLength
+    });
+
+    fetchRegionDetails(regionDataRequestParams);
+  }, [assemblyAccessionId, regionName, regionLength]);
 
   // TODO: width should be recalculated on resize
   // Consider if this is appropriate component for doing this.
@@ -104,8 +146,8 @@ const RegionOverview = () => {
   };
 
   const featureTracks = useMemo(() => {
-    return currentData ? prepareFeatureTracks({ data: currentData }) : null;
-  }, [currentData]);
+    return deferredData ? prepareFeatureTracks({ data: deferredData }) : null;
+  }, [deferredData]);
 
   const topOffsets = featureTracks
     ? getImageHeightAndTopOffsets(featureTracks)
@@ -118,29 +160,35 @@ const RegionOverview = () => {
   return (
     <div className={styles.grid}>
       <div className={styles.leftColumn}>
-        {currentData && topOffsets && (
-          <LeftColumn data={currentData} topOffsets={topOffsets} />
+        {deferredData && topOffsets && (
+          <LeftColumn data={deferredData} topOffsets={topOffsets} />
         )}
       </div>
       <div className={styles.middleColumn} ref={onImageContainerMount}>
-        {location && currentData && featureTracks && width && (
-          <RegionOverviewImage
-            activeGenomeId={activeGenomeId}
-            data={currentData}
-            featureTracks={featureTracks}
-            focusGeneId={focusGeneId}
-            width={width}
-            location={location}
-            regionDetailLocation={regionDetailLocation}
-          />
-        )}
+        <div className={styles.imageContainer}>
+          {location &&
+            extendedLocation &&
+            deferredData &&
+            featureTracks &&
+            width && (
+              <RegionOverviewImage
+                activeGenomeId={activeGenomeId}
+                data={deferredData}
+                featureTracks={featureTracks}
+                focusGeneId={focusGeneId}
+                width={width}
+                location={location}
+                extendedLocation={extendedLocation}
+              />
+            )}
+        </div>
       </div>
       <div className={styles.rightColumn}>
-        {location && (
+        {location && regionLength && (
           <RegionOverviewZoomButtons
             genomeId={activeGenomeId}
             location={location}
-            regionDetailLocation={regionDetailLocation}
+            regionLength={regionLength}
           />
         )}
       </div>
@@ -149,7 +197,7 @@ const RegionOverview = () => {
 };
 
 const LeftColumn = (props: {
-  data: OverviewRegion;
+  data: RegionData;
   topOffsets: ReturnType<typeof getImageHeightAndTopOffsets>;
 }) => {
   const { data, topOffsets } = props;

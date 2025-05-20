@@ -19,6 +19,7 @@ import type {
   GeneInRegionOverview,
   RegulatoryFeature
 } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { RegionData } from 'src/content/app/regulatory-activity-viewer/services/region-data-service/useRegionOverviewData';
 
 /**
  * The purpose of this helper is to accept data returned
@@ -35,7 +36,7 @@ import type {
  */
 
 type Params = {
-  data: OverviewRegion;
+  data: Pick<RegionData, 'genes' | 'regulatory_features'>;
   start?: number;
   end?: number;
 };

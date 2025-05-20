@@ -14,39 +14,44 @@
  * limitations under the License.
  */
 
-import { useAppDispatch } from 'src/store';
-
-import { setRegionDetailLocation } from 'src/content/app/regulatory-activity-viewer/state/region-detail/regionDetailSlice';
+import { useLocation, useNavigate } from 'react-router';
 
 import styles from './RegionOverviewZoomButtons.module.css';
 
 type Props = {
   genomeId: string;
-  location: { start: number; end: number };
-  regionDetailLocation: { start: number; end: number } | null;
+  location: { regionName: string; start: number; end: number };
+  regionLength: number;
 };
 
 const RegionOverviewZoomButtons = (props: Props) => {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const urlLocation = useLocation();
 
   const onZoomIn = () => {
     const newLocation = calculateZoomIn(props);
-    dispatch(
-      setRegionDetailLocation({
-        genomeId: props.genomeId,
-        location: newLocation
-      })
-    );
+    navigateTo(newLocation);
   };
 
   const onZoomOut = () => {
     const newLocation = calculateZoomOut(props);
-    dispatch(
-      setRegionDetailLocation({
-        genomeId: props.genomeId,
-        location: newLocation
-      })
+    navigateTo(newLocation);
+  };
+
+  const navigateTo = ({ start, end }: { start: number; end: number }) => {
+    const { regionName } = props.location;
+    const { pathname, search } = urlLocation;
+
+    const newLocation = `${regionName}:${start}-${end}`;
+
+    const newSearchParams = new URLSearchParams(search);
+    newSearchParams.set('location', newLocation);
+    // for aesthetic purposes, prevent the colon in location query parameter from being encoded
+    const newSearchParamsString = decodeURIComponent(
+      newSearchParams.toString()
     );
+
+    navigate(`${pathname}?${newSearchParamsString}`, { replace: true });
   };
 
   return (
@@ -58,8 +63,8 @@ const RegionOverviewZoomButtons = (props: Props) => {
 };
 
 // When zooming in, pick the location that is half the viewport in size, and is in the middle of the viewport
-const calculateZoomIn = ({ location, regionDetailLocation }: Props) => {
-  const viewportLocation = regionDetailLocation ?? location;
+const calculateZoomIn = ({ location }: Props) => {
+  const viewportLocation = location;
   const viewportDistance = viewportLocation.end - viewportLocation.start;
   const halfViewportDistance = Math.round(viewportDistance / 2);
   const quarterViewportDistance = Math.round(halfViewportDistance / 2);
@@ -73,23 +78,12 @@ const calculateZoomIn = ({ location, regionDetailLocation }: Props) => {
   };
 };
 
-const calculateZoomOut = ({ location, regionDetailLocation }: Props) => {
-  if (!regionDetailLocation) {
-    return location;
-  }
-
-  const viewportDistance =
-    regionDetailLocation.end - regionDetailLocation.start;
+const calculateZoomOut = ({ location, regionLength }: Props) => {
+  const viewportDistance = location.end - location.start;
   const newViewportDistance = viewportDistance * 2;
   const quarterNewDistance = Math.round(newViewportDistance / 4);
-  const newStart = Math.max(
-    regionDetailLocation.start - quarterNewDistance,
-    location.start
-  );
-  const newEnd = Math.min(
-    regionDetailLocation.end + quarterNewDistance,
-    location.end
-  );
+  const newStart = Math.max(location.start - quarterNewDistance, 1);
+  const newEnd = Math.min(location.end + quarterNewDistance, regionLength);
 
   return {
     start: newStart,
