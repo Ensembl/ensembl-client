@@ -82,6 +82,10 @@ const RegionOverview = () => {
   const regionName = location?.regionName;
   const regionLength = currentData?.region.length;
 
+  if (regionLength && extendedLocation) {
+    extendedLocation.end = Math.min(extendedLocation?.end, regionLength);
+  }
+
   useEffect(() => {
     if (!extendedLocation || !assemblyAccessionId) {
       return;
