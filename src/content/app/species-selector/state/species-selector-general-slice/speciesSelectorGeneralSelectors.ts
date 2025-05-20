@@ -48,3 +48,26 @@ export const getEnabledCommittedSpecies = createSelector(
   (state: RootState) => getCommittedSpecies(state),
   (committedSpecies) => committedSpecies.filter(({ isEnabled }) => isEnabled)
 );
+
+/**
+ * Identifies ids of the assemblies each of which has more than one genome
+ * among the saved species
+ */
+export const getAssembliesWithMultipleCommittedGenomes = createSelector(
+  (state: RootState) => getCommittedSpecies(state),
+  (committedSpeciesList) => {
+    const seenAssemblyIds = new Set<string>();
+    const finalAssemblyIdsSet = new Set<string>();
+
+    for (const species of committedSpeciesList) {
+      const assemblyId = species.assembly.accession_id;
+      if (seenAssemblyIds.has(assemblyId)) {
+        finalAssemblyIdsSet.add(assemblyId);
+      } else {
+        seenAssemblyIds.add(assemblyId);
+      }
+    }
+
+    return finalAssemblyIdsSet;
+  }
+);

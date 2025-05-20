@@ -176,7 +176,7 @@ const SpeciesLozengeRelease = () => {
           <SpeciesLozenge
             theme="blue"
             species={humanGenome}
-            isCurrent={false}
+            withReleaseInfo={true}
           />
         </WrapInRedux>
       </div>

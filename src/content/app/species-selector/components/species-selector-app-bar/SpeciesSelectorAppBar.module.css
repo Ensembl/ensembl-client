@@ -2,13 +2,14 @@
   display: grid;
   grid-template-columns: auto minmax(max-content, 1fr);
   align-items: center;
-  column-gap: 4px;
+  column-gap: 15px;
 }
 
 .aside {
   display: flex;
   align-items: center;
   column-gap: 30px;
+  padding-top: 9px; /* to align vertically with species lozenges, whose container also has a top padding */
 }
 
 .placeholderMessage {

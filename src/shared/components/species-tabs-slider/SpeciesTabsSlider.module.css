@@ -1,4 +1,5 @@
 .speciesTabsSlider {
+  --tabs-container-padding-top: 9px; /* padding to push species lozenges down, such that their release pills do not get cropped off */
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -9,9 +10,16 @@
   column-gap: 15px;
   width: 100%;
   overflow-x: auto;
-  scrollbar-width: none; /* hides the scrollbar, but only on Firefox */
+  scrollbar-width: none;
+  padding-top: var(--tabs-container-padding-top);
 }
 
+/*
+  'scrollbar-width: none' is supported by all browsers since 2024
+  - Chrome and other Blink-based added support in January 2024
+  - Safari added support in December 2024
+  TODO: remove the webkit-scrollbar rule below some time in 2026.
+*/
 .tabsContainer::-webkit-scrollbar {
   display: none; /* hide the scrollbar in all webkit-based browsers */
 }
@@ -31,10 +39,12 @@
 
 .leftCorner {
   margin-right: 8px;
+  padding-top: var(--tabs-container-padding-top);
 }
 
 .rightCorner {
   margin-left: 8px;
+  padding-top: var(--tabs-container-padding-top);
 }
 
 .arrowButton {
