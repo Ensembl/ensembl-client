@@ -16,6 +16,7 @@
 
 import {
   useState,
+  useEffect,
   useReducer,
   useCallback,
   useRef,
@@ -146,6 +147,10 @@ const ContactUsInitialForm = () => {
   const stateRef = useRef<typeof state>(state);
 
   const isFormValid = validate(state) && emailFieldValid;
+
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   const onFileChange = useCallback(
     (files: File[]) => {
