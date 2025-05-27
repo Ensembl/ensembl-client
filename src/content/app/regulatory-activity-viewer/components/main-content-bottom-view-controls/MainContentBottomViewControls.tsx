@@ -77,7 +77,6 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
       <ContentViewButton
         view="epigenomes-list"
         activeView={activeView}
-        genomeId={genomeId}
         onClick={() => changeView('epigenomes-list')}
       >
         Table
@@ -86,20 +85,12 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
       <ContentViewButton
         view="dataviz"
         activeView={activeView}
-        genomeId={genomeId}
         onClick={() => changeView('dataviz')}
       >
         Visualise
       </ContentViewButton>
 
-      <ContentViewButton
-        view="epigenomes-selection"
-        activeView={activeView}
-        genomeId={genomeId}
-        onClick={onConfigure}
-      >
-        Configure
-      </ContentViewButton>
+      <SecondaryButton onClick={onConfigure}>Configure</SecondaryButton>
     </div>
   );
 };
@@ -110,7 +101,6 @@ const ContentViewButton = ({
   children,
   onClick
 }: {
-  genomeId: string;
   view: MainContentBottomView;
   activeView: MainContentBottomView;
   onClick: () => void;
