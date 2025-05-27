@@ -102,7 +102,7 @@ const useEpigenomesData = () => {
       baseEpigenomes: filteredEpigenomes,
       combiningDimensions: epigenomeCombiningDimensions
     });
-  }, [filteredEpigenomes]);
+  }, [filteredEpigenomes, epigenomeCombiningDimensions]);
 
   // List of dimensions actually used to sort the epigenomes (up to three dimensions)
   const epigenomeSortableDimensions =
