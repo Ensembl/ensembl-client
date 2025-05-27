@@ -15,19 +15,24 @@
  */
 
 import { memo } from 'react';
-import noop from 'lodash/noop';
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import {
   getMainContentBottomView,
-  getIsEpigenomeSelectorOpen
+  getIsEpigenomeSelectorOpen,
+  getIsSidebarOpen
 } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 
 import useActivityViewerIds from './hooks/useActivityViewerIds';
 import usePreselectedEpigenomes from './hooks/usePreselectedEpigenomes';
 import useActivityViewerRouting from './hooks/useActivityViewerRouting';
 import { useRegulatoryDataAvailabilityQuery } from './state/api/activityViewerApiSlice';
+
+import {
+  openSidebar,
+  closeSidebar
+} from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 
 import ActivityViewerEpigenomesContextProvider from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerEpigenomesContextProvider';
 import { StandardAppLayout } from 'src/shared/components/layout';
@@ -46,10 +51,14 @@ import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigeno
 import styles from './RegulatoryActivityViewer.module.css';
 
 const ActivityViewer = () => {
-  const { activeGenomeId, assemblyAccessionId, genomeIdInUrl, location } =
+  const { genomeId, assemblyAccessionId, genomeIdInUrl, location } =
     useActivityViewerIds();
+  const isSidebarOpen = useAppSelector((state) =>
+    getIsSidebarOpen(state, genomeId ?? '')
+  );
   useActivityViewerRouting();
   usePreselectedEpigenomes();
+  const dispatch = useAppDispatch();
 
   const {
     isFetching: isRegulatoryAvailabilityDataLoading,
@@ -64,6 +73,18 @@ const ActivityViewer = () => {
   );
 
   const isRegulatoryDataAvailable = regulatoryAvailabilityData?.available;
+
+  const toggleSidebar = () => {
+    if (!genomeId) {
+      // this should not happen
+      return;
+    }
+    if (isSidebarOpen) {
+      dispatch(closeSidebar({ genomeId }));
+    } else {
+      dispatch(openSidebar({ genomeId }));
+    }
+  };
 
   if (!genomeIdInUrl) {
     // TODO: add a proper component for this
@@ -97,12 +118,12 @@ const ActivityViewer = () => {
     <div className={styles.container}>
       <ActivityViewerAppBar />
       <StandardAppLayout
-        mainContent={<MainContent genomeId={activeGenomeId} />}
-        sidebarContent={<ActivityViewerSidebar genomeId={activeGenomeId} />}
-        isSidebarOpen={true}
+        mainContent={<MainContent genomeId={genomeId ?? null} />}
+        sidebarContent={<ActivityViewerSidebar genomeId={genomeId ?? null} />}
+        isSidebarOpen={isSidebarOpen}
         topbarContent={<div />}
-        sidebarNavigation={<SidebarNavigation genomeId={activeGenomeId} />}
-        onSidebarToggle={noop}
+        sidebarNavigation={<SidebarNavigation genomeId={genomeId ?? null} />}
+        onSidebarToggle={toggleSidebar}
         viewportWidth={1800}
       />
     </div>

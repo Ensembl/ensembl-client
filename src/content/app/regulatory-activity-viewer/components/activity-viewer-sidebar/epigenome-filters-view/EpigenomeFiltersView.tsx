@@ -23,7 +23,7 @@ import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useE
 import { getEpigenomeSelectionCriteria } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSelectors';
 
 import { removeSelectionCriterion } from 'src/content/app/regulatory-activity-viewer/state/epigenome-selection/epigenomeSelectionSlice';
-import { setMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
+import { openEpigenomesSelector } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 
 import { getMetadataItems } from 'src/content/app/regulatory-activity-viewer/components/epigenome-selection-panel/getEpigenomeCounts';
 
@@ -166,9 +166,8 @@ const ConfigureButton = ({ genomeId }: { genomeId: string }) => {
 
   const onClick = () => {
     dispatch(
-      setMainContentBottomView({
-        genomeId,
-        view: 'epigenomes-selection'
+      openEpigenomesSelector({
+        genomeId
       })
     );
   };

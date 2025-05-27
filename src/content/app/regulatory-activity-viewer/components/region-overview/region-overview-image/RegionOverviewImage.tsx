@@ -124,7 +124,7 @@ const RegionOverviewImage = (props: Props) => {
       ref={onMount}
       className={styles.image}
       style={{
-        width: `${width}px`,
+        width: `100%`,
         height: `${imageHeight}px`,
         borderStyle: 'dashed',
         borderWidth: '1px',

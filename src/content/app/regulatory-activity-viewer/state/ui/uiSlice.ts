@@ -16,16 +16,14 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-export type MainContentBottomView =
-  | 'epigenomes-list'
-  | 'epigenomes-selection'
-  | 'dataviz';
+export type MainContentBottomView = 'epigenomes-list' | 'dataviz';
 
 export type SidebarView = 'default' | 'epigenome-filters';
 
 type StatePerGenome = {
   mainContentBottomView: MainContentBottomView;
   isEpigenomesSelectorOpen: boolean;
+  isSidebarOpen: boolean;
   sidebarView: SidebarView;
 };
 
@@ -34,6 +32,7 @@ type State = Record<string, StatePerGenome>;
 const initialStateForGenome: StatePerGenome = {
   mainContentBottomView: 'epigenomes-list',
   isEpigenomesSelectorOpen: false,
+  isSidebarOpen: true,
   sidebarView: 'default'
 };
 
@@ -65,7 +64,18 @@ const uiSlice = createSlice({
       action: PayloadAction<{ genomeId: string }>
     ) {
       const { genomeId } = action.payload;
+      ensureStateForGenome(state, genomeId);
       state[genomeId].isEpigenomesSelectorOpen = false;
+    },
+    openSidebar(state, action: PayloadAction<{ genomeId: string }>) {
+      const { genomeId } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].isSidebarOpen = true;
+    },
+    closeSidebar(state, action: PayloadAction<{ genomeId: string }>) {
+      const { genomeId } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].isSidebarOpen = false;
     },
     setSidebarView(
       state,
@@ -81,6 +91,8 @@ const uiSlice = createSlice({
 export const {
   setMainContentBottomView,
   setSidebarView,
+  openSidebar,
+  closeSidebar,
   openEpigenomesSelector,
   closeEpigenomesSelector
 } = uiSlice.actions;

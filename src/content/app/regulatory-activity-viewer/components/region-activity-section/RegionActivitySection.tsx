@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef, memo } from 'react';
+import { useState, useRef, useTransition, memo } from 'react';
 import classNames from 'classnames';
 
 import { MAX_SLICE_LENGTH_FOR_DETAILED_VIEW } from 'src/content/app/regulatory-activity-viewer/constants/activityViewerConstants';
@@ -50,23 +50,36 @@ const RegionActivitySectionWrapper = () => {
 };
 
 const RegionActivitySection = () => {
-  // TODO: think about how best to handle width changes; maybe they should come from the parent
+  const [isComponentTransitionPending, startTransition] = useTransition();
   const [width, setWidth] = useState(0);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
   const {
     sortedCombinedEpigenomes,
     epigenomeSortingDimensions,
     epigenomeMetadataDimensionsResponse
   } = useEpigenomes();
 
-  // TODO: width should be recalculated on resize
-  // Consider if this is appropriate component for doing this.
-  useEffect(() => {
-    const imageContainer = imageContainerRef.current as HTMLDivElement;
-    const { width: imageContainerWidth } =
-      imageContainer.getBoundingClientRect();
-    setWidth(imageContainerWidth);
-  }, []);
+  const imageContainerWidthRef = useRef(width);
+
+  // update ref at every re-render
+  imageContainerWidthRef.current = width;
+
+  const onImageContainerMount = (element: HTMLDivElement) => {
+    const resizeObserver = new ResizeObserver((entries) => {
+      const [imageContainer] = entries;
+      const { width: imageContainerWidth } = imageContainer.contentRect;
+      if (imageContainerWidth !== imageContainerWidthRef.current) {
+        startTransition(() => {
+          setWidth(imageContainerWidth);
+        });
+      }
+    });
+
+    resizeObserver.observe(element);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  };
 
   const {
     data: preparedData,
@@ -81,13 +94,13 @@ const RegionActivitySection = () => {
     regionOverviewStyles.grid
   );
 
+  const isPending =
+    isLoading || isTransitionPending || isComponentTransitionPending;
+
   return (
     <div className={componentClasses}>
-      <div
-        className={regionOverviewStyles.middleColumn}
-        ref={imageContainerRef}
-      >
-        {(isLoading || isTransitionPending) && (
+      <div className={regionOverviewStyles.middleColumn}>
+        {isPending && (
           <div className={styles.loader}>
             <CircleLoader />
           </div>
@@ -111,7 +124,11 @@ const RegionActivitySection = () => {
           />
         )}
       </div>
-      <div className={regionOverviewStyles.middleColumn}>
+      <div
+        className={regionOverviewStyles.middleColumn}
+        ref={onImageContainerMount}
+        style={isPending ? { visibility: 'hidden' } : {}}
+      >
         {preparedData && width && (
           <EpigenomeActivityImage
             data={preparedData.epigenomeActivityData}
