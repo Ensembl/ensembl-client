@@ -16,10 +16,7 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-export type MainContentBottomView =
-  | 'epigenomes-list'
-  | 'epigenomes-selection'
-  | 'dataviz';
+export type MainContentBottomView = 'epigenomes-list' | 'dataviz';
 
 export type SidebarView = 'default' | 'epigenome-filters';
 
