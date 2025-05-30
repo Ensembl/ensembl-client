@@ -112,7 +112,18 @@ export const initialState: SpeciesSelectorState = {
 const prepareSelectedSpeciesForCommit = (
   selectedSpecies: SpeciesSearchMatch[]
 ): CommittedItem[] => {
-  return selectedSpecies.map((species) => ({
+  const timestamp = Date.now();
+
+  // NOTE:
+  // In the UI, the lozenges of the selected species are sorted
+  // in reverse chronological order based on the value
+  // of the `selectedAt` field. Since, according to designer's instructions,
+  // if user adds multiple species at once, their lozenges should be displayed
+  // in the same order species search matches were displayed,
+  // the list of species is reversed in the code below
+  // (so as to create an impression that search matches at the top were added the latest)
+
+  return selectedSpecies.toReversed().map((species, index) => ({
     genome_id: species.genome_id,
     genome_tag: species.genome_tag,
     common_name: species.common_name,
@@ -125,7 +136,8 @@ const prepareSelectedSpeciesForCommit = (
     release: species.release,
     is_reference: species.is_reference,
     type: species.type,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: timestamp + index
   }));
 };
 

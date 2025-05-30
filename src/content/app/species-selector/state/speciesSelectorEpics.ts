@@ -145,6 +145,7 @@ const buildCommittedItemFromBriefGenomeSummary = (
       name: genome.assembly.name
     },
     release: genome.release,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   };
 };

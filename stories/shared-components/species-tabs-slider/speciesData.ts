@@ -33,7 +33,8 @@ export default [
     },
     type: null,
     is_reference: true,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   },
   {
     genome_id: 'homo_sapiens37',
@@ -51,7 +52,8 @@ export default [
     },
     type: null,
     is_reference: false,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   },
   {
     genome_id: 'bifidobacterium_longum_subsp_longum_cect_7347',
@@ -69,7 +71,8 @@ export default [
     },
     type: null,
     is_reference: false,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   },
   {
     genome_id: 'arabidopsis_thaliana',
@@ -87,7 +90,8 @@ export default [
     },
     type: null,
     is_reference: false,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   },
   {
     genome_id: 'drosophila_melanogaster',
@@ -105,7 +109,8 @@ export default [
     },
     type: null,
     is_reference: true,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   },
   {
     genome_id: 'drosophila_yakuba',
@@ -123,7 +128,8 @@ export default [
     },
     type: null,
     is_reference: false,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   },
   {
     genome_id: 'caenorhabditis_elegans',
@@ -141,7 +147,8 @@ export default [
     },
     type: null,
     is_reference: true,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   },
   {
     genome_id: 'mus_musculus',
@@ -159,7 +166,8 @@ export default [
     },
     type: null,
     is_reference: true,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   },
   {
     genome_id: 'canis_lupus_familiaris',
@@ -177,7 +185,8 @@ export default [
     },
     type: null,
     is_reference: true,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   },
   {
     genome_id: 'zea_mays',
@@ -195,7 +204,8 @@ export default [
     },
     type: null,
     is_reference: true,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   },
   {
     genome_id: 'escherichia_coli',
@@ -213,6 +223,7 @@ export default [
     },
     type: null,
     is_reference: true,
-    isEnabled: true
+    isEnabled: true,
+    selectedAt: Date.now()
   }
 ] satisfies CommittedItem[];

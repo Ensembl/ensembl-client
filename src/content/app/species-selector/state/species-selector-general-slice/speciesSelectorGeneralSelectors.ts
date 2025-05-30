@@ -20,9 +20,14 @@ import type { RootState } from 'src/store';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SpeciesNameDisplayOption } from 'src/content/app/species-selector/types/speciesNameDisplayOption';
 
-export const getCommittedSpecies = (state: RootState): CommittedItem[] => {
-  return state.speciesSelector.general.committedItems;
-};
+export const getCommittedSpecies = createSelector(
+  (state: RootState) => state.speciesSelector.general.committedItems,
+  (committedItems) => {
+    return committedItems.toSorted(
+      (species1, species2) => species2.selectedAt - species1.selectedAt
+    );
+  }
+);
 
 export const getSpeciesNameDisplayOption = (
   state: RootState

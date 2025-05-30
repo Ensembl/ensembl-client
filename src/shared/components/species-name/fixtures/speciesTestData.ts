@@ -35,5 +35,6 @@ export const humanGenome = {
     type: 'partial'
   },
   genome_tag: 'grch38',
-  isEnabled: true
+  isEnabled: true,
+  selectedAt: Date.now()
 } satisfies CommittedItem;
