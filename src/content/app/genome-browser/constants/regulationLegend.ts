@@ -42,13 +42,6 @@ const regulationLegend = [
     label: 'CTCF',
     definition:
       'CTCF-binding regions are identified after segmenting the genome according to epigenomic activity. Specifically, they correspond to segmentation states where there is a high degree of CTCF binding'
-  },
-  {
-    colour_code: 5,
-    id: 'tfbs_count',
-    label: 'TF binding',
-    definition:
-      'These sites are enriched for Transcription Factor binding, but they lack epigenomic evidence to be classified as an enhancer or promoter'
   }
 ] as const;
 
