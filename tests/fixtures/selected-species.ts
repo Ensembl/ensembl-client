@@ -37,5 +37,6 @@ export const createSelectedSpecies = (
     type: 'integrated'
   },
   isEnabled: true,
+  selectedAt: Date.now(),
   ...fragment
 });
