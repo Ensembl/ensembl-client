@@ -18,17 +18,22 @@ import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types
 
 export const getCombinedEpigenomes = ({
   baseEpigenomes,
-  combiningDimensions
+  combiningDimensions,
+  allEpigenomeDimensions
 }: {
   baseEpigenomes: Epigenome[];
   combiningDimensions: string[];
+  allEpigenomeDimensions: string[];
 }) => {
   const combinedEpigenomesMap = new Map<string, Epigenome>();
+  const distinguishingDimensions = allEpigenomeDimensions.filter(
+    (dimension) => !combiningDimensions.includes(dimension)
+  );
 
   for (const epigenome of baseEpigenomes) {
     const combinedEpigenomeKey = createCombinedEpigenomeKey(
       epigenome,
-      combiningDimensions
+      distinguishingDimensions
     );
     const storedCombinedEpigenome =
       combinedEpigenomesMap.get(combinedEpigenomeKey);
@@ -45,15 +50,14 @@ export const getCombinedEpigenomes = ({
 
 const createCombinedEpigenomeKey = (
   epigenome: Epigenome,
-  combiningDimensions: string[]
+  distinguishingDimensions: string[]
 ) => {
-  const dimensionsForKey = eligibleDimensions.filter(
-    (dimension) => !combiningDimensions.includes(dimension)
+  const keyPartFromDimensions = distinguishingDimensions.reduce(
+    (acc, dimension) => {
+      return `${acc}-${epigenome[dimension]}`;
+    },
+    ''
   );
-
-  const keyPartFromDimensions = dimensionsForKey.reduce((acc, dimension) => {
-    return `${acc}-${epigenome[dimension]}`;
-  }, '');
 
   const key = `${epigenome.term}${keyPartFromDimensions}`;
   return key;
@@ -85,10 +89,3 @@ const createCombinedEpigenome = ({
 
   return combinedEpigenome;
 };
-
-/**
- * A list of dimensions that can possibly be used when combining epigenomes.
- * For example, it is meaningless to combine epigenomes on the "term" dimension or "organ" dimension;
- * but meaningful to combine them on the sex or life stage dimension
- */
-const eligibleDimensions = ['sex', 'life_stage'] as const;

@@ -87,6 +87,13 @@ const useEpigenomesData = () => {
     }
   );
 
+  const allEpigenomeDimensions = useMemo(() => {
+    if (!epigenomeMetadataDimensionsResponse) {
+      return [];
+    }
+    return Object.keys(epigenomeMetadataDimensionsResponse.dimensions);
+  }, [epigenomeMetadataDimensionsResponse]);
+
   const filteredEpigenomes = useMemo(() => {
     if (!baseEpigenomes) {
       return [];
@@ -98,11 +105,20 @@ const useEpigenomesData = () => {
   }, [baseEpigenomes, epigenomeSelectionCriteria]);
 
   const combinedEpigenomes = useMemo(() => {
+    if (!epigenomeCombiningDimensions.length) {
+      return filteredEpigenomes;
+    }
+
     return getCombinedEpigenomes({
       baseEpigenomes: filteredEpigenomes,
-      combiningDimensions: epigenomeCombiningDimensions
+      combiningDimensions: epigenomeCombiningDimensions,
+      allEpigenomeDimensions
     });
-  }, [filteredEpigenomes, epigenomeCombiningDimensions]);
+  }, [
+    filteredEpigenomes,
+    epigenomeCombiningDimensions,
+    allEpigenomeDimensions
+  ]);
 
   // List of dimensions actually used to sort the epigenomes (up to three dimensions)
   const epigenomeSortableDimensions =
