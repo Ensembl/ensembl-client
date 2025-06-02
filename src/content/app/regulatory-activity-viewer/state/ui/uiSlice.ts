@@ -30,7 +30,7 @@ type StatePerGenome = {
 type State = Record<string, StatePerGenome>;
 
 const initialStateForGenome: StatePerGenome = {
-  mainContentBottomView: 'epigenomes-list',
+  mainContentBottomView: 'dataviz',
   isEpigenomesSelectorOpen: false,
   isSidebarOpen: true,
   sidebarView: 'default'

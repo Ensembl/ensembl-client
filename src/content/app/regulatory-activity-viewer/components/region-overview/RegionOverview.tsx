@@ -220,7 +220,7 @@ const LeftColumn = (props: {
         style={{
           position: 'absolute',
           top: `${strandDividerTopOffset}px`,
-          right: '10px',
+          right: '16px',
           transform: 'translateY(-50%)'
         }}
       >
@@ -230,7 +230,7 @@ const LeftColumn = (props: {
         style={{
           position: 'absolute',
           top: `${regulatoryFeatureTracksTopOffset}px`,
-          right: '10px',
+          right: '16px',
           transform: 'translateY(-50%)'
         }}
       >

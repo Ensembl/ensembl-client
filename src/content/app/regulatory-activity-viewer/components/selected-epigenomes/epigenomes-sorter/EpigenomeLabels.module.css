@@ -2,7 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: end;
-  padding-right: 30px;
+  padding-right: 14px;
+  padding-top: 40px; /* Same as for EpigenomesActivityContainer */
 }
 
 .epigenomeLabel {
@@ -23,8 +24,8 @@
 }
 
 .coloredBlock {
-  width: 6px;
-  height: 25px;
+  width: 3px;
+  height: 24px;
 }
 
 .labelPopupContent {

@@ -1,0 +1,8 @@
+.container {
+  border: 1px dashed var(--color-dark-grey);
+  border-radius: 6px;
+  padding-top: 40px;
+  position: relative;
+  min-height: 100%; /* FIXME: shouldn't need this */
+  overflow: hidden;
+}

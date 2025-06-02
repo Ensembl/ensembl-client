@@ -35,7 +35,7 @@ import type {
   TrackDataForDisplay
 } from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/prepareActivityDataForDisplay';
 
-type Props = {
+export type Props = {
   data: EpigenomicActivityForDisplay;
   scale: ScaleLinear<number, number>;
   width: number;

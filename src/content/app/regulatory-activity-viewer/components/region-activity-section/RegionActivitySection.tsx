@@ -23,11 +23,10 @@ import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useE
 import useRegionActivityData from './useRegionActivityData';
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 
-import EpigenomeActivityImage from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
+import EpigenomesActivityImageContainer from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImageContainer';
 import GeneExpressionLevels from 'src/content/app/regulatory-activity-viewer/components/gene-expression-levels/GeneExpressionLevels';
 import EpigenomeLabels from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomeLabels';
-import EpigenomesTable from './epigenomes-table/EpigenomesTable';
-import { CircleLoader } from 'src/shared/components/loader';
+// import { CircleLoader } from 'src/shared/components/loader';
 
 // FIXME: promote these styles to the top level of region activity viewer
 import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
@@ -99,6 +98,48 @@ const RegionActivitySection = () => {
 
   return (
     <div className={componentClasses}>
+      <div className={classNames(regionOverviewStyles.leftColumn)}>
+        {preparedData && epigenomeMetadataDimensionsResponse && (
+          <EpigenomeLabels
+            epigenomes={sortedCombinedEpigenomes ?? []}
+            sortingDimensions={epigenomeSortingDimensions ?? []}
+            displayDimensions={
+              epigenomeMetadataDimensionsResponse.ui_spec.table_layout
+            }
+            allDimensions={epigenomeMetadataDimensionsResponse.dimensions}
+          />
+        )}
+      </div>
+      <div
+        className={regionOverviewStyles.middleColumn}
+        ref={onImageContainerMount}
+        style={isPending ? { visibility: 'hidden' } : {}}
+      >
+        {preparedData && width && (
+          <EpigenomesActivityImageContainer
+            data={preparedData.epigenomeActivityData}
+            scale={preparedData.scale}
+            width={width}
+          />
+        )}
+      </div>
+      <div
+        className={classNames(
+          styles.rightColumn,
+          regionOverviewStyles.rightColumn
+        )}
+      >
+        {preparedData && <GeneExpressionLevels />}
+      </div>
+    </div>
+  );
+};
+
+/**
+
+
+  return (
+    <div className={componentClasses}>
       <div className={regionOverviewStyles.middleColumn}>
         {isPending && (
           <div className={styles.loader}>
@@ -142,6 +183,8 @@ const RegionActivitySection = () => {
       </div>
     </div>
   );
-};
+
+
+ */
 
 export default memo(RegionActivitySectionWrapper);

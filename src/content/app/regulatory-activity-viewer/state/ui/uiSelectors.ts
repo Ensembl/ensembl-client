@@ -17,8 +17,7 @@
 import type { RootState } from 'src/store';
 
 export const getMainContentBottomView = (state: RootState, genomeId: string) =>
-  state.regionActivityViewer.ui[genomeId]?.mainContentBottomView ??
-  'epigenomes-list';
+  state.regionActivityViewer.ui[genomeId]?.mainContentBottomView ?? 'dataviz';
 
 export const getIsEpigenomeSelectorOpen = (
   state: RootState,

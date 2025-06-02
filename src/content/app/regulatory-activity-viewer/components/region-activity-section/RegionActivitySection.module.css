@@ -17,6 +17,11 @@
   backdrop-filter: blur(3px);
 }
 
+.rightColumn {
+  padding-top: 40px; /* Same as for EpigenomesActivityContainer */
+  padding-left: 20px;
+}
+
 .positionRelative {
   position: relative;
 }

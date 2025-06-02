@@ -28,6 +28,7 @@ import {
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import ActivityViewerActionSelector from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-actions-selector/ActivityViewerActionsSelector';
+import EpigenomesTableToggle from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/epigenomes-table/EpigenomesTableToggle';
 
 import styles from './MainContentBottomViewControls.module.css';
 
@@ -39,6 +40,7 @@ const MainContentBottomViewControls = (props: Props) => {
   const { genomeId } = props;
   return (
     <div className={styles.outerGrid}>
+      <EpigenomesTableToggleContainer genomeId={genomeId} />
       <div className={styles.grid}>
         <ActivityViewerActionSelector />
         <ContentViewButtons genomeId={genomeId} />
@@ -119,6 +121,18 @@ const ContentViewButton = ({
       {children}
     </SecondaryButton>
   );
+};
+
+const EpigenomesTableToggleContainer = ({ genomeId }: { genomeId: string }) => {
+  const activeView = useAppSelector((state) =>
+    getMainContentBottomView(state, genomeId)
+  );
+
+  if (activeView !== 'dataviz') {
+    return null;
+  }
+
+  return <EpigenomesTableToggle className={styles.epigenomesTableToggle} />;
 };
 
 export default MainContentBottomViewControls;

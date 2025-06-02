@@ -131,7 +131,7 @@ export const displayEpigenomeValue = (value?: Epigenome[keyof Epigenome]) => {
   } else if (typeof value === 'string') {
     return value;
   } else {
-    return null;
+    return '-';
   }
 };
 

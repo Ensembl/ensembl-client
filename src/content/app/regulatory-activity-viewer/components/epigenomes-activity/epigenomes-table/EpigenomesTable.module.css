@@ -1,24 +1,14 @@
 .container {
   --header-height: 30px;
-  --offset-left: 150px; /* width of the left column of the main grid */
+  --table-background: transparent;
   position: absolute;
-  top: calc(-1 * var(--header-height));
-  left: var(--offset-left);
+  top: calc(40px + (-1 * var(--header-height)));
+  animation: animate-table-entry 0.3s ease-in-out;
+  overflow: auto;
 }
 
-/* this element contains the table and the close button */
-.tableContainerGrid {
-  display: grid;
-  column-gap: 1rem;
-  padding-right: 10px;
-  animation: animate-table-entry 0.2s ease-in-out;
-  background-color: white;
-}
-
-/* a wrapper for the table, whose purpose is to scroll on overflow-x */
-.tableContainer {
-  text-align: left;
-  overflow-x: auto;
+.container tbody {
+  background-color: rgb(from var(--color-light-grey) r g b / 0.85);
 }
 
 @container main-content-container (min-width: 0) {
@@ -30,11 +20,7 @@
   FIXME: at least left and right main column widths should be extracted into css variables
   */
 
-  .tableContainerGrid {
-    grid-template-columns: [table] minmax(min-content, calc(100cqi - 150px - 150px)) [close-button] auto;
-  }
-
-  .tableContainer {
+  .container {
     max-width: calc(100cqi - 150px - 150px - 30px);
   }
 }
@@ -53,18 +39,11 @@
   text-overflow: ellipsis;
 }
 
+/* Same as in EpigenomeLabels coloredBlock class */
 .colorLabel {
   display: inline-block;
-  height: 10px;
-  aspect-ratio: 1;
-}
-
-.openButton {
-  --chevron-fill: white;
-  position: absolute;
-  left: calc(-1 * var(--offset-left));
-  padding: 3px 2px;
-  background-color: var(--color-blue);
+  height: 24px;
+  width: 3px;
 }
 
 .closeButton {
