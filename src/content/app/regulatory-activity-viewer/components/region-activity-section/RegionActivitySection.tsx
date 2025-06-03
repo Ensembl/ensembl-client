@@ -28,8 +28,6 @@ import GeneExpressionLevels from 'src/content/app/regulatory-activity-viewer/com
 import EpigenomeLabels from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomeLabels';
 // import { CircleLoader } from 'src/shared/components/loader';
 
-// FIXME: promote these styles to the top level of region activity viewer
-import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
 import styles from './RegionActivitySection.module.css';
 
 const RegionActivitySectionWrapper = () => {
@@ -88,17 +86,14 @@ const RegionActivitySection = () => {
     width
   });
 
-  const componentClasses = classNames(
-    styles.section,
-    regionOverviewStyles.grid
-  );
+  const componentClasses = classNames(styles.section, styles.grid);
 
   const isPending =
     isLoading || isTransitionPending || isComponentTransitionPending;
 
   return (
     <div className={componentClasses}>
-      <div className={classNames(regionOverviewStyles.leftColumn)}>
+      <div className={classNames(styles.leftColumn)}>
         {preparedData && epigenomeMetadataDimensionsResponse && (
           <EpigenomeLabels
             epigenomes={sortedCombinedEpigenomes ?? []}
@@ -111,7 +106,7 @@ const RegionActivitySection = () => {
         )}
       </div>
       <div
-        className={regionOverviewStyles.middleColumn}
+        className={styles.middleColumn}
         ref={onImageContainerMount}
         style={isPending ? { visibility: 'hidden' } : {}}
       >
@@ -123,12 +118,7 @@ const RegionActivitySection = () => {
           />
         )}
       </div>
-      <div
-        className={classNames(
-          styles.rightColumn,
-          regionOverviewStyles.rightColumn
-        )}
-      >
+      <div className={classNames(styles.rightColumn)}>
         {preparedData && <GeneExpressionLevels />}
       </div>
     </div>

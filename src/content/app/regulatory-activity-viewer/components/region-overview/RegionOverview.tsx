@@ -165,10 +165,20 @@ const RegionOverview = () => {
 
   return (
     <div className={styles.grid}>
-      <div className={styles.leftColumn}>
-        {deferredData && topOffsets && (
-          <LeftColumn data={deferredData} topOffsets={topOffsets} />
+      <div className={styles.topLeftColumn}>
+        {deferredData && <RegionName data={deferredData} />}
+      </div>
+      <div className={styles.topMiddleColumn}>
+        {location && regionLength && (
+          <RegionOverviewZoomButtons
+            genomeId={activeGenomeId}
+            location={location}
+            regionLength={regionLength}
+          />
         )}
+      </div>
+      <div className={styles.leftColumn}>
+        {deferredData && topOffsets && <LeftColumn topOffsets={topOffsets} />}
       </div>
       <div className={styles.middleColumn} ref={onImageContainerMount}>
         <div className={styles.imageContainer}>
@@ -189,30 +199,30 @@ const RegionOverview = () => {
             )}
         </div>
       </div>
-      <div className={styles.rightColumn}>
-        {location && regionLength && (
-          <RegionOverviewZoomButtons
-            genomeId={activeGenomeId}
-            location={location}
-            regionLength={regionLength}
-          />
-        )}
-      </div>
+    </div>
+  );
+};
+
+const RegionName = (props: { data: RegionData }) => {
+  const { data } = props;
+  const {
+    region: { name: regionName, coordinate_system }
+  } = data;
+
+  return (
+    <div>
+      <span className={styles.light}>{coordinate_system + ' '}</span>
+      <span>{regionName}</span>
     </div>
   );
 };
 
 const LeftColumn = (props: {
-  data: RegionData;
   topOffsets: ReturnType<typeof getImageHeightAndTopOffsets>;
 }) => {
-  const { data, topOffsets } = props;
+  const { topOffsets } = props;
   const { strandDividerTopOffset, regulatoryFeatureTracksTopOffset } =
     topOffsets;
-
-  const {
-    region: { name: regionName, coordinate_system }
-  } = data;
 
   return (
     <>
@@ -224,7 +234,7 @@ const LeftColumn = (props: {
           transform: 'translateY(-50%)'
         }}
       >
-        {coordinate_system} {regionName}
+        Genes
       </div>
       <div
         style={{
