@@ -150,7 +150,7 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
         <RegionOverview />
         {/* The spacer divs below are temporary */}
         <div style={{ margin: '0.6rem 0' }} />
-        <MainContentBottomViewControls genomeId={genomeId} />
+        <MainContentBottomViewControls />
       </div>
       <div style={{ margin: '0.6rem 0' }} />
       <MainContentBottom genomeId={genomeId} />

@@ -39,6 +39,10 @@
   text-overflow: ellipsis;
 }
 
+.tableCellContent > * {
+  flex-shrink: 0;
+}
+
 /* Same as in EpigenomeLabels coloredBlock class */
 .colorLabel {
   display: inline-block;

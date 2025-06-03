@@ -111,9 +111,6 @@ const SelectedEpigenomes = (props: Props) => {
           </div>
         )}
       </div>
-      <div className={styles.rightColumn}>
-        <EpigenomesCount epigenomes={sortedCombinedEpigenomes} />
-      </div>
     </div>
   );
 };
@@ -133,16 +130,6 @@ export const displayEpigenomeValue = (value?: Epigenome[keyof Epigenome]) => {
   } else {
     return '-';
   }
-};
-
-const EpigenomesCount = ({ epigenomes }: { epigenomes: unknown[] }) => {
-  const count = epigenomes.length;
-
-  return (
-    <div>
-      <span className={styles.strong}>{count}</span> epigenomes
-    </div>
-  );
 };
 
 const EpigenomeLabels = ({
