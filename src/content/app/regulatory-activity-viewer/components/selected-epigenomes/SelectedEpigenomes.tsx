@@ -145,15 +145,12 @@ const EpigenomeLabels = ({
     <div
       style={{
         display: 'flex',
-        position: 'absolute',
-        top: '2px',
-        bottom: '2px',
         columnGap: '2px'
       }}
     >
       {labelData.map(({ color }, index) => (
         <div
-          style={{ width: '5px', height: '100%', backgroundColor: color }}
+          style={{ width: '3px', height: '24px', backgroundColor: color }}
           key={index}
         />
       ))}

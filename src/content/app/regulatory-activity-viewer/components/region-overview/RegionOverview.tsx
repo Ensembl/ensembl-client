@@ -17,6 +17,7 @@
 import {
   useState,
   useEffect,
+  useRef,
   useMemo,
   useDeferredValue,
   useTransition
@@ -59,6 +60,10 @@ const RegionOverview = () => {
   const [, startWidthTransition] = useTransition();
   const [width, setWidth] = useState(0);
   const navigate = useNavigate();
+
+  const widthRef = useRef(width);
+
+  widthRef.current = width; // update the ref during every rerender
 
   const extendedLocation = useMemo(() => {
     if (!location) {
@@ -119,9 +124,11 @@ const RegionOverview = () => {
     const resizeObserver = new ResizeObserver((entries) => {
       const [imageContainer] = entries;
       const { width: imageContainerWidth } = imageContainer.contentRect;
-      startWidthTransition(() => {
-        setWidth(imageContainerWidth);
-      });
+      if (imageContainerWidth !== widthRef.current) {
+        startWidthTransition(() => {
+          setWidth(imageContainerWidth);
+        });
+      }
     });
 
     resizeObserver.observe(element);

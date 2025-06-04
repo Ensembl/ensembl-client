@@ -38,6 +38,7 @@ import ActivityViewerEpigenomesContextProvider from 'src/content/app/regulatory-
 import { StandardAppLayout } from 'src/shared/components/layout';
 import ActivityViewerAppBar from './components/activity-viewer-app-bar/ActivityViewerAppBar';
 import ActivityViewerTopBar from './components/activity-viewer-top-bar/ActivityViewerTopBar';
+import ActivityViewerSidebarToolstrip from './components/activity-viewer-sidebar-toolstrip/ActivityViewerSidebarToolstrip';
 import ActivityViewerInterstitial from './components/activity-viewer-interstitial/ActivityViewerInterstitial';
 import NoActivityData from './components/no-activity-data/NoActivityData';
 import RegionOverview from './components/region-overview/RegionOverview';
@@ -123,6 +124,7 @@ const ActivityViewer = () => {
         isSidebarOpen={isSidebarOpen}
         topbarContent={<ActivityViewerTopBar />}
         sidebarNavigation={<SidebarNavigation genomeId={genomeId ?? null} />}
+        sidebarToolstripContent={<ActivityViewerSidebarToolstrip />}
         onSidebarToggle={toggleSidebar}
         viewportWidth={1800}
       />
@@ -130,13 +132,11 @@ const ActivityViewer = () => {
   );
 };
 
-const MainContent = ({ genomeId }: { genomeId: string | null }) => {
+const MainContent = memo(({ genomeId }: { genomeId: string | null }) => {
   if (!genomeId) {
     // this will be an interstitial in the future
     return null;
   }
-
-  /* <ActivityViewerFocusFeatureInfo /> */
 
   return (
     <div className={styles.mainContentContainer}>
@@ -158,7 +158,7 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
       <div style={{ margin: '4rem 0' }} />
     </div>
   );
-};
+});
 
 const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
   const activeView = useAppSelector((state) =>
