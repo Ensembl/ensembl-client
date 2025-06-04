@@ -98,7 +98,6 @@ export type RegulationStatistics = {
   enhancers: number | null;
   promoters: number | null;
   ctcf_count: number | null;
-  tfbs_count: number | null;
   open_chromatin_count: number | null;
 };
 

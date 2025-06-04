@@ -20,35 +20,28 @@ const regulationLegend = [
     id: 'promoters',
     label: 'Promoter',
     definition:
-      'Promoters and enhancers in human and mouse are identified by their epigenomic activity across different cell types. The Ensembl Regulatory build is more likely to classify a regulatory feature as a promoter if it is near the 5’ end of an annotated transcript'
+      'A promoter is a region of DNA that includes transcription factor binding sites and acts as the landing site for the core transcriptional machinery from where transcription initiates.'
   },
   {
     colour_code: 2,
     id: 'enhancers',
     label: 'Enhancer',
     definition:
-      'Promoters and enhancers in human and mouse are identified by their epigenomic activity across different cell types. Enhancers tend to be further from known transcripts than promoters'
+      'An enhancer is a region of DNA that contains binding sites for transcription factors, which together act to regulate transcriptional initiation, often in a cell type-specific manner.'
   },
   {
     colour_code: 3,
     id: 'open_chromatin_count',
     label: 'Open chromatin',
     definition:
-      'Open chromatin regions in human and mouse are identified as having epigenomic activity, but without the marks typically associated with enhancers or promoters'
+      'A region of DNA that is accessible to transcription factor binding. In our annotation, this refers to a region that has been reliably detected as open in some experimental contexts. It is thus likely to be important for regulation, but we lack evidence to classify it as a promoter or enhancer. Promoters and enhancers in our annotation are a special type of open chromatin region.'
   },
   {
     colour_code: 4,
     id: 'ctcf_count',
-    label: 'CTCF',
+    label: 'CTCF binding site',
     definition:
-      'CTCF-binding regions are identified after segmenting the genome according to epigenomic activity. Specifically, they correspond to segmentation states where there is a high degree of CTCF binding'
-  },
-  {
-    colour_code: 5,
-    id: 'tfbs_count',
-    label: 'TF binding',
-    definition:
-      'These sites are enriched for Transcription Factor binding, but they lack epigenomic evidence to be classified as an enhancer or promoter'
+      'CCCTC-binding factor (CTCF) is a highly conserved transcription factor that plays many roles in regulating transcription, including acting as an insulator that blocks interactions between certain enhancers and promoters.'
   }
 ] as const;
 
