@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { memo } from 'react';
+
 import EpigenomesTable from '../epigenomes-activity/epigenomes-table/EpigenomesTable';
 import EpigenomeActivityImage, {
   type Props as EpigenomeActivityImageProps
@@ -49,4 +51,4 @@ const Loader = () => {
   );
 };
 
-export default EpigenomesActivityImageContainer;
+export default memo(EpigenomesActivityImageContainer);
