@@ -18,6 +18,7 @@ import EpigenomesTable from '../epigenomes-activity/epigenomes-table/EpigenomesT
 import EpigenomeActivityImage, {
   type Props as EpigenomeActivityImageProps
 } from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './EpigenomesActivityContainer.module.css';
 
@@ -27,12 +28,23 @@ import styles from './EpigenomesActivityContainer.module.css';
  */
 
 const EpigenomesActivityImageContainer = (
-  props: EpigenomeActivityImageProps
+  props: EpigenomeActivityImageProps & { isPending: boolean }
 ) => {
+  const { isPending, ...otherProps } = props;
+
   return (
     <div className={styles.container}>
-      <EpigenomesTable />
-      <EpigenomeActivityImage {...props} />
+      {isPending && <Loader />}
+      {!isPending && <EpigenomesTable />}
+      <EpigenomeActivityImage {...otherProps} />
+    </div>
+  );
+};
+
+const Loader = () => {
+  return (
+    <div className={styles.loaderContainer}>
+      <CircleLoader />
     </div>
   );
 };

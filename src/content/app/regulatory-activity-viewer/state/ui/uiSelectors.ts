@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { createSelector } from '@reduxjs/toolkit';
+
 import type { RootState } from 'src/store';
 
 export const getMainContentBottomView = (state: RootState, genomeId: string) =>
@@ -29,3 +31,11 @@ export const getIsSidebarOpen = (state: RootState, genomeId: string) =>
 
 export const getSidebarView = (state: RootState, genomeId: string) =>
   state.regionActivityViewer.ui[genomeId]?.sidebarView ?? 'default';
+
+export const getHistones = createSelector(
+  [
+    (state: RootState) => state.regionActivityViewer.ui,
+    (_, genomeId: string) => genomeId
+  ],
+  (uiState, genomeId) => uiState[genomeId]?.histones ?? []
+);

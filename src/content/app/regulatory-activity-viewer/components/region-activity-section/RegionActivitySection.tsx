@@ -26,7 +26,7 @@ import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hoo
 import EpigenomesActivityImageContainer from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImageContainer';
 import GeneExpressionLevels from 'src/content/app/regulatory-activity-viewer/components/gene-expression-levels/GeneExpressionLevels';
 import EpigenomeLabels from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomeLabels';
-// import { CircleLoader } from 'src/shared/components/loader';
+import ActivityViewerMiddleColumnLoader from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-middle-column-loader/ActivityViewerMiddleColumnLoader';
 
 import styles from './RegionActivitySection.module.css';
 
@@ -105,17 +105,16 @@ const RegionActivitySection = () => {
           />
         )}
       </div>
-      <div
-        className={styles.middleColumn}
-        ref={onImageContainerMount}
-        style={isPending ? { visibility: 'hidden' } : {}}
-      >
-        {preparedData && width && (
+      <div className={styles.middleColumn} ref={onImageContainerMount}>
+        {preparedData && width ? (
           <EpigenomesActivityImageContainer
             data={preparedData.epigenomeActivityData}
             scale={preparedData.scale}
             width={width}
+            isPending={isPending}
           />
+        ) : (
+          <ActivityViewerMiddleColumnLoader />
         )}
       </div>
       <div className={classNames(styles.rightColumn)}>
@@ -124,57 +123,5 @@ const RegionActivitySection = () => {
     </div>
   );
 };
-
-/**
-
-
-  return (
-    <div className={componentClasses}>
-      <div className={regionOverviewStyles.middleColumn}>
-        {isPending && (
-          <div className={styles.loader}>
-            <CircleLoader />
-          </div>
-        )}
-      </div>
-      <div
-        className={classNames(
-          regionOverviewStyles.leftColumn,
-          styles.positionRelative
-        )}
-      >
-        <EpigenomesTable />
-        {preparedData && epigenomeMetadataDimensionsResponse && (
-          <EpigenomeLabels
-            epigenomes={sortedCombinedEpigenomes ?? []}
-            sortingDimensions={epigenomeSortingDimensions ?? []}
-            displayDimensions={
-              epigenomeMetadataDimensionsResponse.ui_spec.table_layout
-            }
-            allDimensions={epigenomeMetadataDimensionsResponse.dimensions}
-          />
-        )}
-      </div>
-      <div
-        className={regionOverviewStyles.middleColumn}
-        ref={onImageContainerMount}
-        style={isPending ? { visibility: 'hidden' } : {}}
-      >
-        {preparedData && width && (
-          <EpigenomeActivityImage
-            data={preparedData.epigenomeActivityData}
-            scale={preparedData.scale}
-            width={width}
-          />
-        )}
-      </div>
-      <div className={regionOverviewStyles.rightColumn}>
-        {preparedData && <GeneExpressionLevels />}
-      </div>
-    </div>
-  );
-
-
- */
 
 export default memo(RegionActivitySectionWrapper);

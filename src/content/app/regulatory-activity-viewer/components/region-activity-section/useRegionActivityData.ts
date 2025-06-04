@@ -17,6 +17,8 @@
 import { useState, useEffect, useTransition } from 'react';
 import { scaleLinear, type ScaleLinear } from 'd3';
 
+import { useAppDispatch } from 'src/store';
+
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 import {
@@ -24,6 +26,7 @@ import {
   stringifyLocation
 } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 import { useEpigenomesActivityQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
+import { setHistones } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 
 import {
   prepareActivityDataForDisplay,
@@ -56,10 +59,10 @@ const useRegionActivityData = (props: Props) => {
   const [isTransitionPending, startTransition] = useTransition();
   const [regionActivityData, setRegionActivityData] =
     useState<RegionActivityData | null>(null);
-  const { assemblyName, assemblyAccessionId, location } =
-    useActivityViewerIds();
+  const { genomeId, assemblyAccessionId, location } = useActivityViewerIds();
   const { filteredCombinedEpigenomes, sortedCombinedEpigenomes } =
     useEpigenomes();
+  const dispatch = useAppDispatch();
 
   const epigenomeIds = filteredCombinedEpigenomes?.map(
     (epigenome) => epigenome.id
@@ -91,6 +94,21 @@ const useRegionActivityData = (props: Props) => {
       skip: !assemblyAccessionId || !epigenomeIds || !location
     }
   );
+
+  useEffect(() => {
+    // As a side effect of loading epigenome activity data,
+    // save the histones metadata to the redux store.
+    // This will be used elsewhere to build a legend
+    // for the elements of epigenome activity tracks.
+    if (!genomeId || !epigenomeActivityData) {
+      return;
+    }
+
+    const histoneMetadata = Object.values(
+      epigenomeActivityData.track_metadata.histone
+    );
+    dispatch(setHistones({ genomeId, histones: histoneMetadata }));
+  }, [epigenomeActivityData]);
 
   useEffect(() => {
     if (!width || !location || !regionOverviewData || !epigenomeActivityData) {

@@ -16,6 +16,8 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+import type { HistoneMetadata } from 'src/content/app/regulatory-activity-viewer/types/epigenomeActivity';
+
 export type MainContentBottomView = 'epigenomes-list' | 'dataviz';
 
 export type SidebarView = 'default' | 'epigenome-filters';
@@ -25,6 +27,7 @@ type StatePerGenome = {
   isEpigenomesSelectorOpen: boolean;
   isSidebarOpen: boolean;
   sidebarView: SidebarView;
+  histones: HistoneMetadata[];
 };
 
 type State = Record<string, StatePerGenome>;
@@ -33,7 +36,8 @@ const initialStateForGenome: StatePerGenome = {
   mainContentBottomView: 'dataviz',
   isEpigenomesSelectorOpen: false,
   isSidebarOpen: true,
-  sidebarView: 'default'
+  sidebarView: 'default',
+  histones: []
 };
 
 const ensureStateForGenome = (state: State, genomeId: string) => {
@@ -84,6 +88,14 @@ const uiSlice = createSlice({
       const { genomeId, view } = action.payload;
       ensureStateForGenome(state, genomeId);
       state[genomeId].sidebarView = view;
+    },
+    setHistones(
+      state,
+      action: PayloadAction<{ genomeId: string; histones: HistoneMetadata[] }>
+    ) {
+      const { genomeId, histones } = action.payload;
+      ensureStateForGenome(state, genomeId);
+      state[genomeId].histones = histones;
     }
   }
 });
@@ -94,7 +106,8 @@ export const {
   openSidebar,
   closeSidebar,
   openEpigenomesSelector,
-  closeEpigenomesSelector
+  closeEpigenomesSelector,
+  setHistones
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

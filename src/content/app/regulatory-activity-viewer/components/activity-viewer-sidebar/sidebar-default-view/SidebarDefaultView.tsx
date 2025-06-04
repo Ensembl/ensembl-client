@@ -35,6 +35,7 @@ import {
   CollapsibleSectionHead,
   CollapsibleSectionBody
 } from 'src/shared/components/collapsible-section/CollapsibleSection';
+import ActivityTracksLegend from '../activity-tracks-legend/ActivityTracksLegend';
 
 import type { GeneInRegionOverview } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
@@ -42,6 +43,7 @@ import styles from './SidebarDefaultView.module.css';
 
 const SidebarDefaultView = () => {
   const {
+    genomeId,
     assemblyAccessionId,
     location,
     genomeIdForUrl,
@@ -124,6 +126,12 @@ const SidebarDefaultView = () => {
           />
         </CollapsibleSectionBody>
       </CollapsibleSection>
+      <CollapsibleSection>
+        <CollapsibleSectionHead>Epigenome tracks</CollapsibleSectionHead>
+        <CollapsibleSectionBody>
+          {genomeId && <ActivityTracksLegend genomeId={genomeId} />}
+        </CollapsibleSectionBody>
+      </CollapsibleSection>
     </div>
   );
 };
@@ -152,7 +160,7 @@ const Genes = ({
     );
   });
 
-  return <div>{geneElements}</div>;
+  return <div className={styles.features}>{geneElements}</div>;
 };
 
 const SliceTooLargeNotice = () => {

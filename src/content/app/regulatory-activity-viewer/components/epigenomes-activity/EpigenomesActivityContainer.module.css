@@ -6,3 +6,15 @@
   min-height: 100%; /* FIXME: shouldn't need this */
   overflow: hidden;
 }
+
+.loaderContainer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}

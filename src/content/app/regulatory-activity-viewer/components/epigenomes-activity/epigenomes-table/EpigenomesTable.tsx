@@ -54,7 +54,7 @@ const EpigenomesTableContainer = () => {
     updateTableState({ isAvailable: true });
 
     return () => {
-      updateTableState({ isAvailable: false });
+      updateTableState({ isAvailable: false, isOpen: false });
     };
   }, []);
 
