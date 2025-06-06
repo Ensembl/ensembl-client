@@ -48,7 +48,7 @@ const GeneName = ({
   className: classNameFromProps
 }: Props) => {
   const geneNamePrimary = symbol ?? stable_id;
-  const geneNameSecondary = geneNamePrimary ? stable_id : null;
+  const geneNameSecondary = symbol ? stable_id : null;
 
   const componentClasses = classNames(styles.geneName, classNameFromProps);
 

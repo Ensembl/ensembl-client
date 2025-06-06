@@ -16,6 +16,11 @@
 
 import { useLocation, useNavigate } from 'react-router';
 
+// FIXME: either create shared NavigationButtons components, or reuse the same approach as in genome browser (with ImageButton)
+
+import CirclePlusIcon from 'static/icons/icon_plus_circle.svg';
+import CircleMinusIcon from 'static/icons/icon_minus_circle.svg';
+
 import styles from './RegionOverviewZoomButtons.module.css';
 
 type Props = {
@@ -56,8 +61,16 @@ const RegionOverviewZoomButtons = (props: Props) => {
 
   return (
     <div className={styles.buttons}>
-      <button onClick={onZoomOut}>-</button>
-      <button onClick={onZoomIn}>+</button>
+      <button className={styles.button} onClick={onZoomIn} aria-label="Zoom in">
+        <CirclePlusIcon />
+      </button>
+      <button
+        className={styles.button}
+        onClick={onZoomOut}
+        aria-label="Zoom out"
+      >
+        <CircleMinusIcon />
+      </button>
     </div>
   );
 };

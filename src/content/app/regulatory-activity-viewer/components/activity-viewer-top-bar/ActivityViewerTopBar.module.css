@@ -1,0 +1,10 @@
+.grid {
+  display: grid;
+  grid-template-columns: 150px 1fr; /* left column similar to */
+}
+
+.title {
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+  justify-self: center;
+}

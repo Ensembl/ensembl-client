@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { TRACK_HEIGHT } from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/epigenomeActivityImageConstants';
 
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 
+import { tableVisibility$, updateTableState } from './epigenomesTableState';
 import { displayEpigenomeValue } from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/SelectedEpigenomes';
 import { getEpigenomeLabels } from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomeLabels';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
 import TextButton from 'src/shared/components/text-button/TextButton';
-import Chevron from 'src/shared/components/chevron/Chevron';
 
 import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 
@@ -35,7 +34,9 @@ import styles from './EpigenomesTable.module.css';
 type TableDisplayType = 'full' | 'partial';
 
 const EpigenomesTableContainer = () => {
-  const [displayType, setDisplayType] = useState<TableDisplayType | null>(null);
+  const [displayType, setDisplayType] = useState<TableDisplayType | null>(
+    'partial'
+  );
 
   const showPartialTable = () => {
     setDisplayType('partial');
@@ -49,31 +50,38 @@ const EpigenomesTableContainer = () => {
     setDisplayType(null);
   };
 
+  useEffect(() => {
+    updateTableState({ isAvailable: true });
+
+    return () => {
+      updateTableState({ isAvailable: false, isOpen: false });
+    };
+  }, []);
+
+  useEffect(() => {
+    const subscription = tableVisibility$.subscribe((state) => {
+      if (state.isOpen) {
+        showPartialTable();
+      } else {
+        hideTable();
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  if (displayType === null) {
+    return null;
+  }
+
   return (
     <div className={styles.container}>
-      {displayType === null ? (
-        <button
-          className={styles.openButton}
-          onClick={showPartialTable}
-          aria-label="show table of epigenomes"
-        >
-          <Chevron direction="right" />
-        </button>
-      ) : (
-        <div className={styles.tableContainerGrid}>
-          <div className={styles.tableContainer}>
-            <EpigenomesTable
-              displayType={displayType}
-              showFullTable={showFullTable}
-            />
-          </div>
-          <CloseButton
-            className={styles.closeButton}
-            onClick={hideTable}
-            aria-label="hide table of epigenomes"
-          />
-        </div>
-      )}
+      <EpigenomesTable
+        displayType={displayType}
+        showFullTable={showFullTable}
+      />
     </div>
   );
 };
@@ -178,6 +186,7 @@ const EpigenomesTable = ({
                 </td>
               );
             })}
+            {displayType === 'partial' && <td />}
           </tr>
         ))}
       </tbody>

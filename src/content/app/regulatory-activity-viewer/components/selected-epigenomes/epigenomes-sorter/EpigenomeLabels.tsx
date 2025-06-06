@@ -214,7 +214,7 @@ const EpigenomeColorLabel = ({
 }: {
   data: ReturnType<typeof getEpigenomeLabels>[number];
 }) => {
-  const labelHeight = 40; // FIXME: import the constant
+  const labelHeight = 24; // FIXME: import the constant
 
   return (
     <div className={styles.epigenomeColorLabel}>
@@ -224,7 +224,7 @@ const EpigenomeColorLabel = ({
           className={styles.coloredBlock}
           style={{
             backgroundColor: item.color,
-            height: `${labelHeight - 2}px`,
+            height: `${labelHeight}px`,
             margin: '1px 0'
           }}
         />

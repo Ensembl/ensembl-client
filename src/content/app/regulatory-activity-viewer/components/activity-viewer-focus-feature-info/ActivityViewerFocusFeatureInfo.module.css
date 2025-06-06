@@ -1,12 +1,7 @@
-.container {
-  min-height: 40px;
-}
-
-.grid {
-  display: grid;
-  /* grid columns are the same across activity viewer app */
-  grid-template-columns: [left] 150px [middle] 1fr [right] 150px;
-  padding: 16px 0;
+.feature {
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
 }
 
 .leftColumn {
@@ -22,20 +17,20 @@
   row-gap: 2px;
 }
 
+.labelledElement {
+  display: flex;
+  column-gap: 0.7ch;
+  align-items: baseline;
+}
+
 .geneName {
   display: inline-flex;
   align-items: baseline;
   column-gap: 10px;
 }
 
-.geneFullName {
-  display: inline-flex;
-  align-items: baseline;
-  column-gap: 10px;
-}
-
 .smallLight {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: var(--font-weight-light);
 }
 

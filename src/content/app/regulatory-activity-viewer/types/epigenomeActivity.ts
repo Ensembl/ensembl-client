@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-type HistoneMetadata = Record<
+export type HistoneMetadata = {
+  peak_type: 'gapped' | 'narrow';
+  label: string; // arbitrary string
+  color: string; // hex color
+};
+
+export type HistoneMetadataMap = Record<
   string,
   {
     peak_type: 'gapped' | 'narrow';
@@ -24,7 +30,7 @@ type HistoneMetadata = Record<
 >;
 
 export type EpigenomeActivityMetadata = {
-  histone: HistoneMetadata;
+  histone: HistoneMetadataMap;
 };
 
 export type TrackData = {

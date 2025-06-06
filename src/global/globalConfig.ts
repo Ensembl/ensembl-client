@@ -37,7 +37,7 @@ export enum AppName {
   SPECIES_SELECTOR = 'Species selector',
   SPECIES_PAGE = 'Species page',
   ENTITY_VIEWER = 'Entity viewer',
-  REGULATORY_ACTIVITY_VIEWER = 'Regulation explorer',
+  REGULATORY_ACTIVITY_VIEWER = 'Regulatory activity viewer',
   TOOLS = 'Tools' // this is the name of a group of apps
 }
 

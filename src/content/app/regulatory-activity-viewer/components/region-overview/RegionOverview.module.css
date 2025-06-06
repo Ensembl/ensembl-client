@@ -1,16 +1,37 @@
 .grid {
   display: grid;
+  grid-template-areas:
+    'top-left top-middle .'
+    'left middle right';
   grid-template-columns: [left] 150px [middle] 1fr [right] 150px;
+  padding-top: 28px;
+}
+
+.topLeftColumn {
+  grid-area: top-left;
+  text-align: right;
+  padding-bottom: 18px;
+  padding-right: 16px;
+  font-size: 12px;
+}
+
+.topMiddleColumn {
+  grid-area: top-middle;
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 18px;
 }
 
 .leftColumn {
-  grid-column: left;
+  grid-area: left;
   position: relative;
   text-align: right;
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
 }
 
 .middleColumn {
-  grid-column: middle;
+  grid-area: middle;
 }
 
 .rightColumn {
@@ -20,4 +41,8 @@
 .imageContainer {
   position: relative;
   min-height: 100px;
+}
+
+.light {
+  font-weight: var(--font-weight-light);
 }

@@ -30,16 +30,20 @@ import useRegionOverviewData from 'src/content/app/regulatory-activity-viewer/se
 import GeneName from 'src/shared/components/gene-name/GeneName';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import RegulatoryFeatureLegend from '../regulatory-feature-legend/RegulatoryFeatureLegend';
+import {
+  CollapsibleSection,
+  CollapsibleSectionHead,
+  CollapsibleSectionBody
+} from 'src/shared/components/collapsible-section/CollapsibleSection';
+import ActivityTracksLegend from '../activity-tracks-legend/ActivityTracksLegend';
 
-import type {
-  OverviewRegion,
-  GeneInRegionOverview
-} from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
+import type { GeneInRegionOverview } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 import styles from './SidebarDefaultView.module.css';
 
 const SidebarDefaultView = () => {
   const {
+    genomeId,
     assemblyAccessionId,
     location,
     genomeIdForUrl,
@@ -103,15 +107,31 @@ const SidebarDefaultView = () => {
       {isSliceTooLarge ? (
         <SliceTooLargeNotice />
       ) : (
-        <Genes
-          genes={data.genes}
-          onGeneFocus={onGeneFocus}
-          focusGeneId={focusGeneId}
-        />
+        <CollapsibleSection>
+          <CollapsibleSectionHead>Genes</CollapsibleSectionHead>
+          <CollapsibleSectionBody>
+            <Genes
+              genes={data.genes}
+              onGeneFocus={onGeneFocus}
+              focusGeneId={focusGeneId}
+            />
+          </CollapsibleSectionBody>
+        </CollapsibleSection>
       )}
-      <RegulatoryFeatureLegendSection
-        featureTypes={data.regulatory_features.feature_types}
-      />
+      <CollapsibleSection>
+        <CollapsibleSectionHead>Regulatory features</CollapsibleSectionHead>
+        <CollapsibleSectionBody>
+          <RegulatoryFeatureLegend
+            featureTypes={data.regulatory_features.feature_types}
+          />
+        </CollapsibleSectionBody>
+      </CollapsibleSection>
+      <CollapsibleSection>
+        <CollapsibleSectionHead>Epigenome tracks</CollapsibleSectionHead>
+        <CollapsibleSectionBody>
+          {genomeId && <ActivityTracksLegend genomeId={genomeId} />}
+        </CollapsibleSectionBody>
+      </CollapsibleSection>
     </div>
   );
 };
@@ -129,37 +149,18 @@ const Genes = ({
     const isFocusGene = gene.unversioned_stable_id === focusGeneId;
 
     return (
-      <div key={gene.stable_id}>
-        <TextButton
-          onClick={() => onGeneFocus(gene)}
-          disabled={isFocusGene}
-          className={isFocusGene ? styles.activeFeature : undefined}
-        >
-          <GeneName symbol={gene.symbol} stable_id={gene.stable_id} />
-        </TextButton>
-      </div>
+      <TextButton
+        key={gene.stable_id}
+        onClick={() => onGeneFocus(gene)}
+        disabled={isFocusGene}
+        className={isFocusGene ? styles.activeFeature : undefined}
+      >
+        <GeneName symbol={gene.symbol} stable_id={gene.stable_id} />
+      </TextButton>
     );
   });
 
-  // TODO: change this into an accordion
-  return (
-    <div>
-      <div style={{ fontWeight: 'bold' }}>Genes</div>
-      {geneElements}
-    </div>
-  );
-};
-
-const RegulatoryFeatureLegendSection = (props: {
-  featureTypes: OverviewRegion['regulatory_features']['feature_types'];
-}) => {
-  // TODO: change this into an accordion
-  return (
-    <div style={{ marginTop: '1.5rem' }}>
-      <div style={{ fontWeight: 'bold' }}>Regulatory features</div>
-      <RegulatoryFeatureLegend featureTypes={props.featureTypes} />
-    </div>
-  );
+  return <div className={styles.features}>{geneElements}</div>;
 };
 
 const SliceTooLargeNotice = () => {

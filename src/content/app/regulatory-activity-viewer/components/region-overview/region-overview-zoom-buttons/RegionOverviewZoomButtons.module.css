@@ -1,11 +1,15 @@
 .buttons {
   display: flex;
-  column-gap: 0.4rem;
-  margin-left: 0.6rem;
+  column-gap: 25px;
 }
 
-.buttons button {
-  background-color: var(--color-blue);
-  color: white;
-  padding: 0.2rem 0.4rem;
+.button {
+  width: 16px;
+  aspect-ratio: 1;
+}
+
+.button svg {
+  width: 100%;
+  height: 100%;
+  fill: var(--color-blue);
 }

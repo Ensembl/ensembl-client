@@ -194,6 +194,11 @@ const TranslateRegionOverviewContents = (props: Props) => {
 
   const updateLocation = () => {
     const distance = stateRef.current.currentOffset;
+
+    if (!distance) {
+      return;
+    }
+
     const { start: genomicStart, end: genomicEnd } = calculateLocationAfterDrag(
       {
         location,

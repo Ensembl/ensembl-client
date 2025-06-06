@@ -1,0 +1,66 @@
+.container {
+  --header-height: 30px;
+  --table-background: transparent;
+  position: absolute;
+  top: calc(40px + (-1 * var(--header-height)));
+  animation: animate-table-entry 0.3s ease-in-out;
+  overflow: auto;
+}
+
+.container tbody {
+  background-color: rgb(from var(--color-light-grey) r g b / 0.85);
+}
+
+@container main-content-container (min-width: 0) {
+  /* 
+  NOTE:
+  150px is the width of the left column of the main grid
+  another 150px is the width of the left column of the main grid
+  the width of CloseButton is 15px
+  FIXME: at least left and right main column widths should be extracted into css variables
+  */
+
+  .container {
+    max-width: calc(100cqi - 150px - 150px - 30px);
+  }
+}
+
+.table thead {
+  white-space: nowrap;
+}
+
+.tableCellContent {
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+  max-width: 250px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tableCellContent > * {
+  flex-shrink: 0;
+}
+
+/* Same as in EpigenomeLabels coloredBlock class */
+.colorLabel {
+  display: inline-block;
+  height: 24px;
+  width: 3px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+@keyframes animate-table-entry {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
