@@ -17,6 +17,7 @@
 import {
   useState,
   useEffect,
+  useRef,
   useMemo,
   useDeferredValue,
   useTransition
@@ -59,6 +60,10 @@ const RegionOverview = () => {
   const [, startWidthTransition] = useTransition();
   const [width, setWidth] = useState(0);
   const navigate = useNavigate();
+
+  const widthRef = useRef(width);
+
+  widthRef.current = width; // update the ref during every rerender
 
   const extendedLocation = useMemo(() => {
     if (!location) {
@@ -119,9 +124,11 @@ const RegionOverview = () => {
     const resizeObserver = new ResizeObserver((entries) => {
       const [imageContainer] = entries;
       const { width: imageContainerWidth } = imageContainer.contentRect;
-      startWidthTransition(() => {
-        setWidth(imageContainerWidth);
-      });
+      if (imageContainerWidth !== widthRef.current) {
+        startWidthTransition(() => {
+          setWidth(imageContainerWidth);
+        });
+      }
     });
 
     resizeObserver.observe(element);
@@ -165,10 +172,20 @@ const RegionOverview = () => {
 
   return (
     <div className={styles.grid}>
-      <div className={styles.leftColumn}>
-        {deferredData && topOffsets && (
-          <LeftColumn data={deferredData} topOffsets={topOffsets} />
+      <div className={styles.topLeftColumn}>
+        {deferredData && <RegionName data={deferredData} />}
+      </div>
+      <div className={styles.topMiddleColumn}>
+        {location && regionLength && (
+          <RegionOverviewZoomButtons
+            genomeId={activeGenomeId}
+            location={location}
+            regionLength={regionLength}
+          />
         )}
+      </div>
+      <div className={styles.leftColumn}>
+        {deferredData && topOffsets && <LeftColumn topOffsets={topOffsets} />}
       </div>
       <div className={styles.middleColumn} ref={onImageContainerMount}>
         <div className={styles.imageContainer}>
@@ -189,30 +206,30 @@ const RegionOverview = () => {
             )}
         </div>
       </div>
-      <div className={styles.rightColumn}>
-        {location && regionLength && (
-          <RegionOverviewZoomButtons
-            genomeId={activeGenomeId}
-            location={location}
-            regionLength={regionLength}
-          />
-        )}
-      </div>
+    </div>
+  );
+};
+
+const RegionName = (props: { data: RegionData }) => {
+  const { data } = props;
+  const {
+    region: { name: regionName, coordinate_system }
+  } = data;
+
+  return (
+    <div>
+      <span className={styles.light}>{coordinate_system + ' '}</span>
+      <span>{regionName}</span>
     </div>
   );
 };
 
 const LeftColumn = (props: {
-  data: RegionData;
   topOffsets: ReturnType<typeof getImageHeightAndTopOffsets>;
 }) => {
-  const { data, topOffsets } = props;
+  const { topOffsets } = props;
   const { strandDividerTopOffset, regulatoryFeatureTracksTopOffset } =
     topOffsets;
-
-  const {
-    region: { name: regionName, coordinate_system }
-  } = data;
 
   return (
     <>
@@ -220,17 +237,17 @@ const LeftColumn = (props: {
         style={{
           position: 'absolute',
           top: `${strandDividerTopOffset}px`,
-          right: '10px',
+          right: '16px',
           transform: 'translateY(-50%)'
         }}
       >
-        {coordinate_system} {regionName}
+        Genes
       </div>
       <div
         style={{
           position: 'absolute',
           top: `${regulatoryFeatureTracksTopOffset}px`,
-          right: '10px',
+          right: '16px',
           transform: 'translateY(-50%)'
         }}
       >

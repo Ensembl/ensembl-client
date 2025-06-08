@@ -128,7 +128,8 @@ const RegionOverviewImage = (props: Props) => {
         height: `${imageHeight}px`,
         borderStyle: 'dashed',
         borderWidth: '1px',
-        borderColor: 'var(--color-dark-grey)'
+        borderColor: 'var(--color-dark-grey)',
+        borderRadius: '6px'
       }}
     >
       <RegionOverviewLocationSelector

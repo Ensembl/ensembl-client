@@ -2,7 +2,6 @@
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: start;
-  padding: 0 20px;
 }
 
 .epigenomeFilter + .epigenomeFilter {

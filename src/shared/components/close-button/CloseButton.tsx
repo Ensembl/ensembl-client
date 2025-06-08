@@ -15,20 +15,18 @@
  */
 
 import classNames from 'classnames';
+import type { ComponentProps } from 'react';
 
 import CloseIcon from 'static/icons/icon_close.svg';
 
 import styles from './CloseButton.module.css';
 
-type Props = {
-  onClick?: () => void;
-  className?: string;
-};
+type Props = Omit<ComponentProps<'button'>, 'children'>;
 
 const CloseButton = (props: Props) => {
   const className = classNames(styles.closeButton, props.className);
   return (
-    <button type="button" className={className} onClick={props.onClick}>
+    <button {...props} type="button" className={className}>
       <CloseIcon className={styles.icon} />
     </button>
   );
@@ -50,7 +48,6 @@ export const CloseButtonWithLabel = (
   const {
     label = 'Close',
     labelPosition = 'left',
-    onClick,
     className: classNameFromProps
   } = props;
 
@@ -75,7 +72,7 @@ export const CloseButtonWithLabel = (
     );
 
   return (
-    <button type="button" onClick={onClick} className={componentClasses}>
+    <button {...props} type="button" className={componentClasses}>
       {buttonContent}
     </button>
   );

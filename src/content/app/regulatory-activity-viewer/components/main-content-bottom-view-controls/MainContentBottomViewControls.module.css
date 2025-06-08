@@ -1,20 +1,53 @@
 .outerGrid {
   display: grid;
+  align-items: center;
   grid-template-columns: 150px [main] 1fr 150px;  
 }
 
-.grid {
+.rightColumn {
+  padding-left: 20px; /* Same as for right column of the outer grid of other components in this view */
+}
+
+.innerGrid {
   display: grid;
   grid-column: main;
-  grid-template-columns: 1fr [view-buttons] auto;
+  grid-template-columns: 1fr [inner-right] auto;
+  align-items: center;
+}
+
+.innerLeft {
+  font-size: 12px;
+}
+
+.innerRight {
+  display: flex;
+  column-gap: 1.6rem;
+  grid-column: inner-right;
+}
+
+.assayTargetLabel {
+  display: flex;
+  column-gap: 0.6ch;
 }
 
 .viewButtons {
-  grid-column: view-buttons;
   display: flex;
   column-gap: 16px;
 }
 
+.epigenomesTableToggle {
+  justify-self: end;
+  margin-right: 14px;
+}
+
 .viewButtonActive {
   --secondary-button-color: var(--color-black);
+}
+
+.strong {
+  font-weight: var(--font-weight-bold); 
+}
+
+.light {
+  font-weight: var(--font-weight-light);
 }

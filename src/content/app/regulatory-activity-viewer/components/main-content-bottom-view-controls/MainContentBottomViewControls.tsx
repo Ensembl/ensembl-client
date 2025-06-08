@@ -26,23 +26,47 @@ import {
   type MainContentBottomView
 } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 
+import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
+import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
+
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import ActivityViewerActionSelector from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-actions-selector/ActivityViewerActionsSelector';
+import EpigenomesTableToggle from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/epigenomes-table/EpigenomesTableToggle';
 
 import styles from './MainContentBottomViewControls.module.css';
 
-type Props = {
-  genomeId: string;
-};
+const MainContentBottomViewControls = () => {
+  const { genomeId } = useActivityViewerIds();
+  const { sortedCombinedEpigenomes } = useEpigenomes();
 
-const MainContentBottomViewControls = (props: Props) => {
-  const { genomeId } = props;
+  if (!genomeId) {
+    return null;
+  }
+
   return (
     <div className={styles.outerGrid}>
-      <div className={styles.grid}>
-        <ActivityViewerActionSelector />
-        <ContentViewButtons genomeId={genomeId} />
+      <EpigenomesTableToggleContainer genomeId={genomeId} />
+      <div className={styles.innerGrid}>
+        <div className={styles.innerLeft}>
+          <AssayTargetLabel />
+        </div>
+        <div className={styles.innerRight}>
+          <ActivityViewerActionSelector />
+          <ContentViewButtons genomeId={genomeId} />
+        </div>
       </div>
+      <div className={styles.rightColumn}>
+        <EpigenomesCount epigenomes={sortedCombinedEpigenomes || []} />
+      </div>
+    </div>
+  );
+};
+
+const AssayTargetLabel = () => {
+  return (
+    <div className={styles.assayTargetLabel}>
+      <span className={styles.light}>Assay target</span>
+      <span>Open chromatin</span>
     </div>
   );
 };
@@ -79,7 +103,7 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
         activeView={activeView}
         onClick={() => changeView('epigenomes-list')}
       >
-        Table
+        Epigenomes
       </ContentViewButton>
 
       <ContentViewButton
@@ -118,6 +142,28 @@ const ContentViewButton = ({
     >
       {children}
     </SecondaryButton>
+  );
+};
+
+const EpigenomesTableToggleContainer = ({ genomeId }: { genomeId: string }) => {
+  const activeView = useAppSelector((state) =>
+    getMainContentBottomView(state, genomeId)
+  );
+
+  if (activeView !== 'dataviz') {
+    return null;
+  }
+
+  return <EpigenomesTableToggle className={styles.epigenomesTableToggle} />;
+};
+
+const EpigenomesCount = ({ epigenomes }: { epigenomes: unknown[] }) => {
+  const count = epigenomes.length;
+
+  return (
+    <div>
+      <span className={styles.strong}>{count}</span> epigenomes
+    </div>
   );
 };
 

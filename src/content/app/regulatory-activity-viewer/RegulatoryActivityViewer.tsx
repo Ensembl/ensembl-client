@@ -37,9 +37,10 @@ import {
 import ActivityViewerEpigenomesContextProvider from 'src/content/app/regulatory-activity-viewer/contexts/ActivityViewerEpigenomesContextProvider';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import ActivityViewerAppBar from './components/activity-viewer-app-bar/ActivityViewerAppBar';
+import ActivityViewerTopBar from './components/activity-viewer-top-bar/ActivityViewerTopBar';
+import ActivityViewerSidebarToolstrip from './components/activity-viewer-sidebar-toolstrip/ActivityViewerSidebarToolstrip';
 import ActivityViewerInterstitial from './components/activity-viewer-interstitial/ActivityViewerInterstitial';
 import NoActivityData from './components/no-activity-data/NoActivityData';
-import ActivityViewerFocusFeatureInfo from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-focus-feature-info/ActivityViewerFocusFeatureInfo';
 import RegionOverview from './components/region-overview/RegionOverview';
 import RegionActivitySection from './components/region-activity-section/RegionActivitySection';
 import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
@@ -121,8 +122,9 @@ const ActivityViewer = () => {
         mainContent={<MainContent genomeId={genomeId ?? null} />}
         sidebarContent={<ActivityViewerSidebar genomeId={genomeId ?? null} />}
         isSidebarOpen={isSidebarOpen}
-        topbarContent={<div />}
+        topbarContent={<ActivityViewerTopBar />}
         sidebarNavigation={<SidebarNavigation genomeId={genomeId ?? null} />}
+        sidebarToolstripContent={<ActivityViewerSidebarToolstrip />}
         onSidebarToggle={toggleSidebar}
         viewportWidth={1800}
       />
@@ -130,7 +132,7 @@ const ActivityViewer = () => {
   );
 };
 
-const MainContent = ({ genomeId }: { genomeId: string | null }) => {
+const MainContent = memo(({ genomeId }: { genomeId: string | null }) => {
   if (!genomeId) {
     // this will be an interstitial in the future
     return null;
@@ -146,18 +148,17 @@ const MainContent = ({ genomeId }: { genomeId: string | null }) => {
           zIndex: 1
         }}
       >
-        <ActivityViewerFocusFeatureInfo />
         <RegionOverview />
         {/* The spacer divs below are temporary */}
         <div style={{ margin: '0.6rem 0' }} />
-        <MainContentBottomViewControls genomeId={genomeId} />
+        <MainContentBottomViewControls />
       </div>
       <div style={{ margin: '0.6rem 0' }} />
       <MainContentBottom genomeId={genomeId} />
       <div style={{ margin: '4rem 0' }} />
     </div>
   );
-};
+});
 
 const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
   const activeView = useAppSelector((state) =>

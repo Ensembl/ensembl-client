@@ -21,24 +21,19 @@ import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hoo
 import { useFocusGeneQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 import GeneName from 'src/shared/components/gene-name/GeneName';
-import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import styles from './ActivityViewerFocusFeatureInfo.module.css';
 
 const ActivityViewerFocusFeatureInfo = () => {
   const { assemblyAccessionId, focusGeneId, location } = useActivityViewerIds();
 
-  return (
-    <div className={styles.container}>
-      {assemblyAccessionId && location && focusGeneId && (
-        <ActivityViewerFocusGene
-          assemblyId={assemblyAccessionId}
-          geneId={focusGeneId}
-          regionName={location.regionName}
-        />
-      )}
-    </div>
-  );
+  return assemblyAccessionId && location && focusGeneId ? (
+    <ActivityViewerFocusGene
+      assemblyId={assemblyAccessionId}
+      geneId={focusGeneId}
+      regionName={location.regionName}
+    />
+  ) : null;
 };
 
 const ActivityViewerFocusGene = ({
@@ -60,53 +55,23 @@ const ActivityViewerFocusGene = ({
   }
 
   return (
-    <div className={styles.grid}>
-      <div className={styles.leftColumn}>Gene</div>
-      <div className={styles.mainColumn}>
+    <div className={styles.feature}>
+      <span className={styles.labelledElement}>
+        <span className={styles.smallLight}>Gene</span>
         <GeneName symbol={gene.symbol} stable_id={gene.stable_id} />
-        <GeneBiotype biotype={gene.biotype} />
-        <FullLocation
-          regionName={regionName}
-          start={gene.start}
-          end={gene.end}
-          strand={gene.strand}
-        />
-        {gene.name && (
-          <GeneFullName
-            name={gene.name.value}
-            accessionId={gene.name.accession_id}
-            url={gene.name.url}
-          />
-        )}
-      </div>
+      </span>
+      <GeneBiotype biotype={gene.biotype} />
+      <span>{getStrandDisplayName(gene.strand)}</span>
+      <FullLocation regionName={regionName} start={gene.start} end={gene.end} />
     </div>
   );
 };
 
 const GeneBiotype = ({ biotype }: { biotype: string }) => {
   return (
-    <span className={styles.geneBiotype}>
+    <span className={styles.labelledElement}>
       <span className={styles.smallLight}>Biotype</span>
       <span>{biotype}</span>
-    </span>
-  );
-};
-
-const GeneFullName = ({
-  name,
-  accessionId,
-  url
-}: {
-  name: string;
-  accessionId?: string;
-  url?: string;
-}) => {
-  return (
-    <span className={styles.geneFullName}>
-      <span>{name}</span>
-      {accessionId && url && (
-        <ExternalLink to={url}>{accessionId}</ExternalLink>
-      )}
     </span>
   );
 };
@@ -114,13 +79,11 @@ const GeneFullName = ({
 const FullLocation = ({
   regionName,
   start,
-  end,
-  strand
+  end
 }: {
   regionName: string;
   start: number;
   end: number;
-  strand: 'forward' | 'reverse';
 }) => {
   const formattedLocationString = getFormattedLocation({
     chromosome: regionName,
@@ -131,7 +94,6 @@ const FullLocation = ({
   return (
     <span className={styles.fullLocation}>
       <span>{formattedLocationString}</span>
-      <span className={styles.smallLight}>{getStrandDisplayName(strand)}</span>
     </span>
   );
 };

@@ -1,5 +1,10 @@
 @layer components {
 
+  .section {
+    --collapsible-section-padding-left: 17px;
+    --collapsible-section-padding-right: 15px;
+  }
+
   .section + .section {
     margin-top: 2px;
   }
@@ -13,13 +18,18 @@
     color: var(--color-blue);
     background-color: var(--color-light-grey);
     border-radius: 5px;
-    padding: 5px 15px 5px 17px;
+    padding-block: 5px;
+    padding-left: var(--collapsible-section-padding-left);
+    padding-right: var(--collapsible-section-padding-right);
     font-size: 12px;
     width: 100%;
   }
 
   .sectionBody {
-    padding: 10px 0 20px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    padding-left: var(--collapsible-section-padding-left);
+    padding-right: var(--collapsible-section-padding-right);
     animation: collapsible-section-body-fadein 0.2s ease-in;
   }
   

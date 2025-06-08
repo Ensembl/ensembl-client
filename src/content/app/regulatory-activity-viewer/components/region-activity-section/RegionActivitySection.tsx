@@ -23,14 +23,11 @@ import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useE
 import useRegionActivityData from './useRegionActivityData';
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 
-import EpigenomeActivityImage from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImage';
+import EpigenomesActivityImageContainer from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/EpigenomesActivityImageContainer';
 import GeneExpressionLevels from 'src/content/app/regulatory-activity-viewer/components/gene-expression-levels/GeneExpressionLevels';
 import EpigenomeLabels from 'src/content/app/regulatory-activity-viewer/components/selected-epigenomes/epigenomes-sorter/EpigenomeLabels';
-import EpigenomesTable from './epigenomes-table/EpigenomesTable';
-import { CircleLoader } from 'src/shared/components/loader';
+import ActivityViewerMiddleColumnLoader from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-middle-column-loader/ActivityViewerMiddleColumnLoader';
 
-// FIXME: promote these styles to the top level of region activity viewer
-import regionOverviewStyles from '../region-overview/RegionOverview.module.css';
 import styles from './RegionActivitySection.module.css';
 
 const RegionActivitySectionWrapper = () => {
@@ -43,7 +40,14 @@ const RegionActivitySectionWrapper = () => {
   const sliceSize = location.end - location.start + 1;
 
   if (sliceSize > MAX_SLICE_LENGTH_FOR_DETAILED_VIEW) {
-    return <div>Please zoom in to view the details</div>;
+    const componentClasses = classNames(styles.section, styles.grid);
+    return (
+      <div className={componentClasses}>
+        <div className={styles.middleColumn}>
+          Please zoom in to view the details
+        </div>
+      </div>
+    );
   }
 
   return <RegionActivitySection />;
@@ -89,30 +93,14 @@ const RegionActivitySection = () => {
     width
   });
 
-  const componentClasses = classNames(
-    styles.section,
-    regionOverviewStyles.grid
-  );
+  const componentClasses = classNames(styles.section, styles.grid);
 
   const isPending =
     isLoading || isTransitionPending || isComponentTransitionPending;
 
   return (
     <div className={componentClasses}>
-      <div className={regionOverviewStyles.middleColumn}>
-        {isPending && (
-          <div className={styles.loader}>
-            <CircleLoader />
-          </div>
-        )}
-      </div>
-      <div
-        className={classNames(
-          regionOverviewStyles.leftColumn,
-          styles.positionRelative
-        )}
-      >
-        <EpigenomesTable />
+      <div className={classNames(styles.leftColumn)}>
         {preparedData && epigenomeMetadataDimensionsResponse && (
           <EpigenomeLabels
             epigenomes={sortedCombinedEpigenomes ?? []}
@@ -124,20 +112,19 @@ const RegionActivitySection = () => {
           />
         )}
       </div>
-      <div
-        className={regionOverviewStyles.middleColumn}
-        ref={onImageContainerMount}
-        style={isPending ? { visibility: 'hidden' } : {}}
-      >
-        {preparedData && width && (
-          <EpigenomeActivityImage
+      <div className={styles.middleColumn} ref={onImageContainerMount}>
+        {preparedData && width ? (
+          <EpigenomesActivityImageContainer
             data={preparedData.epigenomeActivityData}
             scale={preparedData.scale}
             width={width}
+            isPending={isPending}
           />
+        ) : (
+          <ActivityViewerMiddleColumnLoader />
         )}
       </div>
-      <div className={regionOverviewStyles.rightColumn}>
+      <div className={classNames(styles.rightColumn)}>
         {preparedData && <GeneExpressionLevels />}
       </div>
     </div>

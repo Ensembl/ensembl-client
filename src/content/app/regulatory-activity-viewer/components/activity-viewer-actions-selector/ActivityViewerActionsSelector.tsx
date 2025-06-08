@@ -91,7 +91,7 @@ const ActivityViewerActionSelector = () => {
     <div className={styles.selectContainer}>
       <SimpleSelect
         options={options}
-        placeholder="Actions"
+        placeholder="Manage data display"
         defaultValue=""
         onChange={onActionSelected}
         disabled={action !== null}

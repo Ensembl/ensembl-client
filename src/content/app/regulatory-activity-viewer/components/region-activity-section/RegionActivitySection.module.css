@@ -5,6 +5,12 @@
   padding-bottom: var(--global-padding-bottom);
 }
 
+.grid {
+  /* same as in RegionOverview styles */
+  display: grid;
+  grid-template-columns: [left] 150px [middle] 1fr [right] 150px;
+}
+
 .loader {
   position: absolute;
   left: 0;
@@ -15,6 +21,20 @@
   justify-content: center;
   padding-top: 30px;
   backdrop-filter: blur(3px);
+}
+
+.leftColumn {
+  grid-column: left;
+}
+
+.middleColumn {
+  grid-column: middle;
+}
+
+.rightColumn {
+  grid-column: right;
+  padding-top: 40px; /* Same as for EpigenomesActivityContainer */
+  padding-left: 20px;
 }
 
 .positionRelative {
