@@ -40,7 +40,14 @@ const RegionActivitySectionWrapper = () => {
   const sliceSize = location.end - location.start + 1;
 
   if (sliceSize > MAX_SLICE_LENGTH_FOR_DETAILED_VIEW) {
-    return <div>Please zoom in to view the details</div>;
+    const componentClasses = classNames(styles.section, styles.grid);
+    return (
+      <div className={componentClasses}>
+        <div className={styles.middleColumn}>
+          Please zoom in to view the details
+        </div>
+      </div>
+    );
   }
 
   return <RegionActivitySection />;

@@ -60,6 +60,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
       className={styles.launchbarButtonWrapperLink}
       to={props.path}
       onClick={() => trackLaunchbarAppChange(props.description)}
+      aria-label={props.description}
     >
       {launchbarButtonContent}
     </NavLink>

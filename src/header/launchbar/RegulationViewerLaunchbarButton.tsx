@@ -38,7 +38,7 @@ const RegulatoryActivityViewerLaunchbarButton = () => {
   return (
     <LaunchbarButton
       path={lastVisitedPath}
-      description="Activity viewer"
+      description="Regulatory activity viewer"
       icon={() => (
         <div
           style={{
