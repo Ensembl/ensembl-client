@@ -22,18 +22,24 @@ import { SELECTED_SPECIES_STORE_NAME } from 'src/content/app/species-selector/se
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { Release } from 'src/shared/types/release';
+import type { IndexedDBUpdateScheduler } from './dbUpdateScheduler';
 
-export const migrateSpeciesStore = async ({
+export const migrateSpeciesStore = ({
   db,
   oldVersion,
-  transaction
+  transaction,
+  scheduler
 }: {
   db: IDBPDatabase;
   oldVersion: number;
   transaction: IDBPTransaction<unknown, string[], 'versionchange'>;
+  scheduler: IndexedDBUpdateScheduler;
 }) => {
   if (oldVersion <= 6) {
-    await runSixToSevenMigration({ db, transaction });
+    scheduler.addTask(() => runSixToSevenMigration({ db, transaction }));
+  }
+  if (oldVersion <= 7) {
+    runSevenToEightMigration({ transaction });
   }
 };
 
@@ -90,7 +96,27 @@ const runSixToSevenMigration = async ({
       await db.delete(SELECTED_SPECIES_STORE_NAME, species.genome_id);
     }
   }
+};
 
-  // To pick up the new data and avoid client-side errors, reload the window
-  window.location.reload();
+// Species saved to indexedDB before version 8 do not the timestamp
+// recording when they were added (selected) by the user.
+// This timestamp is used to ensure a stable sorting order of selected species lozenges.
+// During the migration, add a unique now-ish timestamp to each of the stored species.
+const runSevenToEightMigration = async ({
+  transaction
+}: {
+  transaction: IDBPTransaction<unknown, string[], 'versionchange'>;
+}) => {
+  const speciesStore = transaction.objectStore(SELECTED_SPECIES_STORE_NAME);
+  const allSpecies: CommittedItem[] = await speciesStore.getAll();
+
+  const timestamp = Date.now();
+
+  allSpecies.forEach((species, index) => {
+    species.addedAt = timestamp + index;
+  });
+
+  for (const species of allSpecies) {
+    await speciesStore.put(species, species.genome_id);
+  }
 };

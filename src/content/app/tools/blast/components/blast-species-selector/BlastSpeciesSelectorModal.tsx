@@ -51,7 +51,8 @@ const Content = (props: { onClose: () => void }) => {
   const onSpeciesAdd = (genomes: SpeciesSearchMatch[]) => {
     const preparedGenomes = genomes.map((genome) => ({
       ...genome,
-      isEnabled: true
+      isEnabled: true,
+      addedAt: Date.now()
     }));
     dispatch(addSelectedSpecies(preparedGenomes));
     props.onClose();

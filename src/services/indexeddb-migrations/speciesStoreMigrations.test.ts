@@ -25,6 +25,7 @@ import times from 'lodash/times';
 import { SELECTED_SPECIES_STORE_NAME } from 'src/content/app/species-selector/services/speciesSelectorStorageConstants';
 
 import { migrateSpeciesStore } from 'src/services/indexeddb-migrations/speciesStoreMigrations';
+import { IndexedDBUpdateScheduler } from 'src/services/indexeddb-migrations/dbUpdateScheduler';
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 const mockMetadataBaseApi = 'http://metadata-api';
@@ -64,12 +65,6 @@ beforeEach(() => {
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-// Mock out window.location.reload
-Object.defineProperty(window, 'location', {
-  configurable: true,
-  value: { reload: jest.fn() }
-});
-
 describe('v6 -> v7 migration', () => {
   // During migration to version 7,
   // all stored species should receive a release field
@@ -106,7 +101,14 @@ describe('v6 -> v7 migration', () => {
     // Now run the db migration
     const newDb = await openDB('test-db', newVersion, {
       upgrade(db, oldVersion, __, transaction) {
-        migrateSpeciesStore({ db, oldVersion, transaction });
+        const asyncTaskScheduler = new IndexedDBUpdateScheduler();
+        migrateSpeciesStore({
+          db,
+          oldVersion,
+          transaction,
+          scheduler: asyncTaskScheduler
+        });
+        asyncTaskScheduler.runTasks();
       }
     });
 
@@ -151,7 +153,14 @@ describe('v6 -> v7 migration', () => {
     // Now run the db migration
     const newDb = await openDB('test-db', versionEight, {
       upgrade(db, oldVersion, __, transaction) {
-        migrateSpeciesStore({ db, oldVersion, transaction });
+        const asyncTaskScheduler = new IndexedDBUpdateScheduler();
+        migrateSpeciesStore({
+          db,
+          oldVersion,
+          transaction,
+          scheduler: asyncTaskScheduler
+        });
+        asyncTaskScheduler.runTasks();
       }
     });
 
@@ -161,6 +170,61 @@ describe('v6 -> v7 migration', () => {
       retrievedSpecies.every(
         (species) => species.release.name === newReleaseName
       )
+    ).toBe(true);
+  });
+});
+
+describe('v7 -> v8 migration', () => {
+  // During migration to version 8,
+  // all stored species should receive an `addedAt` field,
+  // with a unique timestamp
+
+  test('a field with a timestamp is added to stored species', async () => {
+    const oldDbVersion = 7;
+    const newDbVersion = 8;
+
+    // Create a db using a version prior to when timestamps for saved species were introduced
+    const oldDb = await openDB('test-db', oldDbVersion, {
+      upgrade(db) {
+        db.createObjectStore(SELECTED_SPECIES_STORE_NAME);
+      }
+    });
+
+    const speciesList = times(3, () => {
+      const species = createSelectedSpecies() as any;
+      delete species['addedAt'];
+      return species;
+    });
+
+    // Just making sure that species don't have the addedAt field before saving
+    expect(speciesList.every((species) => species.addedAt === undefined)).toBe(
+      true
+    );
+
+    // Save the species into the database
+    for (const species of speciesList) {
+      await oldDb.put(SELECTED_SPECIES_STORE_NAME, species, species.genome_id);
+    }
+
+    oldDb.close();
+
+    // Now run the db migration
+    const newDb = await openDB('test-db', newDbVersion, {
+      upgrade(db, oldVersion, __, transaction) {
+        const asyncTaskScheduler = new IndexedDBUpdateScheduler();
+        migrateSpeciesStore({
+          db,
+          oldVersion,
+          transaction,
+          scheduler: asyncTaskScheduler
+        });
+        asyncTaskScheduler.runTasks();
+      }
+    });
+
+    const retrievedSpecies = await newDb.getAll(SELECTED_SPECIES_STORE_NAME);
+    expect(
+      retrievedSpecies.every((species) => species.addedAt !== undefined)
     ).toBe(true);
   });
 });

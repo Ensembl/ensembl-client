@@ -16,7 +16,7 @@
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-export type VepSelectedSpecies = Omit<CommittedItem, 'isEnabled'>;
+export type VepSelectedSpecies = Omit<CommittedItem, 'isEnabled' | 'addedAt'>;
 
 export const clientSideSubmissionStatuses = [
   'NOT_SUBMITTED', // initial status of a submission while it is being prepared by the user

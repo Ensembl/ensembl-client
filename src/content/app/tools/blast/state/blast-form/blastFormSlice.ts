@@ -38,7 +38,7 @@ type BlastFormSettings = {
   parameters: Partial<Record<BlastParameterName, string>>;
 };
 
-export type Species = CommittedItem;
+export type Species = Omit<CommittedItem, 'isEnabled' | 'addedAt'>;
 
 export type BlastFormState = {
   step: 'sequences' | 'species'; // will only be relevant on smaller screens
