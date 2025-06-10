@@ -104,7 +104,7 @@ describe('<TableRow />', () => {
       columns
     }).container;
 
-    expect(renderer).toBeCalledWith({
+    expect(renderer).toHaveBeenCalledWith({
       rowData: defaultProps.rows[0].cells,
       rowId: defaultProps.rows[0].rowId,
       cellData: defaultProps.rows[0].cells[indexOfColumnWithRenderer]

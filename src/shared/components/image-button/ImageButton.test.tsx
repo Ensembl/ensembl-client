@@ -113,7 +113,7 @@ describe('<ImageButton />', () => {
       ) as HTMLButtonElement;
       await userEvent.click(imageButton);
 
-      expect(onClick).toBeCalled();
+      expect(onClick).toHaveBeenCalled();
     });
 
     it('does not call the onClick prop when clicked if the status is disabled', async () => {
@@ -126,7 +126,7 @@ describe('<ImageButton />', () => {
       ) as HTMLButtonElement;
       await userEvent.click(imageButton);
 
-      expect(onClick).not.toBeCalled();
+      expect(onClick).not.toHaveBeenCalled();
     });
   });
 

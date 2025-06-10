@@ -84,19 +84,19 @@ describe('<Pagination />', () => {
 
     // Typing non-numeric characters
     await userEvent.type(inputElement, 'a');
-    expect(defaultProps.onChange).not.toBeCalled();
+    expect(defaultProps.onChange).not.toHaveBeenCalled();
 
     // clearing the input
     await userEvent.clear(inputElement);
-    expect(defaultProps.onChange).not.toBeCalled();
+    expect(defaultProps.onChange).not.toHaveBeenCalled();
 
     // Entering a number greater than total pages count
     await userEvent.type(inputElement, String(defaultProps.lastPageNumber + 1));
-    expect(defaultProps.onChange).not.toBeCalledWith();
+    expect(defaultProps.onChange).not.toHaveBeenCalled();
 
     // Pasting a number greater than total pages count
     await userEvent.click(inputElement);
     await userEvent.paste(String(defaultProps.lastPageNumber + 1));
-    expect(defaultProps.onChange).not.toBeCalledWith();
+    expect(defaultProps.onChange).not.toHaveBeenCalled();
   });
 });

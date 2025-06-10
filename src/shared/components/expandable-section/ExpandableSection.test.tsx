@@ -60,12 +60,12 @@ describe('<ExpandableSection />', () => {
       <ExpandableSection {...defaultProps} />
     );
     await userEvent.click(container.querySelector('.toggle') as HTMLElement);
-    expect(mockOnToggle).toBeCalledWith(false);
+    expect(mockOnToggle).toHaveBeenCalledWith(false);
 
     rerender(<ExpandableSection {...defaultProps} isExpanded={false} />);
 
     await userEvent.click(container.querySelector('.toggle') as HTMLElement);
-    expect(mockOnToggle).toBeCalledWith(true);
+    expect(mockOnToggle).toHaveBeenCalledWith(true);
   });
 
   it('applies the passed in classNames', () => {
