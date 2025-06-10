@@ -70,7 +70,7 @@ describe('AccordionItemHeading', () => {
             </AccordionItem>
           </Accordion>
         )
-      ).not.toThrowError(SPEC_ERROR);
+      ).not.toThrow(SPEC_ERROR);
     });
 
     it('permits a single AccordionItemButton as a child within an array', () => {
@@ -86,7 +86,7 @@ describe('AccordionItemHeading', () => {
             </AccordionItem>
           </Accordion>
         )
-      ).not.toThrowError(SPEC_ERROR);
+      ).not.toThrow(SPEC_ERROR);
     });
 
     it('does not permit multiple AccordionItemButton as children within an array', () => {
@@ -103,7 +103,7 @@ describe('AccordionItemHeading', () => {
             </AccordionItem>
           </Accordion>
         )
-      ).toThrowError(SPEC_ERROR);
+      ).toThrow(SPEC_ERROR);
     });
 
     it('throws an error if you don’t nest an AccordionItemButton', () => {
@@ -115,7 +115,7 @@ describe('AccordionItemHeading', () => {
             </AccordionItem>
           </Accordion>
         )
-      ).toThrowError(SPEC_ERROR);
+      ).toThrow(SPEC_ERROR);
     });
 
     it('throws an error if you nest any non-AccordionItemButton element', () => {
@@ -127,7 +127,7 @@ describe('AccordionItemHeading', () => {
             </AccordionItem>
           </Accordion>
         )
-      ).toThrowError(SPEC_ERROR);
+      ).toThrow(SPEC_ERROR);
     });
   });
 });

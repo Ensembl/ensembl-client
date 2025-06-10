@@ -104,12 +104,12 @@ describe('<DataTable />', () => {
       onStateChange
     }).container;
 
-    expect(onStateChange).not.toBeCalled();
+    expect(onStateChange).not.toHaveBeenCalled();
 
     const rightPaginationArrow = container.querySelectorAll('.showHide')[1];
     await userEvent.click(rightPaginationArrow);
 
-    expect(onStateChange).toBeCalledWith({
+    expect(onStateChange).toHaveBeenCalledWith({
       ...defaultProps.state,
       currentPageNumber: 2
     });

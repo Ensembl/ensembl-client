@@ -100,7 +100,9 @@ describe('<Tabs />', () => {
 
     await userEvent.click(unselectedTab);
 
-    expect(onTabChange).toBeCalledWith(tabsData[unselectedTabIndex].title);
+    expect(onTabChange).toHaveBeenCalledWith(
+      tabsData[unselectedTabIndex].title
+    );
   });
 
   it('does not call the onTabChange if the tab is disabled', async () => {
@@ -113,7 +115,7 @@ describe('<Tabs />', () => {
 
     await userEvent.click(disabledTab);
 
-    expect(onTabChange).not.toBeCalled();
+    expect(onTabChange).not.toHaveBeenCalled();
   });
 
   it('applies the passed in default class', () => {
