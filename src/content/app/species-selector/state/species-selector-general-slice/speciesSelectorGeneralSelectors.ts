@@ -24,7 +24,7 @@ export const getCommittedSpecies = createSelector(
   (state: RootState) => state.speciesSelector.general.committedItems,
   (committedItems) => {
     return committedItems.toSorted(
-      (species1, species2) => species2.selectedAt - species1.selectedAt
+      (species1, species2) => species2.addedAt - species1.addedAt
     );
   }
 );

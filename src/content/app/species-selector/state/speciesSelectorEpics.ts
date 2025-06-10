@@ -146,6 +146,6 @@ const buildCommittedItemFromBriefGenomeSummary = (
     },
     release: genome.release,
     isEnabled: true,
-    selectedAt: Date.now()
+    addedAt: Date.now()
   };
 };

@@ -52,7 +52,7 @@ const Content = (props: { onClose: () => void }) => {
     const preparedGenomes = genomes.map((genome) => ({
       ...genome,
       isEnabled: true,
-      selectedAt: Date.now()
+      addedAt: Date.now()
     }));
     dispatch(addSelectedSpecies(preparedGenomes));
     props.onClose();

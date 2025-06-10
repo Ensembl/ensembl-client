@@ -176,7 +176,7 @@ describe('v6 -> v7 migration', () => {
 
 describe('v7 -> v8 migration', () => {
   // During migration to version 8,
-  // all stored species should receive a selectedAt field,
+  // all stored species should receive an `addedAt` field,
   // with a unique timestamp
 
   test('a field with a timestamp is added to stored species', async () => {
@@ -192,14 +192,14 @@ describe('v7 -> v8 migration', () => {
 
     const speciesList = times(3, () => {
       const species = createSelectedSpecies() as any;
-      delete species['selectedAt'];
+      delete species['addedAt'];
       return species;
     });
 
-    // Just making sure that species don't have the selectedAt field before saving
-    expect(
-      speciesList.every((species) => species.selectedAt === undefined)
-    ).toBe(true);
+    // Just making sure that species don't have the addedAt field before saving
+    expect(speciesList.every((species) => species.addedAt === undefined)).toBe(
+      true
+    );
 
     // Save the species into the database
     for (const species of speciesList) {
@@ -224,7 +224,7 @@ describe('v7 -> v8 migration', () => {
 
     const retrievedSpecies = await newDb.getAll(SELECTED_SPECIES_STORE_NAME);
     expect(
-      retrievedSpecies.every((species) => species.selectedAt !== undefined)
+      retrievedSpecies.every((species) => species.addedAt !== undefined)
     ).toBe(true);
   });
 });

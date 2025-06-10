@@ -113,7 +113,7 @@ const runSevenToEightMigration = async ({
   const timestamp = Date.now();
 
   allSpecies.forEach((species, index) => {
-    species.selectedAt = timestamp + index;
+    species.addedAt = timestamp + index;
   });
 
   for (const species of allSpecies) {

@@ -117,7 +117,7 @@ const prepareSelectedSpeciesForCommit = (
   // NOTE:
   // In the UI, the lozenges of the selected species are sorted
   // in reverse chronological order based on the value
-  // of the `selectedAt` field. Since, according to designer's instructions,
+  // of the `addedAt` field. Since, according to designer's instructions,
   // if user adds multiple species at once, their lozenges should be displayed
   // in the same order species search matches were displayed,
   // the list of species is reversed in the code below
@@ -137,7 +137,7 @@ const prepareSelectedSpeciesForCommit = (
     is_reference: species.is_reference,
     type: species.type,
     isEnabled: true,
-    selectedAt: timestamp + index
+    addedAt: timestamp + index
   }));
 };
 

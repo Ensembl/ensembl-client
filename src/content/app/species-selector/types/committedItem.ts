@@ -33,5 +33,5 @@ export type CommittedItem = {
   };
   release: Release;
   isEnabled: boolean;
-  selectedAt: number;
+  addedAt: number;
 };
