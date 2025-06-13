@@ -14,6 +14,8 @@
   grid-column: main;
   grid-template-columns: [info] 1fr [controls] auto;
   align-items: center;
+  padding-left: var(--standard-gutter);
+  padding-right: 20px;
 }
 
 .innerInfoArea {
@@ -70,7 +72,7 @@
   font-weight: var(--font-weight-light);
 }
 
-@container (max-width: 1300px) {
+@container (max-width: 1350px) {
   .innerGrid {
     grid-template-columns: unset;
     grid-template-rows: [controls] auto [info] auto;
