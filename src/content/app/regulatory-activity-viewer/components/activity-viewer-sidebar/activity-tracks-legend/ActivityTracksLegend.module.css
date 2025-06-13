@@ -1,23 +1,15 @@
-.row {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 10px;
-  align-items: center;
-}
-
 .openChromatinPeak {
-  width: 10px;
-  height: 10px;
   border: 1px solid var(--color-black);
 }
 
 .openChromatinSignal {
-  width: 10px;
-  height: 10px;
   background: linear-gradient(to right, var(--color-medium-light-grey), var(--color-medium-dark-grey), var(--color-dark-grey), var(--color-medium-light-grey));
 }
 
 .histone {
-  width: 10px;
+  align-items: center;
+}
+
+.histoneMarker {
   height: 2px;
 }

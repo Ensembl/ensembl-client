@@ -104,20 +104,20 @@ const SidebarDefaultView = () => {
 
   return (
     <div>
-      {isSliceTooLarge ? (
-        <SliceTooLargeNotice />
-      ) : (
-        <CollapsibleSection>
-          <CollapsibleSectionHead>Genes</CollapsibleSectionHead>
-          <CollapsibleSectionBody>
+      <CollapsibleSection>
+        <CollapsibleSectionHead>Genes</CollapsibleSectionHead>
+        <CollapsibleSectionBody>
+          {isSliceTooLarge ? (
+            <SliceTooLargeNotice />
+          ) : (
             <Genes
               genes={data.genes}
               onGeneFocus={onGeneFocus}
               focusGeneId={focusGeneId}
             />
-          </CollapsibleSectionBody>
-        </CollapsibleSection>
-      )}
+          )}
+        </CollapsibleSectionBody>
+      </CollapsibleSection>
       <CollapsibleSection>
         <CollapsibleSectionHead>Regulatory features</CollapsibleSectionHead>
         <CollapsibleSectionBody>

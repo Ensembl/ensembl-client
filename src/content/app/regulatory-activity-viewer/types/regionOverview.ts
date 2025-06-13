@@ -39,7 +39,7 @@ export type GeneInRegionOverview = {
   strand: ForwardOrReverseStrand;
   representative_transcript: RepresentativeTranscriptInRegionOverview;
   tss: TranscriptionStartSite[];
-  merged_exons: ExonInRegionOverview[];
+  merged_exons: ExonInRegionOverview[]; // guaranteed by the api to be ordered by distance from region start
   cds_counts: OverlappingCDSFragment[];
 };
 

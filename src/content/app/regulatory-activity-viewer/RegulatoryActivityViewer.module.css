@@ -10,4 +10,5 @@
   height: 100%;
   overflow: auto;
   container-type: size;
+  min-width: 810px;
 }

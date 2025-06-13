@@ -1,7 +1,11 @@
 .feature {
-  display: flex;
-  align-items: center;
-  column-gap: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.feature > * + * {
+  margin-left: 20px;
 }
 
 .leftColumn {
@@ -18,7 +22,7 @@
 }
 
 .labelledElement {
-  display: flex;
+  display: inline-flex;
   column-gap: 0.7ch;
   align-items: baseline;
 }
@@ -32,10 +36,4 @@
 .smallLight {
   font-size: 12px;
   font-weight: var(--font-weight-light);
-}
-
-.fullLocation {
-  display: inline-flex;
-  align-items: baseline;
-  column-gap: 10px;
 }

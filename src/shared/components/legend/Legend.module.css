@@ -1,0 +1,25 @@
+@layer components {
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+  }
+
+  /* expect to redefine styles if needed */
+  .legendItem {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 12px;
+    align-items: baseline;
+    line-height: 1;
+  }
+
+  .marker {
+    display: inline-block;
+    font-size: 0;
+    width: 10px;
+    height: 10px;
+  }
+
+}

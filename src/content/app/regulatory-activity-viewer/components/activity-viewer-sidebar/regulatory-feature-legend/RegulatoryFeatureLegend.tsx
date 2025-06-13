@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Legend, LegendItem, LegendMarker } from 'src/shared/components/legend';
+
 import type { RegulatoryFeatureMetadata } from 'src/content/app/regulatory-activity-viewer/types/regionOverview';
 
 import styles from './RegulatoryFeatureLegend.module.css';
@@ -24,22 +26,19 @@ type Props = {
 
 const RegulatoryFeatureLegend = (props: Props) => {
   return (
-    <div>
+    <Legend>
       {Object.values(props.featureTypes).map((item) => (
-        <div className={styles.item} key={item.label}>
-          <span
-            className={styles.colorKey}
-            style={{ backgroundColor: item.color }}
-          />
+        <LegendItem key={item.label}>
+          <LegendMarker style={{ backgroundColor: item.color }} />
           <span className={styles.label}>
             <span className={styles.primaryText}>{item.label}</span>
             {item.description && (
               <span className={styles.secondaryText}>{item.description}</span>
             )}
           </span>
-        </div>
+        </LegendItem>
       ))}
-    </div>
+    </Legend>
   );
 };
 

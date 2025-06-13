@@ -98,8 +98,30 @@ const RegionOverviewGene = (props: Props) => {
     introns.push({ start, end });
   }
 
+  // The merged exons returned from the regulatory annotation api
+  // are not guaranteed to include all exons of a gene,
+  // because transcripts that do not result in functional products (e.g. nonsense-mediated decay)
+  // are excluded.
+  // Thus, it is possible for a gene to start earlier than the first merged exon,
+  // or to end after the last merged exon.
+  const firstMergedExon = merged_exons.at(0) as ExonInRegionOverview;
+  const lastMergedExon = merged_exons.at(-1) as ExonInRegionOverview;
+
+  const shouldDrawGeneExtentLeft = gene.data.start < firstMergedExon.start;
+  const shouldDrawGeneExtentRight = gene.data.end > lastMergedExon.end;
+
   return (
     <g data-name="gene" data-symbol={gene.data.symbol}>
+      {shouldDrawGeneExtentLeft && (
+        <GeneExtent
+          from={gene.data.start}
+          to={firstMergedExon.start}
+          scale={scale}
+          offsetTop={offsetTop}
+          color={color}
+          direction="left"
+        />
+      )}
       <Exons exons={merged_exons} trackY={trackY} scale={scale} color={color} />
       <CDSBlocks
         cdsFragments={gene.data.cds_counts}
@@ -108,6 +130,16 @@ const RegionOverviewGene = (props: Props) => {
         color={color}
       />
       <Introns introns={introns} trackY={trackY} scale={scale} color={color} />
+      {shouldDrawGeneExtentRight && (
+        <GeneExtent
+          from={lastMergedExon.end}
+          to={gene.data.end}
+          scale={scale}
+          offsetTop={offsetTop}
+          color={color}
+          direction="right"
+        />
+      )}
       <InteractiveArea
         {...props}
         onClick={onClick}
@@ -224,6 +256,67 @@ const Introns = (props: {
       />
     );
   });
+};
+
+const GeneExtent = ({
+  from,
+  to,
+  scale,
+  color,
+  offsetTop,
+  direction
+}: {
+  from: number; // genomic coordinate
+  to: number; // genomic coordinate
+  scale: ScaleLinear<number, number>;
+  color: string;
+  offsetTop: number;
+  direction: 'left' | 'right';
+}) => {
+  const [scaleGenomicStart] = scale.domain();
+  const genomicDistance = to - from + 1;
+  const width = scale(scaleGenomicStart + genomicDistance);
+
+  if (width < 2) {
+    return null;
+  }
+
+  const xStart = scale(from);
+  const xEnd = xStart + width;
+
+  const lineY = offsetTop + GENE_HEIGHT / 2;
+  const endpointX = direction === 'left' ? xStart : scale(to);
+
+  // horizontal line
+  const line = (
+    <line
+      x1={xStart}
+      x2={xEnd}
+      y1={lineY}
+      y2={lineY}
+      stroke={color}
+      strokeDasharray={2}
+      strokeWidth="1"
+    />
+  );
+
+  const endpoint = (
+    <line
+      x1={endpointX}
+      x2={endpointX}
+      y1={offsetTop}
+      y2={offsetTop + GENE_HEIGHT}
+      stroke={color}
+      strokeWidth="1"
+    />
+  );
+
+  return (
+    <>
+      {line}
+      {endpoint}
+    </>
+  );
 };
 
 const InteractiveArea = (props: {

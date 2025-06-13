@@ -91,11 +91,7 @@ const FullLocation = ({
     end
   });
 
-  return (
-    <span className={styles.fullLocation}>
-      <span>{formattedLocationString}</span>
-    </span>
-  );
+  return <span>{formattedLocationString}</span>;
 };
 
 export default ActivityViewerFocusFeatureInfo;
