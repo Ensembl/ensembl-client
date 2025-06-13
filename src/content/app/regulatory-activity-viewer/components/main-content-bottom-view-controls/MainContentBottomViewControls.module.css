@@ -1,4 +1,5 @@
 .outerGrid {
+  container-type: inline-size;
   display: grid;
   align-items: center;
   grid-template-columns: 150px [main] 1fr 150px;  
@@ -11,23 +12,40 @@
 .innerGrid {
   display: grid;
   grid-column: main;
-  grid-template-columns: 1fr [inner-right] auto;
+  grid-template-columns: [info] 1fr [controls] auto;
   align-items: center;
 }
 
-.innerLeft {
+.innerInfoArea {
   font-size: 12px;
+  grid-column: info;
+  grid-row: info;
+  display: flex;
+  column-gap: var(--standard-gutter);
 }
 
-.innerRight {
+.innerControlsArea {
   display: flex;
-  column-gap: 1.6rem;
-  grid-column: inner-right;
+  align-items: center;
+  column-gap: var(--standard-gutter);
+  grid-column: controls;
+  grid-row: controls;
+}
+
+.sectionTitleAndLocation {
+  display: flex;
+  column-gap: 22px;
+  white-space: nowrap;
+}
+
+.sectionTitle {
+  font-weight: var(--font-weight-bold);
 }
 
 .assayTargetLabel {
   display: flex;
   column-gap: 0.6ch;
+  white-space: nowrap;
 }
 
 .viewButtons {
@@ -50,4 +68,27 @@
 
 .light {
   font-weight: var(--font-weight-light);
+}
+
+@container (max-width: 1300px) {
+  .innerGrid {
+    grid-template-columns: unset;
+    grid-template-rows: [controls] auto [info] auto;
+    row-gap: 8px;
+  }
+
+  .innerInfoArea {
+    justify-self: start;
+    grid-column: unset;
+  }
+
+  .innerControlsArea {
+    grid-column: unset;
+    grid-row: controls;
+    justify-self: end;
+  }
+
+  .epigenomesTableToggle {
+    align-self: end;
+  }
 }
