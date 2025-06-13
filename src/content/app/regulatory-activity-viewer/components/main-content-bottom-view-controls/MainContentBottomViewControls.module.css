@@ -88,7 +88,7 @@
     justify-self: end;
   }
 
-  .epigenomesTableToggle {
+  .epigenomesTableToggle, .rightColumn {
     align-self: end;
   }
 }
