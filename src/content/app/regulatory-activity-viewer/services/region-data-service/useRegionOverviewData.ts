@@ -54,23 +54,28 @@ type QueryParams = {
 const createDataObservable = (query: QueryParams) => {
   return regionDetailsState$.pipe(
     filter((state) => {
+      if (!state.data) {
+        return false;
+      }
+      const regionLength = state.data.region.length;
+
       const binKeys = createBins({
-        start: query.start,
-        end: query.end
+        start: Math.max(query.start, 1),
+        end: Math.min(query.end, regionLength)
       }).map(createBinKey);
 
       return (
-        !!state.data &&
         query.assemblyId === state.data.assemblyId &&
         query.regionName === state.data.region.name &&
         binKeys.every((key) => !!state.data!.bins[key])
       );
     }),
     map((state) => {
+      const regionLength = state.data!.region.length;
       const stateData = state.data as NonNullable<typeof state.data>;
       const binKeys = createBins({
-        start: query.start,
-        end: query.end
+        start: Math.max(query.start, 1),
+        end: Math.min(query.end, regionLength)
       }).map(createBinKey);
 
       const genes: GeneInRegionOverview[] = [];
