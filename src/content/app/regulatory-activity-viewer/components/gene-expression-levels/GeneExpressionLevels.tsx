@@ -43,7 +43,7 @@ const GeneExpressionLevels = () => {
     (epigenome) => epigenome.id
   );
 
-  const { data } = useEpigenomesGeneActivityQuery(
+  const { currentData: data } = useEpigenomesGeneActivityQuery(
     {
       assemblyId: assemblyAccessionId ?? '',
       geneId: focusGeneId ?? '',

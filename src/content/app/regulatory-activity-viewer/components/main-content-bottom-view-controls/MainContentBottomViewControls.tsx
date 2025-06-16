@@ -18,6 +18,8 @@ import type { ReactNode } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
+
 import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 import {
   setMainContentBottomView,
@@ -33,10 +35,12 @@ import { SecondaryButton } from 'src/shared/components/button/Button';
 import ActivityViewerActionSelector from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-actions-selector/ActivityViewerActionsSelector';
 import EpigenomesTableToggle from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/epigenomes-table/EpigenomesTableToggle';
 
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
+
 import styles from './MainContentBottomViewControls.module.css';
 
 const MainContentBottomViewControls = () => {
-  const { genomeId } = useActivityViewerIds();
+  const { genomeId, location } = useActivityViewerIds();
   const { sortedCombinedEpigenomes } = useEpigenomes();
 
   if (!genomeId) {
@@ -47,10 +51,14 @@ const MainContentBottomViewControls = () => {
     <div className={styles.outerGrid}>
       <EpigenomesTableToggleContainer genomeId={genomeId} />
       <div className={styles.innerGrid}>
-        <div className={styles.innerLeft}>
+        <div className={styles.innerInfoArea}>
+          <SectionTitleAndLocation>
+            <SectionTitle />
+            <Location location={location} />
+          </SectionTitleAndLocation>
           <AssayTargetLabel />
         </div>
-        <div className={styles.innerRight}>
+        <div className={styles.innerControlsArea}>
           <ActivityViewerActionSelector />
           <ContentViewButtons genomeId={genomeId} />
         </div>
@@ -60,6 +68,30 @@ const MainContentBottomViewControls = () => {
       </div>
     </div>
   );
+};
+
+const SectionTitleAndLocation = (props: { children: ReactNode }) => {
+  // just a wrapper that positions section title relative to location
+
+  return <div className={styles.sectionTitleAndLocation}>{props.children}</div>;
+};
+
+const SectionTitle = () => {
+  return <span className={styles.sectionTitle}>Region activity</span>;
+};
+
+const Location = ({ location }: { location: GenomicLocation | null }) => {
+  if (!location) {
+    return null;
+  }
+
+  const formattedLocationString = getFormattedLocation({
+    chromosome: location.regionName,
+    start: location.start,
+    end: location.end
+  });
+
+  return <span>{formattedLocationString}</span>;
 };
 
 const AssayTargetLabel = () => {

@@ -207,35 +207,39 @@ export const distributeAcrossBins = ({
     {} as RegionDetailsData['bins']
   );
 
-  let geneIndex = 0;
-  let regFeatureIndex = 0;
+  const addBin = (key: string) => {
+    binsMap[key] = { genes: [], regulatory_features: [] };
+  };
 
-  for (const bin of bins) {
-    const binKey = createBinKey({ start: bin.start, end: bin.end });
-
-    for (let i = geneIndex; i < genes.length; i++) {
-      const gene = genes[i];
-      if (gene.start < bin.end) {
-        binsMap[binKey].genes.push(gene);
-      } else {
-        break;
+  for (const gene of genes) {
+    const binsForGene = createBins({
+      start: gene.start,
+      end: gene.end
+    });
+    const binKeysForGene = binsForGene.map((bin) =>
+      createBinKey({ start: bin.start, end: bin.end })
+    );
+    for (const key of binKeysForGene) {
+      if (!binsMap[key]) {
+        addBin(key);
       }
-      if (gene.end < bin.end) {
-        geneIndex++;
-      }
+      binsMap[key].genes.push(gene);
     }
+  }
 
-    for (let i = regFeatureIndex; i < regulatoryFeatures.length; i++) {
-      const regFeature = regulatoryFeatures[i];
-
-      if (regFeature.start < bin.end) {
-        binsMap[binKey].regulatory_features.push(regFeature);
-      } else {
-        break;
+  for (const regFeature of regulatoryFeatures) {
+    const binsForFeature = createBins({
+      start: regFeature.start,
+      end: regFeature.end
+    });
+    const binKeysForFeature = binsForFeature.map((bin) =>
+      createBinKey({ start: bin.start, end: bin.end })
+    );
+    for (const key of binKeysForFeature) {
+      if (!binsMap[key]) {
+        addBin(key);
       }
-      if (regFeature.end < bin.end) {
-        regFeatureIndex++;
-      }
+      binsMap[key].regulatory_features.push(regFeature);
     }
   }
 

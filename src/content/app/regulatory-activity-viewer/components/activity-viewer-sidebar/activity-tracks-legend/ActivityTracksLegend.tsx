@@ -18,6 +18,8 @@ import { useAppSelector } from 'src/store';
 
 import { getHistones } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 
+import { Legend, LegendItem, LegendMarker } from 'src/shared/components/legend';
+
 import styles from './ActivityTracksLegend.module.css';
 
 type Props = {
@@ -28,22 +30,22 @@ const ActivityTracksLegend = ({ genomeId }: Props) => {
   const histones = useAppSelector((state) => getHistones(state, genomeId));
 
   return (
-    <div>
-      <div className={styles.row}>
-        <span className={styles.openChromatinPeak} />
+    <Legend>
+      <LegendItem>
+        <LegendMarker className={styles.openChromatinPeak} />
         <span>Open chromatin: Peak</span>
-      </div>
-      <div className={styles.row}>
-        <span className={styles.openChromatinSignal} />
+      </LegendItem>
+      <LegendItem>
+        <LegendMarker className={styles.openChromatinSignal} />
         <span>Open chromatin: Signal</span>
-      </div>
+      </LegendItem>
       {histones.map((histoneMetadata) => (
         <HistoneLegendElement
           key={histoneMetadata.label}
           {...histoneMetadata}
         />
       ))}
-    </div>
+    </Legend>
   );
 };
 
@@ -55,10 +57,13 @@ const HistoneLegendElement = ({
   color: string;
 }) => {
   return (
-    <div className={styles.row}>
-      <span className={styles.histone} style={{ backgroundColor: color }} />
+    <LegendItem className={styles.histone}>
+      <LegendMarker
+        className={styles.histoneMarker}
+        style={{ backgroundColor: color }}
+      />
       <span>{label}</span>
-    </div>
+    </LegendItem>
   );
 };
 
