@@ -59,7 +59,8 @@ const server = setupServer(
 
       const genes = geneStarts.map((start) =>
         createGenePayload({
-          start
+          start,
+          end: start + 5_000
         })
       );
       const regionOverviewPayload = createOverviewRegionPayload({
