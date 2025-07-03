@@ -114,7 +114,11 @@ export const deleteActiveEntityIdAndSave =
       activeEntityIds: updatedActiveEntityIds
     });
 
-    return dispatch(deleteActiveEntityIdForGenome(activeGenomeId));
+    // dispatch(deleteActiveEntityIdForGenome(activeGenomeId));
+    window.location.pathname =
+      '/entity-viewer/2df86696-b80f-475c-b327-590a36260c6e';
+
+    // return dispatch(deleteActiveEntityIdForGenome(activeGenomeId));
   };
 
 export const setDefaultActiveGenomeId =
@@ -123,7 +127,9 @@ export const setDefaultActiveGenomeId =
     const state = getState();
     const [firstCommittedSpecies] = getCommittedSpecies(state);
     const activeGenomeId = firstCommittedSpecies?.genome_id;
-    activeGenomeId && dispatch(setActiveGenomeId(activeGenomeId));
+    if (activeGenomeId) {
+      dispatch(setActiveGenomeId(activeGenomeId));
+    }
   };
 
 export const deleteGenome = createAsyncThunk(

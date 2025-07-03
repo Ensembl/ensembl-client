@@ -16,7 +16,6 @@
 
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 import { useGeneSummaryQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
-import usePrevious from 'src/shared/hooks/usePrevious';
 
 /**
  * A hook for validating individual parts of the url.
@@ -32,11 +31,6 @@ const useEntityViewerUrlCheck = () => {
     entityIdInUrl,
     parsedEntityId
   } = useEntityViewerIds();
-  const previousGenomeIdInUrl = usePrevious(genomeIdInUrl);
-  const previousEntityIdInUrl = usePrevious(entityIdInUrl);
-  const hasUrlChanged =
-    genomeIdInUrl !== previousGenomeIdInUrl ||
-    entityIdInUrl !== previousEntityIdInUrl;
 
   const isGene = parsedEntityId?.type === 'gene';
   let geneId;
@@ -55,7 +49,7 @@ const useEntityViewerUrlCheck = () => {
       geneId: geneId ?? ''
     },
     {
-      skip: !genomeId || !geneId || !hasUrlChanged
+      skip: !genomeId || !geneId
     }
   );
 

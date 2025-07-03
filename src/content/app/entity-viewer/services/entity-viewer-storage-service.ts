@@ -45,11 +45,15 @@ export class EntityViewerStorageService {
   }
 
   public updateGeneralState(updatedState: Partial<EntityViewerGeneralState>) {
-    this.storageService.update(
+    localStorage.setItem(
       StorageKeys.GENERAL_STATE,
-      updatedState,
-      localStorageOptions
+      JSON.stringify(updatedState)
     );
+    // this.storageService.update(
+    //   StorageKeys.GENERAL_STATE,
+    //   updatedState,
+    //   localStorageOptions
+    // );
   }
 
   public deleteGenome(genomeIdToDelete: string): void {
