@@ -39,24 +39,18 @@ const useEntityViewerUrlCheck = () => {
     geneId = parsedEntityId.objectId;
   }
 
-  const {
-    isFetching: isGeneQueryFetching,
-    isError: isGeneQueryError,
-    error: geneQueryError
-  } = useGeneSummaryQuery(
-    {
-      genomeId: genomeId ?? '',
-      geneId: geneId ?? ''
-    },
-    {
-      skip: !genomeId || !geneId
-    }
-  );
+  const { isFetching: isGeneQueryFetching, isError: isGeneQueryError } =
+    useGeneSummaryQuery(
+      {
+        genomeId: genomeId ?? '',
+        geneId: geneId ?? ''
+      },
+      {
+        skip: !genomeId || !geneId
+      }
+    );
 
-  const isMissingGene =
-    isGeneQueryError &&
-    'meta' in geneQueryError &&
-    (geneQueryError.meta.data as any)?.gene === null;
+  const isMissingGene = isGeneQueryError;
 
   const isFetching = isGeneQueryFetching; // extend this when we start having other entities
   const isMissingEntity = isMissingGene; // extend this when we start having other entities
