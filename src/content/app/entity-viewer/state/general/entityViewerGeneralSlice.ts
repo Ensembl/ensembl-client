@@ -21,13 +21,11 @@ import {
   type ThunkAction,
   type PayloadAction
 } from '@reduxjs/toolkit';
-import pickBy from 'lodash/pickBy';
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEntityIds,
   getEntityViewerActiveEntityId
 } from './entityViewerGeneralSelectors';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
@@ -103,16 +101,7 @@ export const deleteActiveEntityIdAndSave =
       return; // won't happen
     }
 
-    const allActiveEntityIds = getEntityViewerActiveEntityIds(state);
-
-    const updatedActiveEntityIds = pickBy(
-      allActiveEntityIds,
-      (_, key) => key !== activeGenomeId
-    );
-
-    entityViewerStorageService.updateGeneralState({
-      activeEntityIds: updatedActiveEntityIds
-    });
+    entityViewerStorageService.deleteActiveEntityIdFor(activeGenomeId);
 
     return dispatch(deleteActiveEntityIdForGenome(activeGenomeId));
   };
