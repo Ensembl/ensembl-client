@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -110,8 +110,6 @@ const EntityViewerController = (props: { entityType: string }) => {
 
 const useEntityViewerRouting = () => {
   const {
-    activeGenomeId,
-    activeEntityId,
     genomeIdInUrl,
     genomeIdForUrl,
     entityIdInUrl,
@@ -120,6 +118,20 @@ const useEntityViewerRouting = () => {
     entityId,
     hasActiveGenomeIdChanged
   } = useEntityViewerIds();
+  const [previousActiveIds, setPreviousActiveIds] = useState<{
+    genomeId?: string;
+    entityId?: string;
+  }>({});
+  const [haveActiveIdsChanged, setHaveActiveIdsChanged] = useState(false);
+
+  if (
+    genomeId !== previousActiveIds.genomeId ||
+    entityId !== previousActiveIds.entityId
+  ) {
+    const previousActiveIds = { genomeId, entityId };
+    setPreviousActiveIds(previousActiveIds);
+    setHaveActiveIdsChanged(true);
+  }
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -145,20 +157,22 @@ const useEntityViewerRouting = () => {
       });
       navigate(replacementUrl, { replace: true });
     }
-    dispatch(
-      setActiveIds({
-        genomeId,
-        entityId
-      })
-    );
+    if (haveActiveIdsChanged) {
+      dispatch(
+        setActiveIds({
+          genomeId,
+          entityId
+        })
+      );
+      setHaveActiveIdsChanged(false);
+    }
   }, [
     genomeIdInUrl,
     entityIdInUrl,
     genomeId,
     entityId,
     entityIdForUrl,
-    activeGenomeId,
-    activeEntityId
+    haveActiveIdsChanged
   ]);
 };
 
