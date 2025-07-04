@@ -173,8 +173,6 @@ const useEntityViewerRouting = () => {
     entityId,
     entityIdForUrl,
     haveActiveIdsChanged
-    // activeGenomeId,
-    // activeEntityId
   ]);
 };
 
