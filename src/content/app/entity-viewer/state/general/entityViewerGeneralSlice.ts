@@ -114,11 +114,7 @@ export const deleteActiveEntityIdAndSave =
       activeEntityIds: updatedActiveEntityIds
     });
 
-    // dispatch(deleteActiveEntityIdForGenome(activeGenomeId));
-    window.location.pathname =
-      '/entity-viewer/2df86696-b80f-475c-b327-590a36260c6e';
-
-    // return dispatch(deleteActiveEntityIdForGenome(activeGenomeId));
+    return dispatch(deleteActiveEntityIdForGenome(activeGenomeId));
   };
 
 export const setDefaultActiveGenomeId =
