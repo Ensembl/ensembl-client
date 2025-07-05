@@ -117,7 +117,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
     }),
     baseEpigenomes: builder.query<Epigenome[], BaseEpigenomesRequestParams>({
       query: (params) => ({
-        url: `${config.regulationApiBaseUrl}/epigenomes/v0.4/release/${releaseName}/base_epigenomes/assembly/${params.assemblyId}`
+        url: `${config.regulationApiBaseUrl}/epigenomes/v0.5/release/${releaseName}/base_epigenomes/assembly/${params.assemblyId}`
       })
     }),
     epigenomeMetadataDimensions: builder.query<
@@ -125,7 +125,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       EpigenomeMetadataRequestParams
     >({
       query: (params) => ({
-        url: `${config.regulationApiBaseUrl}/epigenomes/v0.4/release/${releaseName}/metadata_dimensions/assembly/${params.assemblyId}`
+        url: `${config.regulationApiBaseUrl}/epigenomes/v0.5/release/${releaseName}/metadata_dimensions/assembly/${params.assemblyId}`
       })
     }),
     epigenomesActivity: builder.query<
@@ -134,7 +134,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
     >({
       queryFn: async (params, _, __, baseQuery) => {
         const { assemblyId, epigenomeIds, locations, regionName } = params;
-        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.4/release/${releaseName}/region_activity/assembly/${assemblyId}`;
+        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.5/release/${releaseName}/region_activity/assembly/${assemblyId}`;
         const requestBody = {
           region_name: regionName,
           locations,
@@ -165,7 +165,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
     >({
       queryFn: async (params, _, __, baseQuery) => {
         const { assemblyId, epigenomeIds, geneId } = params;
-        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.4/release/${releaseName}/gene_activity/assembly/${assemblyId}/gene/${geneId}`;
+        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.5/release/${releaseName}/gene_activity/assembly/${assemblyId}/gene/${geneId}`;
         const requestBody = {
           epigenome_ids: prepareEpigenomeIdsForRequest(epigenomeIds)
         };

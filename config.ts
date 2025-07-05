@@ -103,9 +103,6 @@ const shouldReportErrors = () =>
 const buildEnvironment = readEnvironment().buildEnvironment;
 
 export default {
-  // Version numbers
-  app_version: '0.4.0',
-
   // build environment
   isDevelopment: buildEnvironment === 'development',
   isProduction: buildEnvironment !== 'development',
