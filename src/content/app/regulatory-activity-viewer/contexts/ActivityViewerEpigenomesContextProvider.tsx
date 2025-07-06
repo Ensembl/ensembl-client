@@ -31,10 +31,13 @@ import {
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks//useActivityViewerIds';
 import {
   useEpigenomeMetadataDimensionsQuery,
-  useBaseEpigenomesQuery
+  useBaseEpigenomesQuery,
+  useEpigenomeLabelsQuery
 } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
 import { ActivityViewerEpigenomesContext } from './ActivityViewerEpigenomesContext';
+
+import type { LabelledEpigenome } from '../types/epigenome';
 
 const ActivityViewerEpigenomesContextProvider = ({
   children
@@ -120,6 +123,28 @@ const useEpigenomesData = () => {
     allEpigenomeDimensions
   ]);
 
+  const {
+    isLoading: areEpigenomeLabelsLoading,
+    isError: isEpigenomeLabelsError,
+    currentData: epigenomeLabels
+  } = useEpigenomeLabelsQuery(
+    {
+      assemblyId: assemblyAccessionId ?? '',
+      combiningDimensions: epigenomeCombiningDimensions,
+      epigenomeIds: combinedEpigenomes.map(({ id }) => id)
+    },
+    {
+      skip: !assemblyAccessionId || !combinedEpigenomes.length
+    }
+  );
+
+  const combinedEpigenomesWithLabels = useMemo(() => {
+    return combinedEpigenomes.map((epigenome, index) => ({
+      ...epigenome,
+      label: epigenomeLabels?.[index].label ?? ''
+    })) as LabelledEpigenome[];
+  }, [epigenomeLabels, combinedEpigenomes]);
+
   // List of dimensions actually used to sort the epigenomes (up to three dimensions)
   const epigenomeSortableDimensions =
     storedEpigenomeSortingDimensions ??
@@ -129,13 +154,19 @@ const useEpigenomesData = () => {
   const dimensionsForSorting = epigenomeSortableDimensions.slice(0, 3); // use up to three first dimensions for sorting
 
   const sortedEpigenomes = sortEpigenomes({
-    epigenomes: combinedEpigenomes,
+    epigenomes: combinedEpigenomesWithLabels,
     sortingDimensions: dimensionsForSorting
   });
 
   return {
-    isLoading: areBaseEpigenomesLoading || areMetadataDimensionsLoading,
-    isError: isBaseEpigenomesError || isEpigenomeMetadataError,
+    isLoading:
+      areBaseEpigenomesLoading ||
+      areMetadataDimensionsLoading ||
+      areEpigenomeLabelsLoading,
+    isError:
+      isBaseEpigenomesError ||
+      isEpigenomeMetadataError ||
+      isEpigenomeLabelsError,
     baseEpigenomes: baseEpigenomes ?? null,
     epigenomeMetadataDimensionsResponse:
       epigenomeMetadataDimensionsResponse ?? null,

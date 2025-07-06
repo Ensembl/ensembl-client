@@ -25,6 +25,7 @@ import type {
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 import type { EpigenomeActivityResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeActivity';
+import type { EpigenomeLabelsResponse } from '../../types/epigenomeLabels';
 import type { EpigenomeGeneActivityResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeGeneActivity';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
@@ -54,6 +55,12 @@ type EpigenomesActivityRequestParams = {
   assemblyId: string;
   regionName: string;
   locations: { start: number; end: number }[];
+  epigenomeIds: string[];
+};
+
+type EpigenomeLabelsRequestParams = {
+  assemblyId: string;
+  combiningDimensions: string[];
   epigenomeIds: string[];
 };
 
@@ -159,6 +166,36 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
         }
       }
     }),
+    epigenomeLabels: builder.query<
+      EpigenomeLabelsResponse,
+      EpigenomeLabelsRequestParams
+    >({
+      queryFn: async (params, _, __, baseQuery) => {
+        const { assemblyId, epigenomeIds, combiningDimensions } = params;
+        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.5/release/${releaseName}/labels/assembly/${assemblyId}`;
+        const requestBody = {
+          collapsed_by: combiningDimensions,
+          epigenome_ids: prepareEpigenomeIdsForRequest(epigenomeIds)
+        };
+
+        const { data, error } = await baseQuery({
+          url,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify(requestBody)
+        });
+
+        if (error) {
+          return {
+            error
+          };
+        } else {
+          return { data: data as EpigenomeLabelsResponse };
+        }
+      }
+    }),
     epigenomesGeneActivity: builder.query<
       EpigenomeGeneActivityResponse,
       EpigenomesGeneActivityRequestParams
@@ -204,5 +241,6 @@ export const {
   useEpigenomeMetadataDimensionsQuery,
   useBaseEpigenomesQuery,
   useEpigenomesActivityQuery,
+  useEpigenomeLabelsQuery,
   useEpigenomesGeneActivityQuery
 } = activityViewerApiSlice;

@@ -30,6 +30,8 @@ import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useE
 import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hooks/useActivityViewerIds';
 import { useEpigenomesGeneActivityQuery } from 'src/content/app/regulatory-activity-viewer/state/api/activityViewerApiSlice';
 
+import type { EpigenomeGeneActivity } from 'src/content/app/regulatory-activity-viewer/types/epigenomeGeneActivity';
+
 /**
  * This component displays gene expression levels,
  * and is only displayed when there is a focus gene.
@@ -87,9 +89,13 @@ const GeneExpressionIndicator = ({
   value,
   trackIndex
 }: {
-  value: number;
+  value: EpigenomeGeneActivity['value'];
   trackIndex: number;
 }) => {
+  if (!value) {
+    return null;
+  }
+
   const darkRectWidth = Math.round(GENE_EXPRESSION_INDICATOR_WIDTH * value);
   const lightRectX = darkRectWidth;
   const lightRectWidth = GENE_EXPRESSION_INDICATOR_WIDTH - darkRectWidth;

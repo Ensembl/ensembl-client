@@ -19,3 +19,7 @@
 export type Epigenome = Record<string, string | string[]> & {
   id: string;
 };
+
+export type LabelledEpigenome = Epigenome & {
+  label: string;
+};
