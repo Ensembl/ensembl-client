@@ -20,7 +20,6 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 
 import {
   getMainContentBottomView,
-  getIsEpigenomeSelectorOpen,
   getIsSidebarOpen
 } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 
@@ -46,7 +45,6 @@ import RegionActivitySection from './components/region-activity-section/RegionAc
 import ActivityViewerSidebar from './components/activity-viewer-sidebar/ActivityViewerSidebar';
 import SidebarNavigation from './components/activity-viewer-sidebar/sidebar-navigation/SidebarNavigation';
 import MainContentBottomViewControls from './components/main-content-bottom-view-controls/MainContentBottomViewControls';
-import EpigenomeSelectionModal from './components/epigenome-selection-modal/EpigenomeSelectionModal';
 import SelectedEpigenomes from './components/selected-epigenomes/SelectedEpigenomes';
 
 import styles from './RegulatoryActivityViewer.module.css';
@@ -164,9 +162,6 @@ const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
   const activeView = useAppSelector((state) =>
     getMainContentBottomView(state, genomeId)
   );
-  const isEpigenomeSelectorOpen = useAppSelector((state) =>
-    getIsEpigenomeSelectorOpen(state, genomeId)
-  );
 
   return (
     <>
@@ -174,9 +169,6 @@ const MainContentBottom = ({ genomeId }: { genomeId: string }) => {
         <SelectedEpigenomes genomeId={genomeId} />
       )}
       {activeView === 'dataviz' && <RegionActivitySection />}
-      {isEpigenomeSelectorOpen && (
-        <EpigenomeSelectionModal genomeId={genomeId} />
-      )}
     </>
   );
 };

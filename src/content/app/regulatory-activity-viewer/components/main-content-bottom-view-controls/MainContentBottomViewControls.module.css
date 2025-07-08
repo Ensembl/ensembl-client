@@ -27,9 +27,6 @@
 }
 
 .innerControlsArea {
-  display: flex;
-  align-items: center;
-  column-gap: var(--standard-gutter);
   grid-column: controls;
   grid-row: controls;
 }
@@ -72,7 +69,7 @@
   font-weight: var(--font-weight-light);
 }
 
-@container (max-width: 1350px) {
+@container (max-width: 1070px) {
   .innerGrid {
     grid-template-columns: unset;
     grid-template-rows: [controls] auto [info] auto;

@@ -1,0 +1,8 @@
+.filtersSection[aria-expanded="true"] {
+  padding-bottom: 16px;
+}
+
+.filtersSectionBody {
+  max-height: 200px;
+  overflow-y: auto;
+}

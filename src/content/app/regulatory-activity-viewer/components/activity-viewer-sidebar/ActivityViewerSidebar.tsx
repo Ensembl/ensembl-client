@@ -20,7 +20,7 @@ import { getSidebarView } from 'src/content/app/regulatory-activity-viewer/state
 
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import SidebarDefaultView from './sidebar-default-view/SidebarDefaultView';
-import EpigenomeFiltersView from './epigenome-filters-view/EpigenomeFiltersView';
+import ConfigurationsView from './configurations-view/ConfigurationsView';
 
 type Props = {
   genomeId: string | null;
@@ -35,8 +35,8 @@ const ActivityViewerSidebar = (props: Props) => {
   return (
     <Sidebar>
       {sidebarView === 'default' && <SidebarDefaultView />}
-      {sidebarView === 'epigenome-filters' && (
-        <EpigenomeFiltersView genomeId={genomeId} />
+      {sidebarView === 'configuration' && (
+        <ConfigurationsView genomeId={genomeId} />
       )}
     </Sidebar>
   );

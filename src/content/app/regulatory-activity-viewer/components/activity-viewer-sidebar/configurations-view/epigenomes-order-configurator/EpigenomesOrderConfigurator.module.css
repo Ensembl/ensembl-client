@@ -1,0 +1,31 @@
+.dimensionPanel {
+  display: grid;
+  grid-template-columns: 1fr 10px;
+  column-gap: 1rem;
+  align-items: center;
+  padding: 6px 20px;
+}
+
+.sortButtons {
+  display: flex;
+  flex-direction: column;
+  row-gap: 3px;
+}
+
+.sortButtons button {
+  font-size: 0;
+}
+
+.sortArrow {
+  height: 8px;
+  width: 8px;
+  fill: var(--color-blue);
+}
+
+.sortArrowDown {
+  transform: rotate(180deg);
+}
+
+.sortButtons button[disabled] .sortArrow {
+  fill: var(--color-grey);
+}
