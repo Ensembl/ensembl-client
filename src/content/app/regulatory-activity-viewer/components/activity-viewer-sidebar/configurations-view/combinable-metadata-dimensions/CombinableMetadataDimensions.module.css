@@ -5,3 +5,12 @@
   align-items: center;
   padding: 6px 20px;
 }
+
+.note {
+  padding: 0 20px;
+  font-weight: var(--font-weight-light);
+}
+
+.strong {
+  font-weight: var(--font-weight-bold);
+}

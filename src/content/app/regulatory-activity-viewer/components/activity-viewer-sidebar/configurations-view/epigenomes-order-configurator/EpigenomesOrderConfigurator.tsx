@@ -74,6 +74,7 @@ const EpigenomesOrderConfigurator = (props: Props) => {
 
   return (
     <div>
+      <ExplanatoryNote />
       {allEpigenomeSortableDimensions.map((dimensionId, index) => (
         <DimensionPanel
           key={dimensionId}
@@ -87,6 +88,16 @@ const EpigenomesOrderConfigurator = (props: Props) => {
         />
       ))}
     </div>
+  );
+};
+
+const ExplanatoryNote = () => {
+  return (
+    <p className={styles.note}>
+      Epigenomes are sorted by the values of the below dimensions. The dimension
+      at the top of the list is used for sorting first; then the following two
+      dimensions are be used to break the ties.
+    </p>
   );
 };
 
@@ -115,7 +126,7 @@ const DimensionPanel = ({
           <ArrowUpIcon className={styles.sortArrow} />
         </button>
         <button
-          onClick={() => onRankChange(dimensionId, 'up')}
+          onClick={() => onRankChange(dimensionId, 'down')}
           aria-label="Decrease sort order"
           disabled={isLast}
         >

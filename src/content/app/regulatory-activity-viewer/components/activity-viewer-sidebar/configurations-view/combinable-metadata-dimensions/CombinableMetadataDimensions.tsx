@@ -58,6 +58,7 @@ const CombinableMetadataDimensions = (props: Props) => {
 
   return (
     <div>
+      <ExplanatoryNote />
       {allCombinableDimensions.map((dimensionId) => (
         <DimensionPanel
           key={dimensionId}
@@ -70,6 +71,16 @@ const CombinableMetadataDimensions = (props: Props) => {
         />
       ))}
     </div>
+  );
+};
+
+const ExplanatoryNote = () => {
+  return (
+    <p className={styles.note}>
+      You can combine the epigenomes by one or more dimensions listed below.
+      Pick dimensions that you would like{' '}
+      <span className={styles.strong}>not</span> to distinguish epigenomes by.
+    </p>
   );
 };
 

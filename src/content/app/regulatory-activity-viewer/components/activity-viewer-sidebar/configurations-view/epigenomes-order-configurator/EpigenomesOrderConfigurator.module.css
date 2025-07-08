@@ -29,3 +29,8 @@
 .sortButtons button[disabled] .sortArrow {
   fill: var(--color-grey);
 }
+
+.note {
+  padding: 0 20px;
+  font-weight: var(--font-weight-light);
+}
