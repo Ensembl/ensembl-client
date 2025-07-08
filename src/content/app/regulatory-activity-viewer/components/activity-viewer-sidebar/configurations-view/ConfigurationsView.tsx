@@ -58,7 +58,7 @@ const Navigation = ({
         disabled={activeView === 'filters'}
         onClick={() => onViewChange('filters')}
       >
-        Filters
+        Filter
       </TextButton>
       <TextButton
         disabled={activeView === 'combine-epigenomes'}
