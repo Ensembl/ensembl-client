@@ -104,7 +104,6 @@ const EpigenomesTable = ({
   const {
     sortedCombinedEpigenomes,
     epigenomeSortingDimensions,
-    allEpigenomeSortableDimensions,
     epigenomeMetadataDimensionsResponse,
     epigenomeCombiningDimensions
   } = useEpigenomes();
@@ -112,7 +111,6 @@ const EpigenomesTable = ({
   if (
     !sortedCombinedEpigenomes ||
     !epigenomeMetadataDimensionsResponse ||
-    !allEpigenomeSortableDimensions ||
     !epigenomeSortingDimensions?.length
   ) {
     return null;

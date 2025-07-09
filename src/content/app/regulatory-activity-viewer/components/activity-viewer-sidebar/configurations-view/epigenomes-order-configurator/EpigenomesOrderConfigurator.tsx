@@ -46,9 +46,7 @@ const EpigenomesOrderConfigurator = (props: Props) => {
 
   const onRankChange = useCallback(
     (dimension: string, direction: 'up' | 'down') => {
-      const newDimensionsOrder = [
-        ...(allEpigenomeSortableDimensions as string[])
-      ];
+      const newDimensionsOrder = [...allEpigenomeSortableDimensions];
       const oldIndex = newDimensionsOrder.indexOf(dimension);
       const newIndex = direction === 'up' ? oldIndex - 1 : oldIndex + 1;
       const dimensionToSwap = newDimensionsOrder[newIndex];
