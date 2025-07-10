@@ -23,6 +23,7 @@ import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormat
 import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 import {
   setMainContentBottomView,
+  setSidebarView,
   type MainContentBottomView
 } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
 
@@ -114,6 +115,15 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
     );
   };
 
+  const openConfigurationView = () => {
+    dispatch(
+      setSidebarView({
+        genomeId,
+        view: 'configuration'
+      })
+    );
+  };
+
   return (
     <div className={styles.viewButtons}>
       <ContentViewButton
@@ -131,6 +141,10 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
       >
         Visualise
       </ContentViewButton>
+
+      <SecondaryButton onClick={openConfigurationView}>
+        Configure
+      </SecondaryButton>
     </div>
   );
 };

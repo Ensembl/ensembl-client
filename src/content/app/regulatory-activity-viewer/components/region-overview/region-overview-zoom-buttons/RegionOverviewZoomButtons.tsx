@@ -61,15 +61,15 @@ const RegionOverviewZoomButtons = (props: Props) => {
 
   return (
     <div className={styles.buttons}>
-      <button className={styles.button} onClick={onZoomIn} aria-label="Zoom in">
-        <CirclePlusIcon />
-      </button>
       <button
         className={styles.button}
         onClick={onZoomOut}
         aria-label="Zoom out"
       >
         <CircleMinusIcon />
+      </button>
+      <button className={styles.button} onClick={onZoomIn} aria-label="Zoom in">
+        <CirclePlusIcon />
       </button>
     </div>
   );

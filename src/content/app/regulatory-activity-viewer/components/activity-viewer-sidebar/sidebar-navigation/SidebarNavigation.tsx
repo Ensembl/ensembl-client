@@ -77,7 +77,7 @@ const SidebarNavigation = (props: Props) => {
         disabled={isConfigurationTabSelected}
         className={configurationTabClasses}
       >
-        Configuration
+        Configure
       </TextButton>
     </div>
   );
