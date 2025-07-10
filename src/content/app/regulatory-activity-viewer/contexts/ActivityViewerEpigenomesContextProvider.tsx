@@ -199,11 +199,22 @@ const getSortableDimensions = ({
   allSortableDimensions,
   combiningDimensions
 }: {
-  storedSortingDimensions: string[] | null;
-  allSortableDimensions: string[];
+  storedSortingDimensions: string[] | null; // this array has order defined by the user
+  allSortableDimensions: string[]; // this array has a full list of sortable dimensions with a default order defined by the api
   combiningDimensions: string[];
 }) => {
-  const sortableDimensions = storedSortingDimensions ?? allSortableDimensions;
+  storedSortingDimensions = storedSortingDimensions ?? [];
+  const storedDimensionsSet = new Set(storedSortingDimensions);
+  const remainingDimensions = allSortableDimensions.filter(
+    (dimension) => !storedDimensionsSet.has(dimension)
+  );
+
+  // this will prevent some of the sortable dimensions from disappearing from the list,
+  // which may happen if the user first combines epigenomes, then changes the sorting order, then uncombines
+  const sortableDimensions = [...storedSortingDimensions].concat(
+    remainingDimensions
+  );
+
   return sortableDimensions.filter(
     (dimension) => !combiningDimensions.includes(dimension)
   );
