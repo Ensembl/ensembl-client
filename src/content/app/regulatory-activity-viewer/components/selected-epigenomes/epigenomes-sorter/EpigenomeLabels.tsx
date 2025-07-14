@@ -22,13 +22,13 @@ import { stringifyDimensionValue } from './sortEpigenomes';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
+import type { LabelledEpigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 
 import styles from './EpigenomeLabels.module.css';
 
 type Props = {
-  epigenomes: Epigenome[];
+  epigenomes: LabelledEpigenome[];
   displayDimensions: string[];
   sortingDimensions: string[];
   allDimensions: EpigenomeMetadataDimensions;
@@ -75,7 +75,7 @@ export const getEpigenomeLabels = ({
   epigenomes,
   sortingDimensions
 }: {
-  epigenomes: Epigenome[];
+  epigenomes: LabelledEpigenome[];
   sortingDimensions: string[];
 }) => {
   const labelData = sortingDimensions.map((dimension, index) => {
@@ -126,7 +126,7 @@ const EpigenomeLabel = ({
   allDimensions
 }: {
   data: ReturnType<typeof getEpigenomeLabels>[number];
-  epigenome: Epigenome;
+  epigenome: LabelledEpigenome;
   displayDimensions: string[];
   allDimensions: EpigenomeMetadataDimensions;
 }) => {
@@ -147,19 +147,17 @@ const EpigenomeTextLabel = ({
   displayDimensions,
   allDimensions
 }: {
-  epigenome: Epigenome;
+  epigenome: LabelledEpigenome;
   displayDimensions: string[];
   allDimensions: EpigenomeMetadataDimensions;
 }) => {
   const [hoverRef, isHovered] = useHover<HTMLSpanElement>();
 
-  const [mainDimension] = displayDimensions;
-
   const labelHeight = 40; // FIXME: import the constant
 
   return (
     <div className={styles.epigenomeTextLabel} style={{ height: labelHeight }}>
-      <span ref={hoverRef}>{epigenome[mainDimension]}</span>
+      <span ref={hoverRef}>{epigenome.label}</span>
 
       {isHovered && (
         <Tooltip anchor={hoverRef.current} autoAdjust={true}>
@@ -179,7 +177,7 @@ const LabelPopupContents = ({
   displayDimensions,
   allDimensions
 }: {
-  epigenome: Epigenome;
+  epigenome: LabelledEpigenome;
   displayDimensions: string[];
   allDimensions: EpigenomeMetadataDimensions;
 }) => {
@@ -238,7 +236,7 @@ const buildEpigenomeLabelsDataForDimension = ({
   dimension,
   colorMap
 }: {
-  epigenomes: Epigenome[];
+  epigenomes: LabelledEpigenome[];
   dimension: string;
   colorMap: Record<string, string>;
 }) => {
@@ -264,7 +262,7 @@ const getColorScaleForValues = (values: string[], order: number) => {
 };
 
 const getDistinctValuesForDimension = (
-  epigenomes: Epigenome[],
+  epigenomes: LabelledEpigenome[],
   dimension: string
 ) => {
   const distinctValues = new Set<string>();

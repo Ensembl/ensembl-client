@@ -16,12 +16,12 @@
 
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 
-export const sortEpigenomes = ({
+export const sortEpigenomes = <T extends Epigenome>({
   sortingDimensions,
   epigenomes
 }: {
   sortingDimensions: string[];
-  epigenomes: Epigenome[];
+  epigenomes: T[];
 }) => {
   return epigenomes.toSorted((e1, e2) => {
     for (const dimension of sortingDimensions) {

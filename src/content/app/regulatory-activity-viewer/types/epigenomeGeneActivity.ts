@@ -16,7 +16,7 @@
 
 export type EpigenomeGeneActivity = {
   epigenome_ids: string[]; // <-- one or more epigenome id, corresponding to a track of epigenome activity data
-  value: number;
+  value: number | null;
 };
 
 export type EpigenomeGeneActivityResponse = {

@@ -16,7 +16,10 @@
 
 import { createContext } from 'react';
 
-import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
+import type {
+  Epigenome,
+  LabelledEpigenome
+} from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 import type { EpigenomeMetadataDimensionsResponse } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 
 type ActivityViewerEpigenomesContextType = {
@@ -24,7 +27,7 @@ type ActivityViewerEpigenomesContextType = {
   isError: boolean;
   baseEpigenomes: Epigenome[] | null;
   filteredCombinedEpigenomes: Epigenome[] | null;
-  sortedCombinedEpigenomes: Epigenome[] | null;
+  sortedCombinedEpigenomes: LabelledEpigenome[] | null;
   epigenomeSortingDimensions: string[] | null; // List of up to three dimensions actually used to sort epigenomes
   allEpigenomeSortableDimensions: string[] | null; // List of all dimensions from which the sorting dimensions can be selected
   epigenomeCombiningDimensions: string[]; // List of dimensions to ignore when distinguishing between epigenomes. Selected by user. Starts as empty list
