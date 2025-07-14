@@ -54,7 +54,6 @@ const MainContentBottomViewControls = () => {
             <SectionTitle />
             <Location location={location} />
           </SectionTitleAndLocation>
-          <AssayTargetLabel />
         </div>
         <div className={styles.innerControlsArea}>
           <ContentViewButtons genomeId={genomeId} />
@@ -89,15 +88,6 @@ const Location = ({ location }: { location: GenomicLocation | null }) => {
   });
 
   return <span>{formattedLocationString}</span>;
-};
-
-const AssayTargetLabel = () => {
-  return (
-    <div className={styles.assayTargetLabel}>
-      <span className={styles.light}>Assay target</span>
-      <span>Open chromatin</span>
-    </div>
-  );
 };
 
 const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
