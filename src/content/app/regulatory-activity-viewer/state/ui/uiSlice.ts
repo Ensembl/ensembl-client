@@ -20,11 +20,10 @@ import type { HistoneMetadata } from 'src/content/app/regulatory-activity-viewer
 
 export type MainContentBottomView = 'epigenomes-list' | 'dataviz';
 
-export type SidebarView = 'default' | 'epigenome-filters';
+export type SidebarView = 'default' | 'configuration';
 
 type StatePerGenome = {
   mainContentBottomView: MainContentBottomView;
-  isEpigenomesSelectorOpen: boolean;
   isSidebarOpen: boolean;
   sidebarView: SidebarView;
   histones: HistoneMetadata[];
@@ -34,7 +33,6 @@ type State = Record<string, StatePerGenome>;
 
 const initialStateForGenome: StatePerGenome = {
   mainContentBottomView: 'dataviz',
-  isEpigenomesSelectorOpen: false,
   isSidebarOpen: true,
   sidebarView: 'default',
   histones: []
@@ -57,19 +55,6 @@ const uiSlice = createSlice({
       const { genomeId, view } = action.payload;
       ensureStateForGenome(state, genomeId);
       state[genomeId].mainContentBottomView = view;
-    },
-    openEpigenomesSelector(state, action: PayloadAction<{ genomeId: string }>) {
-      const { genomeId } = action.payload;
-      ensureStateForGenome(state, genomeId);
-      state[genomeId].isEpigenomesSelectorOpen = true;
-    },
-    closeEpigenomesSelector(
-      state,
-      action: PayloadAction<{ genomeId: string }>
-    ) {
-      const { genomeId } = action.payload;
-      ensureStateForGenome(state, genomeId);
-      state[genomeId].isEpigenomesSelectorOpen = false;
     },
     openSidebar(state, action: PayloadAction<{ genomeId: string }>) {
       const { genomeId } = action.payload;
@@ -105,8 +90,6 @@ export const {
   setSidebarView,
   openSidebar,
   closeSidebar,
-  openEpigenomesSelector,
-  closeEpigenomesSelector,
   setHistones
 } = uiSlice.actions;
 

@@ -58,9 +58,9 @@ const SidebarNavigation = (props: Props) => {
     [styles.activeTab]: isDefaultTabSelected
   });
 
-  const isEpigenomeFiltersTabSelected = activeView === 'epigenome-filters';
-  const epigenomeFiltersTabClasses = classNames(styles.tab, {
-    [styles.activeTab]: isEpigenomeFiltersTabSelected
+  const isConfigurationTabSelected = activeView === 'configuration';
+  const configurationTabClasses = classNames(styles.tab, {
+    [styles.activeTab]: isConfigurationTabSelected
   });
 
   return (
@@ -73,11 +73,11 @@ const SidebarNavigation = (props: Props) => {
         In this region
       </TextButton>
       <TextButton
-        onClick={() => onViewChange('epigenome-filters')}
-        disabled={isEpigenomeFiltersTabSelected}
-        className={epigenomeFiltersTabClasses}
+        onClick={() => onViewChange('configuration')}
+        disabled={isConfigurationTabSelected}
+        className={configurationTabClasses}
       >
-        Region activity
+        Configure
       </TextButton>
     </div>
   );

@@ -23,7 +23,6 @@ import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormat
 import { getMainContentBottomView } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSelectors';
 import {
   setMainContentBottomView,
-  openEpigenomesSelector,
   setSidebarView,
   type MainContentBottomView
 } from 'src/content/app/regulatory-activity-viewer/state/ui/uiSlice';
@@ -32,7 +31,6 @@ import useActivityViewerIds from 'src/content/app/regulatory-activity-viewer/hoo
 import useEpigenomes from 'src/content/app/regulatory-activity-viewer/hooks/useEpigenomes';
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
-import ActivityViewerActionSelector from 'src/content/app/regulatory-activity-viewer/components/activity-viewer-actions-selector/ActivityViewerActionsSelector';
 import EpigenomesTableToggle from 'src/content/app/regulatory-activity-viewer/components/epigenomes-activity/epigenomes-table/EpigenomesTableToggle';
 
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
@@ -56,10 +54,8 @@ const MainContentBottomViewControls = () => {
             <SectionTitle />
             <Location location={location} />
           </SectionTitleAndLocation>
-          <AssayTargetLabel />
         </div>
         <div className={styles.innerControlsArea}>
-          <ActivityViewerActionSelector />
           <ContentViewButtons genomeId={genomeId} />
         </div>
       </div>
@@ -94,15 +90,6 @@ const Location = ({ location }: { location: GenomicLocation | null }) => {
   return <span>{formattedLocationString}</span>;
 };
 
-const AssayTargetLabel = () => {
-  return (
-    <div className={styles.assayTargetLabel}>
-      <span className={styles.light}>Assay target</span>
-      <span>Open chromatin</span>
-    </div>
-  );
-};
-
 const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
   const activeView = useAppSelector((state) =>
     getMainContentBottomView(state, genomeId)
@@ -118,12 +105,11 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
     );
   };
 
-  const onConfigure = () => {
-    dispatch(openEpigenomesSelector({ genomeId }));
+  const openConfigurationView = () => {
     dispatch(
       setSidebarView({
         genomeId,
-        view: 'epigenome-filters'
+        view: 'configuration'
       })
     );
   };
@@ -146,7 +132,9 @@ const ContentViewButtons = ({ genomeId }: { genomeId: string }) => {
         Visualise
       </ContentViewButton>
 
-      <SecondaryButton onClick={onConfigure}>Configure</SecondaryButton>
+      <SecondaryButton onClick={openConfigurationView}>
+        Configure
+      </SecondaryButton>
     </div>
   );
 };

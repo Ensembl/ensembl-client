@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, type ComponentProps } from 'react';
+import { useCallback } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -29,18 +29,24 @@ import {
 
 import { getMetadataItems } from './getEpigenomeCounts';
 
-import EpigenomeMetadataDimensionPanel from './epigenome-metadata-dimension-panel/EpigenomeMetadataDimensionPanel';
+// import EpigenomeMetadataDimensionPanel from './epigenome-metadata-dimension-panel/EpigenomeMetadataDimensionPanel';
+import EpigenomeSelectableMetadataItem from './epigenome-selectable-metadata-item/EpigenomeSelectableMetadataItem';
+import {
+  CollapsibleSection,
+  CollapsibleSectionHead,
+  CollapsibleSectionBody
+} from 'src/shared/components/collapsible-section/CollapsibleSection';
 
 import type { Epigenome } from 'src/content/app/regulatory-activity-viewer/types/epigenome';
 import type { EpigenomeMetadataDimensions } from 'src/content/app/regulatory-activity-viewer/types/epigenomeMetadataDimensions';
 
-import styles from './EpigenomeSelectionPanel.module.css';
+import styles from './EpigenomeFilters.module.css';
 
 type Props = {
   genomeId: string;
 };
 
-const EpigenomeSelectionPanel = (props: Props) => {
+const EpigenomeFilters = (props: Props) => {
   const { genomeId } = props;
   const { baseEpigenomes, epigenomeMetadataDimensionsResponse } =
     useEpigenomes();
@@ -79,15 +85,15 @@ const EpigenomeSelectionPanel = (props: Props) => {
 
   const epigenomeMetadataDimensions =
     epigenomeMetadataDimensionsResponse.dimensions;
-  const epigenomeMetadataColumns =
-    epigenomeMetadataDimensionsResponse.ui_spec.filter_layout;
+  const epigenomeMetadataSections =
+    epigenomeMetadataDimensionsResponse.ui_spec.filter_layout.flat();
 
   return (
-    <div className={styles.panel}>
-      {epigenomeMetadataColumns.map((column) => (
-        <EpigenomeMetadataColumn
-          key={column[0]}
-          dimensionsInColumn={column}
+    <div>
+      {epigenomeMetadataSections.map((sectionId) => (
+        <FiltersPanel
+          key={sectionId}
+          sectionId={sectionId}
           selectionCriteria={epigenomeSelectionCriteria}
           metadataDimensions={epigenomeMetadataDimensions}
           epigenomes={baseEpigenomes}
@@ -99,15 +105,15 @@ const EpigenomeSelectionPanel = (props: Props) => {
   );
 };
 
-const EpigenomeMetadataColumn = ({
-  dimensionsInColumn,
+const FiltersPanel = ({
+  sectionId,
   selectionCriteria,
   metadataDimensions,
   epigenomes,
   onSelectionCriterionAdded,
   onSelectionCriterionRemoved
 }: {
-  dimensionsInColumn: string[];
+  sectionId: string;
   selectionCriteria: Record<string, Set<string>>;
   metadataDimensions: EpigenomeMetadataDimensions;
   epigenomes: Epigenome[];
@@ -120,52 +126,49 @@ const EpigenomeMetadataColumn = ({
     value: string;
   }) => void;
 }) => {
-  return (
-    <div className={styles.column}>
-      {dimensionsInColumn.map((dimensionName) => (
-        <EpigenomeMetadataDimensionPanelWithData
-          key={dimensionName}
-          dimensionName={dimensionName}
-          selectionCriteria={selectionCriteria}
-          metadataDimensions={metadataDimensions}
-          epigenomes={epigenomes}
-          onSelectionCriterionAdded={onSelectionCriterionAdded}
-          onSelectionCriterionRemoved={onSelectionCriterionRemoved}
-        />
-      ))}
-    </div>
-  );
-};
-
-const EpigenomeMetadataDimensionPanelWithData = (
-  props: Pick<
-    ComponentProps<typeof EpigenomeMetadataDimensionPanel>,
-    | 'dimensionName'
-    | 'onSelectionCriterionAdded'
-    | 'onSelectionCriterionRemoved'
-  > & {
-    selectionCriteria: Record<string, Set<string>>;
-    metadataDimensions: EpigenomeMetadataDimensions;
-    epigenomes: Epigenome[];
-  }
-) => {
+  const dimensionName = sectionId;
   const { metadataItems, counts: metadataCounts } = getMetadataItems({
-    epigenomes: props.epigenomes,
-    dimensionName: props.dimensionName,
-    selectionCriteria: props.selectionCriteria,
-    metadataItems: props.metadataDimensions[props.dimensionName]
+    epigenomes: epigenomes,
+    dimensionName,
+    selectionCriteria: selectionCriteria,
+    metadataItems: metadataDimensions[dimensionName]
+  });
+  const selectedValues = selectionCriteria[dimensionName] ?? new Set();
+
+  // NOTE: max-height: 200px?
+
+  const selectableItems = metadataItems.values.map((dataItem) => {
+    let metadataValue: string | null = null;
+
+    if (typeof dataItem === 'string') {
+      metadataValue = dataItem;
+    } else if ('value' in dataItem) {
+      metadataValue = dataItem.value;
+    } else {
+      return null;
+    }
+
+    return (
+      <EpigenomeSelectableMetadataItem
+        dimensionName={dimensionName}
+        name={metadataValue}
+        isSelected={selectedValues.has(metadataValue)}
+        count={metadataCounts[metadataValue] ?? 0}
+        onAdd={onSelectionCriterionAdded}
+        onRemove={onSelectionCriterionRemoved}
+        key={metadataValue}
+      />
+    );
   });
 
   return (
-    <EpigenomeMetadataDimensionPanel
-      dimensionName={props.dimensionName}
-      dimensionData={metadataItems}
-      counts={metadataCounts}
-      selectedValues={props.selectionCriteria[props.dimensionName] ?? new Set()}
-      onSelectionCriterionAdded={props.onSelectionCriterionAdded}
-      onSelectionCriterionRemoved={props.onSelectionCriterionRemoved}
-    />
+    <CollapsibleSection className={styles.filtersSection}>
+      <CollapsibleSectionHead>{metadataItems.name}</CollapsibleSectionHead>
+      <CollapsibleSectionBody className={styles.filtersSectionBody}>
+        {selectableItems}
+      </CollapsibleSectionBody>
+    </CollapsibleSection>
   );
 };
 
-export default EpigenomeSelectionPanel;
+export default EpigenomeFilters;

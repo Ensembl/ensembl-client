@@ -78,7 +78,9 @@ export const CollapsibleSection = (props: {
         setIsOpen
       }}
     >
-      <div className={componentClasses}>{props.children}</div>
+      <div className={componentClasses} aria-expanded={isOpen}>
+        {props.children}
+      </div>
     </SectionContext.Provider>
   );
 };

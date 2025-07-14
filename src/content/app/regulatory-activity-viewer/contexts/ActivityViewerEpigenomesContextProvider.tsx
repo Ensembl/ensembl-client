@@ -145,13 +145,23 @@ const useEpigenomesData = () => {
     })) as LabelledEpigenome[];
   }, [epigenomeLabels, combinedEpigenomes]);
 
-  // List of dimensions actually used to sort the epigenomes (up to three dimensions)
-  const epigenomeSortableDimensions =
-    storedEpigenomeSortingDimensions ??
-    epigenomeMetadataDimensionsResponse?.ui_spec.sortable ??
-    [];
+  const epigenomeSortableDimensions = useMemo(
+    () =>
+      getSortableDimensions({
+        storedSortingDimensions: storedEpigenomeSortingDimensions,
+        allSortableDimensions:
+          epigenomeMetadataDimensionsResponse?.ui_spec.sortable ?? [],
+        combiningDimensions: epigenomeCombiningDimensions
+      }),
+    [
+      storedEpigenomeSortingDimensions,
+      epigenomeMetadataDimensionsResponse,
+      epigenomeCombiningDimensions
+    ]
+  );
 
-  const dimensionsForSorting = epigenomeSortableDimensions.slice(0, 3); // use up to three first dimensions for sorting
+  // use up to three first dimensions for sorting
+  const dimensionsForSorting = epigenomeSortableDimensions.slice(0, 3);
 
   const sortedEpigenomes = sortEpigenomes({
     epigenomes: combinedEpigenomesWithLabels,
@@ -176,6 +186,38 @@ const useEpigenomesData = () => {
     allEpigenomeSortableDimensions: epigenomeSortableDimensions,
     epigenomeCombiningDimensions
   };
+};
+
+/**
+ * Get the full list of dimensions that CAN be used for the sorting of epigenomes.
+ * Consider that dimensions in this list should NOT include ones that were used
+ * to combine base epigenomes into combined epigenomes, because
+ * such dimensions can no longer function to distinguish epigenomes.
+ */
+const getSortableDimensions = ({
+  storedSortingDimensions,
+  allSortableDimensions,
+  combiningDimensions
+}: {
+  storedSortingDimensions: string[] | null; // this array has order defined by the user
+  allSortableDimensions: string[]; // this array has a full list of sortable dimensions with a default order defined by the api
+  combiningDimensions: string[];
+}) => {
+  storedSortingDimensions = storedSortingDimensions ?? [];
+  const storedDimensionsSet = new Set(storedSortingDimensions);
+  const remainingDimensions = allSortableDimensions.filter(
+    (dimension) => !storedDimensionsSet.has(dimension)
+  );
+
+  // this will prevent some of the sortable dimensions from disappearing from the list,
+  // which may happen if the user first combines epigenomes, then changes the sorting order, then uncombines
+  const sortableDimensions = [...storedSortingDimensions].concat(
+    remainingDimensions
+  );
+
+  return sortableDimensions.filter(
+    (dimension) => !combiningDimensions.includes(dimension)
+  );
 };
 
 export default ActivityViewerEpigenomesContextProvider;
