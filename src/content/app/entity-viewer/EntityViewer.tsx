@@ -116,6 +116,7 @@ const useEntityViewerRouting = () => {
     entityIdForUrl,
     genomeId,
     entityId,
+    activeGenomeId,
     hasActiveGenomeIdChanged
   } = useEntityViewerIds();
   const [previousActiveIds, setPreviousActiveIds] = useState<{
@@ -157,7 +158,7 @@ const useEntityViewerRouting = () => {
       });
       navigate(replacementUrl, { replace: true });
     }
-    if (haveActiveIdsChanged) {
+    if (haveActiveIdsChanged || !activeGenomeId) {
       dispatch(
         setActiveIds({
           genomeId,
