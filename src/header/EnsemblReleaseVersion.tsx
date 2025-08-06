@@ -25,7 +25,7 @@ const EnsemblReleaseVersion = () => {
     return null;
   }
 
-  const integratedRelease = data?.find(
+  const integratedRelease = data?.find?.(
     (release) => release.is_current && release.type === 'integrated'
   );
 
