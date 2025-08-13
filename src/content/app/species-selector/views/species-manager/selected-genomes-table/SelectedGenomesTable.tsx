@@ -35,6 +35,7 @@ import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
+import TextButton from 'src/shared/components/text-button/TextButton';
 import {
   CommonName,
   ScientificName,
@@ -50,7 +51,6 @@ import SpeciesSelectorIcon from 'static/icons/icon_launchbar_species_selector.sv
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './SelectedGenomesTable.module.css';
-import TextButton from 'src/shared/components/text-button/TextButton';
 
 /**
  * TODO:
