@@ -214,9 +214,6 @@ const SelectedGenomesTable = (props: {
       type: 'update-deletion-list',
       genomeIds: []
     });
-    tableDispatch({
-      type: 'exit-deletion-mode'
-    });
   };
 
   const deleteGenomes = () => {
