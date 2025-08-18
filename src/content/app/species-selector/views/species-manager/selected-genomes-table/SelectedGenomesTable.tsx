@@ -35,6 +35,7 @@ import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
+import TextButton from 'src/shared/components/text-button/TextButton';
 import {
   CommonName,
   ScientificName,
@@ -183,6 +184,14 @@ const SelectedGenomesTable = (props: {
     });
   };
 
+  const addAllGenomesToDeleteList = () => {
+    const allGenomeIds = filteredGenomes.map((genome) => genome.genome_id);
+    tableDispatch({
+      type: 'update-deletion-list',
+      genomeIds: allGenomeIds
+    });
+  };
+
   const removeGenomeFromDeleteList = (genome: CommittedItem) => {
     const currentGenomeIdsList =
       tableState.deletionModeSettings?.genomeIds ?? [];
@@ -198,6 +207,13 @@ const SelectedGenomesTable = (props: {
         type: 'exit-deletion-mode'
       });
     }
+  };
+
+  const removeAllGenomesFromDeleteList = () => {
+    tableDispatch({
+      type: 'update-deletion-list',
+      genomeIds: []
+    });
   };
 
   const deleteGenomes = () => {
@@ -303,6 +319,8 @@ const SelectedGenomesTable = (props: {
                 <ConfirmDeletion
                   species={genome}
                   onDelete={deleteGenomes}
+                  onSelectAll={addAllGenomesToDeleteList}
+                  onDeselectAll={removeAllGenomesFromDeleteList}
                   onCancel={exitDeletionMode}
                 />
               )}
@@ -359,6 +377,8 @@ const DeleteButtonOrCheckbox = ({
 const ConfirmDeletion = (props: {
   species: CommittedItem;
   onDelete: (species: CommittedItem) => void;
+  onSelectAll: () => void;
+  onDeselectAll: () => void;
   onCancel: () => void;
 }) => {
   // this row will use the two rightmost columns of the table,
@@ -374,6 +394,8 @@ const ConfirmDeletion = (props: {
     <tr className={styles.removalRow}>
       <td colSpan={spanColumnsCount}>
         <div className={styles.removalRowContent}>
+          <TextButton onClick={props.onSelectAll}>Select all</TextButton>
+          <TextButton onClick={props.onDeselectAll}>Deselect all</TextButton>
           <span className={styles.removalWarning}>{removalWarning}</span>
           <PrimaryButton onClick={onDelete}>Remove</PrimaryButton>
         </div>
