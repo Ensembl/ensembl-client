@@ -227,10 +227,10 @@ const SelectedGenomesTable = (props: {
     }
     exitDeletionMode();
     if (filteredGenomes.length === genomeIdsForDeletion.length) {
-      if (!previousApp) {
-        navigate(urlFor.speciesSelector());
-      } else {
+      if (previousApp) {
         navigate(`/${previousApp}`);
+      } else {
+        navigate(urlFor.speciesSelector());
       }
     }
   };
