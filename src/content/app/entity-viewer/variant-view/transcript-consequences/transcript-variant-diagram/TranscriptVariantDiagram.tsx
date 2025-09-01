@@ -176,7 +176,6 @@ const StrandEndLabels = ({ width }: { width: number }) => {
       </text>
       <text
         className={styles.label}
-        textAnchor="right"
         x={endLabelX}
         y={labelY}
         dominantBaseline="hanging"

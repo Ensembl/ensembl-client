@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { Pick2 } from 'ts-multipick';
 import { scaleLinear, interpolateRound, ScaleLinear } from 'd3';
+import type { SVGAttributes } from 'react';
+import type { Pick2 } from 'ts-multipick';
 
 import { measureText } from 'src/shared/helpers/textHelpers';
 
@@ -240,7 +241,7 @@ const VariantMarkLabel = (props: {
   });
 
   let labelX = markX;
-  let textAnchor = 'middle';
+  let textAnchor = 'middle' as SVGAttributes<SVGTextElement>['textAnchor'];
 
   if (predictedLabelWidth / 2 > labelX) {
     labelX = 0;

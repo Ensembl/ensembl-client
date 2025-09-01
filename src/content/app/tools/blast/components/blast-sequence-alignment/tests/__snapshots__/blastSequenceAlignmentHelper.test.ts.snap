@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`createBlastSequenceAlignment long alignments wrapping over multiple lines produces correct output 1`] = `
 "       Query 10 TTCAACAGGAGCAGGAGAACAAAATCCAGTCTCATAGCAGAGGAGAATATAATGTTTACA 69
