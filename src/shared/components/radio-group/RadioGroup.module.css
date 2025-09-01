@@ -59,7 +59,7 @@
   font-weight: var(--radio-label-font-weight, var(--font-weight-light));
   line-height: 30px;
   padding-right: 2px;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   user-select: none;
   cursor: pointer;
 }

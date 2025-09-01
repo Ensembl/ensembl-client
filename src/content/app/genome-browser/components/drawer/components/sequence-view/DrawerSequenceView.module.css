@@ -5,9 +5,9 @@
     'main-bottom aside-bottom';
   grid-template-columns: 60ch 1fr;
   grid-template-rows: 20px auto;
-  grid-column-gap: 24px;
+  column-gap: 24px;
+  row-gap: 17px;
   align-items: start;
-  grid-row-gap: 17px;
 }
 
 .mainTop {

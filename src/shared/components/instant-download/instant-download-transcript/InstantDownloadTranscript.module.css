@@ -43,7 +43,7 @@
 
 .layoutHorizontal {
   grid-template-columns: 1fr 1fr;
-  grid-column-gap: 10px;
+  column-gap: 10px;
   grid-template-areas:
     'transcript gene'
     'transcript download';
@@ -79,7 +79,7 @@
 
 
 .layoutVertical {
-  grid-row-gap: 0.5rem;
+  row-gap: 0.5rem;
 }
 
 .layoutVertical .transcriptSection,

@@ -57,7 +57,7 @@
 
 .inputSummary {
   grid-column: input-summary;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .submissionName {

@@ -6,7 +6,7 @@
   cursor: pointer;
   display: grid;
   grid-template-columns: 10% 43% 43%;
-  grid-column-gap: 2%;
+  column-gap: 2%;
 }
 
 .transcriptId {
@@ -20,7 +20,7 @@
 }
 
 .productStableId {
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   justify-self: end;
   word-break: break-all;
   text-align: right;

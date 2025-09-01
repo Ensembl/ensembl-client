@@ -7,7 +7,7 @@
 .grid {
   display: grid;
   align-items: center;
-  grid-column-gap: 20px;
+  column-gap: 20px;
   padding-right: 20px;
   justify-items: start;
 }
@@ -99,7 +99,7 @@
       '. remove-message remove-message';
     grid-template-columns: 60px auto minmax(min-content, 1fr);
     grid-template-rows: minmax(80px, auto) auto auto;
-    grid-row-gap: 10px;
+    row-gap: 10px;
     margin-bottom: 20px;
   }
 

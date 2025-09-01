@@ -12,8 +12,8 @@
 .instructionsWrapper {
   display: grid;
   grid-template-columns: repeat(4, var(--column-width));
-  grid-column-gap: var(--column-gap);
-  grid-row-gap: var(--row-gap);
+  column-gap: var(--column-gap);
+  row-gap: var(--row-gap);
   max-width: calc(4 * var(--column-width) + 3 * var(--column-gap));
 }
 

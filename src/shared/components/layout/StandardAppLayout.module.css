@@ -22,7 +22,7 @@
   display: grid;
   align-items: center;
   grid-template-columns: 1fr var(--sidebar-content-width);
-  grid-column-gap: var(--sidebar-toolstrip-width);
+  column-gap: var(--sidebar-toolstrip-width);
 }
 
 .topbar_withoutSidebarNavigation {
