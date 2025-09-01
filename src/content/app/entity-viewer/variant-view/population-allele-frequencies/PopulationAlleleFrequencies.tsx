@@ -83,7 +83,7 @@ const PopulationAlleleFrequencies = (props: Props) => {
     />
   );
 
-  if (!currentAllele || !currentAllele.populationFrequencies.length) {
+  if (!currentAllele || !currentAllele.globalAlleleFrequencies.length) {
     return (
       <Panel header={panelHeader}>
         <div className={styles.container}>No data</div>
@@ -190,7 +190,7 @@ const PopulationFrequenciesTable = (props: {
     (popFreq) => popFreq.display_group_name === currentPopulationGroup
   );
 
-  return (
+  return filteredAllelePopFreqs.length ? (
     <Table className={styles.table}>
       <thead>
         <tr>
@@ -213,7 +213,7 @@ const PopulationFrequenciesTable = (props: {
         ))}
       </tbody>
     </Table>
-  );
+  ) : null;
 };
 
 const CircleDiagram = (props: { alleleFrequency: number }) => {
