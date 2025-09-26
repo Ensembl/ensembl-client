@@ -15,6 +15,7 @@
  */
 
 import express from 'express';
+import morgan from 'morgan';
 
 import createProxyMiddleware from './middleware/proxyMiddleware';
 import staticMiddleware from './middleware/staticMiddleware';
@@ -30,6 +31,7 @@ const app = express();
 const serverConfig = getConfigForServer();
 
 app.disable('x-powered-by'); // no need to announce to the world that we are running on Express
+app.use(morgan('combined'));
 
 if (!serverConfig.isEnsemblDeployment) {
   const proxyMiddleware = createProxyMiddleware();
