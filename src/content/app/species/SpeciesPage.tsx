@@ -83,6 +83,7 @@ export const serverFetch: ServerFetch = async (params) => {
   );
   const { data: genomeInfo, error: genomeInfoError } =
     await genomeInfoResponsePromise;
+  genomeInfoResponsePromise.unsubscribe();
 
   if (isGenomeNotFoundError(genomeInfoError)) {
     return {

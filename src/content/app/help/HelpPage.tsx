@@ -26,6 +26,7 @@ import { createHelpPageMeta } from './helpers/helpPageMetaHelpers';
 import { isHelpIndexRoute } from './helpers/isHelpIndexRoute';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
+import type { AppDispatch } from 'src/store';
 
 const LazilyLoadedHelp = lazy(() => import('./Help'));
 
@@ -39,15 +40,14 @@ export default HelpPage;
 
 export const serverFetch: ServerFetch = async (params) => {
   const { path, store } = params;
+  const dispatch: AppDispatch = store.dispatch;
 
   if (isHelpIndexRoute(path)) {
-    store.dispatch(updatePageMeta(createHelpPageMeta({ path })));
+    dispatch(updatePageMeta(createHelpPageMeta({ path })));
     return;
   }
 
-  const articlePromise = store.dispatch(
-    getHelpArticle.initiate({ pathname: path })
-  );
+  const articlePromise = dispatch(getHelpArticle.initiate({ pathname: path }));
 
   const { data: article, error: articleError } = await articlePromise;
 
@@ -57,5 +57,5 @@ export const serverFetch: ServerFetch = async (params) => {
     };
   }
 
-  store.dispatch(updatePageMeta(createHelpPageMeta({ article, path })));
+  dispatch(updatePageMeta(createHelpPageMeta({ article, path })));
 };
