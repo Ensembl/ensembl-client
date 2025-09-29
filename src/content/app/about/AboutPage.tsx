@@ -28,6 +28,7 @@ import {
 } from './helpers/aboutPageMetaHelpers';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
+import type { AppDispatch } from 'src/store';
 
 const LazilyLoadedAbout = lazy(() => import('./About'));
 
@@ -41,12 +42,12 @@ export default AboutPage;
 
 export const serverFetch: ServerFetch = async (params) => {
   const { path, store } = params;
+  const dispatch: AppDispatch = store.dispatch;
 
-  const articlePromise = store.dispatch(
-    getHelpArticle.initiate({ pathname: path })
-  );
+  const articlePromise = dispatch(getHelpArticle.initiate({ pathname: path }));
 
   const { data: article, error: articleError } = await articlePromise;
+  articlePromise.unsubscribe();
 
   if (isMissingResourceError(articleError)) {
     return {
@@ -54,10 +55,10 @@ export const serverFetch: ServerFetch = async (params) => {
     };
   }
 
-  store.dispatch(
+  dispatch(
     updatePageMeta({
-      title: createAboutPageTitle(article.title),
-      description: article.description || ABOUT_PAGE_FALLBACK_DESCRIPTION
+      title: createAboutPageTitle(article!.title),
+      description: article!.description || ABOUT_PAGE_FALLBACK_DESCRIPTION
     })
   );
 };

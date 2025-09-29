@@ -89,6 +89,7 @@ const fetchGenomeData = async ({
   );
   const { data: genomeInfoData, error: genomeInfoError } =
     await genomeInfoResponsePromise;
+  genomeInfoResponsePromise.unsubscribe();
 
   if (isGenomeNotFoundError(genomeInfoError)) {
     throw new NotFoundError();
