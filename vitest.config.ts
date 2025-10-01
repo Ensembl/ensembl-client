@@ -20,7 +20,12 @@ import path from 'node:path';
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'jsdom'
+    environment: 'jsdom',
+    css: {
+      modules: {
+        classNameStrategy: 'non-scoped' // keep original class names
+      }
+    }
     // setupFiles: './setupTests.ts',
   },
   resolve: {
@@ -40,8 +45,7 @@ export default defineConfig({
       // Mock SVGs
       '\\.svg': path.resolve(__dirname, './tests/svgrMock.js'),
 
-      // Mock CSS (identity-obj-proxy equivalent)
-      '\\.(css)$': 'identity-obj-proxy'
+      tests: path.resolve(__dirname, 'tests')
     }
   }
 });

@@ -29,20 +29,27 @@ import windowService from 'src/services/window-service';
 
 import { mockMatchMedia } from 'tests/mocks/mockWindowService';
 
-vi.mock('../content/app/App', () => () => <div id="app" />);
-vi.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
-  <div className="privacyBanner">PrivacyBanner</div>
-));
-vi.mock('../global/globalSlice', () => ({
-  updateBreakpointWidth: vi.fn(() => ({ type: 'updateBreakpointWidth' }))
+vi.mock('../content/app/App', () => ({ default: () => <div id="app" /> }));
+vi.mock('../shared/components/privacy-banner/PrivacyBanner', () => ({
+  default: () => <div className="privacyBanner">PrivacyBanner</div>
 }));
-vi.mock('./useRestoredReduxState', () => vi.fn());
+vi.mock('../global/globalSlice', async () => {
+  const actual = await vi.importActual('../global/globalSlice');
+
+  return {
+    ...actual,
+    updateBreakpointWidth: vi.fn(() => ({ type: 'updateBreakpointWidth' }))
+  };
+});
+vi.mock('./useRestoredReduxState', () => ({ default: vi.fn() }));
 vi.mock(
   'src/content/app/tools/blast/state/blast-results/blastResultsSlice',
   () => ({
-    restoreBlastSubmissions: vi.fn(() => ({
-      type: 'restoreBlastSubmissions'
-    }))
+    default: {
+      restoreBlastSubmissions: vi.fn(() => ({
+        type: 'restoreBlastSubmissions'
+      }))
+    }
   })
 );
 

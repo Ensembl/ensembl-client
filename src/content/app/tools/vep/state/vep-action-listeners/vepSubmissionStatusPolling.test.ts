@@ -23,9 +23,17 @@ import VepSubmissionStatusPolling, {
   POLLING_INTERVAL
 } from 'src/content/app/tools/vep/state/vep-action-listeners/vepSubmissionStatusPolling';
 
-vi.mock('config', () => ({
-  toolsApiBaseUrl: 'http://tools-api-url' // need to provide absolute urls to the fetch running in Node
-}));
+vi.mock('config', async () => {
+  const actual = await vi.importActual<typeof import('config')>('config');
+
+  return {
+    ...actual,
+    default: {
+      ...actual.default,
+      toolsApiBaseUrl: 'http://tools-api-url' // need to provide absolute urls to the fetch running in Node
+    }
+  };
+});
 vi.mock(
   'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice',
   () => ({
