@@ -28,25 +28,21 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 import { TrackPanel } from './TrackPanel';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
-    genomeBrowser: mockGenomeBrowser,
-    restoreBrowserTrackStates: jest.fn(),
-    restoreTrackSettingsStates: jest.fn()
-  })
-);
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser,
+  restoreBrowserTrackStates: vi.fn(),
+  restoreTrackSettingsStates: vi.fn()
+}));
 
-jest.mock('src/shared/components/loader', () => ({
+vi.mock('src/shared/components/loader', () => ({
   SidebarLoader: () => <div className="sidebarLoader" />
 }));
-jest.mock('./components/track-panel-list/TrackPanelList', () => () => (
+vi.mock('./components/track-panel-list/TrackPanelList', () => () => (
   <div className="trackPanelList" />
 ));
-jest.mock(
-  'src/content/app/genome-browser/components/drawer/Drawer',
-  () => () => <div className="drawer" />
-);
+vi.mock('src/content/app/genome-browser/components/drawer/Drawer', () => () => (
+  <div className="drawer" />
+));
 
 const mockState = createMockBrowserState();
 
@@ -65,7 +61,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
 
 describe('<TrackPanel />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {

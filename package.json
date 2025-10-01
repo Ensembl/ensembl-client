@@ -25,7 +25,8 @@
     "storybook": "storybook dev -p 9001 -c .storybook",
     "deploy-docs": "./deploy-docs.sh",
     "check-types": "tsc",
-    "test": "jest --verbose",
+    "test": "vitest",
+    "xtest": "jest --verbose",
     "test:watch": "jest --watch",
     "coverage": "jest --coverage"
   },
@@ -126,6 +127,7 @@
     "ts-node": "10.9.2",
     "typescript": "5.9.2",
     "typescript-eslint": "8.44.1",
+    "vitest": "3.2.4",
     "webpack": "5.101.3",
     "webpack-bundle-analyzer": "4.10.2",
     "webpack-cli": "6.0.1",

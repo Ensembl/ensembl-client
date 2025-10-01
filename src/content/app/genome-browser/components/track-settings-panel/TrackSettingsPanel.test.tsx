@@ -33,18 +33,15 @@ const selectedTrackId = 'focus';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
-    genomeBrowser: mockGenomeBrowser,
-    toggleTrackSetting: jest.fn()
-  })
-);
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser,
+  toggleTrackSetting: vi.fn()
+}));
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    trackToggledTrackSetting: jest.fn()
+    trackToggledTrackSetting: vi.fn()
   })
 );
 
@@ -93,7 +90,7 @@ const renderComponent = () => {
       <TrackSettingsPanel
         trackId={selectedTrackId}
         trackType={TrackType.GENE}
-        onOutsideClick={jest.fn()}
+        onOutsideClick={vi.fn()}
       />
     </Provider>
   );
@@ -105,7 +102,7 @@ const renderComponent = () => {
 
 describe('<TrackSettingsPanel />', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('behaviour', () => {
@@ -115,7 +112,7 @@ describe('<TrackSettingsPanel />', () => {
         .find((element) => element.textContent === 'Track name')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackSettingsSlice, 'updateTrackSettingsAndSave');
+      vi.spyOn(trackSettingsSlice, 'updateTrackSettingsAndSave');
 
       await userEvent.click(toggle);
       const updatedState = store.getState();
@@ -140,7 +137,7 @@ describe('<TrackSettingsPanel />', () => {
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
-      jest.spyOn(trackSettingsSlice, 'updateTrackSettingsAndSave');
+      vi.spyOn(trackSettingsSlice, 'updateTrackSettingsAndSave');
       await userEvent.click(toggle);
       const updatedState = store.getState();
       expect(

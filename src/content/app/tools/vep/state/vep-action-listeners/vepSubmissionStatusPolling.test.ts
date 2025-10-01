@@ -23,13 +23,13 @@ import VepSubmissionStatusPolling, {
   POLLING_INTERVAL
 } from 'src/content/app/tools/vep/state/vep-action-listeners/vepSubmissionStatusPolling';
 
-jest.mock('config', () => ({
+vi.mock('config', () => ({
   toolsApiBaseUrl: 'http://tools-api-url' // need to provide absolute urls to the fetch running in Node
 }));
-jest.mock(
+vi.mock(
   'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice',
   () => ({
-    updateSubmission: jest.fn()
+    updateSubmission: vi.fn()
   })
 );
 
@@ -48,12 +48,12 @@ afterAll(() => server.close());
 
 describe('getSubmissionStatusFetcher', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
-    jest.clearAllMocks();
+    vi.useRealTimers();
+    vi.clearAllMocks();
     server.resetHandlers(); // clear request handlers added to mock service worker during the test
   });
 
@@ -80,11 +80,11 @@ describe('getSubmissionStatusFetcher', () => {
     const vepStatusPolling = new VepSubmissionStatusPolling();
     vepStatusPolling.enqueueSubmission({
       submission: { id: submissionId, status: 'SUBMITTED' },
-      dispatch: jest.fn()
+      dispatch: vi.fn()
     });
 
-    await jest.advanceTimersByTimeAsync(POLLING_INTERVAL * 4);
-    jest.useRealTimers();
+    await vi.advanceTimersByTimeAsync(POLLING_INTERVAL * 4);
+    vi.useRealTimers();
 
     expect(actualStatusPollCount).toBe(maxStatusPollCount);
     expect(updateSubmission as any).toHaveBeenCalledWith({
@@ -132,36 +132,36 @@ describe('getSubmissionStatusFetcher', () => {
     const vepStatusPolling = new VepSubmissionStatusPolling();
     vepStatusPolling.enqueueSubmission({
       submission: { id: submission1.id, status: 'SUBMITTED' },
-      dispatch: jest.fn()
+      dispatch: vi.fn()
     });
-    await jest.advanceTimersByTimeAsync(POLLING_INTERVAL / 2); // add an artificial delay before enqueueing a new submission
+    await vi.advanceTimersByTimeAsync(POLLING_INTERVAL / 2); // add an artificial delay before enqueueing a new submission
     vepStatusPolling.enqueueSubmission({
       submission: { id: submission2.id, status: 'SUBMITTED' },
-      dispatch: jest.fn()
+      dispatch: vi.fn()
     });
 
     // Assert
-    await jest.advanceTimersByTimeAsync(POLLING_INTERVAL / 2); // to compensate for the delay above, this adds up to one polling interval
+    await vi.advanceTimersByTimeAsync(POLLING_INTERVAL / 2); // to compensate for the delay above, this adds up to one polling interval
     expect(submission1.requestsSent).toBe(1);
     expect(submission2.requestsSent).toBe(0);
 
     // make sure that the second submission isn't being polled at its own rhythm
-    await jest.advanceTimersByTimeAsync(POLLING_INTERVAL / 2);
+    await vi.advanceTimersByTimeAsync(POLLING_INTERVAL / 2);
     expect(submission2.requestsSent).toBe(0);
 
-    await jest.advanceTimersByTimeAsync(POLLING_INTERVAL / 2); // to compensate for half a polling interval above
+    await vi.advanceTimersByTimeAsync(POLLING_INTERVAL / 2); // to compensate for half a polling interval above
     expect(submission1.requestsSent).toBe(1);
     expect(submission2.requestsSent).toBe(1);
 
-    await jest.advanceTimersByTimeAsync(POLLING_INTERVAL);
+    await vi.advanceTimersByTimeAsync(POLLING_INTERVAL);
     expect(submission1.requestsSent).toBe(2);
     expect(submission2.requestsSent).toBe(1);
 
-    await jest.advanceTimersByTimeAsync(POLLING_INTERVAL);
+    await vi.advanceTimersByTimeAsync(POLLING_INTERVAL);
     expect(submission1.requestsSent).toBe(2);
     expect(submission2.requestsSent).toBe(2);
 
-    await jest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
     expect(submission1.requestsSent).toBe(3);
     expect(submission2.requestsSent).toBe(2);
     expect(updateSubmission as any).toHaveBeenCalledWith({
@@ -199,11 +199,11 @@ describe('getSubmissionStatusFetcher', () => {
     const vepStatusPolling = new VepSubmissionStatusPolling();
     vepStatusPolling.enqueueSubmission({
       submission: { id: submissionId, status: 'SUBMITTED' },
-      dispatch: jest.fn()
+      dispatch: vi.fn()
     });
 
     // Assert
-    await jest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     expect(actualStatusPollCount).toBe(2);
     expect(updateSubmission as any).toHaveBeenCalledWith({
@@ -238,11 +238,11 @@ describe('getSubmissionStatusFetcher', () => {
     const vepStatusPolling = new VepSubmissionStatusPolling();
     vepStatusPolling.enqueueSubmission({
       submission: { id: submissionId, status: 'SUBMITTED' },
-      dispatch: jest.fn()
+      dispatch: vi.fn()
     });
 
     // Assert
-    await jest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     expect(actualStatusPollCount).toBe(1);
     expect(updateSubmission as any).toHaveBeenCalledWith({
@@ -285,11 +285,11 @@ describe('getSubmissionStatusFetcher', () => {
         { id: 'foo', status: 'RUNNING' },
         { id: 'bar', status: 'RUNNING' }
       ],
-      dispatch: jest.fn()
+      dispatch: vi.fn()
     });
 
     // Assert
-    await jest.advanceTimersByTimeAsync(POLLING_INTERVAL / 2); // precise time doesn't really matter; the initial requests were sent without delay
+    await vi.advanceTimersByTimeAsync(POLLING_INTERVAL / 2); // precise time doesn't really matter; the initial requests were sent without delay
     expect(updateSubmission as any).toHaveBeenCalledWith({
       submissionId: 'foo',
       fragment: { status: 'SUCCEEDED' }
@@ -303,7 +303,7 @@ describe('getSubmissionStatusFetcher', () => {
       fragment: { status: 'RUNNING' }
     }); // the SUBMITTED status has changed to RUNNING
 
-    await jest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
     expect(updateSubmission as any).toHaveBeenCalledWith({
       submissionId: lateSubmissionId,
       fragment: { status: 'SUCCEEDED' }
@@ -349,21 +349,21 @@ describe('getSubmissionStatusFetcher', () => {
     const vepStatusPolling = new VepSubmissionStatusPolling();
     vepStatusPolling.enqueueSubmission({
       submission: { id: submission1.id, status: 'SUBMITTED' },
-      dispatch: jest.fn()
+      dispatch: vi.fn()
     });
     vepStatusPolling.enqueueSubmission({
       submission: { id: submission2.id, status: 'SUBMITTED' },
-      dispatch: jest.fn()
+      dispatch: vi.fn()
     });
 
     // Assert
-    await jest.advanceTimersByTimeAsync(POLLING_INTERVAL * 2);
+    await vi.advanceTimersByTimeAsync(POLLING_INTERVAL * 2);
     expect(submission1.requestsSent).toBe(1);
     expect(submission2.requestsSent).toBe(1);
 
     vepStatusPolling.removeSubmission(submission1.id);
 
-    await jest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
     expect(submission1.requestsSent).toBe(1); // The polling of the status of submission1 should have stopped
     expect(submission2.requestsSent).toBe(3);
   });

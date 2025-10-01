@@ -34,7 +34,7 @@ import blastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig';
 
 import BlastSettings from './BlastSettings';
 
-jest.mock('config', () => ({
+vi.mock('config', () => ({
   toolsApiBaseUrl: 'http://tools-api' // need to provide absolute urls to the fetch running in Node
 }));
 

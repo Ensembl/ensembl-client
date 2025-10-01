@@ -51,12 +51,12 @@ const TestComponent = () => {
 
 describe('useShowTooltip', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.useRealTimers();
+    vi.resetAllMocks();
+    vi.useRealTimers();
   });
 
   describe('useShowTooltip with on click', () => {
@@ -69,7 +69,7 @@ describe('useShowTooltip', () => {
       await userEventWithoutDelay.click(testElement);
 
       act(() => {
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
       });
       expect(queryByTestId('tooltip')).toBeTruthy();
     });
@@ -84,7 +84,7 @@ describe('useShowTooltip', () => {
       await userEventWithoutDelay.click(testElement); // would clear the timer and toggle the state to show the tooltip
 
       act(() => {
-        jest.advanceTimersByTime(0); // the tooltip should appear instantaneously
+        vi.advanceTimersByTime(0); // the tooltip should appear instantaneously
       });
       expect(queryByTestId('tooltip')).toBeTruthy();
     });
@@ -98,7 +98,7 @@ describe('useShowTooltip', () => {
       await userEventWithoutDelay.click(testElement);
 
       act(() => {
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
       });
 
       await userEventWithoutDelay.unhover(testElement); // <-- should have no effect on the tooltip
@@ -118,7 +118,7 @@ describe('useShowTooltip', () => {
 
       // moving the timer to simulate the delay before the tooltip is shown
       act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
+        vi.advanceTimersByTime(TOOLTIP_TIMEOUT);
       });
 
       expect(queryByTestId('tooltip')).toBeTruthy();
@@ -163,7 +163,7 @@ describe('useShowTooltip', () => {
       triggerTooltipCloseSignal();
 
       act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
+        vi.advanceTimersByTime(TOOLTIP_TIMEOUT);
       });
 
       expect(queryByTestId('tooltip')).toBeFalsy();

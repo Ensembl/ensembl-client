@@ -36,21 +36,21 @@ import { TrackPanelList } from './TrackPanelList';
 
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-jest.mock('config', () => ({
+vi.mock('config', () => ({
   tracksApiBaseUrl: 'http://track-api'
 }));
 
-jest.mock('./track-panel-items/TrackPanelGene', () => () => (
+vi.mock('./track-panel-items/TrackPanelGene', () => () => (
   <div className="trackPanelGene" />
 ));
 
-jest.mock('./track-panel-items/TrackPanelRegularItem', () => () => (
+vi.mock('./track-panel-items/TrackPanelRegularItem', () => () => (
   <div className="trackPanelRegularItem" />
 ));
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => jest.fn()
+  () => () => vi.fn()
 );
 
 const mockState = createMockBrowserState();
@@ -99,7 +99,7 @@ afterAll(() => server.close());
 
 describe('<TrackPanelList />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {

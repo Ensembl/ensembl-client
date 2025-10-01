@@ -19,16 +19,16 @@ import userEvent from '@testing-library/user-event';
 
 import NavigateModal from '../../NavigateModal';
 
-jest.mock('../LocationNavigation', () => () => (
+vi.mock('../LocationNavigation', () => () => (
   <div data-test-id="location-nav">LocationNavigation</div>
 ));
-jest.mock('../RegionNavigation', () => () => (
+vi.mock('../RegionNavigation', () => () => (
   <div data-test-id="region-nav">RegionNavigation</div>
 ));
 
 describe('<NavigateModal />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('opens location navigation panel', async () => {

@@ -23,8 +23,8 @@ import GeneOverview from './GeneOverview';
 const mockGenomeId = 'genome_id';
 const mockGeneId = 'unversioned_gene_id';
 
-jest.mock('react-router-dom', () => ({
-  useParams: jest.fn(() => ({
+vi.mock('react-router-dom', () => ({
+  useParams: vi.fn(() => ({
     params: {
       entityId: mockGenomeId,
       mockGeneId
@@ -32,20 +32,20 @@ jest.mock('react-router-dom', () => ({
   }))
 }));
 
-jest.mock(
+vi.mock(
   'src/content/app/entity-viewer/state/api/entityViewerThoasSlice',
   () => ({
-    useGeneOverviewQuery: jest.fn()
+    useGeneOverviewQuery: vi.fn()
   })
 );
 
-jest.mock('src/store', () => ({ useAppDispatch: jest.fn() }));
+vi.mock('src/store', () => ({ useAppDispatch: vi.fn() }));
 
-jest.mock('../publications/GenePublications', () => () => (
+vi.mock('../publications/GenePublications', () => () => (
   <div className="genePublications" />
 ));
 
-jest.mock(
+vi.mock(
   'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds',
   () => () => ({
     genomeId: mockGenomeId,
@@ -53,7 +53,7 @@ jest.mock(
   })
 );
 
-jest.mock(
+vi.mock(
   'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
   () => () => ({})
 );
@@ -87,7 +87,7 @@ const completeGeneData = {
 
 describe('<GeneOverview />', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('loading', () => {

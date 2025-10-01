@@ -38,7 +38,7 @@ const getDatabase = async () => {
   });
 };
 
-jest.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
+vi.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
 
 afterEach(async () => {
   await IndexedDB.clear(GENERAL_UI_STORE_NAME);

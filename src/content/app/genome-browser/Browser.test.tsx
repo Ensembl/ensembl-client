@@ -29,43 +29,42 @@ import { createMockBrowserState } from 'tests/fixtures/browser';
 
 import { BrowserSidebarModalView } from './state/browser-sidebar-modal/browserSidebarModalSlice';
 
-jest.mock('./hooks/useBrowserRouting', () => () => ({
-  changeGenomeId: jest.fn()
+vi.mock('./hooks/useBrowserRouting', () => () => ({
+  changeGenomeId: vi.fn()
 }));
-jest.mock('./hooks/useGenomeBrowser', () => () => ({
+vi.mock('./hooks/useGenomeBrowser', () => () => ({
   genomeBrowser: {}
 }));
-jest.mock('./hooks/useGenomeBrowserTracks', () => jest.fn());
-jest.mock('./components/browser-bar/BrowserBar', () => () => (
+vi.mock('./hooks/useGenomeBrowserTracks', () => vi.fn());
+vi.mock('./components/browser-bar/BrowserBar', () => () => (
   <div className="browserBar">BrowserBar</div>
 ));
-jest.mock('./components/browser-image/BrowserImage', () => () => (
+vi.mock('./components/browser-image/BrowserImage', () => () => (
   <div className="browserImage">BrowserImage</div>
 ));
-jest.mock('./components/browser-app-bar/BrowserAppBar', () => () => (
+vi.mock('./components/browser-app-bar/BrowserAppBar', () => () => (
   <div className="browserAppBar">BrowserAppBar</div>
 ));
-jest.mock('./components/interstitial/BrowserInterstitial', () => () => (
+vi.mock('./components/interstitial/BrowserInterstitial', () => () => (
   <div className="browserInterstitial">BrowserInterstitial</div>
 ));
-jest.mock(
+vi.mock(
   './components/browser-sidebar-toolstrip/BrowserSidebarToolstrip',
   () => () => (
     <div className="browserSidebarToolstrip">BrowserSidebarToolstrip</div>
   )
 );
-jest.mock('./components/track-panel/TrackPanel', () => () => (
+vi.mock('./components/track-panel/TrackPanel', () => () => (
   <div className="trackPanel">TrackPanel</div>
 ));
-jest.mock(
-  './components/browser-sidebar-modal/BrowserSidebarModal',
-  () => () => <div className="sidebarModal">Sidebar modal</div>
-);
-jest.mock(
+vi.mock('./components/browser-sidebar-modal/BrowserSidebarModal', () => () => (
+  <div className="sidebarModal">Sidebar modal</div>
+));
+vi.mock(
   './components/track-panel/components/track-panel-tabs/TrackPanelTabs',
   () => () => <div className="trackPanelTabs">TrackPanelTabs</div>
 );
-jest.mock('./components/drawer/Drawer', () => () => (
+vi.mock('./components/drawer/Drawer', () => () => (
   <div className="drawer">Drawer</div>
 ));
 
@@ -97,7 +96,7 @@ describe('<Browser />', () => {
   const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {

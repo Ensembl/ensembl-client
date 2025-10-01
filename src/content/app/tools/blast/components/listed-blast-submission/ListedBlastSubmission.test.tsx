@@ -38,7 +38,7 @@ import blastResultsReducer, {
 import { createBlastSubmission } from 'tests/fixtures/blast/blastSubmission';
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 
-jest.mock('src/content/app/tools/blast/services/blastStorageService');
+vi.mock('src/content/app/tools/blast/services/blastStorageService');
 
 const defaultProps = {
   submission: createBlastSubmission()

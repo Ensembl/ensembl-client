@@ -23,7 +23,7 @@ import ExpandableSection, { ExpandableSectionProps } from './ExpandableSection';
 
 const expandedContent = faker.lorem.paragraph();
 const collapsedContent = faker.lorem.paragraph();
-const mockOnToggle = jest.fn();
+const mockOnToggle = vi.fn();
 
 const defaultProps = {
   expandedContent,
@@ -38,7 +38,7 @@ const defaultProps = {
 } satisfies ExpandableSectionProps;
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 describe('<ExpandableSection />', () => {

@@ -36,7 +36,7 @@ import {
 
 const mockRegulationApiRoot = 'http://regulation-api';
 
-jest.mock('config', () => ({
+vi.mock('config', () => ({
   metadataApiBaseUrl: 'http://metadata-api',
   regulationApiBaseUrl: 'http://regulation-api'
 }));

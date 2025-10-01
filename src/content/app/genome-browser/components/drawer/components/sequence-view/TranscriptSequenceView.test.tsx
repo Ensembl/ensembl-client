@@ -33,20 +33,20 @@ import {
 
 import TranscriptSequenceView, { type Props } from './TranscriptSequenceView';
 
-jest.mock('config', () => ({
+vi.mock('config', () => ({
   refgetBaseUrl: 'http://refget-api' // need to provide absolute urls to the fetch running in Node
 }));
-jest.mock(
+vi.mock(
   'src/shared/components/blast-sequence-button/BlastSequenceButton',
   () => () => {
     return <button className="blast-sequence-button" />;
   }
 );
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    trackDrawerSequenceViewed: jest.fn()
+    trackDrawerSequenceViewed: vi.fn()
   })
 );
 

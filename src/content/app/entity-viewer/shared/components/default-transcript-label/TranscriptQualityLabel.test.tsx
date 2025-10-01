@@ -38,7 +38,7 @@ const metadata = {
 
 describe('<TranscriptQualityLabel />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('displays correct labels for transcript metadata', () => {

@@ -34,11 +34,11 @@ import { BookmarksModal } from './BookmarksModal';
 import { PreviouslyViewedObject } from 'src/content/app/genome-browser/state/browser-bookmarks/browserBookmarksSlice';
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
+const mockGenomeBrowser = vi.fn(() => new MockGenomeBrowser() as any);
 
 const mockGenomeId = 'grch38';
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   Link: (props: any) => (
     <a href={props.to} onClick={props.onClick}>
       {props.children}
@@ -46,23 +46,23 @@ jest.mock('react-router-dom', () => ({
   )
 }));
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
   () => () => ({
     genomeIdForUrl: mockGenomeId
   })
 );
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowser',
   () => () => mockGenomeBrowser
 );
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    trackPreviouslyViewedObjectClicked: jest.fn(),
-    trackBookmarksDrawerOpened: jest.fn()
+    trackPreviouslyViewedObjectClicked: vi.fn(),
+    trackBookmarksDrawerOpened: vi.fn()
   })
 );
 
@@ -97,7 +97,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
 
 describe('<BookmarksModal />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders previously viewed links', () => {

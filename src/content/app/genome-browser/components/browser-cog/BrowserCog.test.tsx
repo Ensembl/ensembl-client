@@ -22,20 +22,20 @@ import BrowserCog, { BrowserCogProps } from './BrowserCog';
 
 import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
-jest.mock('../track-settings-panel/TrackSettingsPanel', () => () => (
+vi.mock('../track-settings-panel/TrackSettingsPanel', () => () => (
   <div id="trackSettingsPanel">TrackSettingsPanel</div>
 ));
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    reportTrackSettingsOpened: jest.fn()
+    reportTrackSettingsOpened: vi.fn()
   })
 );
 
 describe('<BrowserCog />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const defaultProps: BrowserCogProps = {

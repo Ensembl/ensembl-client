@@ -41,24 +41,21 @@ const renderComponent = (state: typeof mockState = mockState) => {
   );
 };
 
-const mockChangeFocusObject = jest.fn();
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
-    changeFocusObject: mockChangeFocusObject
-  })
-);
+const mockChangeFocusObject = vi.fn();
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
+  changeFocusObject: mockChangeFocusObject
+}));
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => () => ({
-    trackFocusObjectReset: jest.fn()
+    trackFocusObjectReset: vi.fn()
   })
 );
 
 describe('<BrowserReset />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {

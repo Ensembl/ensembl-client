@@ -25,13 +25,13 @@ const props: DeletionConfirmationProps = {
   confirmText: 'Remove',
   cancelText: 'Do not remove',
   warningText: 'Do you want to remove?',
-  onConfirm: jest.fn(),
-  onCancel: jest.fn()
+  onConfirm: vi.fn(),
+  onCancel: vi.fn()
 };
 
 describe('DeletionConfirmation', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('applies custom messages provided by parent', () => {

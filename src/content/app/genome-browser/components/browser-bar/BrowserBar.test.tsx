@@ -23,17 +23,17 @@ import { createMockBrowserState } from 'tests/fixtures/browser';
 
 import { BrowserBar } from './BrowserBar';
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/components/browser-reset/BrowserReset',
   () => () => <div id="browserReset">BrowserReset</div>
 );
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/components/browser-location-indicator/BrowserLocationIndicator',
   () => () => (
     <div id="browserLocationIndicator">Browser Location Indicator</div>
   )
 );
-jest.mock(
+vi.mock(
   'src/shared/components/feature-summary-strip/FeatureSummaryStrip',
   () => () => <div id="featureSummaryStrip">Feature Summary Strip</div>
 );

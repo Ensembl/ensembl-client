@@ -27,7 +27,7 @@ import { TableAction } from 'src/shared/components/data-table/dataTableTypes';
 
 const defaultProps = {
   ...defaultDataTableState,
-  dispatch: jest.fn(),
+  dispatch: vi.fn(),
   columns: [],
   rows: defaultDataTableState.data.map((row, index) => ({
     rowId: index,
@@ -48,7 +48,7 @@ describe('<FindInTable />', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders without error', () => {

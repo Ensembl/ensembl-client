@@ -20,31 +20,31 @@ import { faker } from '@faker-js/faker';
 import mockWindowService from 'tests/mocks/mockWindowService';
 
 const mockLocalStorage: any = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn()
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn()
 };
 
 const mockSessionStorage: any = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn()
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn()
 };
 
 describe('storageService', () => {
   beforeEach(() => {
-    jest
-      .spyOn(mockWindowService, 'getLocalStorage')
-      .mockImplementation(() => mockLocalStorage);
-    jest
-      .spyOn(mockWindowService, 'getSessionStorage')
-      .mockImplementation(() => mockSessionStorage);
+    vi.spyOn(mockWindowService, 'getLocalStorage').mockImplementation(
+      () => mockLocalStorage
+    );
+    vi.spyOn(mockWindowService, 'getSessionStorage').mockImplementation(
+      () => mockSessionStorage
+    );
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('using local storage', () => {
@@ -55,9 +55,9 @@ describe('storageService', () => {
         const key = faker.lorem.word();
         const storedValue = faker.lorem.words();
 
-        jest
-          .spyOn(mockLocalStorage, 'getItem')
-          .mockImplementation(() => JSON.stringify(storedValue));
+        vi.spyOn(mockLocalStorage, 'getItem').mockImplementation(() =>
+          JSON.stringify(storedValue)
+        );
 
         const storageService = new StorageService(mockWindowService);
         const result = storageService.get(key);
@@ -70,7 +70,7 @@ describe('storageService', () => {
 
       it('returns null if nothing is stored under provided key', () => {
         const key = faker.lorem.word();
-        jest.spyOn(mockLocalStorage, 'getItem').mockImplementation(() => null);
+        vi.spyOn(mockLocalStorage, 'getItem').mockImplementation(() => null);
 
         const storageService = new StorageService(mockWindowService);
         const result = storageService.get(key);
@@ -128,9 +128,9 @@ describe('storageService', () => {
           [key2]: value1
         };
 
-        jest
-          .spyOn(mockLocalStorage, 'getItem')
-          .mockImplementation(() => JSON.stringify(obj));
+        vi.spyOn(mockLocalStorage, 'getItem').mockImplementation(() =>
+          JSON.stringify(obj)
+        );
 
         const storageService = new StorageService(mockWindowService);
         storageService.update(key, updateObj);
@@ -182,9 +182,9 @@ describe('storageService', () => {
           }
         };
 
-        jest
-          .spyOn(mockLocalStorage, 'getItem')
-          .mockImplementation(() => JSON.stringify(obj));
+        vi.spyOn(mockLocalStorage, 'getItem').mockImplementation(() =>
+          JSON.stringify(obj)
+        );
 
         const storageService = new StorageService(mockWindowService);
         storageService.removeAt(key, [key, key1, key2, 'foo'], {
@@ -207,9 +207,9 @@ describe('storageService', () => {
         const key = faker.lorem.word();
         const storedValue = faker.lorem.words();
 
-        jest
-          .spyOn(mockSessionStorage, 'getItem')
-          .mockImplementation(() => JSON.stringify(storedValue));
+        vi.spyOn(mockSessionStorage, 'getItem').mockImplementation(() =>
+          JSON.stringify(storedValue)
+        );
 
         const storageService = new StorageService(mockWindowService);
         const result = storageService.get(key, {
@@ -224,9 +224,7 @@ describe('storageService', () => {
 
       it('returns null if nothing is stored under provided key', () => {
         const key = faker.lorem.word();
-        jest
-          .spyOn(mockSessionStorage, 'getItem')
-          .mockImplementation(() => null);
+        vi.spyOn(mockSessionStorage, 'getItem').mockImplementation(() => null);
 
         const storageService = new StorageService(mockWindowService);
         const result = storageService.get(key, {
@@ -285,9 +283,9 @@ describe('storageService', () => {
           [key2]: value2
         };
 
-        jest
-          .spyOn(mockSessionStorage, 'getItem')
-          .mockImplementation(() => JSON.stringify(obj));
+        vi.spyOn(mockSessionStorage, 'getItem').mockImplementation(() =>
+          JSON.stringify(obj)
+        );
 
         const storageService = new StorageService(mockWindowService);
         storageService.update(key, updateObj, {
@@ -340,9 +338,9 @@ describe('storageService', () => {
           }
         };
 
-        jest
-          .spyOn(mockSessionStorage, 'getItem')
-          .mockImplementation(() => JSON.stringify(obj));
+        vi.spyOn(mockSessionStorage, 'getItem').mockImplementation(() =>
+          JSON.stringify(obj)
+        );
 
         const storageService = new StorageService(mockWindowService);
         storageService.removeAt(key, [key, key1, key2, 'foo'], {

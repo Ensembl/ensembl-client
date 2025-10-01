@@ -30,7 +30,7 @@ import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 const mockMetadataBaseApi = 'http://metadata-api';
 
-jest.mock('config', () => ({
+vi.mock('config', () => ({
   metadataApiBaseUrl: 'http://metadata-api'
 }));
 

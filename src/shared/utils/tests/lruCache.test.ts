@@ -83,15 +83,13 @@ describe('LRUCache', () => {
     const timestamp = Date.now();
     cache.set(item.key, item.value);
 
-    jest.spyOn(global.Date, 'now').mockImplementation(() => timestamp + 1);
+    vi.spyOn(global.Date, 'now').mockImplementation(() => timestamp + 1);
 
     // value can be retrieved before cache has gone stale
     // (btw, notice that accessing a value from cache will reset its timestamp)
     expect(cache.get(item.key)).toBe(item.value);
 
-    jest
-      .spyOn(global.Date, 'now')
-      .mockImplementation(() => timestamp + 1000 + 2);
+    vi.spyOn(global.Date, 'now').mockImplementation(() => timestamp + 1000 + 2);
 
     expect(cache.get(item.key)).toBeUndefined();
   });

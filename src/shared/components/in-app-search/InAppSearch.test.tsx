@@ -48,7 +48,7 @@ const defaultProps: InAppSearchProps = {
 
 describe('<InAppSearch />', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('initial rendering', () => {
@@ -98,7 +98,7 @@ describe('<InAppSearch />', () => {
 
   describe('search', () => {
     beforeAll(() => {
-      global.fetch = jest.fn().mockImplementation(
+      global.fetch = vi.fn().mockImplementation(
         () =>
           Promise.resolve({
             ok: true,
@@ -109,10 +109,10 @@ describe('<InAppSearch />', () => {
 
     it('handles query submission', async () => {
       // check that correct arguments are passed to the search function
-      jest
-        .spyOn(inAppSearchSlice, 'search')
-        .mockImplementation(() => ({ type: 'action' }) as any);
-      const onSearchSubmit = jest.fn();
+      vi.spyOn(inAppSearchSlice, 'search').mockImplementation(
+        () => ({ type: 'action' }) as any
+      );
+      const onSearchSubmit = vi.fn();
       const props = { ...defaultProps, onSearchSubmit };
 
       const { container, rerender } = render(

@@ -37,26 +37,23 @@ import { GenomeBrowserIdsProvider } from '../contexts/genome-browser-ids-context
 import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
 // NOTE: scary stuff, but if you prefix function name with the word "mock",
-// jest will allow passing them to the factory function of jest.mock
-const mockChangeFocusObject = jest.fn();
-const mockChangeBrowserLocation = jest.fn();
+// jest will allow passing them to the factory function of vi.mock
+const mockChangeFocusObject = vi.fn();
+const mockChangeBrowserLocation = vi.fn();
 
 const mockMetadataApiBaseUrl = 'http://metadata-api';
 const mockGenomeBrowserObj = {};
 
-jest.mock('config', () => ({
+vi.mock('config', () => ({
   metadataApiBaseUrl: 'http://metadata-api',
   coreApiUrl: 'http://graphql-api'
 }));
 
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
-    genomeBrowser: mockGenomeBrowserObj,
-    changeFocusObject: mockChangeFocusObject,
-    changeBrowserLocation: mockChangeBrowserLocation
-  })
-);
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowserObj,
+  changeFocusObject: mockChangeFocusObject,
+  changeBrowserLocation: mockChangeBrowserLocation
+}));
 
 type GenomeExplainerResponse = Pick<
   BriefGenomeSummary,
@@ -220,7 +217,7 @@ afterAll(() => server.close());
 
 describe('useBrowserRouting', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     routingHandle = null;
   });
 

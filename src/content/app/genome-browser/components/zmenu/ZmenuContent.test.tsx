@@ -38,9 +38,9 @@ import LocationDisplay, {
   LOCATION_DISPLAY_TEST_ID
 } from 'tests/components/LocationDisplay';
 
-jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
+vi.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
   () => () => ({
     genomeIdForUrl: 'grch38'
@@ -58,7 +58,7 @@ const mockState = createMockBrowserState();
 
 const defaultZmenuContentProps: ZmenuContentProps = {
   ...createZmenuContentPayload(),
-  destroyZmenu: jest.fn()
+  destroyZmenu: vi.fn()
 };
 
 const renderZmenuContent = (state = mockState) => {
@@ -80,7 +80,7 @@ const defaultZmenuContentItemProps: ZmenuContentItemProps = {
   featureId: faker.lorem.words(),
   markup: [Markup.FOCUS],
   text: faker.lorem.words(),
-  destroyZmenu: jest.fn()
+  destroyZmenu: vi.fn()
 };
 
 const renderZmenuContentItem = (state = mockState) => {
@@ -101,7 +101,7 @@ const renderZmenuContentItem = (state = mockState) => {
 
 describe('<ZmenuContent />', () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('rendering', () => {

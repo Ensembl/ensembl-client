@@ -23,13 +23,13 @@ export const mockMatchMedia = () => () => ({
 });
 
 const mockWindowService: WindowServiceInterface = {
-  getLocalStorage: jest.fn(),
-  getSessionStorage: jest.fn(),
-  getResizeObserver: jest.fn(),
-  getMatchMedia: jest.fn().mockImplementation(mockMatchMedia),
-  getWindow: jest.fn(),
-  getFileReader: jest.fn(),
-  getLocation: jest.fn()
+  getLocalStorage: vi.fn(),
+  getSessionStorage: vi.fn(),
+  getResizeObserver: vi.fn(),
+  getMatchMedia: vi.fn().mockImplementation(mockMatchMedia),
+  getWindow: vi.fn(),
+  getFileReader: vi.fn(),
+  getLocation: vi.fn()
 };
 
 export default mockWindowService;
