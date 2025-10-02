@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { MemoryRouter, Routes, Route } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import set from 'lodash/fp/set';
-import { useLocation } from 'react-router-dom';
 
 import Browser from './Browser';
 
@@ -43,10 +42,8 @@ vi.mock('./hooks/useGenomeBrowserTracks', () => {
 });
 vi.mock('./components/browser-bar/BrowserBar', () => {
   return {
-    default: () => (
-      <div className="browserBar">BrowserBar</div>
-    )
-  }
+    default: () => <div className="browserBar">BrowserBar</div>
+  };
 });
 vi.mock('./components/browser-image/BrowserImage', () => {
   return {
@@ -55,12 +52,14 @@ vi.mock('./components/browser-image/BrowserImage', () => {
 });
 vi.mock('./components/browser-app-bar/BrowserAppBar', () => {
   return {
-    default: <div className="browserAppBar">BrowserAppBar</div>
+    default: () => <div className="browserAppBar">BrowserAppBar</div>
   };
 });
 vi.mock('./components/interstitial/BrowserInterstitial', () => {
   return {
-    default: <div className="browserInterstitial">BrowserInterstitial</div>
+    default: () => (
+      <div className="browserInterstitial">BrowserInterstitial</div>
+    )
   };
 });
 vi.mock(
@@ -70,35 +69,31 @@ vi.mock(
       default: () => (
         <div className="browserSidebarToolstrip">BrowserSidebarToolstrip</div>
       )
-    }
+    };
   }
 );
 vi.mock('./components/track-panel/TrackPanel', () => {
   return {
-    default: () => (
-      <div className="trackPanel">TrackPanel</div>
-    )
-  }
+    default: () => <div className="trackPanel">TrackPanel</div>
+  };
 });
 vi.mock('./components/browser-sidebar-modal/BrowserSidebarModal', () => {
   return {
-    default: () => (
-      <div className="sidebarModal">Sidebar modal</div>
-    )
-  }
+    default: () => <div className="sidebarModal">Sidebar modal</div>
+  };
 });
 vi.mock(
   './components/track-panel/components/track-panel-tabs/TrackPanelTabs',
   () => {
     return {
       default: () => <div className="trackPanelTabs">TrackPanelTabs</div>
-    }
+    };
   }
 );
 vi.mock('./components/drawer/Drawer', () => {
   return {
     default: () => <div className="drawer">Drawer</div>
-  }
+  };
 });
 
 const mockState = createMockBrowserState();
@@ -118,28 +113,12 @@ const renderComponent = (
 
   return render(
     <MemoryRouter initialEntries={[params.url]}>
-      <Routes>
-        <Route path="/" element={<TestComponent />} />
-      </Routes>
+      <Provider store={store}>
+        <Browser />
+      </Provider>
     </MemoryRouter>
   );
-
-
-  // return render(
-  //   <MemoryRouter initialEntries={[params.url]}>
-  //     <Provider store={store}>
-  //       <Browser />
-  //     </Provider>
-  //   </MemoryRouter>
-  // );
 };
-
-const TestComponent = () => {
-  const location = useLocation();
-
-  return <div>Hello from test</div>
-}
-
 
 describe('<Browser />', () => {
   const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
@@ -149,7 +128,7 @@ describe('<Browser />', () => {
   });
 
   describe('rendering', () => {
-    it.only('renders an interstitial if no species is selected', () => {
+    it('renders an interstitial if no species is selected', () => {
       const { container, debug } = renderComponent({
         state: set('browser.browserGeneral.activeGenomeId', null, mockState),
         url: '/'
