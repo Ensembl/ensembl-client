@@ -21,7 +21,9 @@ import config from 'config';
 import LRUCache from 'src/shared/utils/lruCache';
 
 vi.mock('config', () => ({
-  apiHost: 'http://foo.bar'
+  default: {
+    apiHost: 'http://foo.bar'
+  }
 }));
 
 const generateMockFetch = (response: any) =>

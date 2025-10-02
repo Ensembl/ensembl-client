@@ -153,9 +153,10 @@ describe('BlastSubmissionHeader', () => {
       });
 
       it('disables control buttons, except for the delete button', () => {
-        const { container } = renderComponent({
+        const { container, debug } = renderComponent({
           props: { submission }
         });
+        debug();
         const deleteButton = container.querySelector(
           '.deleteButton'
         ) as HTMLElement;

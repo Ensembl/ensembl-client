@@ -25,8 +25,12 @@ export default defineConfig({
       modules: {
         classNameStrategy: 'non-scoped' // keep original class names
       }
-    }
-    // setupFiles: './setupTests.ts',
+    },
+    setupFiles: [
+      './tests/setup.ts',
+      './tests/setup-rtl.ts'
+    ],
+    pool: 'threads'
   },
   resolve: {
     alias: {
@@ -43,9 +47,20 @@ export default defineConfig({
       'static/browser': path.resolve(__dirname, './static/browser'),
 
       // Mock SVGs
-      '\\.svg': path.resolve(__dirname, './tests/svgrMock.js'),
+      '\\.svg': path.resolve(__dirname, './tests/svgrMock.ts'),
 
       tests: path.resolve(__dirname, 'tests')
     }
-  }
+  },
+  plugins: [
+    {
+      name: 'load-svg',
+      enforce: 'pre',
+      transform(_, id) {
+        if (id.endsWith('.svg')) {
+          return 'export default "SvgMock"; export const ReactComponent = () => "SvgMock";';
+        }
+      },
+    }
+  ],
 });
