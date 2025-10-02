@@ -22,7 +22,7 @@ import { ImageButton, Props as ImageButtonProps } from './ImageButton';
 
 import { Status } from 'src/shared/types/status';
 
-jest.mock(
+vi.mock(
   'src/shared/components/tooltip/Tooltip',
   () =>
     ({ children }: { children: any }) => (
@@ -101,9 +101,9 @@ describe('<ImageButton />', () => {
   });
 
   describe('behaviour on click', () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it('calls the onClick prop when clicked', async () => {

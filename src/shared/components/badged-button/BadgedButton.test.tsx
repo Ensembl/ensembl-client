@@ -20,7 +20,7 @@ import { faker } from '@faker-js/faker';
 import BadgedButton, { Props as BadgedButtonProps } from './BadgedButton';
 import Button from '../button/Button';
 
-const onClick = jest.fn();
+const onClick = vi.fn();
 
 const defaultProps = {
   badgeContent: faker.lorem.words()
@@ -35,7 +35,7 @@ const renderButton = (props: Partial<BadgedButtonProps> = {}) =>
 
 describe('BadgedButton', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
   it('renders the passed in button', () => {
     const { container } = renderButton();

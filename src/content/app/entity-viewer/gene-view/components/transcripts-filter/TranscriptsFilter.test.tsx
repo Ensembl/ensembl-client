@@ -30,11 +30,11 @@ import {
 } from 'tests/fixtures/entity-viewer/transcript';
 import TranscriptsFilter from './TranscriptsFilter';
 
-jest.mock(
+vi.mock(
   'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
   () => () => ({
-    trackAppliedFilters: jest.fn(),
-    trackAppliedSorting: jest.fn()
+    trackAppliedFilters: vi.fn(),
+    trackAppliedSorting: vi.fn()
   })
 );
 
@@ -78,7 +78,7 @@ const defaultTranscripts = [
   nonCodingTranscript2
 ];
 
-const mockToggleFilterPanel = jest.fn();
+const mockToggleFilterPanel = vi.fn();
 
 const wrapInRedux = (
   state: typeof mockState = mockState,

@@ -38,7 +38,7 @@ import blastResultsReducer, {
 import { createBlastSubmission } from 'tests/fixtures/blast/blastSubmission';
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 
-jest.mock('src/content/app/tools/blast/services/blastStorageService');
+vi.mock('src/content/app/tools/blast/services/blastStorageService');
 
 const defaultProps = {
   submission: createBlastSubmission()
@@ -153,9 +153,10 @@ describe('BlastSubmissionHeader', () => {
       });
 
       it('disables control buttons, except for the delete button', () => {
-        const { container } = renderComponent({
+        const { container, debug } = renderComponent({
           props: { submission }
         });
+        debug();
         const deleteButton = container.querySelector(
           '.deleteButton'
         ) as HTMLElement;

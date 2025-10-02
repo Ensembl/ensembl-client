@@ -35,7 +35,8 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "esnext"
+    "target": "esnext",
+    "types": ["vitest/globals"]
   },
   "include": [
     "./src/**/*",
@@ -43,6 +44,7 @@
     "stories/**/*",
     "webpack/**/*",
     "./typings",
-    "./tests/**/*"
+    "./tests/**/*",
+    "vitest.config.ts"
   ]
 }

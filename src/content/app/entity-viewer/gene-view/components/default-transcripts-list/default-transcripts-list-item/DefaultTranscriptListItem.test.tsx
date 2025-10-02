@@ -33,11 +33,11 @@ import {
   createRulerTicks
 } from 'tests/fixtures/entity-viewer/gene';
 
-jest.mock('../transcripts-list-item-info/TranscriptsListItemInfo', () => () => (
+vi.mock('../transcripts-list-item-info/TranscriptsListItemInfo', () => () => (
   <div data-test-id="transcriptsListItemInfo">TranscriptsListItemInfo</div>
 ));
 
-jest.mock(
+vi.mock(
   'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript',
   () => () => <div data-test-id="unsplicedTranscript">UnsplicedTranscript</div>
 );
@@ -108,7 +108,7 @@ const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) => {
 
 describe('<DefaultTranscriptListItem />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('displays unspliced transcript', () => {

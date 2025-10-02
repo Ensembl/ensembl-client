@@ -29,20 +29,27 @@ import windowService from 'src/services/window-service';
 
 import { mockMatchMedia } from 'tests/mocks/mockWindowService';
 
-jest.mock('../content/app/App', () => () => <div id="app" />);
-jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
-  <div className="privacyBanner">PrivacyBanner</div>
-));
-jest.mock('../global/globalSlice', () => ({
-  updateBreakpointWidth: jest.fn(() => ({ type: 'updateBreakpointWidth' }))
+vi.mock('../content/app/App', () => ({ default: () => <div id="app" /> }));
+vi.mock('../shared/components/privacy-banner/PrivacyBanner', () => ({
+  default: () => <div className="privacyBanner">PrivacyBanner</div>
 }));
-jest.mock('./useRestoredReduxState', () => jest.fn());
-jest.mock(
+vi.mock('../global/globalSlice', async () => {
+  const actual = await vi.importActual('../global/globalSlice');
+
+  return {
+    ...actual,
+    updateBreakpointWidth: vi.fn(() => ({ type: 'updateBreakpointWidth' }))
+  };
+});
+vi.mock('./useRestoredReduxState', () => ({ default: vi.fn() }));
+vi.mock(
   'src/content/app/tools/blast/state/blast-results/blastResultsSlice',
   () => ({
-    restoreBlastSubmissions: jest.fn(() => ({
-      type: 'restoreBlastSubmissions'
-    }))
+    default: {
+      restoreBlastSubmissions: vi.fn(() => ({
+        type: 'restoreBlastSubmissions'
+      }))
+    }
   })
 );
 
@@ -60,13 +67,13 @@ describe('<Root />', () => {
   };
 
   beforeEach(() => {
-    jest
-      .spyOn(windowService, 'getMatchMedia')
-      .mockImplementation(mockMatchMedia as any);
+    vi.spyOn(windowService, 'getMatchMedia').mockImplementation(
+      mockMatchMedia as any
+    );
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('contains App', () => {
@@ -85,18 +92,18 @@ describe('<Root />', () => {
   });
 
   it('shows privacy banner if privacy policy version is not set or if version does not match', () => {
-    jest
-      .spyOn(privacyBannerService, 'shouldShowBanner')
-      .mockImplementation(() => true);
+    vi.spyOn(privacyBannerService, 'shouldShowBanner').mockImplementation(
+      () => true
+    );
     const { container } = getRenderedRoot();
     expect(container.querySelector('.privacyBanner')).toBeTruthy();
     (privacyBannerService.shouldShowBanner as any).mockRestore();
   });
 
   it('does not show privacy banner if policy version is set', () => {
-    jest
-      .spyOn(privacyBannerService, 'shouldShowBanner')
-      .mockImplementation(() => false);
+    vi.spyOn(privacyBannerService, 'shouldShowBanner').mockImplementation(
+      () => false
+    );
     const { container } = getRenderedRoot();
     expect(container.querySelector('.privacyBanner')).toBeFalsy();
     (privacyBannerService.shouldShowBanner as any).mockRestore();

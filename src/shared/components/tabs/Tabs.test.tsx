@@ -21,7 +21,7 @@ import times from 'lodash/times';
 
 import Tabs, { Tab } from './Tabs';
 
-const onTabChange = jest.fn();
+const onTabChange = vi.fn();
 
 const createTabGroup = (): Tab[] => {
   const options = [
@@ -58,7 +58,7 @@ const renderTabs = () => render(<Tabs {...defaultProps} />);
 
 describe('<Tabs />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('displays all the tabs passed in', () => {

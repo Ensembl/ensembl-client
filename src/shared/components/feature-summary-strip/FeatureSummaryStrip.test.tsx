@@ -23,8 +23,8 @@ import {
 
 import { createFocusObject } from 'tests/fixtures/focus-object';
 
-jest.mock('./GeneSummaryStrip', () => () => <div>Gene Summary Strip</div>);
-jest.mock('./LocationSummaryStrip', () => () => (
+vi.mock('./GeneSummaryStrip', () => () => <div>Gene Summary Strip</div>);
+vi.mock('./LocationSummaryStrip', () => () => (
   <div>Location Summary Strip</div>
 ));
 

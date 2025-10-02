@@ -29,16 +29,16 @@ import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import SpeciesUsageToggle from './SpeciesUsageToggle';
 
-jest.mock(
+vi.mock(
   'src/content/app/species-selector/services/speciesSelectorStorageService',
   () => ({
-    saveMultipleSelectedSpecies: jest.fn()
+    saveMultipleSelectedSpecies: vi.fn()
   })
 );
 
-jest.mock('src/content/app/species/hooks/useSpeciesAnalytics', () =>
-  jest.fn(() => ({
-    trackSpeciesUse: jest.fn()
+vi.mock('src/content/app/species/hooks/useSpeciesAnalytics', () =>
+  vi.fn(() => ({
+    trackSpeciesUse: vi.fn()
   }))
 );
 
@@ -92,7 +92,7 @@ const renderComponent = (
 
 describe('SpeciesSelectionControls', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('shows correct controls for enabled species', () => {

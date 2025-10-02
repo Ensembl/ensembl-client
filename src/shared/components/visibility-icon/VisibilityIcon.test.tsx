@@ -21,10 +21,10 @@ import { VisibilityIcon } from './VisibilityIcon';
 import { Status } from 'src/shared/types/status';
 
 describe('<VisibilityIcon />', () => {
-  const onClick = jest.fn();
+  const onClick = vi.fn();
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders ImageButton', () => {

@@ -27,17 +27,17 @@ import { initialState as initialBlastFormState } from 'src/content/app/tools/bla
 
 import BlastAppBar from './BlastAppBar';
 
-jest.mock(
+vi.mock(
   'src/shared/components/communication-framework/CommunicationPanelButton',
   () => () => <div>CommunicationPanelButton</div>
 );
 
-jest.mock(
+vi.mock(
   'src/shared/hooks/useMediaQuery',
   () => () => false // no match
 );
 
-jest.mock(
+vi.mock(
   'src/shared/components/species-tabs-slider/SpeciesTabsSlider',
   () => (props: { children: ReactNode }) => <div>{props.children}</div>
 );
@@ -91,10 +91,11 @@ describe('BlastAppBar', () => {
       const { container, store } = renderComponent();
       const speciesLozenge = getByText(container as HTMLElement, 'Human');
 
-      speciesLozenge && (await userEvent.click(speciesLozenge));
+      if (speciesLozenge) {
+        await userEvent.click(speciesLozenge);
+      }
 
       const updatedState = store.getState();
-      updatedState.blast.blastForm.selectedSpecies;
       expect(updatedState.blast.blastForm.selectedSpecies.length).toBe(1);
     });
   });

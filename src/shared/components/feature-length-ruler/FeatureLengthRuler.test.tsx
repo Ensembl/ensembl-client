@@ -50,7 +50,7 @@ describe('<FeatureLengthRuler />', () => {
     };
 
     it('passes calculated ticks to the callback', () => {
-      const callback = jest.fn();
+      const callback = vi.fn();
       render(<FeatureLengthRuler {...props} onTicksCalculated={callback} />);
       expect(callback).toHaveBeenCalledTimes(1);
 

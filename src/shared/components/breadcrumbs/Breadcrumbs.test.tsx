@@ -24,7 +24,7 @@ const defaultProps = {
 
 describe('Breadcrumbs', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders the breadcrumbs', () => {

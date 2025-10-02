@@ -28,36 +28,33 @@ import { BrowserImage } from './BrowserImage';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
-const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
-const mockClearGenomeBrowser = jest.fn();
+const mockGenomeBrowser = vi.fn(() => new MockGenomeBrowser() as any);
+const mockClearGenomeBrowser = vi.fn();
 
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
-    genomeBrowser: mockGenomeBrowser(),
-    activateGenomeBrowser: jest.fn(),
-    clearGenomeBrowser: mockClearGenomeBrowser
-  })
-);
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser(),
+  activateGenomeBrowser: vi.fn(),
+  clearGenomeBrowser: mockClearGenomeBrowser
+}));
 
-jest.mock('../browser-cog/BrowserCogList', () => () => (
+vi.mock('../browser-cog/BrowserCogList', () => () => (
   <div id="browserCogList" />
 ));
 
-jest.mock('src/content/app/genome-browser/components/zmenu', () => ({
+vi.mock('src/content/app/genome-browser/components/zmenu', () => ({
   ZmenuController: () => <div id="zmenuController" />
 }));
 
-jest.mock('src/shared/components/loader', () => ({
+vi.mock('src/shared/components/loader', () => ({
   CircleLoader: () => <div id="circleLoader" />
 }));
 
-jest.mock('src/shared/components/overlay/Overlay', () => () => (
+vi.mock('src/shared/components/overlay/Overlay', () => () => (
   <div id="overlay" />
 ));
 
-jest.mock('src/content/app/genome-browser/hooks/useGenomeBrowserPosition', () =>
-  jest.fn()
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowserPosition', () =>
+  vi.fn()
 );
 
 const mockState = createMockBrowserState();
@@ -81,7 +78,7 @@ describe('<BrowserImage />', () => {
   beforeEach(() => {
     // running this in before each, because it looks that
     // afterEach completes before cleanup functions called at component's unmounting get executed
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {

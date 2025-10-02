@@ -59,7 +59,7 @@ describe('SimpleSelect', () => {
   });
 
   it('has the first option selected by default', async () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     const { container } = render(
       <SimpleSelect options={options} onChange={onChange} />
     );
@@ -128,7 +128,7 @@ describe('SimpleSelect', () => {
   });
 
   it('exposes a method for resetting the select', async () => {
-    let selectComponentRef = { clear: jest.fn() };
+    let selectComponentRef = { clear: vi.fn() };
 
     // prepare a wrapper component for testing
     const TestComponent = () => {

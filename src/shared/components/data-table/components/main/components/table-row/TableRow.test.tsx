@@ -30,7 +30,7 @@ const { columns, data } = createDataTableSampleData(1, 10);
 const defaultProps = {
   ...defaultDataTableState,
   data,
-  dispatch: jest.fn(),
+  dispatch: vi.fn(),
   columns,
   rows: data.map((row, index) => ({
     rowId: index,
@@ -56,7 +56,7 @@ describe('<TableRow />', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders without error', () => {
@@ -95,7 +95,7 @@ describe('<TableRow />', () => {
 
   it('respects individual column renderer prop', () => {
     const columns = [...defaultProps.columns];
-    const renderer = jest.fn();
+    const renderer = vi.fn();
 
     const indexOfColumnWithRenderer = 0;
     columns[indexOfColumnWithRenderer].renderer = renderer;

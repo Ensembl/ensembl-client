@@ -22,7 +22,7 @@ import Pagination, { PaginationProps } from './Pagination';
 const defaultProps: PaginationProps = {
   currentPageNumber: 1,
   lastPageNumber: 10,
-  onChange: jest.fn()
+  onChange: vi.fn()
 };
 
 describe('<Pagination />', () => {
@@ -32,7 +32,7 @@ describe('<Pagination />', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders without error', () => {

@@ -39,13 +39,13 @@ const generateKaryotype = () =>
     type: 'chromosome'
   }));
 const mockKaryotype = generateKaryotype();
-const mockChangeBrowserLocation = jest.fn();
+const mockChangeBrowserLocation = vi.fn();
 
-jest.mock('config', () => ({
+vi.mock('config', () => ({
   metadataApiBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
 }));
-jest.mock('src/shared/state/genome/genomeApiSlice', () => {
-  const originalModule = jest.requireActual(
+vi.mock('src/shared/state/genome/genomeApiSlice', () => {
+  const originalModule = vi.requireActual(
     'src/shared/state/genome/genomeApiSlice'
   );
 
@@ -57,22 +57,19 @@ jest.mock('src/shared/state/genome/genomeApiSlice', () => {
     })
   };
 });
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/components/browser-sidebar-modal/modal-views/navigate-modal/NavigationButtons',
   () => () => <div data-test-id="navigation-buttons" />
 );
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
   () => () => ({
     genomeIdForUrl: 'human'
   })
 );
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
-    changeBrowserLocation: mockChangeBrowserLocation
-  })
-);
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
+  changeBrowserLocation: mockChangeBrowserLocation
+}));
 
 const renderComponent = () => {
   const initialState = {
@@ -148,7 +145,7 @@ const newBrowserLocationParams = {
 
 describe('<RegionNavigation />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('segmented input', () => {
@@ -173,9 +170,10 @@ describe('<RegionNavigation />', () => {
     it('does not submit location unless all inputs have been filled in', async () => {
       const { getByLabelText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start');
-      jest
-        .spyOn(browserHelperMethods, 'validateGenomicLocation')
-        .mockImplementation(jest.fn());
+      vi.spyOn(
+        browserHelperMethods,
+        'validateGenomicLocation'
+      ).mockImplementation(vi.fn());
 
       await userEvent.type(startCoordinateInput, '500{enter}');
 

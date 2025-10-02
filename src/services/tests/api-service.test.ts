@@ -20,12 +20,14 @@ import apiService, { HTTPMethod } from '../api-service';
 import config from 'config';
 import LRUCache from 'src/shared/utils/lruCache';
 
-jest.mock('config', () => ({
-  apiHost: 'http://foo.bar'
+vi.mock('config', () => ({
+  default: {
+    apiHost: 'http://foo.bar'
+  }
 }));
 
 const generateMockFetch = (response: any) =>
-  jest.fn(() => Promise.resolve(response));
+  vi.fn(() => Promise.resolve(response));
 
 describe('api service', () => {
   let mockFetch: any;
@@ -38,27 +40,25 @@ describe('api service', () => {
   const mockErrorResolver = () => Promise.resolve(mockError);
   const generateMockSuccessResponse = () => ({
     ok: true,
-    json: jest.fn(mockJsonResolver),
-    text: jest.fn(mockTextResolver)
+    json: vi.fn(mockJsonResolver),
+    text: vi.fn(mockTextResolver)
   });
   const generateMockErrorResponse = () => ({
     ok: false,
     status: 400,
-    json: jest.fn(mockErrorResolver)
+    json: vi.fn(mockErrorResolver)
   });
 
   beforeEach(() => {
     const mockSuccessResponse = generateMockSuccessResponse();
     mockFetch = generateMockFetch(mockSuccessResponse);
-    LRUCache.prototype.get = jest.fn();
-    LRUCache.prototype.set = jest.fn();
-    jest
-      .spyOn(apiService, 'getFetch')
-      .mockImplementation(() => mockFetch as any);
+    LRUCache.prototype.get = vi.fn();
+    LRUCache.prototype.set = vi.fn();
+    vi.spyOn(apiService, 'getFetch').mockImplementation(() => mockFetch as any);
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('.fetch', () => {
@@ -143,12 +143,12 @@ describe('api service', () => {
       expect(LRUCache.prototype.set).toHaveBeenCalledTimes(1);
       expect(LRUCache.prototype.set).toHaveBeenCalledWith(endpoint, response);
 
-      jest.resetAllMocks();
+      vi.resetAllMocks();
 
       const mockCachedResponse = { foo: 'this comes from cache' };
-      jest
-        .spyOn(LRUCache.prototype, 'get')
-        .mockImplementation(() => mockCachedResponse);
+      vi.spyOn(LRUCache.prototype, 'get').mockImplementation(
+        () => mockCachedResponse
+      );
 
       response = await apiService.fetch(endpoint, { preserveEndpoint: true });
       expect(LRUCache.prototype.get).toHaveBeenCalledTimes(1); // checks cache and gets item from cache
@@ -173,7 +173,7 @@ describe('api service', () => {
         mockErrorResponse = generateMockErrorResponse();
         mockFetch = generateMockFetch(mockErrorResponse);
 
-        jest.spyOn(apiService, 'getFetch').mockImplementation(() => mockFetch);
+        vi.spyOn(apiService, 'getFetch').mockImplementation(() => mockFetch);
       });
 
       it('throws an error', async () => {

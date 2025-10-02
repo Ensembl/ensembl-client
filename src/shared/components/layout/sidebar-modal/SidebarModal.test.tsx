@@ -23,7 +23,7 @@ const sidebarModalContent = 'This content goes into the sidebarModal’s content
 
 const sidebarModalTitle = 'This content goes into the sidebarModal’s title';
 
-const onClose = jest.fn();
+const onClose = vi.fn();
 
 const defaultProps: SidebarModalProps = {
   title: sidebarModalTitle,
@@ -37,7 +37,7 @@ const renderSidebarModal = (props?: Partial<SidebarModalProps>) => {
 
 describe('<SidebarModal />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('displays the title with the correct content', () => {

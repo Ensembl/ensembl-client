@@ -20,11 +20,11 @@ import { faker } from '@faker-js/faker';
 
 import CheckboxWithLabel from './CheckboxWithLabel';
 
-const onChange = jest.fn();
+const onChange = vi.fn();
 
 describe('<CheckboxWithLabel />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const label = faker.lorem.words();

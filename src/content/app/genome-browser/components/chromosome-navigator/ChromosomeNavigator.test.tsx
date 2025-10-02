@@ -46,9 +46,9 @@ const isApproximatelyEqual = (num1: number, num2: number) => {
 
 describe('Chromosome Navigator', () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     const mockMeasure: any = () => ({ width: 40 });
-    jest.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
+    vi.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
   });
 
   describe('basic rendering', () => {
@@ -353,7 +353,7 @@ describe('Chromosome Navigator', () => {
     it('displays two labels when there is enough space for them', () => {
       const mockLabelWidth = 10;
       const mockMeasure: any = () => ({ width: mockLabelWidth });
-      jest.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
+      vi.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
 
       const { labels } = getRenderedLabels(props);
       const expectedLabel1X =
@@ -371,7 +371,7 @@ describe('Chromosome Navigator', () => {
     it('displays a single label combining two positions when there is not enough space for two', () => {
       const mockLabelWidth = 40;
       const mockMeasure: any = () => ({ width: mockLabelWidth });
-      jest.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
+      vi.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
       const { labels } = getRenderedLabels(props);
 
       const midpointBetweenPointers =
@@ -390,7 +390,7 @@ describe('Chromosome Navigator', () => {
     it('shows a single value when start and end position are the same', () => {
       const mockLabelWidth = 40;
       const mockMeasure: any = () => ({ width: mockLabelWidth });
-      jest.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
+      vi.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
 
       const focusPosition = 20000;
       const props = {

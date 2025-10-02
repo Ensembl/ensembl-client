@@ -34,7 +34,7 @@ import {
 } from 'tests/fixtures/entity-viewer/transcript';
 import { createExternalReference } from 'tests/fixtures/entity-viewer/external-reference';
 
-jest.mock(
+vi.mock(
   'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds',
   () => () => ({
     activeGenomeId: 'human',
@@ -43,11 +43,11 @@ jest.mock(
   })
 );
 
-jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
+vi.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
   <div data-test-id="viewInApp">ViewInApp</div>
 ));
 
-jest.mock('src/shared/components/instant-download', () => ({
+vi.mock('src/shared/components/instant-download', () => ({
   InstantDownloadTranscript: () => (
     <div data-test-id="instantDownloadTranscript">
       InstantDownloadTranscript

@@ -45,11 +45,11 @@ const generateKaryotype = () =>
   }));
 const mockKaryotype = generateKaryotype();
 
-jest.mock('config', () => ({
+vi.mock('config', () => ({
   metadataApiBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
 }));
-jest.mock('src/shared/state/genome/genomeApiSlice', () => {
-  const originalModule = jest.requireActual(
+vi.mock('src/shared/state/genome/genomeApiSlice', () => {
+  const originalModule = vi.requireActual(
     'src/shared/state/genome/genomeApiSlice'
   );
 
@@ -61,7 +61,7 @@ jest.mock('src/shared/state/genome/genomeApiSlice', () => {
     })
   };
 });
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
   () => () => ({
     genomeIdForUrl: 'human'
@@ -127,7 +127,7 @@ const RouteTester = () => {
 
 describe('<LocationNavigation />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('segmented input', () => {
@@ -150,9 +150,10 @@ describe('<LocationNavigation />', () => {
     it('does not submit location unless all inputs have been filled in', async () => {
       const { getByLabelText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start');
-      jest
-        .spyOn(browserHelperMethods, 'validateGenomicLocation')
-        .mockImplementation(jest.fn());
+      vi.spyOn(
+        browserHelperMethods,
+        'validateGenomicLocation'
+      ).mockImplementation(vi.fn());
 
       await userEvent.type(startCoordinateInput, '500{enter}');
 

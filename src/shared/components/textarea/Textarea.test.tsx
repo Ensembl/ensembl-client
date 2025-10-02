@@ -30,13 +30,13 @@ describe('<Textarea />', () => {
     id: faker.lorem.word(),
     name: faker.lorem.word(),
     className: faker.lorem.word(),
-    onChange: jest.fn(),
-    onFocus: jest.fn(),
-    onBlur: jest.fn()
+    onChange: vi.fn(),
+    onFocus: vi.fn(),
+    onBlur: vi.fn()
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const textareaValue = faker.lorem.words();
@@ -83,7 +83,7 @@ describe('<Textarea />', () => {
   describe('responding with events', () => {
     it('passes event to onChange', async () => {
       const initialText = 'Hello worl';
-      const spy = jest.fn();
+      const spy = vi.fn();
 
       const StatefulTextareaWrapper = () => {
         const [text, setText] = useState(initialText);

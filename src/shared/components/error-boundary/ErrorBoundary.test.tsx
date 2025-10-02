@@ -20,7 +20,7 @@ import errorService from 'src/services/error-service';
 
 import ErrorBoundary from './ErrorBoundary';
 
-jest.mock('src/services/error-service');
+vi.mock('src/services/error-service');
 
 const Child = () => <span className="child">I am a child</span>;
 const BrokenChild = (props: { errorMessage: string }) => {
@@ -43,11 +43,11 @@ describe('<ErrorBoundary />', () => {
   });
 
   beforeAll(() => {
-    errorService.report = jest.fn();
+    errorService.report = vi.fn();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders children components if they render normally', () => {

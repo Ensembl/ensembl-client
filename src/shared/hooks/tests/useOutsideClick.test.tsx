@@ -20,7 +20,7 @@ import userEvent from '@testing-library/user-event';
 
 import useOutsideClick from '../useOutsideClick';
 
-const clickHandler = jest.fn();
+const clickHandler = vi.fn();
 
 const TestComponent = () => {
   const innerElementRef1 = useRef(null);
@@ -43,7 +43,7 @@ const TestComponent = () => {
 
 describe('useOutsideClick', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('fires click handler if click is outside the host components', async () => {
