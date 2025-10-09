@@ -41,7 +41,7 @@ const searchApiSlice = restApiSlice.injectEndpoints({
     searchVariants: builder.query<SearchResults, SearchParams>({
       query: (params) => {
         return {
-          url: 'http://localhost:8083/api/search/variants',
+          url: `${config.searchApiBaseUrl}/variants`,
           method: 'POST',
           body: params
         };
