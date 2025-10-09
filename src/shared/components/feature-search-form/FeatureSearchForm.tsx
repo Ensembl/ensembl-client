@@ -138,6 +138,9 @@ const FeatureSearchForm = (props: Props) => {
           </PrimaryButton>
         )}
       </form>
+      {searchLocation === 'interstitial' && resultsInfo && (
+        <div className={styles.resultsInfoInterstitial}>{resultsInfo}</div>
+      )}
     </>
   );
 };

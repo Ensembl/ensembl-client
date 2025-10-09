@@ -5,7 +5,6 @@
   padding-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
   height: 100%;
 }
 
@@ -14,6 +13,7 @@
   min-height: 0;
   width: 600px;
   overflow-y: auto;
+  margin-top: 20px;
 }
 
 /* FIXME: remove the pseudo-radio elements when we replace them with real radio buttons */
@@ -22,7 +22,7 @@
   display: flex;
   column-gap: 2rem;
   margin-left: var(--inner-block-offset-left);
-  margin-top: -1rem;
+  margin-top: 10px;
 }
 
 .pseudoRadioDisabled > * {

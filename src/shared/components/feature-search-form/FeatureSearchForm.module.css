@@ -1,7 +1,7 @@
 .tab {
   display: flex;
   gap: 25px;
-  margin-left: var(--inner-block-offset-left);
+  margin-left: 20px;
 }
 
 .activeTab {
@@ -12,6 +12,7 @@
   display: flex;
   gap: 46px;
   align-items: center;
+  margin-top: 15px;
 }
 
 .searchField {
@@ -43,6 +44,11 @@
 
 .resultsInfo {
   flex: 0 0 auto;
+  margin-left: 20px;
+}
+
+.resultsInfoInterstitial {
+  margin: 20px 0 0 20px;
 }
 
 .submitSidebar {

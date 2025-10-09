@@ -6,14 +6,19 @@
 }
 
 .inAppSearchFormContainer {
-  flex-shrink: 0;
+  margin-top: 20px;
+}
+
+.resultsContainerSidebar {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-left: 20px;
   margin-top: 20px;
 }
 
 .resultsContainer {
   flex: 1;
-  min-height: 0;
-  overflow-y: auto;
   padding-left: 20px;
   margin-top: 20px;
 }
@@ -22,7 +27,6 @@
   --circle-loader-display: block;
   margin-top: 30px;
   margin-left: 20px;
-  flex-shrink: 0;
 }
 
 .hitsNumber {

@@ -38,6 +38,7 @@ import styles from './InAppSearch.module.css';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { SearchResults } from 'src/shared/types/search-api/search-results';
+import classNames from 'classnames';
 
 export type InAppSearchMode = 'interstitial' | 'sidebar';
 
@@ -127,6 +128,11 @@ const InAppSearch = (props: Props) => {
       />
     ) : undefined;
 
+  const resultsContainerClass = classNames({
+    [styles.resultsContainer]: mode !== 'sidebar',
+    [styles.resultsContainerSidebar]: mode === 'sidebar'
+  });
+
   return (
     <div className={styles.inAppSearch}>
       <div className={styles.inAppSearchFormContainer}>
@@ -144,7 +150,7 @@ const InAppSearch = (props: Props) => {
       {!isLoading &&
         activeSearchMode.mode === FeatureSearchModeType.GENE_SEARCH_MODE &&
         currentGeneSearchResults && (
-          <div className={styles.resultsContainer}>
+          <div className={resultsContainerClass}>
             <InAppSearchMatches
               results={currentGeneSearchResults}
               featureSearchMode={activeSearchMode.mode}
@@ -158,7 +164,7 @@ const InAppSearch = (props: Props) => {
       {!isLoading &&
         activeSearchMode.mode === FeatureSearchModeType.VARIANT_SEARCH_MODE &&
         currentVariantSearchResults && (
-          <div className={styles.resultsContainer}>
+          <div className={resultsContainerClass}>
             <InAppSearchMatches
               results={currentVariantSearchResults}
               featureSearchMode={activeSearchMode.mode}
