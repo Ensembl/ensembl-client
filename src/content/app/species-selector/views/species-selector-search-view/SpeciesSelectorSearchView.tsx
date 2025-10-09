@@ -28,22 +28,31 @@ import {
   useLazySearchGenesQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 import { getCommittedSpecies } from '../../state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import styles from './SpeciesSelectorSearchView.module.css';
-import radioStyles from 'src/shared/components/radio-group/RadioGroup.module.css';
 import {
   FeatureSearchMode,
   FEATURE_SEARCH_MODES as featureSearchModes,
   FeatureSearchModeType
 } from 'src/shared/types/search-api/search-modes';
 import { FeatureSearchResults } from 'src/shared/components/feature-search-result/FeatureSearchResult';
+import {
+  setGeneQuery,
+  setVariantQuery
+} from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSlice';
+import { getFeatureQueries } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSelectors';
+
+import styles from './SpeciesSelectorSearchView.module.css';
+import radioStyles from 'src/shared/components/radio-group/RadioGroup.module.css';
 
 const SpeciesSelectorSearchView = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
+  const featureQueries = useAppSelector(getFeatureQueries);
+  const committedSpecies = useAppSelector(getCommittedSpecies);
 
   const initialMode = location.pathname.includes('/variant')
     ? featureSearchModes.find(
@@ -55,10 +64,6 @@ const SpeciesSelectorSearchView = () => {
 
   const [activeSearchMode, setActiveSearchMode] =
     useState<FeatureSearchMode>(initialMode);
-  const [queries, setQueries] = useState<Record<string, string>>({
-    gene: '',
-    variant: ''
-  });
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
@@ -66,18 +71,27 @@ const SpeciesSelectorSearchView = () => {
     useLazySearchVariantsQuery();
   const { currentData: currentVariantSearchResults } = variantSearchResults;
 
-  const committedSpecies = useAppSelector(getCommittedSpecies);
   const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
-  const query = queries[activeSearchMode.mode];
+
+  const featureSearchModeToKey = {
+    [FeatureSearchModeType.GENE_SEARCH_MODE]: 'gene' as const,
+    [FeatureSearchModeType.VARIANT_SEARCH_MODE]: 'variant' as const
+  };
+  const query = featureQueries[featureSearchModeToKey[activeSearchMode.mode]];
   const queryFromParams = searchParams.get('query') || '';
+  const isGeneSearchMode =
+    activeSearchMode.mode === FeatureSearchModeType.GENE_SEARCH_MODE;
+  const isVariantSearchMode =
+    activeSearchMode.mode === FeatureSearchModeType.VARIANT_SEARCH_MODE;
 
   useEffect(() => {
-    // on mount, update the query from the URL (if any)
+    // load from url only on first render or refresh
     if (queryFromParams) {
-      setQueries((prev) => ({
-        ...prev,
-        [activeSearchMode.mode]: queryFromParams
-      }));
+      if (isGeneSearchMode) {
+        dispatch(setGeneQuery(queryFromParams));
+      } else if (isVariantSearchMode) {
+        dispatch(setVariantQuery(queryFromParams));
+      }
     }
   }, []);
 
@@ -86,22 +100,19 @@ const SpeciesSelectorSearchView = () => {
       return;
     }
 
-    if (activeSearchMode.mode === FeatureSearchModeType.GENE_SEARCH_MODE) {
-      triggerGeneSearch({
-        genome_ids: genomeIds,
-        query: query,
-        page: 1,
-        per_page: 50
-      });
+    const searchParams = {
+      genome_ids: genomeIds,
+      query: query,
+      page: 1,
+      per_page: 50
+    };
+
+    if (isGeneSearchMode) {
+      triggerGeneSearch(searchParams);
     }
 
-    if (activeSearchMode.mode === FeatureSearchModeType.VARIANT_SEARCH_MODE) {
-      triggerVariantSearch({
-        genome_ids: genomeIds,
-        query: query,
-        page: 1,
-        per_page: 50
-      });
+    if (isVariantSearchMode) {
+      triggerVariantSearch(searchParams);
     }
   }, [query]);
 
@@ -110,10 +121,19 @@ const SpeciesSelectorSearchView = () => {
   };
 
   const onFeatureSearchSubmit = (input: string) => {
-    setQueries((prev) => ({
-      ...prev,
-      [activeSearchMode.mode]: input
-    }));
+    const isEmpty = input.trim() === '';
+
+    if (isGeneSearchMode) {
+      dispatch(setGeneQuery(input));
+      if (isEmpty) {
+        geneSearchResults.reset();
+      }
+    } else if (isVariantSearchMode) {
+      dispatch(setVariantQuery(input));
+      if (isEmpty) {
+        variantSearchResults.reset();
+      }
+    }
 
     if (input) {
       searchParams.set('query', input);
@@ -128,10 +148,11 @@ const SpeciesSelectorSearchView = () => {
   ) => {
     setActiveSearchMode(featureSearchMode);
 
-    const query = queries[featureSearchMode.mode];
+    const currentQuery =
+      featureQueries[featureSearchModeToKey[featureSearchMode.mode]];
     let path = `${urlFor.speciesSelector()}/search/${featureSearchMode.mode.toLowerCase()}`;
-    if (query) {
-      path += `?query=${encodeURIComponent(query)}`;
+    if (currentQuery) {
+      path += `?query=${encodeURIComponent(currentQuery)}`;
     }
     navigate(urlFor.speciesSelectorFeatureSearch(path), { replace: true });
   };
@@ -143,10 +164,11 @@ const SpeciesSelectorSearchView = () => {
           activeFeatureSearchMode={activeSearchMode}
           query={query}
           onSearchSubmit={onFeatureSearchSubmit}
+          onClear={() => onFeatureSearchSubmit('')}
           updateActiveFeatureSearchMode={updateActiveFeatureSearchMode}
         />
         <SearchScope />
-        {activeSearchMode.mode === FeatureSearchModeType.GENE_SEARCH_MODE && (
+        {isGeneSearchMode && (
           <div className={styles.resultsWrapper}>
             <FeatureSearchResults
               featureSearchMode={activeSearchMode.mode}
@@ -155,8 +177,7 @@ const SpeciesSelectorSearchView = () => {
             />
           </div>
         )}
-        {activeSearchMode.mode ===
-          FeatureSearchModeType.VARIANT_SEARCH_MODE && (
+        {isVariantSearchMode && (
           <div className={styles.resultsWrapper}>
             <FeatureSearchResults
               featureSearchMode={activeSearchMode.mode}

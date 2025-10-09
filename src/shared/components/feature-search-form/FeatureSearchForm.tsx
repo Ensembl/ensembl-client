@@ -32,6 +32,7 @@ type Props = {
   activeFeatureSearchMode: FeatureSearchMode;
   searchLocation?: string; // Ex: 'sidebar', 'interstitial'
   onSearchSubmit: (query: string) => void;
+  onClear: () => void;
   updateActiveFeatureSearchMode: (mode: FeatureSearchMode) => void;
   resultsInfo?: ReactNode;
 };
@@ -43,6 +44,7 @@ const FeatureSearchForm = (props: Props) => {
     searchLocation,
     updateActiveFeatureSearchMode,
     onSearchSubmit,
+    onClear,
     resultsInfo
   } = props;
 
@@ -68,6 +70,7 @@ const FeatureSearchForm = (props: Props) => {
     setShouldDisableSubmit(false);
 
     if (newQuery.trim() === '') {
+      onClear();
       setShouldDisableSubmit(true);
     }
   };

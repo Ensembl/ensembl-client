@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import analyticsTracking from 'src/services/analytics-service';
 
 import { CircleLoader } from 'src/shared/components/loader';
 import InAppSearchMatches from './InAppSearchMatches';
 
-import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
+import {
+  updateGeneQuery,
+  updateVariantQuery,
+  type AppName
+} from 'src/shared/state/in-app-search/inAppSearchSlice';
 
 import FeatureSearchForm from '../feature-search-form/FeatureSearchForm';
 import {
@@ -34,11 +38,14 @@ import {
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
 
-import styles from './InAppSearch.module.css';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { SearchResults } from 'src/shared/types/search-api/search-results';
 import classNames from 'classnames';
+import { useAppDispatch, useAppSelector } from 'src/store';
+import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
+
+import styles from './InAppSearch.module.css';
 
 export type InAppSearchMode = 'interstitial' | 'sidebar';
 
@@ -53,57 +60,80 @@ export type Props = {
 
 const InAppSearch = (props: Props) => {
   const { app, genomeId, genomeIdForUrl, mode } = props;
+  const dispatch = useAppDispatch();
+
   const initialMode = featureSearchModes.find(
     (m) => m.mode === FeatureSearchModeType.GENE_SEARCH_MODE
   )!;
   const [activeSearchMode, setActiveSearchMode] =
     useState<FeatureSearchMode>(initialMode);
-  const [queries, setQueries] = useState<Record<string, string>>({
-    gene: '',
-    variant: ''
-  });
+
+  const inAppFeatureQueries = useAppSelector((state) =>
+    getInAppFeatureQueries(state, app, genomeId)
+  );
+
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
   const { currentData: currentVariantSearchResults } = variantSearchResults;
-  const [isLoading, setIsLoading] = useState(false);
-  const query = queries[activeSearchMode.mode];
+
+  const featureSearchModeToKey = {
+    [FeatureSearchModeType.GENE_SEARCH_MODE]: 'gene' as const,
+    [FeatureSearchModeType.VARIANT_SEARCH_MODE]: 'variant' as const
+  };
+  const query =
+    inAppFeatureQueries[featureSearchModeToKey[activeSearchMode.mode]];
+
+  const isGeneSearchMode =
+    activeSearchMode.mode === FeatureSearchModeType.GENE_SEARCH_MODE;
+  const isVariantSearchMode =
+    activeSearchMode.mode === FeatureSearchModeType.VARIANT_SEARCH_MODE;
+
+  useEffect(() => {
+    if (!query) {
+      return;
+    }
+
+    const searchParams = {
+      genome_ids: [genomeId],
+      query: query,
+      page: 1,
+      per_page: 50
+    };
+
+    if (isGeneSearchMode) {
+      triggerGeneSearch(searchParams);
+    }
+
+    if (isVariantSearchMode) {
+      triggerVariantSearch(searchParams);
+    }
+  }, [query]);
 
   const onFeatureSearchSubmit = (input: string) => {
-    setIsLoading(true);
-    setQueries((prev) => ({
-      ...prev,
-      [activeSearchMode.mode]: input
-    }));
+    const isEmpty = input.trim() === '';
 
-    if (activeSearchMode.mode === FeatureSearchModeType.GENE_SEARCH_MODE) {
-      triggerGeneSearch({
-        genome_ids: [genomeId],
-        query: input,
-        page: 1,
-        per_page: 50
-      });
-    }
+    if (isGeneSearchMode) {
+      dispatch(updateGeneQuery({ app, genomeId, query: input }));
 
-    if (activeSearchMode.mode === FeatureSearchModeType.VARIANT_SEARCH_MODE) {
-      triggerVariantSearch({
-        genome_ids: [genomeId],
-        query: input,
-        page: 1,
-        per_page: 50
-      });
-    }
-    try {
-      if (app === 'entityViewer') {
-        analyticsTracking.trackEvent({
-          category: `${app}_${mode}_search`,
-          action: 'submit_search',
-          label: query
-        });
+      if (isEmpty) {
+        geneSearchResults.reset();
       }
-    } finally {
-      setIsLoading(false);
+    } else if (isVariantSearchMode) {
+      dispatch(updateVariantQuery({ app, genomeId, query: input }));
+
+      if (isEmpty) {
+        variantSearchResults.reset();
+      }
+    }
+
+    if (app === 'entityViewer') {
+      analyticsTracking.trackEvent({
+        category: `${app}_${mode}_search`,
+        action: 'submit_search',
+        label: query
+      });
     }
   };
 
@@ -113,20 +143,25 @@ const InAppSearch = (props: Props) => {
     setActiveSearchMode(featureSearchMode);
   };
 
-  const totalSearchHitsComponent =
-    activeSearchMode.mode === FeatureSearchModeType.GENE_SEARCH_MODE &&
-    currentGeneSearchResults ? (
-      <TotalSearchHits
-        results={currentGeneSearchResults}
-        featureSearchMode={activeSearchMode.mode}
-      />
-    ) : activeSearchMode.mode === FeatureSearchModeType.VARIANT_SEARCH_MODE &&
-      currentVariantSearchResults ? (
-      <TotalSearchHits
-        results={currentVariantSearchResults}
-        featureSearchMode={activeSearchMode.mode}
-      />
-    ) : undefined;
+  const isGeneSearchResultsDefined =
+    isGeneSearchMode && currentGeneSearchResults;
+  const isVariantSearchResultsDefined =
+    isVariantSearchMode && currentVariantSearchResults;
+  const isLoading =
+    (isGeneSearchMode && geneSearchResults.isFetching) ||
+    (isVariantSearchMode && variantSearchResults.isFetching);
+
+  const totalSearchHitsComponent = isGeneSearchResultsDefined ? (
+    <TotalSearchHits
+      results={currentGeneSearchResults}
+      featureSearchMode={activeSearchMode.mode}
+    />
+  ) : isVariantSearchResultsDefined ? (
+    <TotalSearchHits
+      results={currentVariantSearchResults}
+      featureSearchMode={activeSearchMode.mode}
+    />
+  ) : undefined;
 
   const resultsContainerClass = classNames({
     [styles.resultsContainer]: mode !== 'sidebar',
@@ -141,40 +176,37 @@ const InAppSearch = (props: Props) => {
           query={query}
           searchLocation={mode}
           onSearchSubmit={onFeatureSearchSubmit}
+          onClear={() => onFeatureSearchSubmit('')}
           updateActiveFeatureSearchMode={updateActiveFeatureSearchMode}
           resultsInfo={totalSearchHitsComponent}
         />
       </div>
 
       {isLoading && <CircleLoader className={styles.spinner} size="small" />}
-      {!isLoading &&
-        activeSearchMode.mode === FeatureSearchModeType.GENE_SEARCH_MODE &&
-        currentGeneSearchResults && (
-          <div className={resultsContainerClass}>
-            <InAppSearchMatches
-              results={currentGeneSearchResults}
-              featureSearchMode={activeSearchMode.mode}
-              app={app}
-              mode={mode}
-              genomeIdForUrl={genomeIdForUrl}
-              onMatchNavigation={props.onMatchNavigation}
-            />
-          </div>
-        )}
-      {!isLoading &&
-        activeSearchMode.mode === FeatureSearchModeType.VARIANT_SEARCH_MODE &&
-        currentVariantSearchResults && (
-          <div className={resultsContainerClass}>
-            <InAppSearchMatches
-              results={currentVariantSearchResults}
-              featureSearchMode={activeSearchMode.mode}
-              app={app}
-              mode={mode}
-              genomeIdForUrl={genomeIdForUrl}
-              onMatchNavigation={props.onMatchNavigation}
-            />
-          </div>
-        )}
+      {!isLoading && isGeneSearchResultsDefined && (
+        <div className={resultsContainerClass}>
+          <InAppSearchMatches
+            results={currentGeneSearchResults}
+            featureSearchMode={activeSearchMode.mode}
+            app={app}
+            mode={mode}
+            genomeIdForUrl={genomeIdForUrl}
+            onMatchNavigation={props.onMatchNavigation}
+          />
+        </div>
+      )}
+      {!isLoading && isVariantSearchResultsDefined && (
+        <div className={resultsContainerClass}>
+          <InAppSearchMatches
+            results={currentVariantSearchResults}
+            featureSearchMode={activeSearchMode.mode}
+            app={app}
+            mode={mode}
+            genomeIdForUrl={genomeIdForUrl}
+            onMatchNavigation={props.onMatchNavigation}
+          />
+        </div>
+      )}
     </div>
   );
 };

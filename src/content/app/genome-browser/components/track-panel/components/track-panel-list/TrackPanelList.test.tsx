@@ -137,7 +137,7 @@ describe('<TrackPanelList />', () => {
     it('opens the relevant modal when modal link is clicked', async () => {
       const { store, getByText } = renderComponent();
 
-      const geneSearchLink = getByText('Find a gene');
+      const geneSearchLink = getByText('Find');
 
       await userEvent.click(geneSearchLink);
 

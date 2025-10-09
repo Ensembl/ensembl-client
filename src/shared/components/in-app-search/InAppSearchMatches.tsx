@@ -73,10 +73,14 @@ const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
   }
 
   const { matches } = results;
+  const isGeneSearchMode =
+    featureSearchMode === FeatureSearchModeType.GENE_SEARCH_MODE;
+  const isVariantSearchMode =
+    featureSearchMode === FeatureSearchModeType.VARIANT_SEARCH_MODE;
 
   return (
     <div className={styles.searchMatches}>
-      {featureSearchMode === FeatureSearchModeType.GENE_SEARCH_MODE &&
+      {isGeneSearchMode &&
         matches.map((match, index) => (
           <InAppGeneSearchMatch
             key={(match as GeneSearchMatch).stable_id}
@@ -88,7 +92,7 @@ const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
             onMatchNavigation={onMatchNavigation}
           />
         ))}
-      {featureSearchMode === FeatureSearchModeType.VARIANT_SEARCH_MODE &&
+      {isVariantSearchMode &&
         matches.map((match, index) => {
           const variantMatch = match as VariantSearchMatch;
           const key = `${variantMatch.region_name}:${variantMatch.region_name}:${variantMatch.start}`;

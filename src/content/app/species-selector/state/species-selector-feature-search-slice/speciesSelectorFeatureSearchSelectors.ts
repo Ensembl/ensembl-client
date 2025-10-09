@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from 'src/store';
 
-type SpeciesSelectorGeneSearchState = {
-  query: string;
+export const getGeneQuery = (state: RootState) => {
+  return state.speciesSelector.featureSearch.queries.gene;
 };
 
-const initialState: SpeciesSelectorGeneSearchState = {
-  query: ''
+export const getVariantQuery = (state: RootState) => {
+  return state.speciesSelector.featureSearch.queries.variant;
 };
 
-const speciesSelectorGeneSearchSlice = createSlice({
-  name: 'species-selector-gene-search',
-  initialState,
-  reducers: {
-    setQuery: (state, action: PayloadAction<string>) => {
-      state.query = action.payload;
-    }
-  },
-  selectors: {
-    getQuery: (state) => state.query
-  }
-});
-
-export const { setQuery } = speciesSelectorGeneSearchSlice.actions;
-
-export default speciesSelectorGeneSearchSlice.reducer;
+export const getFeatureQueries = (state: RootState) => {
+  return state.speciesSelector.featureSearch.queries;
+};

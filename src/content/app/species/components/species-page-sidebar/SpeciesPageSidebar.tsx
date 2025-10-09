@@ -32,8 +32,9 @@ import DownloadIcon from 'static/icons/icon_download.svg';
 import { SpeciesSidebarModalView } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
 
-import styles from './SpeciesPageSidebar.module.css';
 import SearchButton from 'src/shared/components/search-button/SearchButton';
+
+import styles from './SpeciesPageSidebar.module.css';
 
 type Props = {
   data: GenomeInfo;

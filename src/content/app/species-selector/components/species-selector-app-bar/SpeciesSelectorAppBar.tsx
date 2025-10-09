@@ -21,7 +21,7 @@ import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import { getQuery as readStoredGeneQuery } from 'src/content/app/species-selector/state/species-selector-gene-search-slice/speciesSelectorGeneSearchSelectors';
+import { getGeneQuery } from 'src/content/app/species-selector/state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSelectors';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -70,7 +70,7 @@ export const SpeciesSelectorAppBar = () => {
 };
 
 const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
-  const storedGeneSearchQuery = useAppSelector(readStoredGeneQuery);
+  const storedGeneSearchQuery = useAppSelector(getGeneQuery);
   const navigate = useNavigate();
   const location = useLocation();
   const inSearchMode = isInSearchMode(location.pathname);
