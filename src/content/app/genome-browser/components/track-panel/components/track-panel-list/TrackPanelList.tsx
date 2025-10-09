@@ -44,7 +44,6 @@ import {
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import TrackPanelVariantGroupLegend from './track-panel-items/TrackPanelVariantGroupLegend';
 import TrackPanelRegulationLegend from './track-panel-items/TrackPanelRegulationLegend';
-import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
 
 import ResetIcon from 'static/icons/icon_reset.svg';
 
@@ -56,6 +55,7 @@ import type {
 } from 'src/shared/types/focus-object/focusObjectTypes';
 
 import styles from './TrackPanelList.module.css';
+import SearchButton from 'src/shared/components/search-button/SearchButton';
 
 export const TrackPanelList = () => {
   // by the time this component renders, genome id should be available
@@ -89,7 +89,7 @@ export const TrackPanelList = () => {
     <div className={styles.trackPanelList}>
       <FocusObject focusObject={activeFocusObject} />
       <div className={styles.modalLinksWrapper}>
-        <GeneSearchButton onClick={openSearch} />
+        <SearchButton onClick={openSearch} label="Find" />
         <button className={styles.modalLink} onClick={openNavigateModal}>
           <span>Change location</span>
           <ResetIcon />

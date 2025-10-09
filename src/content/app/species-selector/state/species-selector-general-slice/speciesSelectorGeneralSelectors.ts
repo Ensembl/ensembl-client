@@ -22,7 +22,7 @@ import type { SpeciesNameDisplayOption } from 'src/content/app/species-selector/
 
 export const getCommittedSpecies = createSelector(
   (state: RootState) => state.speciesSelector.general.committedItems,
-  (committedItems) => {
+  (committedItems): CommittedItem[] => {
     return committedItems.toSorted(
       (species1, species2) => species2.addedAt - species1.addedAt
     );

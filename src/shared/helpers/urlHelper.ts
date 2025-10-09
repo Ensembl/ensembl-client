@@ -75,8 +75,22 @@ export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
   return query ? `${path}?${query}` : path;
 };
 
-export const speciesSelectorGeneSearch = (searchInput?: string) => {
-  const path = `${speciesSelectorPath}/search/gene`;
+export const speciesSelectorFeatureSearch = (
+  path: string,
+  searchInput?: string
+) => {
+  const urlSearchParams = new URLSearchParams('');
+
+  if (searchInput) {
+    urlSearchParams.append('query', searchInput);
+  }
+
+  const query = decodeURIComponent(urlSearchParams.toString());
+  return query ? `${path}?${query}` : path;
+};
+
+export const speciesSelectorVariantSearch = (searchInput?: string) => {
+  const path = `${speciesSelectorPath}/search/variant`;
   const urlSearchParams = new URLSearchParams('');
 
   if (searchInput) {

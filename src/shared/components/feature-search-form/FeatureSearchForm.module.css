@@ -1,0 +1,51 @@
+.tab {
+  display: flex;
+  gap: 25px;
+  margin-left: var(--inner-block-offset-left);
+}
+
+.activeTab {
+  color: black;
+}
+
+.searchForm {
+  display: flex;
+  gap: 46px;
+  align-items: center;
+}
+
+.searchField {
+  flex: 0 0 485px;
+}
+
+.submit {
+  flex: 0 0 auto;
+}
+
+.searchFormSidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.searchFieldSidebar {
+  width: 100%;
+}
+
+.sidebarBottomRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.resultsInfo {
+  flex: 0 0 auto;
+}
+
+.submitSidebar {
+  flex: 0 0 auto;
+  margin-left: auto;
+}

@@ -1,0 +1,26 @@
+.searchButton {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 12px;
+  white-space: nowrap;
+  color: var(--color-blue);
+}
+
+.searchButton > * {
+  flex: 0 0 auto;
+}
+
+.searchIconWrapper {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-blue);
+  border-radius: 5px;
+}
+
+.searchIcon {
+  fill: var(--color-white);
+  height: 14px;
+}

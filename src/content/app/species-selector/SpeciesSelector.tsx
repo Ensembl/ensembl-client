@@ -21,7 +21,7 @@ import SpeciesSearchResultsAppBar from './components/species-selector-search-res
 import SpeciesManagerAppBar from './views/species-manager/species-manager-app-bar/SpeciesManagerAppBar';
 import SpeciesSelectorResultsView from './views/species-selector-results-view/SpeciesSelectorResultsView';
 import SpeciesSelectorMainView from './views/species-selector-main-view/SpeciesSelectorMainView';
-import SpeciesSelectorGeneSearchView from './views/species-selector-gene-search-view/SpeciesSelectorGeneSearchView';
+import SpeciesSelectorSearchView from './views/species-selector-search-view/SpeciesSelectorSearchView';
 import SpeciesManager from './views/species-manager/SpeciesManager';
 
 import styles from './SpeciesSelector.module.css';
@@ -32,6 +32,7 @@ const SpeciesSelector = () => {
       <Route index element={<SpeciesSelectorAppBar />} />
       <Route path="/search" element={<SpeciesSearchResultsAppBar />} />
       <Route path="/search/gene" element={<SpeciesSelectorAppBar />} />
+      <Route path="/search/variant" element={<SpeciesSelectorAppBar />} />
       <Route path="/manage" element={<SpeciesManagerAppBar />} />
     </Routes>
   );
@@ -40,7 +41,8 @@ const SpeciesSelector = () => {
     <Routes>
       <Route index element={<SpeciesSelectorMainView />} />
       <Route path="/search" element={<SpeciesSelectorResultsView />} />
-      <Route path="/search/gene" element={<SpeciesSelectorGeneSearchView />} />
+      <Route path="/search/gene" element={<SpeciesSelectorSearchView />} />
+      <Route path="/search/variant" element={<SpeciesSelectorSearchView />} />
       <Route path="/manage" element={<SpeciesManager />} />
     </Routes>
   );

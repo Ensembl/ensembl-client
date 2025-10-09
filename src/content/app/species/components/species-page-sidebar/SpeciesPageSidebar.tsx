@@ -26,7 +26,6 @@ import { updateSpeciesSidebarModalForGenome } from 'src/content/app/species/stat
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
-import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
 
 import DownloadIcon from 'static/icons/icon_download.svg';
 
@@ -34,6 +33,7 @@ import { SpeciesSidebarModalView } from 'src/content/app/species/state/sidebar/s
 import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './SpeciesPageSidebar.module.css';
+import SearchButton from 'src/shared/components/search-button/SearchButton';
 
 type Props = {
   data: GenomeInfo;
@@ -69,7 +69,7 @@ const SpeciesPageSidebar = (props: Props) => {
         </div>
 
         <div className={styles.topSectionButtonsContainer}>
-          <GeneSearchButton onClick={onGeneSearchClick} />
+          <SearchButton onClick={onGeneSearchClick} label="Find" />
         </div>
       </section>
 
