@@ -23,10 +23,12 @@ import {
 
 import { createFocusObject } from 'tests/fixtures/focus-object';
 
-vi.mock('./GeneSummaryStrip', () => () => <div>Gene Summary Strip</div>);
-vi.mock('./LocationSummaryStrip', () => () => (
-  <div>Location Summary Strip</div>
-));
+vi.mock('./GeneSummaryStrip', () => ({
+  default: () => <div>Gene Summary Strip</div>
+}));
+vi.mock('./LocationSummaryStrip', () => ({
+  default: () => <div>Location Summary Strip</div>
+}));
 
 describe('<FeatureSummaryStrip />', () => {
   const defaultProps = {

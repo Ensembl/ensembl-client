@@ -20,7 +20,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { http, graphql, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
+import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
 import set from 'lodash/fp/set';
 
 import createRootReducer from 'src/root/rootReducer';
@@ -45,14 +45,18 @@ const mockMetadataApiBaseUrl = 'http://metadata-api';
 const mockGenomeBrowserObj = {};
 
 vi.mock('config', () => ({
-  metadataApiBaseUrl: 'http://metadata-api',
-  coreApiUrl: 'http://graphql-api'
+  default: {
+    metadataApiBaseUrl: 'http://metadata-api',
+    coreApiUrl: 'http://graphql-api'
+  }
 }));
 
-vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
-  genomeBrowser: mockGenomeBrowserObj,
-  changeFocusObject: mockChangeFocusObject,
-  changeBrowserLocation: mockChangeBrowserLocation
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
+    genomeBrowser: mockGenomeBrowserObj,
+    changeFocusObject: mockChangeFocusObject,
+    changeBrowserLocation: mockChangeBrowserLocation
+  })
 }));
 
 type GenomeExplainerResponse = Pick<

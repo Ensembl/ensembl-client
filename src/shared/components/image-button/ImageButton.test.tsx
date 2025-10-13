@@ -22,13 +22,11 @@ import { ImageButton, Props as ImageButtonProps } from './ImageButton';
 
 import { Status } from 'src/shared/types/status';
 
-vi.mock(
-  'src/shared/components/tooltip/Tooltip',
-  () =>
-    ({ children }: { children: any }) => (
-      <div className="tooltip">{children}</div>
-    )
-);
+vi.mock('src/shared/components/tooltip/Tooltip', () => ({
+  default: ({ children }: { children: any }) => (
+    <div className="tooltip">{children}</div>
+  )
+}));
 
 const defaultProps = {
   image: '/image.svg'
@@ -140,7 +138,7 @@ describe('<ImageButton />', () => {
       description
     };
 
-    it('shows tooltip when moused over', () => {
+    it('shows tooltip when moused over', async () => {
       const { container } = renderImageButton(props);
       expect(container.querySelector('.tooltip')).toBeFalsy();
 

@@ -45,12 +45,16 @@ const mockBacteriumKaryotype = [
 const mockMetadataApiUrl = 'http://metadata-api';
 
 vi.mock('config', () => ({
-  metadataApiBaseUrl: 'http://metadata-api'
+  default: {
+    metadataApiBaseUrl: 'http://metadata-api'
+  }
 }));
 
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => vi.fn()
+  () => ({
+    default: () => vi.fn()
+  })
 );
 
 const server = setupServer(
