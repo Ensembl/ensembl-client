@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { render, act, waitFor } from '@testing-library/react';
@@ -35,7 +35,9 @@ import blastSettingsConfig from 'tests/fixtures/blast/blastSettingsConfig';
 import BlastSettings from './BlastSettings';
 
 vi.mock('config', () => ({
-  toolsApiBaseUrl: 'http://tools-api' // need to provide absolute urls to the fetch running in Node
+  default: {
+    toolsApiBaseUrl: 'http://tools-api' // need to provide absolute urls to the fetch running in Node
+  }
 }));
 
 // BlastSettings component depends on useBlastForm hook, which fetches the config
@@ -88,7 +90,7 @@ describe('BlastSettings', () => {
     renderResult = renderBlastSettings();
     const { container, store, getByText } = renderResult;
 
-    await act(() => {
+    act(() => {
       store.dispatch(
         setBlastDatabase({ database: 'dna_sm', config: blastSettingsConfig })
       );
