@@ -26,41 +26,35 @@ export default defineConfig({
         classNameStrategy: 'non-scoped' // keep original class names
       }
     },
-    setupFiles: [
-      './tests/setup.ts',
-      './tests/setup-rtl.ts'
-    ],
-    pool: 'threads'
+    setupFiles: ['./tests/setup.ts', './tests/setup-rtl.ts'],
+    pool: 'threads',
+    alias: [
+      // Mock SVGs
+      {
+        find: /^.+\.svg$/,
+        replacement: path.resolve(__dirname, './tests/svgrMock.tsx')
+      }
+    ]
   },
   resolve: {
-    alias: {
+    alias: [
       // Handle absolute imports like "src/..."
-      src: path.resolve(__dirname, './src'),
+      { find: 'src', replacement: path.resolve(__dirname, './src') },
 
-      // Map "config" to your config.ts
-      config: path.resolve(__dirname, './config.ts'),
+      // Map "config" to config.ts
+      { find: 'config', replacement: path.resolve(__dirname, './config.ts') },
 
       // Handle static assets
-      static: path.resolve(__dirname, './static'),
+      { find: 'static', replacement: path.resolve(__dirname, './static') },
 
-      // Example: stub out browser-specific static files
-      'static/browser': path.resolve(__dirname, './static/browser'),
-
-      // Mock SVGs
-      '\\.svg': path.resolve(__dirname, './tests/svgrMock.ts'),
-
-      tests: path.resolve(__dirname, 'tests')
-    }
-  },
-  plugins: [
-    {
-      name: 'load-svg',
-      enforce: 'pre',
-      transform(_, id) {
-        if (id.endsWith('.svg')) {
-          return 'export default "SvgMock"; export const ReactComponent = () => "SvgMock";';
-        }
+      // Stub out browser-specific static files
+      {
+        find: 'static/browser',
+        replacement: path.resolve(__dirname, './static/browser')
       },
-    }
-  ],
+
+      // Resolve tests directory
+      { find: 'tests', replacement: path.resolve(__dirname, 'tests') }
+    ]
+  }
 });
