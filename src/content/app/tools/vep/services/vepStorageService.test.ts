@@ -44,12 +44,12 @@ const getDatabase = async () => {
   });
 };
 
-jest.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
+vi.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
 
 /**
  * NOTE:
  * The tests below do not test file manipulation. There are two reasons for this:
- * - Our tests do not run in the real browser, but instead in Node with Node with jsdom and some Jest shenanigans.
+ * - Our tests do not run in the real browser, but instead in Node with Node with jsdom.
  *   This is bad; but it isn't clear what the way out is. Perhaps in the future we will be able to migrate to Vitest,
  *   which can run tests in the browser; or perhaps Playwright will mature to the point where it can run component tests.
  * - As a result, we do not have access to the real indexedDB in tests, and have to use the `fake-indexeddb` polyfill.

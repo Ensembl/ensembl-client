@@ -14,22 +14,4 @@
  * limitations under the License.
  */
 
-import { WindowServiceInterface } from 'src/services/window-service';
-
-export const mockMatchMedia = () => () => ({
-  matches: true,
-  addEventListener: () => null,
-  removeEventListener: () => null
-});
-
-const mockWindowService: WindowServiceInterface = {
-  getLocalStorage: vi.fn(),
-  getSessionStorage: vi.fn(),
-  getResizeObserver: vi.fn(),
-  getMatchMedia: vi.fn().mockImplementation(mockMatchMedia),
-  getWindow: vi.fn(),
-  getFileReader: vi.fn(),
-  getLocation: vi.fn()
-};
-
-export default mockWindowService;
+vi.mock('src/services/google-analytics');

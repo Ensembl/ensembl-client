@@ -20,7 +20,7 @@ import errorService from 'src/services/error-service';
 
 import ErrorBoundary from './ErrorBoundary';
 
-jest.mock('src/services/error-service');
+vi.mock('src/services/error-service');
 
 const Child = () => <span className="child">I am a child</span>;
 const BrokenChild = (props: { errorMessage: string }) => {
@@ -36,18 +36,25 @@ const Fallback = ({ error }: { error: Error }) => (
 );
 
 describe('<ErrorBoundary />', () => {
-  // suppress error messages from React and jsdom
-  // (see https://github.com/facebook/react/pull/13384)
-  window.addEventListener('error', (e) => {
-    e.preventDefault();
-  });
-
   beforeAll(() => {
-    errorService.report = jest.fn();
+    vi.spyOn(console, 'error').mockImplementation((...args) => {
+      // Filter out React’s “The above error occurred…” noise
+      const message = args[0];
+      if (
+        typeof message === 'string' &&
+        message.includes('The above error occurred in the <BuggyComponent>')
+      ) {
+        return;
+      }
+      // Make sure to log other any other error messages
+      return vi.fn().apply(console, args as any);
+    });
+
+    errorService.report = vi.fn();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders children components if they render normally', () => {

@@ -37,7 +37,7 @@ const renderMenu = (props: Partial<HelpMenuProps> = {}) =>
   );
 
 beforeAll(() => {
-  Element.prototype.scrollIntoView = jest.fn();
+  Element.prototype.scrollIntoView = vi.fn();
 });
 
 afterAll(() => {

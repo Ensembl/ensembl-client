@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -29,45 +29,72 @@ import { createMockBrowserState } from 'tests/fixtures/browser';
 
 import { BrowserSidebarModalView } from './state/browser-sidebar-modal/browserSidebarModalSlice';
 
-jest.mock('./hooks/useBrowserRouting', () => () => ({
-  changeGenomeId: jest.fn()
-}));
-jest.mock('./hooks/useGenomeBrowser', () => () => ({
+vi.mock('./hooks/useBrowserRouting', () => {
+  return {
+    default: () => ({ changeGenomeId: vi.fn() })
+  };
+});
+vi.mock('./hooks/useGenomeBrowser', () => () => ({
   genomeBrowser: {}
 }));
-jest.mock('./hooks/useGenomeBrowserTracks', () => jest.fn());
-jest.mock('./components/browser-bar/BrowserBar', () => () => (
-  <div className="browserBar">BrowserBar</div>
-));
-jest.mock('./components/browser-image/BrowserImage', () => () => (
-  <div className="browserImage">BrowserImage</div>
-));
-jest.mock('./components/browser-app-bar/BrowserAppBar', () => () => (
-  <div className="browserAppBar">BrowserAppBar</div>
-));
-jest.mock('./components/interstitial/BrowserInterstitial', () => () => (
-  <div className="browserInterstitial">BrowserInterstitial</div>
-));
-jest.mock(
+vi.mock('./hooks/useGenomeBrowserTracks', () => {
+  return { default: vi.fn() };
+});
+vi.mock('./components/browser-bar/BrowserBar', () => {
+  return {
+    default: () => <div className="browserBar">BrowserBar</div>
+  };
+});
+vi.mock('./components/browser-image/BrowserImage', () => {
+  return {
+    default: () => <div className="browserImage">BrowserImage</div>
+  };
+});
+vi.mock('./components/browser-app-bar/BrowserAppBar', () => {
+  return {
+    default: () => <div className="browserAppBar">BrowserAppBar</div>
+  };
+});
+vi.mock('./components/interstitial/BrowserInterstitial', () => {
+  return {
+    default: () => (
+      <div className="browserInterstitial">BrowserInterstitial</div>
+    )
+  };
+});
+vi.mock(
   './components/browser-sidebar-toolstrip/BrowserSidebarToolstrip',
-  () => () => (
-    <div className="browserSidebarToolstrip">BrowserSidebarToolstrip</div>
-  )
+  () => {
+    return {
+      default: () => (
+        <div className="browserSidebarToolstrip">BrowserSidebarToolstrip</div>
+      )
+    };
+  }
 );
-jest.mock('./components/track-panel/TrackPanel', () => () => (
-  <div className="trackPanel">TrackPanel</div>
-));
-jest.mock(
-  './components/browser-sidebar-modal/BrowserSidebarModal',
-  () => () => <div className="sidebarModal">Sidebar modal</div>
-);
-jest.mock(
+vi.mock('./components/track-panel/TrackPanel', () => {
+  return {
+    default: () => <div className="trackPanel">TrackPanel</div>
+  };
+});
+vi.mock('./components/browser-sidebar-modal/BrowserSidebarModal', () => {
+  return {
+    default: () => <div className="sidebarModal">Sidebar modal</div>
+  };
+});
+vi.mock(
   './components/track-panel/components/track-panel-tabs/TrackPanelTabs',
-  () => () => <div className="trackPanelTabs">TrackPanelTabs</div>
+  () => {
+    return {
+      default: () => <div className="trackPanelTabs">TrackPanelTabs</div>
+    };
+  }
 );
-jest.mock('./components/drawer/Drawer', () => () => (
-  <div className="drawer">Drawer</div>
-));
+vi.mock('./components/drawer/Drawer', () => {
+  return {
+    default: () => <div className="drawer">Drawer</div>
+  };
+});
 
 const mockState = createMockBrowserState();
 
@@ -97,7 +124,7 @@ describe('<Browser />', () => {
   const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {
@@ -106,6 +133,7 @@ describe('<Browser />', () => {
         state: set('browser.browserGeneral.activeGenomeId', null, mockState),
         url: '/'
       });
+
       expect(container.querySelector('.browserInterstitial')).toBeTruthy();
     });
 

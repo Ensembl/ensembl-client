@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`parseBlastInput parsing FASTA input clears white spaces from the input 1`] = `
+exports[`parseBlastInput > parsing FASTA input > clears white spaces from the input 1`] = `
 [
   {
     "header": "sp|P05067|A4_HUMAN Amyloid-beta precursor protein OS=Homo sapiens OX=9606 GN=APP PE=1 SV=3",
@@ -9,7 +9,7 @@ exports[`parseBlastInput parsing FASTA input clears white spaces from the input 
 ]
 `;
 
-exports[`parseBlastInput parsing FASTA input correctly parses a file with multiple sequences 1`] = `
+exports[`parseBlastInput > parsing FASTA input > correctly parses a file with multiple sequences 1`] = `
 [
   {
     "header": "gi|1348912|gb|G26680|G26680 human STS STS_D11729.^Agi|1396336|gb|G27617|G27617 human STS SHGC-32648.",
@@ -26,7 +26,7 @@ exports[`parseBlastInput parsing FASTA input correctly parses a file with multip
 ]
 `;
 
-exports[`parseBlastInput parsing FASTA input correctly parses a single sequence 1`] = `
+exports[`parseBlastInput > parsing FASTA input > correctly parses a single sequence 1`] = `
 [
   {
     "header": "gi|3318709|pdb|1A91|  Subunit C Of The F1fo Atp Synthase Of Escherichia Coli; Nmr, 10 Structures",
@@ -35,7 +35,7 @@ exports[`parseBlastInput parsing FASTA input correctly parses a single sequence 
 ]
 `;
 
-exports[`parseBlastInput parsing FASTA input ignores blank lines in the input 1`] = `
+exports[`parseBlastInput > parsing FASTA input > ignores blank lines in the input 1`] = `
 [
   {
     "header": "gi|1348912|gb|G26680|G26680 human STS STS_D11729.^Agi|1396336|gb|G27617|G27617 human STS SHGC-32648.",
@@ -52,7 +52,7 @@ exports[`parseBlastInput parsing FASTA input ignores blank lines in the input 1`
 ]
 `;
 
-exports[`parseBlastInput parsing bare sequences cleans white space in the beginning of a sequence line 1`] = `
+exports[`parseBlastInput > parsing bare sequences > cleans white space in the beginning of a sequence line 1`] = `
 [
   {
     "value": "QIKDLLVSSSTDLDTTLVLVNAIYFKGMWKTAFNAEDTREMPFHVTKQESKPVQMMCMNNSFNVATLPAEKMKILELPFASGDLSMLVLLPDEVSDLERIEKTINFEKLTEWTNPNTMEKRRVKVYLPQMKIEEKYNLTSVLMALGMTDLFIPSANLTGISSAESLKISQAVHGAFMELSEDGIEMAGSTGVIEDIKHSPESEQFRADHPFLFLIKHNPTNTIVYFGRYWSP",
@@ -60,7 +60,7 @@ exports[`parseBlastInput parsing bare sequences cleans white space in the beginn
 ]
 `;
 
-exports[`parseBlastInput parsing bare sequences correctly parses a single sequence 1`] = `
+exports[`parseBlastInput > parsing bare sequences > correctly parses a single sequence 1`] = `
 [
   {
     "value": "QIKDLLVSSSTDLDTTLVLVNAIYFKGMWKTAFNAEDTREMPFHVTKQESKPVQMMCMNNSFNVATLPAEKMKILELPFASGDLSMLVLLPDEVSDLERIEKTINFEKLTEWTNPNTMEKRRVKVYLPQMKIEEKYNLTSVLMALGMTDLFIPSANLTGISSAESLKISQAVHGAFMELSEDGIEMAGSTGVIEDIKHSPESEQFRADHPFLFLIKHNPTNTIVYFGRYWSP",
@@ -68,7 +68,7 @@ exports[`parseBlastInput parsing bare sequences correctly parses a single sequen
 ]
 `;
 
-exports[`parseBlastInput parsing bare sequences removes numbers from numbered sequence lines 1`] = `
+exports[`parseBlastInput > parsing bare sequences > removes numbers from numbered sequence lines 1`] = `
 [
   {
     "value": "QIKDLLVSSSTDLDTTLVLVNAIYFKGMWKTAFNAEDTREMPFHVTKQESKPVQMMCMNNSFNVATLPAEKMKILELPFASGDLSMLVLLPDEVSDLERIEKTINFEKLTEWTNPNTMEKRRVKVYLPQMKIEEKYNLTSVLMALGMTDLFIPSANLTGISSAESLKISQAVHGAFMELSEDGIEMAGSTGVIEDIKHSPESEQFRADHPFLFLIKHNPTNTIVYFGRYWSP",

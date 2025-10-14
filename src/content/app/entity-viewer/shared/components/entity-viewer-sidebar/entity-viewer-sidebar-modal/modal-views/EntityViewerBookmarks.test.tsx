@@ -22,9 +22,9 @@ import createRootReducer from 'src/root/rootReducer';
 
 import { EntityViewerSidebarBookmarks } from './EntityViewerBookmarks';
 
-const mockGenomeId = 'human'; // to be picked up by jest
+const mockGenomeId = 'human'; // to be picked up by the test runner
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   Link: (props: any) => (
     <a className="link" href={props.to}>
       {props.children}
@@ -32,19 +32,17 @@ jest.mock('react-router-dom', () => ({
   )
 }));
 
-jest.mock(
-  'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
-  () => () => ({
-    trackPreviouslyViewedObjectClicked: jest.fn()
+vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerAnalytics', () => ({
+  default: () => ({
+    trackPreviouslyViewedObjectClicked: vi.fn()
   })
-);
+}));
 
-jest.mock(
-  'src/content/app/entity-viewer/hooks/useEntityViewerIds',
-  () => () => ({
+vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerIds', () => ({
+  default: () => ({
     genomeIdForUrl: mockGenomeId
   })
-);
+}));
 
 const exampleEntities = [
   {
@@ -114,7 +112,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
 
 describe('<EntityViewerSidebarBookmarks />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('shows previously viewed entities if present', () => {

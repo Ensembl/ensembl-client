@@ -20,7 +20,7 @@ import { faker } from '@faker-js/faker';
 
 import { PrimaryButton, SecondaryButton } from './Button';
 
-const onClick = jest.fn();
+const onClick = vi.fn();
 
 const defaultProps = {
   onClick
@@ -28,7 +28,7 @@ const defaultProps = {
 
 describe('PrimaryButton', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders a button', () => {

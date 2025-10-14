@@ -18,7 +18,7 @@ class MockGenomeBrowser {
   private subscriptions = new Map<string, Set<any>>();
 
   public send() {
-    return jest.fn();
+    return vi.fn();
   }
 
   public subscribe = (actionType: string, callback: any) => {

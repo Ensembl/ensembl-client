@@ -39,13 +39,15 @@ const generateKaryotype = () =>
     type: 'chromosome'
   }));
 const mockKaryotype = generateKaryotype();
-const mockChangeBrowserLocation = jest.fn();
+const mockChangeBrowserLocation = vi.fn();
 
-jest.mock('config', () => ({
-  metadataApiBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
+vi.mock('config', () => ({
+  default: {
+    metadataApiBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
+  }
 }));
-jest.mock('src/shared/state/genome/genomeApiSlice', () => {
-  const originalModule = jest.requireActual(
+vi.mock('src/shared/state/genome/genomeApiSlice', async () => {
+  const originalModule = await vi.importActual(
     'src/shared/state/genome/genomeApiSlice'
   );
 
@@ -57,22 +59,22 @@ jest.mock('src/shared/state/genome/genomeApiSlice', () => {
     })
   };
 });
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/components/browser-sidebar-modal/modal-views/navigate-modal/NavigationButtons',
-  () => () => <div data-test-id="navigation-buttons" />
+  () => ({
+    default: () => <div data-test-id="navigation-buttons" />
+  })
 );
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
-  () => () => ({
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowserIds', () => ({
+  default: () => ({
     genomeIdForUrl: 'human'
   })
-);
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
+}));
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
     changeBrowserLocation: mockChangeBrowserLocation
   })
-);
+}));
 
 const renderComponent = () => {
   const initialState = {
@@ -148,7 +150,7 @@ const newBrowserLocationParams = {
 
 describe('<RegionNavigation />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('segmented input', () => {
@@ -173,9 +175,10 @@ describe('<RegionNavigation />', () => {
     it('does not submit location unless all inputs have been filled in', async () => {
       const { getByLabelText } = renderComponent();
       const startCoordinateInput = getByLabelText('Start');
-      jest
-        .spyOn(browserHelperMethods, 'validateGenomicLocation')
-        .mockImplementation(jest.fn());
+      vi.spyOn(
+        browserHelperMethods,
+        'validateGenomicLocation'
+      ).mockImplementation(vi.fn());
 
       await userEvent.type(startCoordinateInput, '500{enter}');
 

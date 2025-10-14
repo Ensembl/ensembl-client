@@ -20,7 +20,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { http, graphql, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
+import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
 import set from 'lodash/fp/set';
 
 import createRootReducer from 'src/root/rootReducer';
@@ -37,26 +37,27 @@ import { GenomeBrowserIdsProvider } from '../contexts/genome-browser-ids-context
 import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
 // NOTE: scary stuff, but if you prefix function name with the word "mock",
-// jest will allow passing them to the factory function of jest.mock
-const mockChangeFocusObject = jest.fn();
-const mockChangeBrowserLocation = jest.fn();
+// jest will allow passing them to the factory function of vi.mock
+const mockChangeFocusObject = vi.fn();
+const mockChangeBrowserLocation = vi.fn();
 
 const mockMetadataApiBaseUrl = 'http://metadata-api';
 const mockGenomeBrowserObj = {};
 
-jest.mock('config', () => ({
-  metadataApiBaseUrl: 'http://metadata-api',
-  coreApiUrl: 'http://graphql-api'
+vi.mock('config', () => ({
+  default: {
+    metadataApiBaseUrl: 'http://metadata-api',
+    coreApiUrl: 'http://graphql-api'
+  }
 }));
 
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
     genomeBrowser: mockGenomeBrowserObj,
     changeFocusObject: mockChangeFocusObject,
     changeBrowserLocation: mockChangeBrowserLocation
   })
-);
+}));
 
 type GenomeExplainerResponse = Pick<
   BriefGenomeSummary,
@@ -220,7 +221,7 @@ afterAll(() => server.close());
 
 describe('useBrowserRouting', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     routingHandle = null;
   });
 

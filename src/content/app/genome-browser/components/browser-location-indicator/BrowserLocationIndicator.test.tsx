@@ -44,13 +44,17 @@ const mockBacteriumKaryotype = [
 
 const mockMetadataApiUrl = 'http://metadata-api';
 
-jest.mock('config', () => ({
-  metadataApiBaseUrl: 'http://metadata-api'
+vi.mock('config', () => ({
+  default: {
+    metadataApiBaseUrl: 'http://metadata-api'
+  }
 }));
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => jest.fn()
+  () => ({
+    default: () => vi.fn()
+  })
 );
 
 const server = setupServer(
@@ -119,7 +123,7 @@ afterAll(() => server.close());
 
 describe('BrowserLocationIndicator', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('rendering', () => {

@@ -60,13 +60,13 @@ const minimalProps = {
   topbarContent: <TopbarContent />,
   isSidebarOpen: true,
   sidebarNavigation: <SidebarNavigation />,
-  onSidebarToggle: jest.fn(),
+  onSidebarToggle: vi.fn(),
   viewportWidth: BreakpointWidth.DESKTOP
 };
 
 describe('StandardAppLayout', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {
@@ -123,7 +123,7 @@ describe('StandardAppLayout', () => {
         ...minimalProps,
         isDrawerOpen: false,
         drawerContent: <DrawerContent />,
-        onDrawerClose: jest.fn()
+        onDrawerClose: vi.fn()
       };
 
       it('renders drawer content in the drawer', () => {
@@ -188,7 +188,7 @@ describe('StandardAppLayout', () => {
       ...minimalProps,
       isDrawerOpen: false,
       drawerContent: <DrawerContent />,
-      onDrawerClose: jest.fn()
+      onDrawerClose: vi.fn()
     };
 
     describe('sidebar navigation tabs when sidebar is closed', () => {

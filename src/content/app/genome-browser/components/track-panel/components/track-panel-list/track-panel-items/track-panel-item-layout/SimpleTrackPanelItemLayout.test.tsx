@@ -83,7 +83,7 @@ describe('<SimpleTrackPanelItemLayout />', () => {
   });
 
   it('renders a visibility button with the correct visibility status if a callback is passed', async () => {
-    const onChangeVisibility = jest.fn();
+    const onChangeVisibility = vi.fn();
     const { container } = render(
       <SimpleTrackPanelItemLayout
         visibilityStatus={Status.SELECTED}
@@ -103,7 +103,7 @@ describe('<SimpleTrackPanelItemLayout />', () => {
   });
 
   it('renders an ellipsis if a callback is passed', async () => {
-    const onShowMore = jest.fn();
+    const onShowMore = vi.fn();
     const { container } = render(
       <SimpleTrackPanelItemLayout onShowMore={onShowMore}>
         <MainContent />

@@ -52,23 +52,27 @@ import {
   createFailedJobStatusResponse
 } from './fixtures/blastSubmissionFixtures';
 
-jest.mock('src/content/app/tools/blast/services/blastStorageService', () => ({
-  saveBlastSubmission: jest.fn().mockImplementation(() => Promise.resolve()),
-  updateSavedBlastJob: jest.fn().mockImplementation(() => Promise.resolve()),
-  getAllBlastSubmissions: jest.fn(),
-  deleteExpiredBlastSubmissions: jest.fn(),
-  deleteBlastSubmission: jest.fn()
+vi.mock('src/content/app/tools/blast/services/blastStorageService', () => ({
+  saveBlastSubmission: vi.fn().mockImplementation(() => Promise.resolve()),
+  updateSavedBlastJob: vi.fn().mockImplementation(() => Promise.resolve()),
+  getAllBlastSubmissions: vi.fn(),
+  deleteExpiredBlastSubmissions: vi.fn(),
+  deleteBlastSubmission: vi.fn()
 }));
-jest.mock('config', () => ({
-  toolsApiBaseUrl: 'http://tools-api-url' // need to provide absolute urls to the fetch running in Node
+vi.mock('config', () => ({
+  default: {
+    toolsApiBaseUrl: 'http://tools-api-url' // need to provide absolute urls to the fetch running in Node
+  }
 }));
-jest.mock('../blastEpicConstants', () => ({
+vi.mock('../blastEpicConstants', () => ({
   POLLING_INTERVAL: 0
 }));
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => jest.fn()
+  () => ({
+    default: () => vi.fn()
+  })
 );
 
 const buildReduxStore = () => {
@@ -127,7 +131,7 @@ describe('blast epics', () => {
 
   afterEach(() => {
     shutdownEpic();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('blastFormSubmissionEpic', () => {
@@ -278,11 +282,11 @@ describe('blast epics', () => {
       }
     });
 
-    jest
-      .spyOn(blastStorageService, 'getAllBlastSubmissions')
-      .mockImplementation(async () => ({
+    vi.spyOn(blastStorageService, 'getAllBlastSubmissions').mockImplementation(
+      async () => ({
         [successfulSubmission.submission_id]: storedBlastSubmission
-      }));
+      })
+    );
 
     it('polls status of unfinished jobs', async () => {
       const maxJobPollCount = 3;

@@ -15,7 +15,7 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -38,14 +38,15 @@ import LocationDisplay, {
   LOCATION_DISPLAY_TEST_ID
 } from 'tests/components/LocationDisplay';
 
-jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
+vi.mock('./ZmenuAppLinks', () => ({
+  default: () => <div>ZmenuAppLinks</div>
+}));
 
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
-  () => () => ({
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowserIds', () => ({
+  default: () => ({
     genomeIdForUrl: 'grch38'
   })
-);
+}));
 
 enum Markup {
   STRONG = 'strong',
@@ -58,7 +59,7 @@ const mockState = createMockBrowserState();
 
 const defaultZmenuContentProps: ZmenuContentProps = {
   ...createZmenuContentPayload(),
-  destroyZmenu: jest.fn()
+  destroyZmenu: vi.fn()
 };
 
 const renderZmenuContent = (state = mockState) => {
@@ -80,7 +81,7 @@ const defaultZmenuContentItemProps: ZmenuContentItemProps = {
   featureId: faker.lorem.words(),
   markup: [Markup.FOCUS],
   text: faker.lorem.words(),
-  destroyZmenu: jest.fn()
+  destroyZmenu: vi.fn()
 };
 
 const renderZmenuContentItem = (state = mockState) => {
@@ -101,7 +102,7 @@ const renderZmenuContentItem = (state = mockState) => {
 
 describe('<ZmenuContent />', () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('rendering', () => {

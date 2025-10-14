@@ -29,14 +29,15 @@ import createRootReducer from 'src/root/rootReducer';
 
 const mockGenomeBrowserService = new MockGenomeBrowserService();
 
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
     genomeBrowserService: mockGenomeBrowserService
   })
-);
+}));
 
-jest.mock('./BrowserCog', () => () => <div className="browserCog" />);
+vi.mock('./BrowserCog', () => ({
+  default: () => <div className="browserCog" />
+}));
 
 const displayedTracks = [
   {
@@ -96,7 +97,7 @@ const renderComponent = () => {
 
 describe('<BrowserCogList />', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('rendering', () => {
@@ -107,7 +108,7 @@ describe('<BrowserCogList />', () => {
     });
 
     it('updates displayed tracks in redux after receiving genome browser message', () => {
-      jest.spyOn(displayedTracksSlice, 'setDisplayedTracks');
+      vi.spyOn(displayedTracksSlice, 'setDisplayedTracks');
 
       renderComponent();
 

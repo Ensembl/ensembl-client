@@ -33,20 +33,24 @@ import {
 
 import TranscriptSequenceView, { type Props } from './TranscriptSequenceView';
 
-jest.mock('config', () => ({
-  refgetBaseUrl: 'http://refget-api' // need to provide absolute urls to the fetch running in Node
-}));
-jest.mock(
-  'src/shared/components/blast-sequence-button/BlastSequenceButton',
-  () => () => {
-    return <button className="blast-sequence-button" />;
+vi.mock('config', () => ({
+  default: {
+    refgetBaseUrl: 'http://refget-api' // need to provide absolute urls to the fetch running in Node
   }
+}));
+vi.mock(
+  'src/shared/components/blast-sequence-button/BlastSequenceButton',
+  () => ({
+    default: () => <button className="blast-sequence-button" />
+  })
 );
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    trackDrawerSequenceViewed: jest.fn()
+  () => ({
+    default: () => ({
+      trackDrawerSequenceViewed: vi.fn()
+    })
   })
 );
 

@@ -33,14 +33,18 @@ import { TrackSet } from '../../trackPanelConfig';
 
 const mockTrackApi = 'http://track-api';
 
-jest.mock('config', () => ({
-  tracksApiBaseUrl: 'http://track-api'
+vi.mock('config', () => ({
+  default: {
+    tracksApiBaseUrl: 'http://track-api'
+  }
 }));
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    reportTrackPanelTabChange: jest.fn()
+  () => ({
+    default: () => ({
+      reportTrackPanelTabChange: vi.fn()
+    })
   })
 );
 
@@ -126,7 +130,7 @@ afterAll(() => server.close());
 
 describe('<TrackPanelTabs />', () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('rendering', () => {
@@ -156,7 +160,7 @@ describe('<TrackPanelTabs />', () => {
 
         const tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
-        jest.spyOn(trackPanelActions, 'selectTrackPanelTab');
+        vi.spyOn(trackPanelActions, 'selectTrackPanelTab');
 
         await userEvent.click(tab);
         expect(trackPanelActions.selectTrackPanelTab).toHaveBeenCalledWith(
@@ -177,7 +181,7 @@ describe('<TrackPanelTabs />', () => {
 
         let tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
-        jest.spyOn(trackPanelActions, 'toggleTrackPanel');
+        vi.spyOn(trackPanelActions, 'toggleTrackPanel');
 
         await userEvent.click(tab);
         expect(trackPanelActions.toggleTrackPanel).not.toHaveBeenCalled();
@@ -212,7 +216,7 @@ describe('<TrackPanelTabs />', () => {
 
         let tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
-        jest.spyOn(drawerActions, 'closeDrawer');
+        vi.spyOn(drawerActions, 'closeDrawer');
 
         await userEvent.click(tab);
         expect(drawerActions.closeDrawer).not.toHaveBeenCalled();

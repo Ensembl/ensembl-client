@@ -36,10 +36,18 @@ import {
 
 const mockRegulationApiRoot = 'http://regulation-api';
 
-jest.mock('config', () => ({
-  metadataApiBaseUrl: 'http://metadata-api',
-  regulationApiBaseUrl: 'http://regulation-api'
-}));
+vi.mock('config', async () => {
+  const actual = await vi.importActual<typeof import('config')>('config');
+
+  return {
+    ...actual,
+    default: {
+      ...actual.default,
+      metadataApiBaseUrl: 'http://metadata-api',
+      regulationApiBaseUrl: 'http://regulation-api'
+    }
+  };
+});
 
 const server = setupServer(
   http.get(

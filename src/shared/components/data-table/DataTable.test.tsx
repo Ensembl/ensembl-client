@@ -62,7 +62,7 @@ describe('<DataTable />', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders without error', () => {
@@ -99,7 +99,7 @@ describe('<DataTable />', () => {
   });
 
   it('calls onStateChange with the updated state when the state changes', async () => {
-    const onStateChange = jest.fn();
+    const onStateChange = vi.fn();
     container = renderDataTable({
       onStateChange
     }).container;
@@ -116,7 +116,7 @@ describe('<DataTable />', () => {
   });
 
   it('updates tableState when the state from the parent changes', async () => {
-    const onStateChange = jest.fn();
+    const onStateChange = vi.fn();
     const { container, rerender } = renderDataTable({
       onStateChange
     });

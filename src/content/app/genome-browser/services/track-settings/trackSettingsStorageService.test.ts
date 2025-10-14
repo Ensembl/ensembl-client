@@ -55,7 +55,7 @@ const getDatabase = async () => {
   });
 };
 
-jest.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
+vi.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
 
 describe('trackSettingsStorageService', () => {
   afterEach(async () => {
@@ -313,12 +313,10 @@ describe('trackSettingsStorageService', () => {
 
     describe('deleteTrackSettings', () => {
       it('deletes settings of one track', async () => {
-        const humanTracksBefore = await getTrackSettingsForGenome(
-          humanGenomeId
-        );
-        const wheatTracksBefore = await getTrackSettingsForGenome(
-          wheatGenomeId
-        );
+        const humanTracksBefore =
+          await getTrackSettingsForGenome(humanGenomeId);
+        const wheatTracksBefore =
+          await getTrackSettingsForGenome(wheatGenomeId);
         expect(humanTracksBefore.length).toBe(2);
         expect(wheatTracksBefore.length).toBe(1);
 
@@ -335,12 +333,10 @@ describe('trackSettingsStorageService', () => {
 
     describe('deleteTrackSettingsForGenome', () => {
       it('deletes settings of all track of a genome', async () => {
-        const humanTracksBefore = await getTrackSettingsForGenome(
-          humanGenomeId
-        );
-        const wheatTracksBefore = await getTrackSettingsForGenome(
-          wheatGenomeId
-        );
+        const humanTracksBefore =
+          await getTrackSettingsForGenome(humanGenomeId);
+        const wheatTracksBefore =
+          await getTrackSettingsForGenome(wheatGenomeId);
         expect(humanTracksBefore.length).toBe(2);
         expect(wheatTracksBefore.length).toBe(1);
 

@@ -30,17 +30,18 @@ import BrowserSidebarToolstrip from './BrowserSidebarToolstrip';
 
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-jest.mock(
-  'src/shared/components/image-button/ImageButton',
-  () => (props: { description: string; onClick: () => void }) => (
+vi.mock('src/shared/components/image-button/ImageButton', () => ({
+  default: (props: { description: string; onClick: () => void }) => (
     <button onClick={props.onClick}>{props.description}</button>
   )
-);
+}));
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    trackSidebarModalViewToggle: jest.fn()
+  () => ({
+    default: () => ({
+      trackSidebarModalViewToggle: vi.fn()
+    })
   })
 );
 
@@ -87,7 +88,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
 
 describe('<BrowserSidebarToolstrip />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {

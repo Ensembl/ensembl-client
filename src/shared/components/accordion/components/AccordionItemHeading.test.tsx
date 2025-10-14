@@ -51,7 +51,7 @@ describe('AccordionItemHeading', () => {
 
     beforeEach(() => {
       // tslint:disable-next-line no-console
-      console.error = jest.fn();
+      console.error = vi.fn();
     });
 
     afterAll(() => {

@@ -123,7 +123,7 @@ describe('<ShadedInput />', () => {
 
     // NOTE: onChange won't get triggered this way; but onInput will
     it('clears the input if the clear button is pressed', async () => {
-      const onInput = jest.fn();
+      const onInput = vi.fn();
       const { container } = render(
         <ShadedInput type="search" onInput={onInput} />
       );

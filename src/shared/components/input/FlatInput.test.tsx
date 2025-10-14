@@ -99,7 +99,7 @@ describe('<FlatInput />', () => {
 
     // NOTE: onChange won't get triggered this way; but onInput will
     it('clears the text if the clear button is pressed', async () => {
-      const onInput = jest.fn();
+      const onInput = vi.fn();
       const { container } = render(
         <FlatInput type="search" onInput={onInput} />
       );

@@ -19,6 +19,7 @@ import IconCard from './IconCard';
 import storyStyles from '../common.module.css';
 
 function importAllIcons() {
+  // @ts-expect-error - The following line uses Webpack-specific api `require.context`. If we switch to Vite, we should use `import.meta.glob`
   const iconsContextModule: any = require.context(
     'static/icons?url',
     true,
