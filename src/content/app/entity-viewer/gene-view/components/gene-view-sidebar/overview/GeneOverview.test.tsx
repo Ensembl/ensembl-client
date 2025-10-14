@@ -34,29 +34,39 @@ vi.mock('react-router-dom', () => ({
 
 vi.mock(
   'src/content/app/entity-viewer/state/api/entityViewerThoasSlice',
-  () => ({
-    useGeneOverviewQuery: vi.fn()
-  })
+  async () => {
+    const originalModule = await vi.importActual(
+      'src/content/app/entity-viewer/state/api/entityViewerThoasSlice'
+    );
+    return {
+      ...originalModule,
+      useGeneOverviewQuery: vi.fn()
+    };
+  }
 );
 
-vi.mock('src/store', () => ({ useAppDispatch: vi.fn() }));
+vi.mock('src/store', async () => {
+  const originalModule = await vi.importActual('src/store');
+  return {
+    ...originalModule,
+    useAppDispatch: vi.fn()
+  };
+});
 
-vi.mock('../publications/GenePublications', () => () => (
-  <div className="genePublications" />
-));
+vi.mock('../publications/GenePublications', () => ({
+  default: () => <div className="genePublications" />
+}));
 
-vi.mock(
-  'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds',
-  () => () => ({
+vi.mock('src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds', () => ({
+  default: () => ({
     genomeId: mockGenomeId,
     geneId: mockGeneId
   })
-);
+}));
 
-vi.mock(
-  'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
-  () => () => ({})
-);
+vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerAnalytics', () => ({
+  default: () => ({})
+}));
 
 const geneName = 'gene_name';
 const geneSymbol = 'gene_symbol';

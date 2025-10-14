@@ -25,14 +25,16 @@ import { ProteinExternalReferenceGroup } from './ProteinsListItemInfo';
 
 vi.mock(
   'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein',
-  () => vi.fn()
+  () => ({
+    default: vi.fn()
+  })
 );
 
-vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerAnalytics', () =>
-  vi.fn(() => ({
+vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerAnalytics', () => ({
+  default: () => ({
     trackExternalLinkClickInProteinsList: vi.fn()
-  }))
-);
+  })
+}));
 
 const swissprotXref = createExternalReference({
   accession_id: 'SWISS123',

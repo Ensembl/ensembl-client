@@ -30,13 +30,12 @@ import {
 } from 'tests/fixtures/entity-viewer/transcript';
 import TranscriptsFilter from './TranscriptsFilter';
 
-vi.mock(
-  'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
-  () => () => ({
+vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerAnalytics', () => ({
+  default: () => ({
     trackAppliedFilters: vi.fn(),
     trackAppliedSorting: vi.fn()
   })
-);
+}));
 
 const mockState = {
   entityViewer: {

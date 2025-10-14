@@ -16,7 +16,7 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
+import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { render, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
@@ -46,10 +46,12 @@ const generateKaryotype = () =>
 const mockKaryotype = generateKaryotype();
 
 vi.mock('config', () => ({
-  metadataApiBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
+  default: {
+    metadataApiBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
+  }
 }));
-vi.mock('src/shared/state/genome/genomeApiSlice', () => {
-  const originalModule = vi.requireActual(
+vi.mock('src/shared/state/genome/genomeApiSlice', async () => {
+  const originalModule = await vi.importActual(
     'src/shared/state/genome/genomeApiSlice'
   );
 
@@ -61,12 +63,11 @@ vi.mock('src/shared/state/genome/genomeApiSlice', () => {
     })
   };
 });
-vi.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
-  () => () => ({
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowserIds', () => ({
+  default: () => ({
     genomeIdForUrl: 'human'
   })
-);
+}));
 
 const renderComponent = () => {
   const initialState = {

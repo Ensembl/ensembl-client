@@ -32,15 +32,16 @@ vi.mock('react-router-dom', () => ({
   )
 }));
 
-vi.mock(
-  'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
-  () => () => ({
+vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerAnalytics', () => ({
+  default: () => ({
     trackPreviouslyViewedObjectClicked: vi.fn()
   })
-);
+}));
 
-vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerIds', () => () => ({
-  genomeIdForUrl: mockGenomeId
+vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerIds', () => ({
+  default: () => ({
+    genomeIdForUrl: mockGenomeId
+  })
 }));
 
 const exampleEntities = [

@@ -28,21 +28,23 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 import { TrackPanel } from './TrackPanel';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
-vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
-  genomeBrowser: mockGenomeBrowser,
-  restoreBrowserTrackStates: vi.fn(),
-  restoreTrackSettingsStates: vi.fn()
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
+    genomeBrowser: mockGenomeBrowser,
+    restoreBrowserTrackStates: vi.fn(),
+    restoreTrackSettingsStates: vi.fn()
+  })
 }));
 
 vi.mock('src/shared/components/loader', () => ({
   SidebarLoader: () => <div className="sidebarLoader" />
 }));
-vi.mock('./components/track-panel-list/TrackPanelList', () => () => (
-  <div className="trackPanelList" />
-));
-vi.mock('src/content/app/genome-browser/components/drawer/Drawer', () => () => (
-  <div className="drawer" />
-));
+vi.mock('./components/track-panel-list/TrackPanelList', () => ({
+  default: () => <div className="trackPanelList" />
+}));
+vi.mock('src/content/app/genome-browser/components/drawer/Drawer', () => ({
+  default: () => <div className="drawer" />
+}));
 
 const mockState = createMockBrowserState();
 

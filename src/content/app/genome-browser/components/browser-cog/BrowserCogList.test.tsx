@@ -29,11 +29,15 @@ import createRootReducer from 'src/root/rootReducer';
 
 const mockGenomeBrowserService = new MockGenomeBrowserService();
 
-vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
-  genomeBrowserService: mockGenomeBrowserService
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
+    genomeBrowserService: mockGenomeBrowserService
+  })
 }));
 
-vi.mock('./BrowserCog', () => () => <div className="browserCog" />);
+vi.mock('./BrowserCog', () => ({
+  default: () => <div className="browserCog" />
+}));
 
 const displayedTracks = [
   {

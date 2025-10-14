@@ -15,7 +15,7 @@
  */
 
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -153,10 +153,9 @@ describe('BlastSubmissionHeader', () => {
       });
 
       it('disables control buttons, except for the delete button', () => {
-        const { container, debug } = renderComponent({
+        const { container } = renderComponent({
           props: { submission }
         });
-        debug();
         const deleteButton = container.querySelector(
           '.deleteButton'
         ) as HTMLElement;

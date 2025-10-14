@@ -30,17 +30,18 @@ import BrowserSidebarToolstrip from './BrowserSidebarToolstrip';
 
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-vi.mock(
-  'src/shared/components/image-button/ImageButton',
-  () => (props: { description: string; onClick: () => void }) => (
+vi.mock('src/shared/components/image-button/ImageButton', () => ({
+  default: (props: { description: string; onClick: () => void }) => (
     <button onClick={props.onClick}>{props.description}</button>
   )
-);
+}));
 
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    trackSidebarModalViewToggle: vi.fn()
+  () => ({
+    default: () => ({
+      trackSidebarModalViewToggle: vi.fn()
+    })
   })
 );
 

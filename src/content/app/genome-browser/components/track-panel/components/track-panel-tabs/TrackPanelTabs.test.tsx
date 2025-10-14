@@ -34,13 +34,17 @@ import { TrackSet } from '../../trackPanelConfig';
 const mockTrackApi = 'http://track-api';
 
 vi.mock('config', () => ({
-  tracksApiBaseUrl: 'http://track-api'
+  default: {
+    tracksApiBaseUrl: 'http://track-api'
+  }
 }));
 
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    reportTrackPanelTabChange: vi.fn()
+  () => ({
+    default: () => ({
+      reportTrackPanelTabChange: vi.fn()
+    })
   })
 );
 

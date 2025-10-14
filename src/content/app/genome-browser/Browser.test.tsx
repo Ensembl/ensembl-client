@@ -129,11 +129,10 @@ describe('<Browser />', () => {
 
   describe('rendering', () => {
     it('renders an interstitial if no species is selected', () => {
-      const { container, debug } = renderComponent({
+      const { container } = renderComponent({
         state: set('browser.browserGeneral.activeGenomeId', null, mockState),
         url: '/'
       });
-      debug();
 
       expect(container.querySelector('.browserInterstitial')).toBeTruthy();
     });

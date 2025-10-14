@@ -60,7 +60,9 @@ vi.mock('src/content/app/tools/blast/services/blastStorageService', () => ({
   deleteBlastSubmission: vi.fn()
 }));
 vi.mock('config', () => ({
-  toolsApiBaseUrl: 'http://tools-api-url' // need to provide absolute urls to the fetch running in Node
+  default: {
+    toolsApiBaseUrl: 'http://tools-api-url' // need to provide absolute urls to the fetch running in Node
+  }
 }));
 vi.mock('../blastEpicConstants', () => ({
   POLLING_INTERVAL: 0
@@ -68,7 +70,9 @@ vi.mock('../blastEpicConstants', () => ({
 
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => vi.fn()
+  () => ({
+    default: () => vi.fn()
+  })
 );
 
 const buildReduxStore = () => {

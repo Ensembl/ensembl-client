@@ -19,5 +19,4 @@ export const ReactComponent = (props: any) => (
   <svg {...props} data-testid="mock-svg" />
 );
 
-// This mock is for SVGs imported as a string or URL
-export default 'mock-svg-url';
+export default ReactComponent;

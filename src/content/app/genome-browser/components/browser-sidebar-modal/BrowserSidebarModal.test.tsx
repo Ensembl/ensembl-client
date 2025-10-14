@@ -32,20 +32,19 @@ import {
 
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-vi.mock('./modal-views/SearchModal', () => () => (
-  <div className="searchModal" />
-));
+vi.mock('./modal-views/SearchModal', () => ({
+  default: () => <div className="searchModal" />
+}));
 
-vi.mock('./modal-views/DownloadModal', () => () => (
-  <div className="downloadModal" />
-));
+vi.mock('./modal-views/DownloadModal', () => ({
+  default: () => <div className="downloadModal" />
+}));
 
-vi.mock(
-  'src/shared/components/close-button/CloseButton',
-  () => (props: { onClick: () => void }) => (
+vi.mock('src/shared/components/close-button/CloseButton', () => ({
+  default: (props: { onClick: () => void }) => (
     <button className="closeButton" onClick={props.onClick}></button>
   )
-);
+}));
 
 const mockState = createMockBrowserState();
 

@@ -18,7 +18,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { faker } from '@faker-js/faker';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 
 import createRootReducer from 'src/root/rootReducer';
 
@@ -34,18 +34,17 @@ import {
 } from 'tests/fixtures/entity-viewer/transcript';
 import { createExternalReference } from 'tests/fixtures/entity-viewer/external-reference';
 
-vi.mock(
-  'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds',
-  () => () => ({
+vi.mock('src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds', () => ({
+  default: () => ({
     activeGenomeId: 'human',
     genomeIdInUrl: 'grch38',
     entityIdInUrl: 'some_gene'
   })
-);
+}));
 
-vi.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
-  <div data-test-id="viewInApp">ViewInApp</div>
-));
+vi.mock('src/shared/components/view-in-app/ViewInApp', () => ({
+  default: () => <div data-test-id="viewInApp">ViewInApp</div>
+}));
 
 vi.mock('src/shared/components/instant-download', () => ({
   InstantDownloadTranscript: () => (

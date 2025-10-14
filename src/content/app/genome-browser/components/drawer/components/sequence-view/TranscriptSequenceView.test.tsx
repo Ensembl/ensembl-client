@@ -34,19 +34,23 @@ import {
 import TranscriptSequenceView, { type Props } from './TranscriptSequenceView';
 
 vi.mock('config', () => ({
-  refgetBaseUrl: 'http://refget-api' // need to provide absolute urls to the fetch running in Node
+  default: {
+    refgetBaseUrl: 'http://refget-api' // need to provide absolute urls to the fetch running in Node
+  }
 }));
 vi.mock(
   'src/shared/components/blast-sequence-button/BlastSequenceButton',
-  () => () => {
-    return <button className="blast-sequence-button" />;
-  }
+  () => ({
+    default: () => <button className="blast-sequence-button" />
+  })
 );
 
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    trackDrawerSequenceViewed: vi.fn()
+  () => ({
+    default: () => ({
+      trackDrawerSequenceViewed: vi.fn()
+    })
   })
 );
 

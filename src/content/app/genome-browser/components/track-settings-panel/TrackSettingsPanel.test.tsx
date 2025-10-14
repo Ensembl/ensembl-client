@@ -33,15 +33,19 @@ const selectedTrackId = 'focus';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 
-vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
-  genomeBrowser: mockGenomeBrowser,
-  toggleTrackSetting: vi.fn()
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
+    genomeBrowser: mockGenomeBrowser,
+    toggleTrackSetting: vi.fn()
+  })
 }));
 
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    trackToggledTrackSetting: vi.fn()
+  () => ({
+    default: () => ({
+      trackToggledTrackSetting: vi.fn()
+    })
   })
 );
 

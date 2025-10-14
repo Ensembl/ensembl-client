@@ -46,23 +46,23 @@ vi.mock('react-router-dom', () => ({
   )
 }));
 
-vi.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
-  () => () => ({
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowserIds', () => ({
+  default: () => ({
     genomeIdForUrl: mockGenomeId
   })
-);
+}));
 
-vi.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => mockGenomeBrowser
-);
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => mockGenomeBrowser
+}));
 
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    trackPreviouslyViewedObjectClicked: vi.fn(),
-    trackBookmarksDrawerOpened: vi.fn()
+  () => ({
+    default: () => ({
+      trackPreviouslyViewedObjectClicked: vi.fn(),
+      trackBookmarksDrawerOpened: vi.fn()
+    })
   })
 );
 

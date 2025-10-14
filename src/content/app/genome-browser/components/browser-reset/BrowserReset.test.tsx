@@ -42,14 +42,18 @@ const renderComponent = (state: typeof mockState = mockState) => {
 };
 
 const mockChangeFocusObject = vi.fn();
-vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
-  changeFocusObject: mockChangeFocusObject
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
+    changeFocusObject: mockChangeFocusObject
+  })
 }));
 
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    trackFocusObjectReset: vi.fn()
+  () => ({
+    default: () => ({
+      trackFocusObjectReset: vi.fn()
+    })
   })
 );
 

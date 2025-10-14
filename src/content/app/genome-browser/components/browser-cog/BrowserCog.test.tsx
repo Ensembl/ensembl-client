@@ -22,14 +22,16 @@ import BrowserCog, { BrowserCogProps } from './BrowserCog';
 
 import { TrackType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 
-vi.mock('../track-settings-panel/TrackSettingsPanel', () => () => (
-  <div id="trackSettingsPanel">TrackSettingsPanel</div>
-));
+vi.mock('../track-settings-panel/TrackSettingsPanel', () => ({
+  default: () => <div id="trackSettingsPanel">TrackSettingsPanel</div>
+}));
 
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => ({
-    reportTrackSettingsOpened: vi.fn()
+  () => ({
+    default: () => ({
+      reportTrackSettingsOpened: vi.fn()
+    })
   })
 );
 

@@ -25,17 +25,23 @@ import { BrowserBar } from './BrowserBar';
 
 vi.mock(
   'src/content/app/genome-browser/components/browser-reset/BrowserReset',
-  () => () => <div id="browserReset">BrowserReset</div>
+  () => ({
+    default: () => <div id="browserReset">BrowserReset</div>
+  })
 );
 vi.mock(
   'src/content/app/genome-browser/components/browser-location-indicator/BrowserLocationIndicator',
-  () => () => (
-    <div id="browserLocationIndicator">Browser Location Indicator</div>
-  )
+  () => ({
+    default: () => (
+      <div id="browserLocationIndicator">Browser Location Indicator</div>
+    )
+  })
 );
 vi.mock(
   'src/shared/components/feature-summary-strip/FeatureSummaryStrip',
-  () => () => <div id="featureSummaryStrip">Feature Summary Strip</div>
+  () => ({
+    default: () => <div id="featureSummaryStrip">Feature Summary Strip</div>
+  })
 );
 
 const mockState = createMockBrowserState();

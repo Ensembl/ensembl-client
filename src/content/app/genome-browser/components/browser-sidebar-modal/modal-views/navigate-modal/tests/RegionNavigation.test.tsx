@@ -42,10 +42,12 @@ const mockKaryotype = generateKaryotype();
 const mockChangeBrowserLocation = vi.fn();
 
 vi.mock('config', () => ({
-  metadataApiBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
+  default: {
+    metadataApiBaseUrl: 'http://location-validation-api' // need to provide absolute urls to the fetch running in Node
+  }
 }));
-vi.mock('src/shared/state/genome/genomeApiSlice', () => {
-  const originalModule = vi.requireActual(
+vi.mock('src/shared/state/genome/genomeApiSlice', async () => {
+  const originalModule = await vi.importActual(
     'src/shared/state/genome/genomeApiSlice'
   );
 
@@ -59,16 +61,19 @@ vi.mock('src/shared/state/genome/genomeApiSlice', () => {
 });
 vi.mock(
   'src/content/app/genome-browser/components/browser-sidebar-modal/modal-views/navigate-modal/NavigationButtons',
-  () => () => <div data-test-id="navigation-buttons" />
-);
-vi.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
-  () => () => ({
-    genomeIdForUrl: 'human'
+  () => ({
+    default: () => <div data-test-id="navigation-buttons" />
   })
 );
-vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
-  changeBrowserLocation: mockChangeBrowserLocation
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowserIds', () => ({
+  default: () => ({
+    genomeIdForUrl: 'human'
+  })
+}));
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
+    changeBrowserLocation: mockChangeBrowserLocation
+  })
 }));
 
 const renderComponent = () => {

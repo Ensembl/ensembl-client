@@ -37,20 +37,24 @@ import { TrackPanelList } from './TrackPanelList';
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 vi.mock('config', () => ({
-  tracksApiBaseUrl: 'http://track-api'
+  default: {
+    tracksApiBaseUrl: 'http://track-api'
+  }
 }));
 
-vi.mock('./track-panel-items/TrackPanelGene', () => () => (
-  <div className="trackPanelGene" />
-));
+vi.mock('./track-panel-items/TrackPanelGene', () => ({
+  default: () => <div className="trackPanelGene" />
+}));
 
-vi.mock('./track-panel-items/TrackPanelRegularItem', () => () => (
-  <div className="trackPanelRegularItem" />
-));
+vi.mock('./track-panel-items/TrackPanelRegularItem', () => ({
+  default: () => <div className="trackPanelRegularItem" />
+}));
 
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
-  () => () => vi.fn()
+  () => ({
+    default: () => vi.fn()
+  })
 );
 
 const mockState = createMockBrowserState();

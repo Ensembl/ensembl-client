@@ -31,15 +31,17 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 const mockGenomeBrowser = vi.fn(() => new MockGenomeBrowser() as any);
 const mockClearGenomeBrowser = vi.fn();
 
-vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => () => ({
-  genomeBrowser: mockGenomeBrowser(),
-  activateGenomeBrowser: vi.fn(),
-  clearGenomeBrowser: mockClearGenomeBrowser
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
+    genomeBrowser: mockGenomeBrowser(),
+    activateGenomeBrowser: vi.fn(),
+    clearGenomeBrowser: mockClearGenomeBrowser
+  })
 }));
 
-vi.mock('../browser-cog/BrowserCogList', () => () => (
-  <div id="browserCogList" />
-));
+vi.mock('../browser-cog/BrowserCogList', () => ({
+  default: () => <div id="browserCogList" />
+}));
 
 vi.mock('src/content/app/genome-browser/components/zmenu', () => ({
   ZmenuController: () => <div id="zmenuController" />
@@ -49,12 +51,15 @@ vi.mock('src/shared/components/loader', () => ({
   CircleLoader: () => <div id="circleLoader" />
 }));
 
-vi.mock('src/shared/components/overlay/Overlay', () => () => (
-  <div id="overlay" />
-));
+vi.mock('src/shared/components/overlay/Overlay', () => ({
+  default: () => <div id="overlay" />
+}));
 
-vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowserPosition', () =>
-  vi.fn()
+vi.mock(
+  'src/content/app/genome-browser/hooks/useGenomeBrowserPosition',
+  () => ({
+    default: vi.fn()
+  })
 );
 
 const mockState = createMockBrowserState();

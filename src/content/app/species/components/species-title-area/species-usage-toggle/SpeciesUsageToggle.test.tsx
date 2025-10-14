@@ -23,8 +23,6 @@ import createRootReducer from 'src/root/rootReducer';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-// import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
-
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import SpeciesUsageToggle from './SpeciesUsageToggle';
@@ -36,11 +34,11 @@ vi.mock(
   })
 );
 
-vi.mock('src/content/app/species/hooks/useSpeciesAnalytics', () =>
-  vi.fn(() => ({
+vi.mock('src/content/app/species/hooks/useSpeciesAnalytics', () => ({
+  default: () => ({
     trackSpeciesUse: vi.fn()
-  }))
-);
+  })
+}));
 
 const selectedSpecies = createSelectedSpecies();
 const disabledSpecies = {

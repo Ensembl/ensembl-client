@@ -15,7 +15,7 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -38,14 +38,15 @@ import LocationDisplay, {
   LOCATION_DISPLAY_TEST_ID
 } from 'tests/components/LocationDisplay';
 
-vi.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
+vi.mock('./ZmenuAppLinks', () => ({
+  default: () => <div>ZmenuAppLinks</div>
+}));
 
-vi.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowserIds',
-  () => () => ({
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowserIds', () => ({
+  default: () => ({
     genomeIdForUrl: 'grch38'
   })
-);
+}));
 
 enum Markup {
   STRONG = 'strong',

@@ -15,7 +15,7 @@
  */
 
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, getByText } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -29,18 +29,18 @@ import BlastAppBar from './BlastAppBar';
 
 vi.mock(
   'src/shared/components/communication-framework/CommunicationPanelButton',
-  () => () => <div>CommunicationPanelButton</div>
+  () => ({
+    default: () => <div>CommunicationPanelButton</div>
+  })
 );
 
-vi.mock(
-  'src/shared/hooks/useMediaQuery',
-  () => () => false // no match
-);
+vi.mock('src/shared/hooks/useMediaQuery', () => ({
+  default: () => false // no match
+}));
 
-vi.mock(
-  'src/shared/components/species-tabs-slider/SpeciesTabsSlider',
-  () => (props: { children: ReactNode }) => <div>{props.children}</div>
-);
+vi.mock('src/shared/components/species-tabs-slider/SpeciesTabsSlider', () => ({
+  default: (props: { children: ReactNode }) => <div>{props.children}</div>
+}));
 
 const mockCommittedItems = [
   {
