@@ -25,10 +25,9 @@
     "storybook": "storybook dev -p 9001 -c .storybook",
     "deploy-docs": "./deploy-docs.sh",
     "check-types": "tsc",
-    "test": "vitest",
-    "xtest": "jest --verbose",
-    "test:watch": "jest --watch",
-    "coverage": "jest --coverage"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@ensembl/ensembl-genome-browser": "0.6.11",

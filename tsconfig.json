@@ -45,6 +45,6 @@
     "webpack/**/*",
     "./typings",
     "./tests/**/*",
-    "vitest.config.ts"
+    "vitest.config.mts"
   ]
 }
