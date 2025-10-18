@@ -20,7 +20,7 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
-type SearchGenesParams = {
+type SearchParams = {
   genome_ids: string[];
   query: string;
   page: number;
@@ -29,10 +29,19 @@ type SearchGenesParams = {
 
 const searchApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    searchGenes: builder.query<SearchResults, SearchGenesParams>({
+    searchGenes: builder.query<SearchResults, SearchParams>({
       query: (params) => {
         return {
           url: `${config.searchApiBaseUrl}/genes`,
+          method: 'POST',
+          body: params
+        };
+      }
+    }),
+    searchVariants: builder.query<SearchResults, SearchParams>({
+      query: (params) => {
+        return {
+          url: `${config.searchApiBaseUrl}/variants`,
           method: 'POST',
           body: params
         };
@@ -41,4 +50,5 @@ const searchApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
-export const { useLazySearchGenesQuery } = searchApiSlice;
+export const { useLazySearchGenesQuery, useLazySearchVariantsQuery } =
+  searchApiSlice;

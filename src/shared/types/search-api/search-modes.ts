@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-
-type SpeciesSelectorGeneSearchState = {
-  query: string;
+export type FeatureSearchMode = {
+  mode: 'Gene' | 'Variant';
+  label: string;
+  placeholder: string;
+  help?: string;
 };
 
-const initialState: SpeciesSelectorGeneSearchState = {
-  query: ''
-};
+export enum FeatureSearchModeType {
+  GENE_SEARCH_MODE = 'Gene',
+  VARIANT_SEARCH_MODE = 'Variant'
+}
 
-const speciesSelectorGeneSearchSlice = createSlice({
-  name: 'species-selector-gene-search',
-  initialState,
-  reducers: {
-    setQuery: (state, action: PayloadAction<string>) => {
-      state.query = action.payload;
-    }
+export const FEATURE_SEARCH_MODES: FeatureSearchMode[] = [
+  {
+    mode: FeatureSearchModeType.GENE_SEARCH_MODE,
+    label: 'Find a gene',
+    placeholder: 'Gene ID or name',
+    help: 'Find a gene using a stable ID (versioned or un-versioned), symbol or synonym'
   },
-  selectors: {
-    getQuery: (state) => state.query
+  {
+    mode: FeatureSearchModeType.VARIANT_SEARCH_MODE,
+    label: 'Find a variant',
+    placeholder: 'Variant ID',
+    help: 'Find a variant using rsID'
   }
-});
-
-export const { setQuery } = speciesSelectorGeneSearchSlice.actions;
-
-export default speciesSelectorGeneSearchSlice.reducer;
+];

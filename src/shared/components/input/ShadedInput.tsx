@@ -49,6 +49,7 @@ const ShadedInput = (props: Props) => {
     help,
     type = 'text',
     placeholder: placeholderFromProps,
+    ref: forwardedRef,
     ...otherProps
   } = props;
   const innerRef = useRef<HTMLInputElement>(null);
@@ -62,18 +63,18 @@ const ShadedInput = (props: Props) => {
   const callbackInputRef = useCallback(
     (el: HTMLInputElement) => {
       innerRef.current = el;
-      if (props.ref) {
-        if (props.ref instanceof Function) {
-          props.ref(el);
+      if (forwardedRef) {
+        if (forwardedRef instanceof Function) {
+          forwardedRef(el);
         } else {
-          props.ref.current = el;
+          forwardedRef.current = el;
         }
       }
       return () => {
         innerRef.current = null;
       };
     },
-    [props.ref]
+    [forwardedRef]
   );
 
   const wrapperClasses = classNames(
