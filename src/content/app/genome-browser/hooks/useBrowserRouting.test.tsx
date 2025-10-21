@@ -36,8 +36,6 @@ import { GenomeBrowserIdsProvider } from '../contexts/genome-browser-ids-context
 
 import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
-// NOTE: scary stuff, but if you prefix function name with the word "mock",
-// jest will allow passing them to the factory function of vi.mock
 const mockChangeFocusObject = vi.fn();
 const mockChangeBrowserLocation = vi.fn();
 

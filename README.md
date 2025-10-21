@@ -60,9 +60,9 @@ You can BLAST against a range of databases (proteins, transcripts, and genomic s
 - `npm run lint:scripts` - Runs ESLint against all typescript files to make sure they conform to the style guide.
 - `npm run lint:styles` - Runs `stylelint` against CSS files to make sure they conform to the style guide.
 - `npm run check-types` – Runs typescript compiler to check for type correctness.
-- `npm test` - Runs the suite of unit tests with `jest`.
-- `npm test:watch` - Runs `jest` in watch mode.
-- `npm run coverage` - Updates the `jest` coverage of the React.js code, and shows the test coverage.
+- `npm test` - Runs the suite of unit tests with `vitest`.
+- `npm test:watch` - Runs `vitest` in watch mode.
+- `npm run coverage` - Updates the `vitest` coverage of the React.js code, and shows the test coverage.
 
 ### Testing production build locally
 - `npm run prod:analyse` — Runs production build, and also uses `webpack-bundle-analyzer` to report the size of the bundle.
@@ -84,5 +84,4 @@ The default setup of VS Code is sufficient for development, but its functionalit
 - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint): Adds ESLint support to VS Code.
 - [stylelint](https://marketplace.visualstudio.com/items?itemName=shinnn.stylelint): Adds `stylelint` support to VS Code.
 - [SVG Viewer](https://marketplace.visualstudio.com/items?itemName=cssho.vscode-svgviewer): By default, VS Code will show SVG images only as a code file. This extension will add functionality, to let you view the SVG files as images.
-- [snapshot-tools](https://marketplace.visualstudio.com/items?itemName=asvetliakov.snapshot-tools): Enable linking of Jest generated snapshots with the Jest unit tests.
 - [vscode-icons](https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons): By default, VS Code does not have icon support for many of the configuration files and formats used in the code. This extension adds those missing icons and more.
