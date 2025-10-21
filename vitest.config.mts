@@ -21,6 +21,14 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    // The `deps` block is added, because jsdom seems to be calling `require` for parse5, which is causing errors
+    deps: {
+      optimizer: {
+        web: {
+          include: ['parse5']
+        }
+      }
+    },
     css: {
       modules: {
         classNameStrategy: 'non-scoped' // keep original class names
