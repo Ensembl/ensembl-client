@@ -27,7 +27,7 @@ variables:
 
 # Template to build static assets
 .build-static:
-  image: node:22.11.0
+  image: node:22.21.0
   before_script:
   - npm ci --loglevel warn
   script:
