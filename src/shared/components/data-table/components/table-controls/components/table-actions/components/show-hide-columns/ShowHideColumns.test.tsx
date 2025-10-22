@@ -32,7 +32,7 @@ const columns: DataTableColumns = createDataTableSampleData(1, 10).columns;
 
 const defaultProps = {
   ...defaultDataTableState,
-  dispatch: jest.fn(),
+  dispatch: vi.fn(),
   columns,
   rows: defaultDataTableState.data.map((row, index) => ({
     rowId: index,
@@ -51,7 +51,7 @@ describe('<ShowHideColumns />', () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders without error', () => {

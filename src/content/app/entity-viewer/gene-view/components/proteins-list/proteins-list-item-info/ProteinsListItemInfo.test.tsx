@@ -23,16 +23,18 @@ import { createExternalReference } from 'tests/fixtures/entity-viewer/external-r
 import { ExternalSource } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { ProteinExternalReferenceGroup } from './ProteinsListItemInfo';
 
-jest.mock(
+vi.mock(
   'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein',
-  () => jest.fn()
+  () => ({
+    default: vi.fn()
+  })
 );
 
-jest.mock('src/content/app/entity-viewer/hooks/useEntityViewerAnalytics', () =>
-  jest.fn(() => ({
-    trackExternalLinkClickInProteinsList: jest.fn()
-  }))
-);
+vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerAnalytics', () => ({
+  default: () => ({
+    trackExternalLinkClickInProteinsList: vi.fn()
+  })
+}));
 
 const swissprotXref = createExternalReference({
   accession_id: 'SWISS123',

@@ -23,7 +23,7 @@ const link = faker.internet.url();
 
 describe('<ExternalReference />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('renders a link with a label', () => {

@@ -15,7 +15,7 @@
  */
 
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -38,7 +38,7 @@ import blastResultsReducer, {
 import { createBlastSubmission } from 'tests/fixtures/blast/blastSubmission';
 import { getFormattedDateTime } from 'src/shared/helpers/formatters/dateFormatter';
 
-jest.mock('src/content/app/tools/blast/services/blastStorageService');
+vi.mock('src/content/app/tools/blast/services/blastStorageService');
 
 const defaultProps = {
   submission: createBlastSubmission()

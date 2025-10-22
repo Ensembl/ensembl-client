@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';

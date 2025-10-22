@@ -28,7 +28,7 @@ import blastFormReducer, {
 
 import BlastInputSequences from './BlastInputSequences';
 
-jest.mock('src/content/app/tools/blast/state/blast-api/blastApiSlice', () => {
+vi.mock('src/content/app/tools/blast/state/blast-api/blastApiSlice', () => {
   return {
     useBlastConfigQuery: () => ({ data: mockBlastSettingsConfig })
   };

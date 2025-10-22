@@ -30,7 +30,7 @@ const file2 = new File(['dolor sit amet'], 'file2.txt', {
 
 describe('Upload', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('rendering', () => {
@@ -55,7 +55,7 @@ describe('Upload', () => {
   });
 
   describe('file uploading via file input', () => {
-    const onUpload = jest.fn();
+    const onUpload = vi.fn();
 
     it('uploads a single file', () => {
       const { container } = render(<FileDropZone onUpload={onUpload} />);
@@ -142,7 +142,7 @@ describe('Upload', () => {
         types: ['Files']
       }
     };
-    const onUpload = jest.fn();
+    const onUpload = vi.fn();
 
     it('changes styles when a file is dragged over', () => {
       const { container } = render(<FileDropZone onUpload={onUpload} />);

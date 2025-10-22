@@ -23,24 +23,22 @@ import createRootReducer from 'src/root/rootReducer';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-// import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
-
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import SpeciesUsageToggle from './SpeciesUsageToggle';
 
-jest.mock(
+vi.mock(
   'src/content/app/species-selector/services/speciesSelectorStorageService',
   () => ({
-    saveMultipleSelectedSpecies: jest.fn()
+    saveMultipleSelectedSpecies: vi.fn()
   })
 );
 
-jest.mock('src/content/app/species/hooks/useSpeciesAnalytics', () =>
-  jest.fn(() => ({
-    trackSpeciesUse: jest.fn()
-  }))
-);
+vi.mock('src/content/app/species/hooks/useSpeciesAnalytics', () => ({
+  default: () => ({
+    trackSpeciesUse: vi.fn()
+  })
+}));
 
 const selectedSpecies = createSelectedSpecies();
 const disabledSpecies = {
@@ -92,7 +90,7 @@ const renderComponent = (
 
 describe('SpeciesSelectionControls', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('shows correct controls for enabled species', () => {

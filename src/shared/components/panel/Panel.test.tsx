@@ -24,7 +24,7 @@ const panelBodyContent = 'This content goes into the panel’s body';
 
 const panelHeaderContent = 'This content goes into the panel’s header';
 
-const onClose = jest.fn();
+const onClose = vi.fn();
 
 const panelClassNames = {
   panel: faker.lorem.word(),
@@ -45,7 +45,7 @@ const renderPanel = (props?: Partial<PanelProps>) => {
 
 describe('<Panel />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('displays the header with the correct content', () => {

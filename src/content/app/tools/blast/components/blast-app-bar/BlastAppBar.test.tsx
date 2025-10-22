@@ -15,7 +15,7 @@
  */
 
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, getByText } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -27,20 +27,20 @@ import { initialState as initialBlastFormState } from 'src/content/app/tools/bla
 
 import BlastAppBar from './BlastAppBar';
 
-jest.mock(
+vi.mock(
   'src/shared/components/communication-framework/CommunicationPanelButton',
-  () => () => <div>CommunicationPanelButton</div>
+  () => ({
+    default: () => <div>CommunicationPanelButton</div>
+  })
 );
 
-jest.mock(
-  'src/shared/hooks/useMediaQuery',
-  () => () => false // no match
-);
+vi.mock('src/shared/hooks/useMediaQuery', () => ({
+  default: () => false // no match
+}));
 
-jest.mock(
-  'src/shared/components/species-tabs-slider/SpeciesTabsSlider',
-  () => (props: { children: ReactNode }) => <div>{props.children}</div>
-);
+vi.mock('src/shared/components/species-tabs-slider/SpeciesTabsSlider', () => ({
+  default: (props: { children: ReactNode }) => <div>{props.children}</div>
+}));
 
 const mockCommittedItems = [
   {
@@ -91,10 +91,11 @@ describe('BlastAppBar', () => {
       const { container, store } = renderComponent();
       const speciesLozenge = getByText(container as HTMLElement, 'Human');
 
-      speciesLozenge && (await userEvent.click(speciesLozenge));
+      if (speciesLozenge) {
+        await userEvent.click(speciesLozenge);
+      }
 
       const updatedState = store.getState();
-      updatedState.blast.blastForm.selectedSpecies;
       expect(updatedState.blast.blastForm.selectedSpecies.length).toBe(1);
     });
   });

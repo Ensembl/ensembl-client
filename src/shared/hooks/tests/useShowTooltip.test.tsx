@@ -21,13 +21,6 @@ import { useShowTooltip } from '../useShowTooltip';
 
 import { TOOLTIP_TIMEOUT } from 'src/shared/components/tooltip/tooltip-constants';
 
-// userEvent has an internal delay function that defaults to a setTimeout of 0ms
-// This confuses fake timers.
-// One way of dealing with this is to pass a delay: null option; the other is to pass a fake advanceTimers function
-// (see https://testing-library.com/docs/user-event/options)
-const userEventWithoutDelay = userEvent.setup({
-  delay: null
-});
 
 let triggerTooltipCloseSignal: () => void;
 
@@ -49,14 +42,35 @@ const TestComponent = () => {
   );
 };
 
+beforeAll(() => {
+  // Somehow, somewhere, the testing library is tightly coupled with Jest,
+  // (because, accodring to its devs, "it is the most popular testing framework").
+  // As a result, it becomes necessary, in non-jest environments,
+  // if use of fake timers is needed, to stub the `jest` global object.
+  // See:
+  //   - https://github.com/testing-library/react-testing-library/issues/1197
+  //   - https://github.com/testing-library/user-event/issues/1115
+  vi.stubGlobal("jest", {
+    advanceTimersByTime: vi.advanceTimersByTime.bind(vi),
+  });
+});
+
+afterAll(() => {
+  vi.unstubAllGlobals();
+});
+
+const userEventWithFakeTimers = userEvent.setup({
+  advanceTimers: vi.advanceTimersByTime
+});
+
 describe('useShowTooltip', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.useRealTimers();
+    vi.resetAllMocks();
+    vi.useRealTimers();
   });
 
   describe('useShowTooltip with on click', () => {
@@ -66,10 +80,10 @@ describe('useShowTooltip', () => {
         '.test-element'
       ) as HTMLElement;
 
-      await userEventWithoutDelay.click(testElement);
+      await userEventWithFakeTimers.click(testElement);
 
       act(() => {
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
       });
       expect(queryByTestId('tooltip')).toBeTruthy();
     });
@@ -80,11 +94,11 @@ describe('useShowTooltip', () => {
         '.test-element'
       ) as HTMLElement;
 
-      await userEventWithoutDelay.hover(testElement); // would start the timer
-      await userEventWithoutDelay.click(testElement); // would clear the timer and toggle the state to show the tooltip
+      await userEventWithFakeTimers.hover(testElement); // would start the timer
+      await userEventWithFakeTimers.click(testElement); // would clear the timer and toggle the state to show the tooltip
 
       act(() => {
-        jest.advanceTimersByTime(0); // the tooltip should appear instantaneously
+        vi.advanceTimersByTime(0); // the tooltip should appear instantaneously
       });
       expect(queryByTestId('tooltip')).toBeTruthy();
     });
@@ -95,13 +109,13 @@ describe('useShowTooltip', () => {
         '.test-element'
       ) as HTMLElement;
 
-      await userEventWithoutDelay.click(testElement);
+      await userEventWithFakeTimers.click(testElement);
 
       act(() => {
-        jest.advanceTimersByTime(0);
+        vi.advanceTimersByTime(0);
       });
 
-      await userEventWithoutDelay.unhover(testElement); // <-- should have no effect on the tooltip
+      await userEventWithFakeTimers.unhover(testElement); // <-- should have no effect on the tooltip
       expect(queryByTestId('tooltip')).toBeTruthy();
     });
   });
@@ -113,12 +127,12 @@ describe('useShowTooltip', () => {
         '.test-element'
       ) as HTMLElement;
 
-      await userEventWithoutDelay.hover(testElement);
+      await userEventWithFakeTimers.hover(testElement);
       expect(queryByTestId('tooltip')).toBeFalsy();
 
       // moving the timer to simulate the delay before the tooltip is shown
       act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
+        vi.advanceTimersByTime(TOOLTIP_TIMEOUT);
       });
 
       expect(queryByTestId('tooltip')).toBeTruthy();
@@ -130,14 +144,14 @@ describe('useShowTooltip', () => {
         '.test-element'
       ) as HTMLElement;
 
-      await userEventWithoutDelay.hover(testElement);
+      await userEventWithFakeTimers.hover(testElement);
 
       // making sure that the tooltip got shown
       await waitFor(() => {
         expect(queryByTestId('tooltip')).toBeTruthy();
       });
 
-      await userEventWithoutDelay.unhover(testElement);
+      await userEventWithFakeTimers.unhover(testElement);
       expect(queryByTestId('tooltip')).toBeFalsy();
     });
   });
@@ -151,7 +165,7 @@ describe('useShowTooltip', () => {
         '.test-element'
       ) as HTMLElement;
 
-      await userEventWithoutDelay.click(testElement);
+      await userEventWithFakeTimers.click(testElement);
 
       // make sure that the tooltip is shown
       await waitFor(() => {
@@ -163,7 +177,7 @@ describe('useShowTooltip', () => {
       triggerTooltipCloseSignal();
 
       act(() => {
-        jest.advanceTimersByTime(TOOLTIP_TIMEOUT);
+        vi.advanceTimersByTime(TOOLTIP_TIMEOUT);
       });
 
       expect(queryByTestId('tooltip')).toBeFalsy();
