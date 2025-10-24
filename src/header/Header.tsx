@@ -47,7 +47,7 @@ export const Topbar = () => (
     <div className={styles.topbarLeft}>
       <HomeLink />
       <div className={styles.logotypeWrapper}>
-        <Link to="/" aria-label="Ensembl home page">
+        <Link to="/" tabIndex={-1}>
           <Logotype className={styles.logotype} />
         </Link>
       </div>

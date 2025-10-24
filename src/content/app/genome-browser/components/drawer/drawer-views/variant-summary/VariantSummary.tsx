@@ -77,15 +77,17 @@ const VariantSummary = (props: Props) => {
   const { variant } = variantData;
   const preparedSummaryData = prepareVariantSummaryData(variant);
 
-  const focusId = buildFocusIdForUrl({
-    type: 'variant',
-    objectId: focusVariant?.variant_id || ''
-  });
-
-  const entityViewerUrl = urlFor.entityViewer({
-    genomeId: genomeIdForUrl,
-    entityId: focusId
-  });
+  let entityViewerUrl;
+  if (focusVariant?.variant_id) {
+    const focusId = buildFocusIdForUrl({
+      type: 'variant',
+      objectId: focusVariant.variant_id
+    });
+    entityViewerUrl = urlFor.entityViewer({
+      genomeId: genomeIdForUrl,
+      entityId: focusId
+    });
+  }
 
   return (
     <>
@@ -176,7 +178,7 @@ const VariantSummary = (props: Props) => {
         </div>
       )}
 
-      {focusVariant?.variant_id && (
+      {entityViewerUrl && (
         <div className={styles.row}>
           <div className={styles.value}>
             <ViewInApp links={{ entityViewer: { url: entityViewerUrl } }} />
