@@ -204,27 +204,29 @@
 
 .toolsList {
   display: flex;
-  flex-direction: row;
-  align-items: center;
   justify-content: center;
   gap: 30px;
-  margin-top: 60px;
+  margin-top: 50px;
+  position: relative;
 }
 
 .toolsListItem {
   display: flex;
   align-items: center;
-  gap: 15px;
+  position: relative;
 }
 
 .toolsListItemLabel {
   font-weight: var(--font-weight-bold);
   color: var(--color-white);
+  position: absolute;
+  right: 100%;
+  margin-right: 15px;
 }
 
 .toolsButton {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   background-color: var(--color-blue);
   color: var(--color-white);
   border-radius: 6px;
