@@ -1,6 +1,6 @@
 .home {
   display: grid;
-  grid-template-rows: minmax(550px, auto) 85px;
+  grid-template-rows: minmax(650px, auto) 85px;
 }
 
 .main {
@@ -12,6 +12,8 @@
 
 .mainTop {
   position: relative;
+  margin-bottom: -30px;
+  z-index: 1;
 }
 
 .mainTopMiddle {
@@ -221,7 +223,7 @@
   color: var(--color-white);
   position: absolute;
   right: 100%;
-  margin-right: 15px;
+  margin-right: 12px;
 }
 
 .toolsButton {
