@@ -29,6 +29,10 @@ import type {
   ZmenuPayload,
   ZmenuContentRegulation
 } from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+
+import styles from '../Zmenu.module.css';
 
 type Props = {
   payload: ZmenuPayload;
@@ -38,8 +42,20 @@ type Props = {
 const RegulationZmenu = (props: Props) => {
   const { content } = props.payload;
   const genomeId = useAppSelector(getBrowserActiveGenomeId) || '';
+  const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
+  const activeSpecies = enabledCommittedSpecies.find(
+    (species) => species.genome_id === genomeId
+  );
 
   const featureMetadata = extractFeatureMetadata(props.payload);
+
+  let regulationActivityExternalUrl;
+  if (activeSpecies) {
+    const species = activeSpecies.scientific_name
+      .toLowerCase()
+      .replace(' ', '_');
+    regulationActivityExternalUrl = `https://regulation.ensembl.org/${activeSpecies.release.name}/regulatory_features/${species}/${featureMetadata.id}`;
+  }
 
   const mainContent = (
     <div>
@@ -49,6 +65,13 @@ const RegulationZmenu = (props: Props) => {
         destroyZmenu={props.onDestroy}
       />
       <ToggleButton label="Download" />
+      {regulationActivityExternalUrl && (
+        <div className={styles.regulationExternalLink}>
+          <ExternalLink to={regulationActivityExternalUrl}>
+            Regulatory activity
+          </ExternalLink>
+        </div>
+      )}
     </div>
   );
 
