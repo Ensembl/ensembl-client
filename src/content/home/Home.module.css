@@ -1,6 +1,6 @@
 .home {
   display: grid;
-  grid-template-rows: minmax(550px, auto) 85px;
+  grid-template-rows: minmax(650px, auto) 85px;
 }
 
 .main {
@@ -12,6 +12,8 @@
 
 .mainTop {
   position: relative;
+  margin-bottom: -30px;
+  z-index: 1;
 }
 
 .mainTopMiddle {
@@ -200,4 +202,38 @@
 
 .socialMediaLinks {
   margin-right: 12px;
+}
+
+.toolsList {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 50px;
+  position: relative;
+}
+
+.toolsListItem {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.toolsListItemLabel {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-white);
+  position: absolute;
+  right: 100%;
+  margin-right: 12px;
+}
+
+.toolsButton {
+  width: 36px;
+  height: 36px;
+  background-color: var(--color-blue);
+  color: var(--color-white);
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
