@@ -242,3 +242,11 @@ export const refget = (params: RefgetUrlParams) => {
     config.refgetBaseUrl
   }/sequence/${checksum}?${searchParams.toString()}`;
 };
+
+export const regulationActivityExternalUrl = (
+  releaseName: string,
+  species: string,
+  featureId: string
+) => {
+  return `${config.regulationExternalBaseUrl}/${releaseName}/regulatory_features/${species}/${featureId}`;
+};
