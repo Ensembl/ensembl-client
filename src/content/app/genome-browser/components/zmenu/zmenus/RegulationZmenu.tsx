@@ -16,6 +16,8 @@
 
 import { useAppSelector } from 'src/store';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import ZmenuContent from '../ZmenuContent';
@@ -49,12 +51,16 @@ const RegulationZmenu = (props: Props) => {
 
   const featureMetadata = extractFeatureMetadata(props.payload);
 
-  let regulationActivityExternalUrl;
+  let regulationExternalUrl;
   if (activeSpecies) {
     const species = activeSpecies.scientific_name
       .toLowerCase()
       .replace(' ', '_');
-    regulationActivityExternalUrl = `https://regulation.ensembl.org/${activeSpecies.release.name}/regulatory_features/${species}/${featureMetadata.id}`;
+    regulationExternalUrl = urlFor.regulationActivityExternalUrl(
+      activeSpecies.release.name,
+      species,
+      featureMetadata.id
+    );
   }
 
   const mainContent = (
@@ -65,9 +71,9 @@ const RegulationZmenu = (props: Props) => {
         destroyZmenu={props.onDestroy}
       />
       <ToggleButton label="Download" />
-      {regulationActivityExternalUrl && (
+      {regulationExternalUrl && (
         <div className={styles.regulationExternalLink}>
-          <ExternalLink to={regulationActivityExternalUrl}>
+          <ExternalLink to={regulationExternalUrl}>
             Regulatory activity
           </ExternalLink>
         </div>
