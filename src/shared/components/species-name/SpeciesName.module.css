@@ -16,4 +16,9 @@
   .prominent {
     font-weight: var(--font-weight-bold);
   }
+
+  .assemblyTableMode {
+    font-weight: var(--font-weight-light);
+    font-size: 11px;
+  }
 }

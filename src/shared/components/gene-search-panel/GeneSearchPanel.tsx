@@ -44,6 +44,8 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/commi
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { SearchMatch } from 'src/shared/types/search-api/search-match';
 
+import SpeciesName from '../species-name/SpeciesName';
+
 import styles from './GeneSearchPanel.module.css';
 import radioStyles from 'src/shared/components/radio-group/RadioGroup.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
@@ -116,7 +118,7 @@ const GeneSearchForm = (props: {
 
   // NOTE: future versions of React will stop passing null to ref callbacks; so update function signature when this happens
   const focusInput = (input: HTMLInputElement | null) => {
-    input && input.focus();
+    input?.focus();
   };
 
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -204,6 +206,9 @@ const GeneSearchResults = (props: {
               </span>
               species
             </th>
+            <th>Release date</th>
+            <th>Release type</th>
+            <th>Assembly accession</th>
             <th>Gene</th>
           </tr>
         </thead>
@@ -223,38 +228,29 @@ const GeneSearchResults = (props: {
 const GeneSearchTableRows = (props: { data: SearchMatchesWithSpecies }) => {
   const { speciesInfo, searchMatches } = props.data;
 
-  const speciesElement = (
-    <div className={styles.speciesCell}>
-      <span>{speciesInfo.common_name ?? speciesInfo.scientific_name}</span>
-      <span className={styles.assemblyName}>{speciesInfo.assembly.name}</span>
-    </div>
+  return (
+    <>
+      {searchMatches.map((match, index) => (
+        <tr key={index}>
+          {index === 0 && (
+            <>
+              <td rowSpan={searchMatches.length}>
+                <SpeciesName species={speciesInfo} tableMode={true} />
+              </td>
+              <td rowSpan={searchMatches.length}>{speciesInfo.release.name}</td>
+              <td rowSpan={searchMatches.length}>{speciesInfo.release.type}</td>
+              <td rowSpan={searchMatches.length}>
+                {speciesInfo.assembly.accession_id}
+              </td>
+            </>
+          )}
+          <td>
+            <GeneMatch match={match} species={speciesInfo} />
+          </td>
+        </tr>
+      ))}
+    </>
   );
-
-  if (searchMatches.length === 1) {
-    return (
-      <tr>
-        <td>{speciesElement}</td>
-        <td>
-          <GeneMatch match={searchMatches[0]} species={speciesInfo} />
-        </td>
-      </tr>
-    );
-  } else {
-    return (
-      <>
-        {searchMatches.map((match, index) => (
-          <tr key={index}>
-            {index === 0 && (
-              <td rowSpan={searchMatches.length}>{speciesElement}</td>
-            )}
-            <td>
-              <GeneMatch match={match} species={speciesInfo} />
-            </td>
-          </tr>
-        ))}
-      </>
-    );
-  }
 };
 
 const GeneMatch = (props: { match: SearchMatch; species: CommittedItem }) => {

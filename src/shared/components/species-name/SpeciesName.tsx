@@ -41,6 +41,7 @@ export type Props = HTMLAttributes<HTMLSpanElement> & {
     'common_name' | 'scientific_name' | 'assembly' | 'type' | 'is_reference'
   >;
   speciesNameDisplayOption: SpeciesNameDisplayOption;
+  tableMode?: boolean;
 };
 
 // Exported component that is not connected to redux. For convenience while testing.
@@ -48,6 +49,7 @@ export const SpeciesName = (props: Props) => {
   const {
     species,
     speciesNameDisplayOption,
+    tableMode,
     className: classNameFromProps,
     ...otherProps
   } = props;
@@ -56,7 +58,11 @@ export const SpeciesName = (props: Props) => {
 
   return (
     <span className={componentClasses} {...otherProps}>
-      <Content species={species} displayOption={speciesNameDisplayOption} />
+      <Content
+        species={species}
+        displayOption={speciesNameDisplayOption}
+        tableMode={tableMode}
+      />
     </span>
   );
 };
@@ -64,9 +70,12 @@ export const SpeciesName = (props: Props) => {
 const Content = (props: {
   species: Props['species'];
   displayOption: SpeciesNameDisplayOption;
+  tableMode?: boolean;
 }) => {
-  const { species, displayOption } = props;
-  const scientificNameClasses = classNames(styles.prominent, styles.italic);
+  const { species, displayOption, tableMode } = props;
+  const prominentClass = !tableMode ? styles.prominent : undefined;
+  const scientificNameClasses = classNames(prominentClass, styles.italic);
+  const assemblyClass = tableMode ? styles.assemblyTableMode : styles.assembly;
 
   const scientificNameElement = (
     <ScientificName
@@ -81,9 +90,9 @@ const Content = (props: {
         <CommonName
           common_name={species.common_name}
           fallback={scientificNameElement}
-          className={styles.prominent}
+          className={prominentClass}
         />
-        <AssemblyName assembly={species.assembly} className={styles.assembly} />
+        <AssemblyName assembly={species.assembly} className={assemblyClass} />
       </>
     );
   } else if (displayOption === 'common-name_type_assembly-name') {
@@ -92,7 +101,7 @@ const Content = (props: {
         <CommonName
           common_name={species.common_name}
           fallback={scientificNameElement}
-          className={styles.prominent}
+          className={prominentClass}
         />
         {!!(species.type || species.is_reference) && (
           <span className={styles.type}>
@@ -101,7 +110,7 @@ const Content = (props: {
             <SpeciesReference {...species} />
           </span>
         )}
-        <AssemblyName assembly={species.assembly} className={styles.assembly} />
+        <AssemblyName assembly={species.assembly} className={assemblyClass} />
       </>
     );
   } else if (displayOption === 'scientific-name_assembly-name') {
@@ -111,7 +120,7 @@ const Content = (props: {
           scientific_name={species.scientific_name}
           className={scientificNameClasses}
         />
-        <AssemblyName assembly={species.assembly} className={styles.assembly} />
+        <AssemblyName assembly={species.assembly} className={assemblyClass} />
       </>
     );
   } else if (displayOption === 'scientific-name_type_assembly-name') {
@@ -128,7 +137,7 @@ const Content = (props: {
             <SpeciesReference {...species} className={styles.italic} />
           </span>
         )}
-        <AssemblyName assembly={species.assembly} className={styles.assembly} />
+        <AssemblyName assembly={species.assembly} className={assemblyClass} />
       </>
     );
   } else if (displayOption === 'assembly-accession-id') {
@@ -136,7 +145,7 @@ const Content = (props: {
       <>
         <AssemblyAccessionId
           assembly={species.assembly}
-          className={styles.prominent}
+          className={prominentClass}
         />
       </>
     );
