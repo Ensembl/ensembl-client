@@ -19,7 +19,6 @@ import { gql } from 'graphql-request';
 import type { FullGene } from 'src/shared/types/core-api/gene';
 
 // This query is intended to populate the right-hand sidebar for the gene view
-// It looks very similar to geneSummaryQuery; but has a potential of becoming heavier
 export const geneOverviewQuery = gql`
   query GeneOverview($genomeId: String!, $geneId: String!) {
     gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
@@ -34,6 +33,43 @@ export const geneOverviewQuery = gql`
         }
         biotype {
           value
+        }
+      }
+      transcripts {
+        stable_id
+        metadata {
+          appris {
+            definition
+            description
+            label
+            value
+          }
+          canonical {
+            definition
+            description
+            label
+            value
+          }
+          gencode_basic {
+            definition
+            description
+            label
+            value
+          }
+          mane {
+            definition
+            description
+            label
+            ncbi_transcript {
+              id
+            }
+          }
+          tsl {
+            definition
+            description
+            label
+            value
+          }
         }
       }
     }
