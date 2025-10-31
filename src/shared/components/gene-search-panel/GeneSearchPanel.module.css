@@ -73,10 +73,12 @@
 
 .speciesName [data-part="common-name"] {
   font-size: 13px;
+  font-weight: normal;
 }
 
 .speciesName [data-part="scientific-name"] {
   font-size: 13px;
+  font-weight: normal;
 }
 
 .speciesName [data-part="assembly-name"] {
