@@ -235,7 +235,10 @@ const GeneSearchTableRows = (props: { data: SearchMatchesWithSpecies }) => {
           {index === 0 && (
             <>
               <td rowSpan={searchMatches.length}>
-                <SpeciesName species={speciesInfo} tableMode={true} />
+                <SpeciesName
+                  species={speciesInfo}
+                  className={styles.speciesName}
+                />
               </td>
               <td rowSpan={searchMatches.length}>{speciesInfo.release.name}</td>
               <td rowSpan={searchMatches.length}>{speciesInfo.release.type}</td>
