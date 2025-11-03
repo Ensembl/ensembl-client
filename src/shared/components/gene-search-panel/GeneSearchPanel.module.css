@@ -71,13 +71,9 @@
   vertical-align: top;
 }
 
-.speciesName [data-part="common-name"] {
-  font-size: 13px;
-  font-weight: normal;
-}
-
-.speciesName [data-part="scientific-name"] {
-  font-size: 13px;
+.speciesName [data-part="common-name"],
+.speciesName [data-part="scientific-name"],
+.speciesName [data-part="assembly-id"] {
   font-weight: normal;
 }
 
