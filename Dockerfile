@@ -1,4 +1,4 @@
-FROM node:22.11.0 AS builder
+FROM node:24.11.0 AS builder
 
 ARG SOURCE_DIR="./"
 
@@ -14,7 +14,7 @@ RUN npm ci --loglevel warn && \
 
 
 # PRODUCTION IMAGE
-FROM node:22.11.0-alpine AS runner
+FROM node:24.11.0-alpine AS runner
 
 WORKDIR /srv/ensembl-client/
 
