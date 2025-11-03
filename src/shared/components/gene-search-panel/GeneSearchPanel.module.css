@@ -38,12 +38,13 @@
 .resultsWrapper {
   grid-row: search-results;
   height: 100%;
+  width: 800px;
   overflow-y: auto;
   margin-top: 2rem;
 }
 
 .resultsTable {
-  width: 600px;
+  width: 100%;
   border-collapse: collapse;
 }
 
@@ -66,27 +67,24 @@
   border-bottom: 1px solid var(--color-medium-light-grey);
 }
 
-/* Species column */
-.resultsTable td:first-child {
-  width: 60%;
+.resultsTable td:not(:last-child) {
   vertical-align: top;
+}
+
+.speciesName [data-part="common-name"],
+.speciesName [data-part="scientific-name"],
+.speciesName [data-part="assembly-id"] {
+  font-weight: normal;
+}
+
+.speciesName [data-part="assembly-name"] {
+  font-size: 11px;
+  font-weight: var(--font-weight-light);
 }
 
 .speciesCount {
   font-weight: var(--font-weight-bold);
   padding: 0 0.5ch;
-}
-
-.speciesCell {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  column-gap: 1ch;
-}
-
-.assemblyName {
-  font-weight: var(--font-weight-light);
-  font-size: 11px;
 }
 
 .geneMatch {
