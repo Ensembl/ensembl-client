@@ -15,10 +15,11 @@
  */
 
 import webpackConfig from './webpack.ts';
+import type { StorybookConfig } from '@storybook/react-webpack5';
 
-export default {
+const config: StorybookConfig = {
   stories: ['../stories/**/*.stories.tsx'],
-  webpackFinal: (config: any) => webpackConfig(config),
+  webpackFinal: (config) => webpackConfig(config),
   addons: ['@storybook/addon-webpack5-compiler-babel'],
   framework: {
     name: '@storybook/react-webpack5',
@@ -33,3 +34,5 @@ export default {
     disableTelemetry: true // 👈 Disables telemetry
   }
 };
+
+export default config;

@@ -19,23 +19,24 @@
 */
 
 import path from 'node:path';
+import type { Configuration, RuleSetRule } from 'webpack';
 
-export default (config: any) => {
+export default (config: Configuration) => {
   // a bit of a hack to remove svg handling from Storybook's default webpack config:
   // find the rule that matches svg files and replace its regex with Storybook's default,
   // but without svg
-  const defaultSvgRule = config.module.rules.find((rule: any) =>
+  const defaultSvgRule = config.module!.rules!.find((rule: any) =>
     rule.test.test('.svg')
-  );
+  ) as RuleSetRule;
   defaultSvgRule.test =
     /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|cur|ani)(\?.*)?$/;
 
   // remove the webpack rule for CSS files pre-defined in @storybook/react; we are going to use our own
-  config.module.rules = config.module.rules.filter(
+  config.module!.rules = config.module!.rules!.filter(
     (rule: any) => !rule.test?.test('file.css')
   );
 
-  config.module.rules.push({
+  config.module!.rules.push({
     test: /\.css$/,
     include: [
       path.resolve(import.meta.dirname, '../src'),
@@ -65,7 +66,7 @@ export default (config: any) => {
       }
     ]
   });
-  config.module.rules.push({
+  config.module!.rules.push({
     test: /\.svg$/,
     oneOf: [
       {
@@ -78,8 +79,8 @@ export default (config: any) => {
     ]
   });
 
-  config.resolve.extensions.push('.ts', '.tsx');
-  config.resolve.alias = {
+  config.resolve!.extensions!.push('.ts', '.tsx');
+  config.resolve!.alias = {
     config: path.join(import.meta.dirname, '../config.ts'),
     src: path.join(import.meta.dirname, '../src'),
     tests: path.join(import.meta.dirname, '../tests'),
