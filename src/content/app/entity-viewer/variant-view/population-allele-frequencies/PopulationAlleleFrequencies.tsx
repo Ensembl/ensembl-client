@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useEffect, useState } from 'react';
+
 import { createSmallNumberFormatter } from 'src/shared/helpers/formatters/numberFormatter';
 
 import usePopulationAlleleFrequenciesData, {
@@ -25,13 +27,7 @@ import { CircularProportionIndicator } from 'src/shared/components/proportion-in
 import { Table, ColumnHead } from 'src/shared/components/table';
 import { CircleLoader } from 'src/shared/components/loader';
 
-import {
-  Accordion,
-  AccordionItem,
-  AccordionItemHeading,
-  AccordionItemButton,
-  AccordionItemPanel
-} from 'src/shared/components/accordion';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import styles from './PopulationAlleleFrequencies.module.css';
 
@@ -47,6 +43,10 @@ type PopulationFrequencyData = NonNullable<
 
 const PopulationAlleleFrequencies = (props: Props) => {
   const { genomeId, variantId, activeAlleleId } = props;
+  const [isGlobalAlleleFreqAccordionOpen, setIsGlobalAlleleFreqAccordionOpen] =
+    useState(true);
+  const [populationFreqAccordionState, setPopulationFreqAccordionState] =
+    useState<Record<string, boolean>>({});
 
   const { currentData, isLoading } = usePopulationAlleleFrequenciesData({
     genomeId,
@@ -54,13 +54,36 @@ const PopulationAlleleFrequencies = (props: Props) => {
     activeAlleleId
   });
 
+  useEffect(() => {
+    const groups = currentData?.populationGroups;
+
+    if (
+      groups?.length &&
+      Object.keys(populationFreqAccordionState).length === 0
+    ) {
+      const initialState = Object.fromEntries(
+        groups.map((group, index) => [group, index === 0])
+      );
+      setPopulationFreqAccordionState(initialState);
+    }
+  }, [currentData?.populationGroups]);
+
   const frequencyCount = (
-    freqs:
-      | PreparedPopulationFrequencyData[]
-      | PreparedPopulationFrequencyData[],
+    freqs: PreparedPopulationFrequencyData[],
     group: string
   ) => {
     return freqs.filter((freq) => freq.display_group_name === group).length;
+  };
+
+  const toggleGlobalAlleleFreqAccordion = () => {
+    setIsGlobalAlleleFreqAccordionOpen(!isGlobalAlleleFreqAccordionOpen);
+  };
+
+  const togglePopulationFreqAccordion = (group: string) => {
+    setPopulationFreqAccordionState((prevState) => ({
+      ...prevState,
+      [group]: !prevState[group]
+    }));
   };
 
   if (isLoading) {
@@ -107,24 +130,26 @@ const PopulationAlleleFrequencies = (props: Props) => {
     return (
       <Panel header={panelHeader}>
         <div className={styles.container}>
-          <Accordion preExpanded={['global']} className={styles.accordion}>
-            <AccordionItem uuid={'global'}>
-              <AccordionItemHeading className={styles.accordionHeading}>
-                <AccordionItemButton className={styles.accordionButton}>
-                  <span>Frequency data for Individual populations</span>
-                  <span className={styles.frequencyCount}>
-                    ({globalFrequencyCount})
+          <div className={styles.accordionTitleWrapper}>
+            <ShowHide
+              onClick={toggleGlobalAlleleFreqAccordion}
+              isExpanded={isGlobalAlleleFreqAccordionOpen}
+              label={
+                <span>
+                  <span className={styles.accordionHeader}>
+                    Frequency data for individual populations
                   </span>
-                </AccordionItemButton>
-              </AccordionItemHeading>
-              <AccordionItemPanel className={styles.accordionItemContent}>
-                <GlobalFrequenciesTable
-                  allele={currentAllele}
-                  populationGroups={populationGroups}
-                />
-              </AccordionItemPanel>
-            </AccordionItem>
-          </Accordion>
+                  ({globalFrequencyCount})
+                </span>
+              }
+            />
+          </div>
+          {isGlobalAlleleFreqAccordionOpen && (
+            <GlobalFrequenciesTable
+              allele={currentAllele}
+              populationGroups={populationGroups}
+            />
+          )}
         </div>
       </Panel>
     );
@@ -133,47 +158,38 @@ const PopulationAlleleFrequencies = (props: Props) => {
   return (
     <Panel header={panelHeader}>
       <div className={styles.container}>
-        <Accordion
-          preExpanded={[populationGroups[0]]}
-          className={styles.accordion}
-          allowMultipleExpanded={true}
-        >
-          {populationGroups.map((group) => (
-            <AccordionItem
-              uuid={group}
-              key={group}
-              className={styles.accordionItem}
-            >
-              <div className={styles.accordionTitleContainer}>
-                <div className={styles.accordionHeadingContainer}>
-                  <AccordionItemHeading className={styles.accordionHeading}>
-                    <AccordionItemButton className={styles.accordionButton}>
-                      <span>{group}</span>
-                      <span className={styles.frequencyCount}>
-                        (
-                        {frequencyCount(
-                          currentAllele.populationFrequencies,
-                          group
-                        )}
-                        )
-                      </span>
-                    </AccordionItemButton>
-                  </AccordionItemHeading>
-                </div>
-                <GlobalFrequenciesHeader
-                  allele={currentAllele}
-                  currentPopulationGroup={group}
+        {populationGroups.map((group) => (
+          <div key={group} className={styles.accordionWrapper}>
+            <div className={styles.accordionTitleWrapper}>
+              <div className={styles.accordionHeaderContainer}>
+                <ShowHide
+                  onClick={() => togglePopulationFreqAccordion(group)}
+                  isExpanded={populationFreqAccordionState[group]}
+                  label={
+                    <span>
+                      <span className={styles.accordionHeader}>{group}</span>(
+                      {frequencyCount(
+                        currentAllele.populationFrequencies,
+                        group
+                      )}
+                      )
+                    </span>
+                  }
                 />
               </div>
-              <AccordionItemPanel className={styles.accordionItemContent}>
-                <PopulationFrequenciesTable
-                  allele={currentAllele}
-                  currentPopulationGroup={group}
-                />
-              </AccordionItemPanel>
-            </AccordionItem>
-          ))}
-        </Accordion>
+              <GlobalFrequenciesHeader
+                allele={currentAllele}
+                currentPopulationGroup={group}
+              />
+            </div>
+            {populationFreqAccordionState[group] && (
+              <PopulationFrequenciesTable
+                allele={currentAllele}
+                currentPopulationGroup={group}
+              />
+            )}
+          </div>
+        ))}
       </div>
     </Panel>
   );
@@ -210,9 +226,8 @@ const GlobalFrequenciesTable = (props: {
           <ColumnHead>Population</ColumnHead>
           <ColumnHead></ColumnHead>
           <ColumnHead>
-            <span className={styles.alleleColumnTitle}>Alt Allele</span>
+            <span className={styles.alleleColumnTitle}>Allele</span>
           </ColumnHead>
-          <th />
         </tr>
       </thead>
       <tbody>
@@ -290,7 +305,7 @@ const PopulationFrequenciesTable = (props: {
           <ColumnHead>Population</ColumnHead>
           <ColumnHead></ColumnHead>
           <ColumnHead>
-            <span className={styles.alleleColumnTitle}>Alt Allele</span>
+            <span className={styles.alleleColumnTitle}>Allele</span>
           </ColumnHead>
           <th />
         </tr>
