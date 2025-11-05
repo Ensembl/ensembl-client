@@ -129,7 +129,11 @@ const PopulationAlleleFrequencies = (props: Props) => {
   return (
     <Panel header={panelHeader}>
       <div className={styles.container}>
-        <Accordion preExpanded={populationGroups} className={styles.accordion}>
+        <Accordion
+          preExpanded={populationGroups}
+          className={styles.accordion}
+          allowMultipleExpanded={true}
+        >
           {populationGroups.map((group) => (
             <AccordionItem
               uuid={group}
