@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
-
 import { createSmallNumberFormatter } from 'src/shared/helpers/formatters/numberFormatter';
 
 import usePopulationAlleleFrequenciesData, {
@@ -49,19 +47,12 @@ type PopulationFrequencyData = NonNullable<
 
 const PopulationAlleleFrequencies = (props: Props) => {
   const { genomeId, variantId, activeAlleleId } = props;
-  const [populationGroup, setPopulationGroup] = useState('');
 
   const { currentData, isLoading } = usePopulationAlleleFrequenciesData({
     genomeId,
     variantId,
     activeAlleleId
   });
-
-  useEffect(() => {
-    if (currentData?.populationGroups && !populationGroup) {
-      setPopulationGroup(currentData.populationGroups[0]);
-    }
-  }, [currentData?.populationGroups]);
 
   const frequencyCount = (
     freqs:
