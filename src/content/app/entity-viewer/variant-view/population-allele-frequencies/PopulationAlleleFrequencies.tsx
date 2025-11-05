@@ -280,7 +280,9 @@ const GlobalFrequenciesHeader = (props: {
     <div className={styles.globalFrequencyHeader}>
       <span>Global</span>
       <CircleDiagram alleleFrequency={alleleGlobalFreq.allele_frequency} />
-      {smallNumberFormatter.format(alleleGlobalFreq.allele_frequency)}
+      <span>
+        {smallNumberFormatter.format(alleleGlobalFreq.allele_frequency)}
+      </span>
     </div>
   );
 };
