@@ -15,6 +15,8 @@
  */
 
 import {
+  ActivityViewerIcon,
+  AlignmentsViewerIcon,
   GenomeBrowserIcon,
   SpeciesSelectorIcon,
   GlobalSearchIcon,
@@ -37,12 +39,20 @@ export const AppIconStory = () => (
       <div>Genome browser</div>
     </div>
     <div className={styles.appIconWrapper}>
+      <AlignmentsViewerIcon />
+      <div>Alignments viewer</div>
+    </div>
+    <div className={styles.appIconWrapper}>
       <SpeciesSelectorIcon />
       <div>Species selector</div>
     </div>
     <div className={styles.appIconWrapper}>
       <EntityViewerIcon />
       <div>EntityViewer</div>
+    </div>
+    <div className={styles.appIconWrapper}>
+      <ActivityViewerIcon />
+      <div>Activity viewer</div>
     </div>
     <div className={styles.appIconWrapper}>
       <BlastIcon />
