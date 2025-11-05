@@ -15,16 +15,25 @@
  */
 
 import { useState, useEffect } from 'react';
-import classNames from 'classnames';
 
 import { createSmallNumberFormatter } from 'src/shared/helpers/formatters/numberFormatter';
 
-import usePopulationAlleleFrequenciesData from './usePopulationAlleleFrequenciesData';
+import usePopulationAlleleFrequenciesData, {
+  PreparedPopulationFrequencyData
+} from './usePopulationAlleleFrequenciesData';
 
 import Panel from 'src/shared/components/panel/Panel';
 import { CircularProportionIndicator } from 'src/shared/components/proportion-indicator/CircularProportionIndicator';
 import { Table, ColumnHead } from 'src/shared/components/table';
 import { CircleLoader } from 'src/shared/components/loader';
+
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel
+} from 'src/shared/components/accordion';
 
 import styles from './PopulationAlleleFrequencies.module.css';
 
@@ -54,6 +63,15 @@ const PopulationAlleleFrequencies = (props: Props) => {
     }
   }, [currentData?.populationGroups]);
 
+  const frequencyCount = (
+    freqs:
+      | PreparedPopulationFrequencyData[]
+      | PreparedPopulationFrequencyData[],
+    group: string
+  ) => {
+    return freqs.filter((freq) => freq.display_group_name === group).length;
+  };
+
   if (isLoading) {
     const panelHeader = (
       <div className={styles.panelHeader}>
@@ -74,14 +92,7 @@ const PopulationAlleleFrequencies = (props: Props) => {
 
   const { variant, allele: currentAllele, populationGroups } = currentData;
 
-  const panelHeader = (
-    <PanelHeader
-      variant={variant}
-      populationGroups={populationGroups}
-      currentPopulationGroup={populationGroup}
-      onPopulationGroupChange={setPopulationGroup}
-    />
-  );
+  const panelHeader = <PanelHeader variant={variant} />;
 
   if (!currentAllele || !currentAllele.globalAlleleFrequencies.length) {
     return (
@@ -91,17 +102,79 @@ const PopulationAlleleFrequencies = (props: Props) => {
     );
   }
 
+  if (currentAllele && currentAllele.populationFrequencies.length === 0) {
+    const globalFrequencyCount = populationGroups.reduce((count, group) => {
+      return (
+        count + frequencyCount(currentAllele.globalAlleleFrequencies, group)
+      );
+    }, 0);
+
+    return (
+      <Panel header={panelHeader}>
+        <div className={styles.container}>
+          <Accordion preExpanded={['global']} className={styles.accordion}>
+            <AccordionItem uuid={'global'}>
+              <AccordionItemHeading className={styles.accordionHeading}>
+                <AccordionItemButton className={styles.accordionButton}>
+                  <span>Frequency data for Individual populations</span>
+                  <span className={styles.frequencyCount}>
+                    ({globalFrequencyCount})
+                  </span>
+                </AccordionItemButton>
+              </AccordionItemHeading>
+              <AccordionItemPanel className={styles.accordionItemContent}>
+                <GlobalFrequenciesTable
+                  allele={currentAllele}
+                  populationGroups={populationGroups}
+                />
+              </AccordionItemPanel>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </Panel>
+    );
+  }
+
   return (
     <Panel header={panelHeader}>
       <div className={styles.container}>
-        <GlobalFrequenciesTable
-          allele={currentAllele}
-          currentPopulationGroup={populationGroup}
-        />
-        <PopulationFrequenciesTable
-          allele={currentAllele}
-          currentPopulationGroup={populationGroup}
-        />
+        <Accordion preExpanded={populationGroups} className={styles.accordion}>
+          {populationGroups.map((group) => (
+            <AccordionItem
+              uuid={group}
+              key={group}
+              className={styles.accordionItem}
+            >
+              <div className={styles.accordionTitleContainer}>
+                <div className={styles.accordionHeadingContainer}>
+                  <AccordionItemHeading className={styles.accordionHeading}>
+                    <AccordionItemButton className={styles.accordionButton}>
+                      <span>{group}</span>
+                      <span className={styles.frequencyCount}>
+                        (
+                        {frequencyCount(
+                          currentAllele.populationFrequencies,
+                          group
+                        )}
+                        )
+                      </span>
+                    </AccordionItemButton>
+                  </AccordionItemHeading>
+                </div>
+                <GlobalFrequenciesHeader
+                  allele={currentAllele}
+                  currentPopulationGroup={group}
+                />
+              </div>
+              <AccordionItemPanel className={styles.accordionItemContent}>
+                <PopulationFrequenciesTable
+                  allele={currentAllele}
+                  currentPopulationGroup={group}
+                />
+              </AccordionItemPanel>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </Panel>
   );
@@ -109,16 +182,8 @@ const PopulationAlleleFrequencies = (props: Props) => {
 
 const PanelHeader = (props: {
   variant: PopulationFrequencyData['variant'];
-  populationGroups: string[];
-  currentPopulationGroup: string;
-  onPopulationGroupChange: (group: string) => void; // FIXME: this may not be needed; a group may just be a link
 }) => {
-  const {
-    variant,
-    populationGroups,
-    currentPopulationGroup,
-    onPopulationGroupChange
-  } = props;
+  const { variant } = props;
 
   return (
     <div className={styles.panelHeader}>
@@ -126,54 +191,83 @@ const PanelHeader = (props: {
       <span className={styles.variantType}>{variant.allele_type.value}</span>
       <span className={styles.colonSeparator}>:</span>
       <span className={styles.alleleFreqTitle}>Allele frequency</span>
-      <div className={styles.populationGroups}>
-        {populationGroups.map((group) => (
-          <button
-            key={group}
-            className={styles.populationGroup}
-            onClick={() => onPopulationGroupChange(group)}
-            disabled={group === currentPopulationGroup}
-          >
-            {group}
-          </button>
-        ))}
-      </div>
     </div>
   );
 };
 
 const GlobalFrequenciesTable = (props: {
   allele: NonNullable<PopulationFrequencyData['allele']>;
+  populationGroups: string[];
+}) => {
+  const { allele, populationGroups } = props;
+  const smallNumberFormatter = createSmallNumberFormatter();
+
+  const alleleGlobalFreqs = allele.globalAlleleFrequencies;
+
+  return (
+    <Table className={styles.table}>
+      <thead>
+        <tr>
+          <ColumnHead>Population</ColumnHead>
+          <ColumnHead></ColumnHead>
+          <ColumnHead>
+            <span className={styles.alleleColumnTitle}>Alt Allele</span>
+          </ColumnHead>
+          <th />
+        </tr>
+      </thead>
+      <tbody>
+        {populationGroups.map((group) => {
+          const alleleGlobalFreq = alleleGlobalFreqs.find(
+            (popFreq) => popFreq.display_group_name === group
+          );
+
+          return (
+            <tr key={group}>
+              <td>{group}</td>
+              <td>
+                {alleleGlobalFreq ? (
+                  <CircleDiagram
+                    alleleFrequency={alleleGlobalFreq.allele_frequency}
+                  />
+                ) : null}
+              </td>
+              <td>
+                {alleleGlobalFreq
+                  ? smallNumberFormatter.format(
+                      alleleGlobalFreq.allele_frequency
+                    )
+                  : null}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </Table>
+  );
+};
+
+const GlobalFrequenciesHeader = (props: {
+  allele: NonNullable<PopulationFrequencyData['allele']>;
   currentPopulationGroup: string;
 }) => {
   const { allele, currentPopulationGroup } = props;
 
   const alleleGlobalFreqs = allele.globalAlleleFrequencies;
-
   const alleleGlobalFreq = alleleGlobalFreqs.find(
     (popFreq) => popFreq.display_group_name === currentPopulationGroup
   );
-
-  const tableClasses = classNames(styles.table, styles.tablePlain);
+  if (!alleleGlobalFreq) {
+    return null;
+  }
   const smallNumberFormatter = createSmallNumberFormatter();
 
-  const diagram = alleleGlobalFreq ? (
-    <CircleDiagram alleleFrequency={alleleGlobalFreq.allele_frequency} />
-  ) : null;
-  const formattedFreq = alleleGlobalFreq
-    ? smallNumberFormatter.format(alleleGlobalFreq.allele_frequency)
-    : null;
-
   return (
-    <table className={tableClasses}>
-      <tbody>
-        <tr>
-          <td>Global</td>
-          <td>{diagram}</td>
-          <td>{formattedFreq}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div className={styles.globalFrequencyHeader}>
+      <span>Global</span>
+      <CircleDiagram alleleFrequency={alleleGlobalFreq.allele_frequency} />
+      {smallNumberFormatter.format(alleleGlobalFreq.allele_frequency)}
+    </div>
   );
 };
 
@@ -195,8 +289,9 @@ const PopulationFrequenciesTable = (props: {
       <thead>
         <tr>
           <ColumnHead>Population</ColumnHead>
+          <ColumnHead></ColumnHead>
           <ColumnHead>
-            <span className={styles.alleleColumnTitle}>Allele</span>
+            <span className={styles.alleleColumnTitle}>Alt Allele</span>
           </ColumnHead>
           <th />
         </tr>

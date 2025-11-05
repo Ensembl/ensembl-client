@@ -1,6 +1,6 @@
 .container {
-  padding-left: var(--global-padding-left);
-  margin-top: 40px;
+  padding-left: var(--double-standard-gutter);
+  margin-top: 20px;
   padding-bottom: var(--global-padding-bottom);
 }
 
@@ -83,4 +83,65 @@
   height: 10px;
   width: 10px;
   background-color: var(--color-grey);
+}
+
+.accordion {
+  border: none;
+}
+
+.accordionButton {
+  color: var(--color-blue);
+  padding: 5px 15px;
+  border-radius: 5px;
+}
+
+.accordionButton::before,
+.accordionButton::after {
+  margin-top: -3px;
+}
+
+.accordionHeading {
+  width: fit-content;
+  font-weight: var(--font-weight-bold);
+}
+
+.accordionItem {
+  margin-bottom: 20px;
+}
+
+.accordionItem:not(:first-child) {
+  border-top: none;
+}
+
+.accordionItemContent {
+  background-color: transparent;
+  border: none;
+  padding: 15px;
+}
+
+.globalFrequencyHeader {
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  align-items: center;
+  font-weight: var(--font-weight-bold);
+  width: 270px;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+.accordionTitleContainer {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.accordionHeadingContainer {
+  width: 330px;
+}
+
+.frequencyCount {
+  font-weight: normal;
+  margin: 0 5px;
 }
