@@ -26,6 +26,7 @@ import {
 import LaunchbarButton from './LaunchbarButton';
 import SpeciesSelectorLaunchbarButton from './SpeciesSelectorLaunchbarButton';
 import EntityViewerLaunchbarButton from './EntityViewerLaunchbarButton';
+import AlignmentsViewerLaunchbarButton from './AlignmentsViewerLaunchbarButton';
 import RegulatoryActivityViewerLaunchbarButton from './RegulationViewerLaunchbarButton';
 import BlastLaunchbarButton from './BlastLaunchbarButton';
 import VepLaunchbarButton from './VepLaunchbarButton';
@@ -59,6 +60,7 @@ const Launchbar = () => {
               icon={GenomeBrowserIcon}
               enabled={true}
             />
+            <AlignmentsViewerLaunchbarButton />
           </div>
           <div className={styles.category}>
             <EntityViewerLaunchbarButton />
