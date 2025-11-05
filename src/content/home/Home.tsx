@@ -138,7 +138,7 @@ const Home = () => {
 
           <div className={styles.homeTopRight}>
             <HelpPopupButton
-              label="About using Ensembl"
+              label="Getting started"
               slug="ensembl-website-basics"
               labelClass={styles.helpLabel}
             />
