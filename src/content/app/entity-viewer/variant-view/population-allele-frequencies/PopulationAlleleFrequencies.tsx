@@ -85,7 +85,11 @@ const PopulationAlleleFrequencies = (props: Props) => {
 
   const panelHeader = <PanelHeader variant={variant} />;
 
-  if (!currentAllele || !currentAllele.globalAlleleFrequencies.length) {
+  if (
+    !currentAllele ||
+    !currentAllele.globalAlleleFrequencies.length ||
+    !populationGroups.length
+  ) {
     return (
       <Panel header={panelHeader}>
         <div className={styles.container}>No data</div>
@@ -130,7 +134,7 @@ const PopulationAlleleFrequencies = (props: Props) => {
     <Panel header={panelHeader}>
       <div className={styles.container}>
         <Accordion
-          preExpanded={populationGroups}
+          preExpanded={[populationGroups[0]]}
           className={styles.accordion}
           allowMultipleExpanded={true}
         >
