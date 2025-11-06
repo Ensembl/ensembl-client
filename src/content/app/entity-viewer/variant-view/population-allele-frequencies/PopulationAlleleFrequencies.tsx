@@ -132,13 +132,13 @@ const OnlyGlobalFrequencies = ({
   return (
     <Panel header={<PanelHeader variant={variant} />}>
       <div className={styles.container}>
-        <div className={styles.accordionTitleWrapper}>
+        <div className={styles.sectionHead}>
           <ShowHide
             onClick={toggleExpanded}
             isExpanded={isExpanded}
             label={
               <span>
-                <span className={styles.accordionHeader}>
+                <span className={styles.sectionTitle}>
                   Frequency data for individual populations
                 </span>
                 {globalFrequenciesCount}
@@ -221,15 +221,15 @@ const PopulationAndGlobalFrequencies = ({
           const isSectionExpanded = expandedSections.has(index);
 
           return (
-            <div key={group} className={styles.accordionWrapper}>
-              <div className={styles.accordionTitleWrapper}>
+            <div key={group} className={styles.section}>
+              <div className={styles.sectionHead}>
                 <ShowHide
                   className={styles.showHide}
                   onClick={() => toggleSection(index)}
                   isExpanded={expandedSections.has(index)}
                   label={
                     <span>
-                      <span className={styles.accordionHeader}>{group}</span>
+                      <span className={styles.sectionTitle}>{group}</span>
                       {getPopulationFrequenciesCount({
                         populationFrequencies: allele.populationFrequencies,
                         group

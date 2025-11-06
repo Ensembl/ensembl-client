@@ -96,20 +96,20 @@
   margin-left: 10px;
 }
 
-.accordionWrapper {
+.section {
   margin-top: 30px;
 }
 
-.accordionHeader {
-  font-weight: var(--font-weight-bold);
-  margin-right: 5px;
-}
-
-.accordionTitleWrapper {
+.sectionHead {
   display: flex;
   flex-direction: row;
   align-items: center;
   margin-bottom: 15px;
+}
+
+.sectionTitle {
+  font-weight: var(--font-weight-bold);
+  margin-right: 5px;
 }
 
 .showHide {
