@@ -112,6 +112,9 @@
   margin-bottom: 15px;
 }
 
-.accordionHeaderContainer {
+.showHide {
   width: 330px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }

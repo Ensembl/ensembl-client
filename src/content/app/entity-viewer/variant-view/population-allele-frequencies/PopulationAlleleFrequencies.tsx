@@ -161,22 +161,18 @@ const PopulationAlleleFrequencies = (props: Props) => {
         {populationGroups.map((group) => (
           <div key={group} className={styles.accordionWrapper}>
             <div className={styles.accordionTitleWrapper}>
-              <div className={styles.accordionHeaderContainer}>
-                <ShowHide
-                  onClick={() => togglePopulationFreqAccordion(group)}
-                  isExpanded={populationFreqAccordionState[group]}
-                  label={
-                    <span>
-                      <span className={styles.accordionHeader}>{group}</span>(
-                      {frequencyCount(
-                        currentAllele.populationFrequencies,
-                        group
-                      )}
-                      )
-                    </span>
-                  }
-                />
-              </div>
+              <ShowHide
+                className={styles.showHide}
+                onClick={() => togglePopulationFreqAccordion(group)}
+                isExpanded={populationFreqAccordionState[group]}
+                label={
+                  <span>
+                    <span className={styles.accordionHeader}>{group}</span>(
+                    {frequencyCount(currentAllele.populationFrequencies, group)}
+                    )
+                  </span>
+                }
+              />
               <GlobalFrequenciesHeader
                 allele={currentAllele}
                 currentPopulationGroup={group}
