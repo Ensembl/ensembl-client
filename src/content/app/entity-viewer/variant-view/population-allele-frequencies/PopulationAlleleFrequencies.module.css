@@ -96,7 +96,7 @@
   margin-left: 10px;
 }
 
-.section {
+.section + .section {
   margin-top: 30px;
 }
 
