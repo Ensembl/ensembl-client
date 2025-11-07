@@ -221,7 +221,6 @@ const trackSettingsSlice = createSlice({
       }>
     ) {
       const { genomeId, trackSettings } = action.payload;
-
       state[genomeId] = {
         ...defaultTrackSettingsForGenome,
         settingsForIndividualTracks: {
