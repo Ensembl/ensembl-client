@@ -259,8 +259,8 @@ describe('trackSettingsStorageService', () => {
           (track) => track.trackId === refSeqTrack.id
         );
         expect(geneTrackBefore?.settings['transcript-label']).toBe(false);
-        expect(geneTrackBefore?.settings.name).toBe(false);
-        expect(refSeqTrackBefore?.settings.name).toBe(false);
+        expect(geneTrackBefore?.settings.name).toBe(true);
+        expect(refSeqTrackBefore?.settings.name).toBe(true);
 
         const updatedGeneTrackSettings = {
           ...geneTrack,
