@@ -222,11 +222,6 @@ const trackSettingsSlice = createSlice({
     ) {
       const { genomeId, trackSettings } = action.payload;
 
-      // Show track names by default for all tracks
-      for (const track of Object.values(trackSettings)) {
-        track.settings.name = true;
-      }
-
       state[genomeId] = {
         ...defaultTrackSettingsForGenome,
         settingsForIndividualTracks: {

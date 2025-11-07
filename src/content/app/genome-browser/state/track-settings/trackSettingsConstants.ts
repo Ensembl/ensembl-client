@@ -39,7 +39,7 @@ export enum TrackType {
 export const getDefaultGeneTrackSettings = (): GeneTrackSettings => ({
   several: false,
   'transcript-label': false,
-  name: false,
+  name: true,
   label: true,
   isVisible: true
 });
@@ -50,7 +50,7 @@ export const getDefaultVariantTrackSettings = (): VariantTrackSettings => ({
   'label-other-id': false,
   'label-other-alleles': false,
   'show-extents': true,
-  name: false,
+  name: true,
   isVisible: true
 });
 
@@ -70,7 +70,7 @@ export const getDefaultFocusVariantTrackSettings =
   };
 
 export const getDefaultRegularTrackSettings = (): RegularTrackSettings => ({
-  name: false,
+  name: true,
   isVisible: true
 });
 
