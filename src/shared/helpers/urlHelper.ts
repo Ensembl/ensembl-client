@@ -193,6 +193,10 @@ export const regulatoryActivityViewer = (
   return query ? `${path}?${query}` : path;
 };
 
+export const structuralVariantsViewer = () => {
+  return `/structural-variants`;
+};
+
 export const blastForm = () => '/blast';
 
 export const blastUnviewedSubmissions = () => '/blast/unviewed-submissions';

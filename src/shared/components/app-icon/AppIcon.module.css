@@ -14,13 +14,6 @@
 /* The image-button-svg-width and image-button-svg-height variables below
 get used when AppIcon is placed inside of the ImageButton component */
 
-.globalSearch svg {
-  --image-button-svg-width: 62.5%;
-  --image-button-svg-height: 62.5%;
-  width: 62.5%;
-  height: 62.5%;
-}
-
 .genomeBrowser svg {
   --image-button-svg-width: 59.375%;
   --image-button-svg-height: 59.375%;
@@ -33,13 +26,6 @@ get used when AppIcon is placed inside of the ImageButton component */
   --image-button-svg-height: 70%;
   width: 70%;
   height: 70%;
-}
-
-.entityViewer svg {
-  --image-button-svg-width: 75%;
-  --image-button-svg-height: 75%;
-  width: 75%;
-  height: 75%;
 }
 
 .blast svg {

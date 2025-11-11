@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-export { default as ActivityViewerIcon } from './ActivityViewerIcon';
-export { default as AlignmentsViewerIcon } from './AlignmentsViewerIcon';
-export { default as BlastIcon } from './BlastIcon';
-export { default as HelpIcon } from './HelpIcon';
-export { default as GenomeBrowserIcon } from './GenomeBrowserIcon';
-export { default as GlobalSearchIcon } from './GlobalSearchIcon';
-export { default as EntityViewerIcon } from './EntityViewerIcon';
-export { default as SpeciesSelectorIcon } from './SpeciesSelectorIcon';
-export { default as VepIcon } from './VepIcon';
+import { memo } from 'react';
+import classNames from 'classnames';
+
+import SVGIcon from 'static/icons/icon_launchbar_activity_viewer.svg';
+
+import styles from './AppIcon.module.css';
+
+const BlastIcon = () => {
+  const elementClasses = classNames(styles.appIcon);
+
+  return (
+    <div className={elementClasses}>
+      <SVGIcon />
+    </div>
+  );
+};
+
+export default memo(BlastIcon);

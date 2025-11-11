@@ -23,12 +23,14 @@ import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
-const LazilyLoadedBrowser = lazy(() => import('./Browser'));
+const LazilyLoadedStructuralVariants = lazy(
+  () => import('./StructuralVariants')
+);
 
-const pageTitle = 'Genome browser — Ensembl';
-const pageDescription = 'Ensembl genome browser';
+const pageTitle = 'Structural variants — Ensembl';
+const pageDescription = 'Alignments viewer for structural variants';
 
-const BrowserPage = () => {
+const StructuralVariantsPage = () => {
   const hasMounted = useHasMounted();
   const dispatch = useAppDispatch();
 
@@ -41,10 +43,10 @@ const BrowserPage = () => {
     );
   }, []);
 
-  return hasMounted ? <LazilyLoadedBrowser /> : null;
+  return hasMounted ? <LazilyLoadedStructuralVariants /> : null;
 };
 
-export default BrowserPage;
+export default StructuralVariantsPage;
 
 // not really fetching anything; just setting page meta
 export const serverFetch: ServerFetch = async (params) => {

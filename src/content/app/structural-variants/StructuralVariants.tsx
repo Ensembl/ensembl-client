@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-export { default as ActivityViewerIcon } from './ActivityViewerIcon';
-export { default as AlignmentsViewerIcon } from './AlignmentsViewerIcon';
-export { default as BlastIcon } from './BlastIcon';
-export { default as HelpIcon } from './HelpIcon';
-export { default as GenomeBrowserIcon } from './GenomeBrowserIcon';
-export { default as GlobalSearchIcon } from './GlobalSearchIcon';
-export { default as EntityViewerIcon } from './EntityViewerIcon';
-export { default as SpeciesSelectorIcon } from './SpeciesSelectorIcon';
-export { default as VepIcon } from './VepIcon';
+import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
+import StructuralVariantsTopBar from './components/structural-variants-top-bar/StructuralVariantsTopBar';
+
+const StructuralVariants = () => {
+  return (
+    <div>
+      <StructuralVariantsAppBar />
+      <StructuralVariantsTopBar />
+    </div>
+  );
+};
+
+export default StructuralVariants;

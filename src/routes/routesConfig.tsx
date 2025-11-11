@@ -28,6 +28,9 @@ import SpeciesPage, {
 import GenomeBrowserPage, {
   serverFetch as genomeBrowserPageServerFetch
 } from 'src/content/app/genome-browser/BrowserPage';
+import StructuralVariantsPage, {
+  serverFetch as structuralVariantsPageServerFetch
+} from 'src/content/app/structural-variants/StructuralVariantsPage';
 import EntityViewerPage, {
   serverFetch as entityViewerServerFetch
 } from 'src/content/app/entity-viewer/EntityViewerPage';
@@ -83,6 +86,11 @@ const routes: RouteConfig[] = [
     path: '/entity-viewer/*',
     element: <EntityViewerPage />,
     serverFetch: entityViewerServerFetch
+  },
+  {
+    path: '/structural-variants/*',
+    element: <StructuralVariantsPage />,
+    serverFetch: structuralVariantsPageServerFetch
   },
   {
     path: '/activity-viewer/*',
