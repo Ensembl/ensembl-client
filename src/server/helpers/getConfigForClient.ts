@@ -39,8 +39,7 @@ const getBaseApiUrls = (): BaseApiUrls => {
     variationApiUrl:
       process.env.VARIATION_GRAPHQL_API_URL ?? defaultApiUrls.variationApiUrl,
     comparaApiBaseUrl: defaultApiUrls.comparaApiBaseUrl,
-    regulationApiBaseUrl: defaultApiUrls.regulationApiBaseUrl,
-    regulationExternalBaseUrl: defaultApiUrls.regulationExternalBaseUrl
+    regulationApiBaseUrl: defaultApiUrls.regulationApiBaseUrl
   };
 };
 

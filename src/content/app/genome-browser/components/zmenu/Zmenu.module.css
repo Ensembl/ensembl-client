@@ -67,6 +67,8 @@
   word-break: break-all;
 }
 
-.regulationExternalLink {
-  float: right;
+.zmenuActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

@@ -53,12 +53,8 @@ const RegulationZmenu = (props: Props) => {
 
   let regulationExternalUrl;
   if (activeSpecies) {
-    const species = activeSpecies.scientific_name
-      .toLowerCase()
-      .replace(' ', '_');
     regulationExternalUrl = urlFor.regulationActivityExternalUrl(
-      activeSpecies.release.name,
-      species,
+      activeSpecies,
       featureMetadata.id
     );
   }
@@ -70,14 +66,14 @@ const RegulationZmenu = (props: Props) => {
         featureId={`regulation:${featureMetadata.id}`} /* we can't navigate to regulatory feature anyway */
         destroyZmenu={props.onDestroy}
       />
-      <ToggleButton label="Download" />
-      {regulationExternalUrl && (
-        <div className={styles.regulationExternalLink}>
+      <div className={styles.zmenuActions}>
+        <ToggleButton label="Download" />
+        {regulationExternalUrl && (
           <ExternalLink to={regulationExternalUrl}>
             Regulatory activity
           </ExternalLink>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 

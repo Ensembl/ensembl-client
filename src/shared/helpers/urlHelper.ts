@@ -15,6 +15,7 @@
  */
 
 import config from 'config';
+import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 export const home = () => '/';
 
@@ -244,9 +245,9 @@ export const refget = (params: RefgetUrlParams) => {
 };
 
 export const regulationActivityExternalUrl = (
-  releaseName: string,
-  species: string,
+  species: CommittedItem,
   featureId: string
 ) => {
-  return `${config.regulationExternalBaseUrl}/${releaseName}/regulatory_features/${species}/${featureId}`;
+  const species_name = species.scientific_name.toLowerCase().replace(' ', '_');
+  return `https://regulation.ensembl.org/${species.release.name}/regulatory_features/${species_name}/${featureId}`;
 };
