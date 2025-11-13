@@ -248,6 +248,6 @@ export const regulationActivityExternalUrl = (
   species: CommittedItem,
   featureId: string
 ) => {
-  const species_name = species.scientific_name.toLowerCase().replace(' ', '_');
-  return `https://regulation.ensembl.org/${species.release.name}/regulatory_features/${species_name}/${featureId}`;
+  const speciesName = species.scientific_name.toLowerCase().replace(' ', '_');
+  return `https://regulation.ensembl.org/${species.release.name}/regulatory_features/${speciesName}/${featureId}`;
 };
