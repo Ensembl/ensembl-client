@@ -15,7 +15,7 @@
  */
 
 import config from 'config';
-import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 export const home = () => '/';
 
