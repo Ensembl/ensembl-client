@@ -41,11 +41,10 @@ export type VariantForSummaryStrip = ComponentProps<
 
 const VariantSummaryStrip = (props: {
   variant: FocusVariant;
-  isGhosted?: boolean;
   className?: string;
   ref?: RefObject<HTMLDivElement | null>;
 }) => {
-  const { variant, isGhosted } = props;
+  const { variant } = props;
   const { genome_id: genomeId, variant_id: variantId } = variant;
   const { currentData: variantData } = useGbVariantQuery({
     genomeId,
@@ -58,10 +57,7 @@ const VariantSummaryStrip = (props: {
 
   const stripClasses = classNames(
     featureStripStyles.featureSummaryStrip,
-    props.className,
-    {
-      [featureStripStyles.featureSummaryStripGhosted]: isGhosted
-    }
+    props.className
   );
 
   return (

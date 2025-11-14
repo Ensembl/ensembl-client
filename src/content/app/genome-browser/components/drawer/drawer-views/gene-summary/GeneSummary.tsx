@@ -141,7 +141,7 @@ const GeneSummary = () => {
           </div>
         </div>
       </div>
-      <div className={classNames(rowClasses, styles.downloadRow)}>
+      <div className={classNames(rowClasses, styles.sequenceRow)}>
         <div className={styles.value}>
           <GeneSequenceView gene={gene} />
         </div>

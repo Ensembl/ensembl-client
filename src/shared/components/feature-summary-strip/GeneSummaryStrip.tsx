@@ -36,17 +36,14 @@ type Gene = Pick<FocusGene, GeneFields>;
 
 type Props = {
   gene: Gene;
-  isGhosted?: boolean;
   className?: string;
   ref?: RefObject<HTMLDivElement | null>;
 };
 
 const GeneSummaryStrip = (props: Props) => {
-  const { gene, isGhosted } = props;
+  const { gene } = props;
 
-  const stripClasses = classNames(styles.featureSummaryStrip, props.className, {
-    [styles.featureSummaryStripGhosted]: isGhosted
-  });
+  const stripClasses = classNames(styles.featureSummaryStrip, props.className);
 
   return (
     <div className={stripClasses} ref={props.ref}>

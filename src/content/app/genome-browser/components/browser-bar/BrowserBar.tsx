@@ -22,14 +22,12 @@ import BrowserReset from '../browser-reset/BrowserReset';
 import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 
-import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import styles from './BrowserBar.module.css';
 
 export const BrowserBar = () => {
   const focusObject = useAppSelector(getBrowserActiveFocusObject);
-  const isDrawerOpened = useAppSelector(getIsDrawerOpened);
 
   const browserBarRef = useRef<HTMLDivElement>(null);
   const featureSummaryRef = useRef<HTMLDivElement>(null);
@@ -46,7 +44,6 @@ export const BrowserBar = () => {
       {focusObject && (
         <FeatureSummaryStrip
           focusObject={focusObject}
-          isGhosted={isDrawerOpened}
           ref={featureSummaryRef}
           className={styles.featureSummaryStrip}
         />

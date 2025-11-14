@@ -25,19 +25,17 @@ import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes
 export type FeatureSummaryStripProps = {
   focusObject: FocusObject;
   className?: string;
-  isGhosted?: boolean;
   ref?: RefObject<HTMLDivElement | null>;
 };
 
 export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
-  const { focusObject, isGhosted, ref } = props;
+  const { focusObject, ref } = props;
 
   switch (focusObject.type) {
     case 'gene':
       return (
         <GeneSummaryStrip
           gene={focusObject}
-          isGhosted={isGhosted}
           ref={ref}
           className={props.className}
         />
@@ -46,7 +44,6 @@ export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
       return (
         <LocationSummaryStrip
           location={focusObject}
-          isGhosted={isGhosted}
           ref={ref}
           className={props.className}
         />
@@ -55,7 +52,6 @@ export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
       return (
         <VariantSummaryStrip
           variant={focusObject}
-          isGhosted={isGhosted}
           ref={ref}
           className={props.className}
         />
