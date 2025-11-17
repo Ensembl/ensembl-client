@@ -76,8 +76,14 @@
   font-weight: var(--font-weight-normal);
 }
 
+.sequenceRow > .value {
+  display: flex;
+}
+
 .downloadRow > .value {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .downloadLink {
@@ -86,7 +92,7 @@
 }
 
 .downloadWrapper {
-  margin-left: 40px;
+  margin-top: 10px;
   position: relative;
 }
 

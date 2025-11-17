@@ -25,16 +25,13 @@ import { FocusLocation } from 'src/shared/types/focus-object/focusObjectTypes';
 
 type Props = {
   location: FocusLocation;
-  isGhosted?: boolean;
   className?: string;
   ref?: RefObject<HTMLDivElement | null>;
 };
 
 const LocationSummaryStrip = (props: Props) => {
-  const { location, isGhosted } = props;
-  const stripClasses = classNames(styles.featureSummaryStrip, props.className, {
-    [styles.featureSummaryStripGhosted]: isGhosted
-  });
+  const { location } = props;
+  const stripClasses = classNames(styles.featureSummaryStrip, props.className);
   return (
     <div className={stripClasses} ref={props.ref}>
       <span className={styles.featureSummaryStripLabel}>Location</span>
