@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
+import { combineReducers } from 'redux';
 
-export type GenomeGroupForStructuralVariants = {
-  id: string;
-  type: 'structural_variant'; // a constant string
-  reference_genome: BriefGenomeSummary;
-};
+import generalSlice from './general/structuralVariantsGeneralSlice';
+
+export default combineReducers({
+  general: generalSlice
+});

@@ -19,9 +19,14 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import config from 'config';
 
 import type { GenomeGroupForStructuralVariants } from 'src/content/app/structural-variants/types/genomeGroup';
+import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
 type GenomeGroupsResponse = {
   genome_groups: GenomeGroupForStructuralVariants[];
+};
+
+type GenomesInGroupResponse = {
+  genomes: BriefGenomeSummary[];
 };
 
 const structuralVariantsApiSlice = restApiSlice.injectEndpoints({
@@ -30,8 +35,14 @@ const structuralVariantsApiSlice = restApiSlice.injectEndpoints({
       query: () => ({
         url: `${config.metadataApiBaseUrl}/genome_groups?group_type=structural_variant`
       })
+    }),
+    genomesInGroup: builder.query<GenomesInGroupResponse, string>({
+      query: (groupId: string) => ({
+        url: `${config.metadataApiBaseUrl}/genome_groups/${groupId}/genomes`
+      })
     })
   })
 });
 
-export const { useGenomeGroupsQuery } = structuralVariantsApiSlice;
+export const { useGenomeGroupsQuery, useGenomesInGroupQuery } =
+  structuralVariantsApiSlice;

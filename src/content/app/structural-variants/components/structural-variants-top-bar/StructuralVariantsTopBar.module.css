@@ -1,8 +1,26 @@
 .topBar {
+  --flat-input-width: 200px;
   display: flex;
   align-items: center;
   height: 38px; /* NOTE: there is a --topbar-height variable in StandardAppLayout */
   background: var(--color-light-grey);
   box-shadow: 0 2px 3px var(--color-grey);
   padding-left: var(--standard-gutter);
+  white-space: nowrap;
+}
+
+.withBothMargins {
+  margin: 0 14px;
+}
+
+.withRightMargin {
+  margin-right: 14px;
+}
+
+.light {
+  font-weight: var(--font-weight-light);
+}
+
+.select {
+  width: 150px;
 }

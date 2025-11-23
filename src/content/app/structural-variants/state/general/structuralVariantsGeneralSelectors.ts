@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
+import type { RootState } from 'src/store';
 
-export type GenomeGroupForStructuralVariants = {
-  id: string;
-  type: 'structural_variant'; // a constant string
-  reference_genome: BriefGenomeSummary;
-};
+export const getReferenceGenome = (state: RootState) =>
+  state.structuralVariants.general.referenceGenome;
+
+export const getAlternativeGenome = (state: RootState) =>
+  state.structuralVariants.general.alternativeGenome;
