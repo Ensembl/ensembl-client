@@ -30,6 +30,7 @@ export type BaseApiUrls = {
   searchApiBaseUrl: string;
   variationApiUrl: string;
   regulationApiBaseUrl: string;
+  structuralVariantsApiBaseUrl: string;
 };
 
 export type PublicKeys = {
@@ -47,7 +48,9 @@ export const defaultApiUrls: BaseApiUrls = {
   toolsApiBaseUrl: '/api/tools',
   searchApiBaseUrl: '/api/search',
   variationApiUrl: '/api/graphql/variation',
-  regulationApiBaseUrl: 'https://dev-2020.ensembl.org/api/regulation' // <-- use full url with hostname for the time being
+  regulationApiBaseUrl: 'https://dev-2020.ensembl.org/api/regulation', // <-- use full url with hostname for the time being
+  structuralVariantsApiBaseUrl:
+    'https://dev-2020.ensembl.org/api/structural-variants' // <-- use full url with hostname for the time being
 };
 
 const defaultKeys = {
@@ -79,7 +82,8 @@ const getBaseApiUrls = (): BaseApiUrls => {
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
     tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl, // irrelevant for server-side rendering
     toolsApiBaseUrl: defaultApiUrls.toolsApiBaseUrl, // irrelevant for server-side rendering
-    searchApiBaseUrl: defaultApiUrls.searchApiBaseUrl // irrelevant for server-side rendering
+    searchApiBaseUrl: defaultApiUrls.searchApiBaseUrl, // irrelevant for server-side rendering
+    structuralVariantsApiBaseUrl: defaultApiUrls.structuralVariantsApiBaseUrl // irrelevant for server-side rendering
   };
 };
 
