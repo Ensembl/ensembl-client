@@ -220,9 +220,10 @@ const useTopBarState = () => {
     let refGenomeLocation: GenomicLocation;
     if (state.refGenomeLocationDraft) {
       // TODO: handle errors!
-      refGenomeLocation = getGenomicLocationFromString(
-        state.refGenomeLocationDraft
-      );
+      const draftLocationString = state.refGenomeLocationDraft
+        .trim()
+        .replaceAll(',', '');
+      refGenomeLocation = getGenomicLocationFromString(draftLocationString);
 
       // update location in the state with parsed location from the draft
       dispatch({
