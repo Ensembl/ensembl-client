@@ -17,7 +17,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
-import type { Location } from 'src/content/app/structural-variants/types/location';
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
 /**
  * Will probably also need:
@@ -28,8 +28,8 @@ import type { Location } from 'src/content/app/structural-variants/types/locatio
 export type State = {
   referenceGenome: BriefGenomeSummary | null;
   alternativeGenome: BriefGenomeSummary | null;
-  referenceGenomeLocation: Location | null;
-  alternativeGenomeLocation: Location | null;
+  referenceGenomeLocation: GenomicLocation | null;
+  alternativeGenomeLocation: GenomicLocation | null;
 };
 
 const initialState: State = {
@@ -45,8 +45,8 @@ const initialState: State = {
 type GenomesAndLocationsPayload = {
   referenceGenome: BriefGenomeSummary | null;
   alternativeGenome: BriefGenomeSummary | null;
-  referenceGenomeLocation: Location | null;
-  alternativeGenomeLocation: Location | null;
+  referenceGenomeLocation: GenomicLocation | null;
+  alternativeGenomeLocation: GenomicLocation | null;
 };
 
 const speciesGeneralSlice = createSlice({

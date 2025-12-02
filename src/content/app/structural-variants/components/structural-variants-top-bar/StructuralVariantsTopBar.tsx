@@ -19,11 +19,10 @@ import classNames from 'classnames';
 
 import useTopBarState from './useTopBarState';
 
-// import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
-
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 
 import FlatInput from 'src/shared/components/input/FlatInput';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 import type { GenomeGroupForStructuralVariants } from 'src/content/app/structural-variants/types/genomeGroup';
@@ -34,11 +33,14 @@ const StructuralVariantsTopBar = () => {
   const {
     genomeGroups,
     genomesInGroup,
-    exampleLocation,
     referenceGenome,
+    referenceGenomeLocation,
     altGenome,
+    canSubmitSelection,
     changeReferenceGenome,
-    changeAltGenome
+    changeAltGenome,
+    changeReferenceGenomeLocation,
+    submitSelection
   } = useTopBarState();
 
   const onGenomeGroupSelected = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -75,9 +77,10 @@ const StructuralVariantsTopBar = () => {
     }
   };
 
-  // const formattedLocation = exampleLocation ? getFormattedLocation(exampleLocation)
-
-  // const x = referenceGenome;
+  const onLocationChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const locationString = event.target.value;
+    changeReferenceGenomeLocation(locationString);
+  };
 
   return (
     <div className={styles.topBar}>
@@ -103,7 +106,7 @@ const StructuralVariantsTopBar = () => {
         in region
       </span>
 
-      <FlatInput defaultValue={exampleLocation ?? ''} />
+      <FlatInput value={referenceGenomeLocation} onChange={onLocationChange} />
 
       <span className={classNames(styles.withBothMargins, styles.light)}>
         and
@@ -120,6 +123,14 @@ const StructuralVariantsTopBar = () => {
         value={altGenome?.genome_id ?? ''}
         onChange={onAlternativeGenomeSelected}
       />
+
+      <PrimaryButton
+        className={styles.submitButton}
+        disabled={!canSubmitSelection}
+        onClick={submitSelection}
+      >
+        Go
+      </PrimaryButton>
     </div>
   );
 };

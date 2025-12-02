@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useReducer } from 'react';
+import { useState, useReducer } from 'react';
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import {
   getReferenceGenome,
@@ -28,15 +28,22 @@ import {
   useGenomeGroupsQuery,
   useGenomesInGroupQuery
 } from 'src/content/app/structural-variants/state/api/structuralVariantsApiSlice';
+import { setGenomesAndLocations } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSlice';
 import { useExampleObjectsForGenomeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
+import {
+  getGenomicLocationFromString,
+  type GenomicLocation
+} from 'src/shared/helpers/genomicLocationHelpers';
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
+
 import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
-import type { Location } from 'src/content/app/structural-variants/types/location';
 
 type TopBarState = {
   referenceGenome: BriefGenomeSummary | null;
   altGenome: BriefGenomeSummary | null;
-  refGenomeLocation: Location | null;
+  refGenomeLocation: GenomicLocation | null;
+  refGenomeLocationDraft: string | null; // for users to mess with
   isEditing: boolean;
 };
 
@@ -44,6 +51,7 @@ const initialState: TopBarState = {
   referenceGenome: null,
   altGenome: null,
   refGenomeLocation: null,
+  refGenomeLocationDraft: null,
   isEditing: false
 };
 
@@ -51,7 +59,7 @@ type SetGenomesAndLocationAction = {
   type: 'set_genomes_and_location';
   referenceGenome: BriefGenomeSummary;
   altGenome: BriefGenomeSummary;
-  refGenomeLocation: Location;
+  refGenomeLocation: GenomicLocation;
 };
 
 type ChangeReferenceGenomeAction = {
@@ -64,19 +72,19 @@ type ChangeAltGenome = {
   genome: BriefGenomeSummary;
 };
 
-type ChangeReferenceGenomeLocationAction = {
-  type: 'change_reference_genome_location';
-  location: Location;
+type ChangeRefGenomeLocationDraftAction = {
+  type: 'change_reference_genome_location_draft';
+  location: string;
 };
 
-type ProgrammaticallyChangeReferenceGenomeLocationAction = {
-  type: 'change_reference_genome_location_programmatically';
-  location: Location;
+type ChangeReferenceGenomeLocationAction = {
+  type: 'change_reference_genome_location';
+  location: GenomicLocation;
+  isEditing?: boolean;
 };
 
 type FinishEditingAction = {
   type: 'finish_editing';
-  location: Location;
 };
 
 type Action =
@@ -84,7 +92,7 @@ type Action =
   | ChangeReferenceGenomeAction
   | ChangeAltGenome
   | ChangeReferenceGenomeLocationAction
-  | ProgrammaticallyChangeReferenceGenomeLocationAction
+  | ChangeRefGenomeLocationDraftAction
   | FinishEditingAction;
 
 const reducer = (state: TopBarState, action: Action): TopBarState => {
@@ -108,21 +116,23 @@ const reducer = (state: TopBarState, action: Action): TopBarState => {
         altGenome: action.genome,
         isEditing: true
       };
+    case 'change_reference_genome_location_draft':
+      return {
+        ...state,
+        refGenomeLocationDraft: action.location,
+        isEditing: true
+      };
     case 'change_reference_genome_location':
       return {
         ...state,
         refGenomeLocation: action.location,
-        isEditing: true
-      };
-    case 'change_reference_genome_location_programmatically':
-      return {
-        ...state,
-        refGenomeLocation: action.location,
-        isEditing: false
+        isEditing:
+          action.isEditing !== undefined ? action.isEditing : state.isEditing
       };
     case 'finish_editing':
       return {
         ...state,
+        refGenomeLocationDraft: null,
         isEditing: false
       };
     default:
@@ -135,6 +145,10 @@ const useTopBarState = () => {
   const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
   const altGenomeFromRedux = useAppSelector(getAlternativeGenome);
   const refGenomeLocationFromRedux = useAppSelector(getReferenceLocation);
+  const reduxDispatch = useAppDispatch();
+
+  const [prevRefGenomeLocationFromRedux, setPrevGenomeLocationFromRedux] =
+    useState<GenomicLocation | null>(refGenomeLocationFromRedux);
 
   const referenceGenomeId = state.referenceGenome?.genome_id;
 
@@ -156,12 +170,29 @@ const useTopBarState = () => {
       altGenome: altGenomeFromRedux,
       refGenomeLocation: refGenomeLocationFromRedux
     });
+  } else if (!state.refGenomeLocation && exampleLocation) {
+    const location = getGenomicLocationFromString(exampleLocation);
+    dispatch({
+      type: 'change_reference_genome_location',
+      location
+    });
+  }
+  if (
+    refGenomeLocationFromRedux &&
+    refGenomeLocationFromRedux !== prevRefGenomeLocationFromRedux
+  ) {
+    dispatch({
+      type: 'change_reference_genome_location',
+      location: refGenomeLocationFromRedux,
+      isEditing: false
+    });
+    setPrevGenomeLocationFromRedux(refGenomeLocationFromRedux);
   }
 
   const canSubmitSelection =
-    state.referenceGenome &&
-    state.altGenome &&
-    state.refGenomeLocation &&
+    !!state.referenceGenome &&
+    !!state.altGenome &&
+    !!state.refGenomeLocation &&
     state.isEditing;
 
   const changeReferenceGenome = (genome: BriefGenomeSummary) => {
@@ -178,24 +209,68 @@ const useTopBarState = () => {
     });
   };
 
-  const changeReferenceGenomeLocation = (location: Location) => {
+  const changeReferenceGenomeLocationDraft = (location: string) => {
     dispatch({
-      type: 'change_reference_genome_location',
+      type: 'change_reference_genome_location_draft',
       location
     });
   };
 
+  const submitSelection = () => {
+    let refGenomeLocation: GenomicLocation;
+    if (state.refGenomeLocationDraft) {
+      // TODO: handle errors!
+      refGenomeLocation = getGenomicLocationFromString(
+        state.refGenomeLocationDraft
+      );
+
+      // update location in the state with parsed location from the draft
+      dispatch({
+        type: 'change_reference_genome_location',
+        location: refGenomeLocation
+      });
+    } else {
+      refGenomeLocation = state.refGenomeLocation as GenomicLocation;
+    }
+
+    dispatch({
+      type: 'finish_editing'
+    });
+
+    reduxDispatch(
+      setGenomesAndLocations({
+        referenceGenome: state.referenceGenome,
+        referenceGenomeLocation: refGenomeLocation, // don't read the location from the state; it's too late for that
+        alternativeGenome: state.altGenome,
+        alternativeGenomeLocation: null
+      })
+    );
+  };
+
+  let referenceGenomeLocationString: string;
+  if (state.refGenomeLocationDraft) {
+    referenceGenomeLocationString = state.refGenomeLocationDraft;
+  } else if (state.refGenomeLocation) {
+    referenceGenomeLocationString = getFormattedLocation({
+      chromosome: state.refGenomeLocation.regionName,
+      start: state.refGenomeLocation.start,
+      end: state.refGenomeLocation.end
+    });
+  } else {
+    referenceGenomeLocationString = '';
+  }
+
   return {
     referenceGenome: state.referenceGenome,
     altGenome: state.altGenome,
-    referenceGenomeLocation: state.refGenomeLocation,
+    referenceGenomeLocation: referenceGenomeLocationString,
     canSubmitSelection,
     genomeGroups,
     genomesInGroup,
-    exampleLocation,
     changeReferenceGenome,
     changeAltGenome,
-    changeReferenceGenomeLocation
+    changeReferenceGenomeLocation: changeReferenceGenomeLocationDraft,
+    submitSelection
   };
 };
 
