@@ -19,58 +19,46 @@ import { useSearchParams } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
-import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
+import {
+  getGenomicLocationFromString,
+  type GenomicLocation
+} from 'src/shared/helpers/genomicLocationHelpers';
 
 import {
   useGenomeGroupsQuery,
   useGenomesInGroupQuery
 } from 'src/content/app/structural-variants/state/api/structuralVariantsApiSlice';
-import { setGenomesAndLocations } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSlice';
+import {
+  setGenomesAndLocations,
+  setReferenceGenomeLocation
+} from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSlice';
 
-import { getReferenceGenome } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
+import {
+  getReferenceGenome,
+  getReferenceLocation
+} from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
-import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
-
-const useStateFromUrl = () => {
+const useStructuralVariantsRouting = () => {
   const [searchParams] = useSearchParams();
-  const referenceGenome = useAppSelector(getReferenceGenome);
-
-  const referenceGenomeId = searchParams.get('ref-genome-id');
-  const altGenomeId = searchParams.get('alt-genome-id');
-  const referenceLocationString = searchParams.get('ref-location');
-  const altLocationString = searchParams.get('alt-location');
-
-  useData({
-    referenceGenomeFromState: referenceGenome,
-    referenceGenomeId,
-    altGenomeId,
-    referenceLocationString,
-    altLocationString
-  });
-};
-
-const useData = ({
-  referenceGenomeId,
-  altGenomeId,
-  referenceLocationString,
-  referenceGenomeFromState
-}: {
-  referenceGenomeId: string | null;
-  altGenomeId: string | null;
-  referenceLocationString: string | null;
-  altLocationString: string | null;
-  referenceGenomeFromState: BriefGenomeSummary | null;
-}) => {
-  const shouldFetch =
-    !referenceGenomeFromState && referenceGenomeId && altGenomeId;
+  const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
+  const referenceGenomeLocationFromRedux = useAppSelector(getReferenceLocation);
   const dispatch = useAppDispatch();
+
+  const referenceGenomeIdParam = searchParams.get('ref-genome-id');
+  const altGenomeIdParam = searchParams.get('alt-genome-id');
+  const referenceLocationParam = searchParams.get('ref-location');
+  // TODO: make use of altLocationParam
+  // const altLocationParam = searchParams.get('alt-location');
+
+  const shouldFetch =
+    !referenceGenomeFromRedux && referenceGenomeIdParam && altGenomeIdParam;
 
   const { data: genomeGroupsData } = useGenomeGroupsQuery(undefined, {
     skip: !shouldFetch
   });
 
   const referenceGroup = genomeGroupsData?.genome_groups.find(
-    (group) => group.reference_genome.genome_id === referenceGenomeId
+    (group) => group.reference_genome.genome_id === referenceGenomeIdParam
   );
   const referenceGenome = referenceGroup?.reference_genome;
   const isReferenceGenomeIdInvalid = genomeGroupsData && !referenceGenome;
@@ -81,19 +69,17 @@ const useData = ({
       skip: !referenceGroup || isReferenceGenomeIdInvalid
     }
   );
-
   const altGenome = genomesInGroup?.genomes.find(
-    (genome) => genome.genome_id === altGenomeId
+    (genome) => genome.genome_id === altGenomeIdParam
   );
-  // const isAltGenomeIdInvalid = genomesInGroup && !altGenome;
 
-  const referenceGenomeLocation = referenceLocationString
-    ? getLocationFromUrlParam(referenceLocationString)
+  const referenceGenomeLocation = referenceLocationParam
+    ? getLocationFromUrlParam(referenceLocationParam)
     : null;
 
   useEffect(() => {
     if (
-      !referenceGenomeFromState &&
+      !referenceGenomeFromRedux &&
       referenceGenome &&
       altGenome &&
       referenceGenomeLocation
@@ -106,22 +92,41 @@ const useData = ({
           alternativeGenomeLocation: null
         })
       );
+    } else if (
+      referenceGenomeLocation &&
+      referenceGenomeLocationFromRedux &&
+      areDifferentLocations(
+        referenceGenomeLocation,
+        referenceGenomeLocationFromRedux
+      )
+    ) {
+      dispatch(setReferenceGenomeLocation(referenceGenomeLocation));
     }
   }, [
     referenceGenome,
     altGenome,
     referenceGenomeLocation,
-    referenceGenomeFromState
+    referenceGenomeFromRedux
   ]);
 };
 
 const getLocationFromUrlParam = (locationString: string) => {
   try {
-    const [regionName, start, end] = getChrLocationFromStr(locationString);
-    return { regionName, start, end };
+    return getGenomicLocationFromString(locationString);
   } catch {
     return null;
   }
 };
 
-export default useStateFromUrl;
+const areDifferentLocations = (
+  loc1: GenomicLocation,
+  loc2: GenomicLocation
+) => {
+  return (
+    loc1.regionName !== loc2.regionName ||
+    loc1.start !== loc2.start ||
+    loc1.end !== loc2.end
+  );
+};
+
+export default useStructuralVariantsRouting;

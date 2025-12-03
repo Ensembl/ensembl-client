@@ -15,8 +15,11 @@
  */
 
 import { useState, useReducer } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import {
   getReferenceGenome,
@@ -145,6 +148,7 @@ const useTopBarState = () => {
   const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
   const altGenomeFromRedux = useAppSelector(getAlternativeGenome);
   const refGenomeLocationFromRedux = useAppSelector(getReferenceLocation);
+  const navigate = useNavigate();
   const reduxDispatch = useAppDispatch();
 
   const [prevRefGenomeLocationFromRedux, setPrevGenomeLocationFromRedux] =
@@ -246,6 +250,14 @@ const useTopBarState = () => {
         alternativeGenomeLocation: null
       })
     );
+
+    const url = urlFor.structuralVariantsViewer({
+      referenceGenomeId: state.referenceGenome?.genome_id,
+      referenceGenomeLocation: state.refGenomeLocation as GenomicLocation,
+      altGenomeId: state.altGenome?.genome_id
+    });
+
+    navigate(url, { replace: true });
   };
 
   let referenceGenomeLocationString: string;

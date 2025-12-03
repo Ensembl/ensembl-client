@@ -15,6 +15,12 @@
  */
 
 import config from 'config';
+
+import {
+  getGenomicLocationString,
+  type GenomicLocation
+} from 'src/shared/helpers/genomicLocationHelpers';
+
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 export const home = () => '/';
@@ -194,8 +200,35 @@ export const regulatoryActivityViewer = (
   return query ? `${path}?${query}` : path;
 };
 
-export const structuralVariantsViewer = () => {
-  return `/structural-variants`;
+export const structuralVariantsViewer = (params?: {
+  referenceGenomeId?: string;
+  altGenomeId?: string;
+  referenceGenomeLocation?: GenomicLocation;
+  altGenomeLocation?: GenomicLocation;
+}) => {
+  const urlSearchParams = new URLSearchParams();
+  const pathname = '/structural-variants';
+
+  if (params?.referenceGenomeId) {
+    urlSearchParams.set('ref-genome-id', params.referenceGenomeId);
+  }
+  if (params?.referenceGenomeLocation) {
+    const locationString = getGenomicLocationString(
+      params.referenceGenomeLocation
+    );
+    urlSearchParams.set('ref-location', locationString);
+  }
+  if (params?.altGenomeId) {
+    urlSearchParams.set('alt-genome-id', params.altGenomeId);
+  }
+  if (params?.altGenomeLocation) {
+    const locationString = getGenomicLocationString(params.altGenomeLocation);
+    urlSearchParams.set('alt-location', locationString);
+  }
+
+  const query = decodeURIComponent(urlSearchParams.toString());
+
+  return query ? `${pathname}?${query}` : pathname;
 };
 
 export const blastForm = () => '/blast';
