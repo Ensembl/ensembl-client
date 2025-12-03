@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { type ChangeEvent } from 'react';
 import classNames from 'classnames';
+import type { ChangeEvent } from 'react';
 
 import useTopBarState from './useTopBarState';
 
