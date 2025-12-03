@@ -55,9 +55,8 @@ variables:
   script:
     - apk update && apk add git
     - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
-    - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-    - git -C ensembl-client-nginx checkout migration/ssr
-    - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
+    - git clone https://gitlab.ebi.ac.uk/ensembl-client-nginx.git
+    - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile.review --no-cache .
     - docker push ${CONTAINER_IMAGE}
     - docker rmi ${CONTAINER_IMAGE}
     - docker logout $CI_REGISTRY
