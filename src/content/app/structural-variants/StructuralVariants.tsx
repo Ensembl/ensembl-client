@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import useStructuralVariantsRouting from 'src/content/app/structural-variants/hooks/useStructuralVariantsRouting';
+
 import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
 import StructuralVariantsTopBar from './components/structural-variants-top-bar/StructuralVariantsTopBar';
 import StructuralVariantsImage from './components/structural-variants-image/StructuralVariantsImage';
 
 const StructuralVariants = () => {
+  useStructuralVariantsRouting();
+
   return (
     <div>
       <StructuralVariantsAppBar />

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { RootState } from 'src/store';
-
-export const getReferenceGenome = (state: RootState) =>
-  state.structuralVariants.general.referenceGenome;
-
-export const getAlternativeGenome = (state: RootState) =>
-  state.structuralVariants.general.alternativeGenome;
-
-export const getReferenceLocation = (state: RootState) =>
-  state.structuralVariants.general.referenceGenomeLocation;
+/**
+ * NOTE: eventually, this should be a shared type.
+ * Note though that in core data model, location is start, end, length;
+ * and also that while building the genome browser, we used the word "chromosome" a lot.
+ * So it would reguire some thought where to put this type.
+ */
+export type Location = {
+  regionName: string;
+  start: number;
+  end?: number;
+};

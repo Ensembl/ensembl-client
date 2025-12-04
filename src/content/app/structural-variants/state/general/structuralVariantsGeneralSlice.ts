@@ -17,6 +17,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
 /**
  * Will probably also need:
@@ -27,17 +28,46 @@ import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 export type State = {
   referenceGenome: BriefGenomeSummary | null;
   alternativeGenome: BriefGenomeSummary | null;
+  referenceGenomeLocation: GenomicLocation | null;
+  alternativeGenomeLocation: GenomicLocation | null;
 };
 
 const initialState: State = {
   referenceGenome: null,
-  alternativeGenome: null
+  alternativeGenome: null,
+  referenceGenomeLocation: null,
+  alternativeGenomeLocation: null
 };
 
-const speciesGeneralSlice = createSlice({
-  name: 'species-page-general',
+// Contains reference and alternative genomes,
+// as well as location within the reference genome, and, possibly, location within alternative genome
+// Contains data from user's selection, or data restored from url paramaters
+type GenomesAndLocationsPayload = {
+  referenceGenome: BriefGenomeSummary | null;
+  alternativeGenome: BriefGenomeSummary | null;
+  referenceGenomeLocation: GenomicLocation | null;
+  alternativeGenomeLocation: GenomicLocation | null;
+};
+
+const structuralVariantsGeneralSlice = createSlice({
+  name: 'structural-variants-general',
   initialState,
   reducers: {
+    setGenomesAndLocations(
+      state,
+      action: PayloadAction<GenomesAndLocationsPayload>
+    ) {
+      const {
+        referenceGenome,
+        alternativeGenome,
+        referenceGenomeLocation,
+        alternativeGenomeLocation
+      } = action.payload;
+      state.referenceGenome = referenceGenome;
+      state.alternativeGenome = alternativeGenome;
+      state.referenceGenomeLocation = referenceGenomeLocation;
+      state.alternativeGenomeLocation = alternativeGenomeLocation;
+    },
     setReferenceGenome(
       state,
       action: PayloadAction<{ genome: BriefGenomeSummary }>
@@ -45,6 +75,9 @@ const speciesGeneralSlice = createSlice({
       const { genome } = action.payload;
       state.referenceGenome = genome;
       state.alternativeGenome = null;
+    },
+    setReferenceGenomeLocation(state, action: PayloadAction<GenomicLocation>) {
+      state.referenceGenomeLocation = action.payload;
     },
     setAlternativeGenome(
       state,
@@ -56,7 +89,11 @@ const speciesGeneralSlice = createSlice({
   }
 });
 
-export const { setReferenceGenome, setAlternativeGenome } =
-  speciesGeneralSlice.actions;
+export const {
+  setGenomesAndLocations,
+  setReferenceGenome,
+  setReferenceGenomeLocation,
+  setAlternativeGenome
+} = structuralVariantsGeneralSlice.actions;
 
-export default speciesGeneralSlice.reducer;
+export default structuralVariantsGeneralSlice.reducer;
