@@ -39,6 +39,7 @@ import {
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import {
   buildDefaultFocusGeneTrack,
+  buildDefaultFocusVariantTrack,
   buildDefaultGeneTrack,
   buildDefaultVariantTrack,
   buildDefaultRegularTrack,
@@ -179,9 +180,10 @@ const prepareTrackSettings = ({
   const defaultTrackSettings: TrackSettingsPerTrack = {};
 
   if (focusObject?.type === TrackType.GENE) {
-    defaultTrackSettings[TrackId.GENE] = buildDefaultFocusGeneTrack(
-      TrackId.GENE
-    );
+    defaultTrackSettings[TrackId.FOCUS_GENE] = buildDefaultFocusGeneTrack();
+  } else if (focusObject?.type === TrackType.VARIANT) {
+    defaultTrackSettings[TrackId.FOCUS_VARIANT] =
+      buildDefaultFocusVariantTrack();
   }
 
   trackCategories.forEach((category) => {
@@ -192,8 +194,8 @@ const prepareTrackSettings = ({
         type === TrackType.GENE
           ? buildDefaultGeneTrack(track_id)
           : type === TrackType.VARIANT
-          ? buildDefaultVariantTrack(track_id)
-          : buildDefaultRegularTrack(track_id);
+            ? buildDefaultVariantTrack(track_id)
+            : buildDefaultRegularTrack(track_id);
 
       trackSettings.settings.isVisible = on_by_default;
       defaultTrackSettings[track_id] = trackSettings;

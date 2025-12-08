@@ -52,6 +52,7 @@ export type TrackStates = {
   };
 };
 
-export enum TrackId {
-  GENE = 'focus'
-}
+export const TrackId = {
+  FOCUS_GENE: 'focus',
+  FOCUS_VARIANT: 'focus-variant'
+};
