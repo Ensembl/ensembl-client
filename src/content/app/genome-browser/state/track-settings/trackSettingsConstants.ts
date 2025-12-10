@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+
 import type {
   GeneTrackSettings,
   FocusGeneTrackSettings,
@@ -86,17 +88,15 @@ export const buildDefaultVariantTrack = (trackId: string): VariantTrack => ({
   settings: getDefaultVariantTrackSettings()
 });
 
-export const buildDefaultFocusGeneTrack = (
-  trackId: string
-): FocusGeneTrack => ({
-  id: trackId,
+export const buildDefaultFocusGeneTrack = (): FocusGeneTrack => ({
+  id: TrackId.FOCUS_GENE,
   trackType: TrackType.FOCUS_GENE,
   settings: getDefaultGeneTrackSettings()
 });
 
 export const buildDefaultFocusVariantTrack = (): FocusVariantTrack => {
   return {
-    id: 'focus-variant',
+    id: TrackId.FOCUS_VARIANT,
     trackType: TrackType.FOCUS_VARIANT,
     settings: getDefaultFocusVariantTrackSettings()
   };

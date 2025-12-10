@@ -18,6 +18,8 @@ import 'fake-indexeddb/auto';
 import { openDB } from 'idb';
 import set from 'lodash/fp/set';
 
+import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+
 import IndexedDB from 'src/services/indexeddb-service';
 
 import {
@@ -86,10 +88,10 @@ describe('trackSettingsStorageService', () => {
     describe('saveTrackSettingsForGenome', () => {
       it('saves settings for multiple tracks at once', async () => {
         const genomeId = 'human';
-        const focusTrackId = 'focus';
+        const focusTrackId = TrackId.FOCUS_GENE;
         const track1Id = 'gene-track';
         const track2Id = 'plain-track';
-        const focusTrack = buildDefaultFocusGeneTrack(focusTrackId);
+        const focusTrack = buildDefaultFocusGeneTrack();
         const geneTrack = buildDefaultGeneTrack(track1Id);
         const plainTrack = buildDefaultRegularTrack(track2Id);
         const database = await getDatabase();
@@ -123,7 +125,7 @@ describe('trackSettingsStorageService', () => {
   describe('retrieving track settings', () => {
     const genomeId = 'human';
     const anotherGenomeId = 'wheat';
-    const focusTrackId = 'focus-gene';
+    const focusTrackId = TrackId.FOCUS_GENE;
     const geneTrackId = 'gene-track';
     const refSeqTrackId = 'reference-sequence-track';
     const oldGeneTrackId = 'old-gene-track';
@@ -138,7 +140,7 @@ describe('trackSettingsStorageService', () => {
     let oldGeneTrack: any;
 
     beforeEach(async () => {
-      focusTrack = buildDefaultFocusGeneTrack(focusTrackId);
+      focusTrack = buildDefaultFocusGeneTrack();
       geneTrack = buildDefaultGeneTrack(geneTrackId);
       refSeqTrack = buildDefaultRegularTrack(refSeqTrackId);
       oldGeneTrack = buildDefaultGeneTrack(oldGeneTrackId);
