@@ -307,7 +307,7 @@ const useFocusVariant = (params: UseFocusVariantParams) => {
   const { setFocusObject, toggleTrackSetting, genomeBrowser } =
     genomeBrowserMethods;
   const focusVariantTrackSettings = useAppSelector(getAllTrackSettings)
-    ?.settingsForIndividualTracks['focus-variant'].settings as
+    ?.settingsForIndividualTracks['focus-variant']?.settings as
     | FocusVariantTrackSettings
     | undefined;
 
