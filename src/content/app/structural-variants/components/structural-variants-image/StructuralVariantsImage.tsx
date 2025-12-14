@@ -14,36 +14,82 @@
  * limitations under the License.
  */
 
+import { useRef, type DetailedHTMLProps, type HTMLAttributes } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '@ensembl/ensembl-structural-variants';
-import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 
 import config from 'config';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import type {
-  EnsSvBrowser,
-  Endpoints
+  StructuralVariantsBrowser,
+  Endpoints,
+  ViewportChangePayload
 } from '@ensembl/ensembl-structural-variants';
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
 const CHROMOSOME_LENGTH = 248956422; // length of chromosome 1
-const REGION_NAME = '1';
-const INITIAL_START = 142_500_000;
-const INITIAL_END = 145_500_000;
-
-const chm13T2TGenomeId = '4c07817b-c7c5-463f-8624-982286bc4355';
-const grch38GenomeId = 'a7335667-93e7-11ec-a39d-005056b38ce3';
 
 const REFERENCE_TRACKS = ['sv-gene', '950a71e1-5229-459c-822f-d104506d24e8'];
 const ALT_TRACKS = ['sv-gene', 'a8691c70-7d68-4322-937d-938affb1b4ea'];
 
-const StructuralVariantsImage = () => {
+type Props = {
+  referenceGenomeId: string;
+  altGenomeId: string;
+  referenceGenomeLocation: GenomicLocation;
+};
+
+const StructuralVariantsImage = (props: Props) => {
+  const navigate = useNavigate();
+
+  const onViewportChangeEnd = (event: CustomEvent<ViewportChangePayload>) => {
+    const referenceGenomeLocation = event.detail.reference;
+    const altGenomeLocation = event.detail.alt;
+    const regionName = props.referenceGenomeLocation.regionName;
+
+    const url = urlFor.structuralVariantsViewer({
+      referenceGenomeId: props.referenceGenomeId,
+      altGenomeId: props.altGenomeId,
+      referenceGenomeLocation: {
+        regionName,
+        ...referenceGenomeLocation
+      },
+      altGenomeLocation: {
+        regionName,
+        ...altGenomeLocation
+      }
+    });
+
+    navigate(url, { replace: true });
+  };
+  const onViewportChangeEndRef = useRef(onViewportChangeEnd);
+
+  const onMount = (element: StructuralVariantsBrowser) => {
+    const viewportChangeEndHandler = (event: Event) => {
+      const actualHandler = onViewportChangeEndRef.current;
+      actualHandler(event as CustomEvent<ViewportChangePayload>);
+    };
+
+    element.addEventListener('viewport-change-end', viewportChangeEndHandler);
+
+    return () => {
+      element.removeEventListener(
+        'viewport-change-end',
+        viewportChangeEndHandler
+      );
+    };
+  };
+
   return (
     <div>
       <ens-sv-browser
-        referenceGenomeId={chm13T2TGenomeId}
-        altGenomeId={grch38GenomeId}
-        start={INITIAL_START}
-        end={INITIAL_END}
-        regionName={REGION_NAME}
+        ref={onMount}
+        referenceGenomeId={props.referenceGenomeId}
+        altGenomeId={props.altGenomeId}
+        start={props.referenceGenomeLocation.start}
+        end={props.referenceGenomeLocation.end}
+        regionName={props.referenceGenomeLocation.regionName}
         regionLength={CHROMOSOME_LENGTH}
         referenceTracks={REFERENCE_TRACKS}
         altTracks={ALT_TRACKS}
@@ -58,8 +104,8 @@ const StructuralVariantsImage = () => {
 };
 
 type StructuralVariantsBrowserProps = DetailedHTMLProps<
-  HTMLAttributes<EnsSvBrowser>,
-  EnsSvBrowser
+  HTMLAttributes<StructuralVariantsBrowser>,
+  StructuralVariantsBrowser
 > & {
   referenceGenomeId: string;
   altGenomeId: string;

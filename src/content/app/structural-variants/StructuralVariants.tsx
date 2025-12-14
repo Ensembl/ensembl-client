@@ -18,7 +18,7 @@ import useStructuralVariantsRouting from 'src/content/app/structural-variants/ho
 
 import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
 import StructuralVariantsTopBar from './components/structural-variants-top-bar/StructuralVariantsTopBar';
-import StructuralVariantsImage from './components/structural-variants-image/StructuralVariantsImage';
+import StructuralVariantsMain from './components/structural-variants-main/StructuralVariantsMain';
 
 const StructuralVariants = () => {
   useStructuralVariantsRouting();
@@ -27,7 +27,7 @@ const StructuralVariants = () => {
     <div>
       <StructuralVariantsAppBar />
       <StructuralVariantsTopBar />
-      <StructuralVariantsImage />
+      <StructuralVariantsMain />
     </div>
   );
 };

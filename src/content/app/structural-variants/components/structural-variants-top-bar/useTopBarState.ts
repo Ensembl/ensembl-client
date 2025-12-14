@@ -253,7 +253,7 @@ const useTopBarState = () => {
 
     const url = urlFor.structuralVariantsViewer({
       referenceGenomeId: state.referenceGenome?.genome_id,
-      referenceGenomeLocation: state.refGenomeLocation as GenomicLocation,
+      referenceGenomeLocation: refGenomeLocation as GenomicLocation,
       altGenomeId: state.altGenome?.genome_id
     });
 
