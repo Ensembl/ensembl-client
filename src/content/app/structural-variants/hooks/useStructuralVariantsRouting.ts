@@ -47,8 +47,7 @@ const useStructuralVariantsRouting = () => {
   const referenceGenomeIdParam = searchParams.get('ref-genome-id');
   const altGenomeIdParam = searchParams.get('alt-genome-id');
   const referenceLocationParam = searchParams.get('ref-location');
-  // TODO: make use of altLocationParam
-  // const altLocationParam = searchParams.get('alt-location');
+  const altLocationParam = searchParams.get('alt-location');
 
   const shouldFetch =
     !referenceGenomeFromRedux && referenceGenomeIdParam && altGenomeIdParam;
@@ -108,6 +107,13 @@ const useStructuralVariantsRouting = () => {
     referenceGenomeLocation,
     referenceGenomeFromRedux
   ]);
+
+  return {
+    referenceGenomeIdParam,
+    altGenomeIdParam,
+    referenceLocationParam,
+    altLocationParam
+  };
 };
 
 const getLocationFromUrlParam = (locationString: string) => {

@@ -29,6 +29,8 @@ import type {
 } from '@ensembl/ensembl-structural-variants';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
+import styles from './StructuralVariantsImage.module.css';
+
 const CHROMOSOME_LENGTH = 248956422; // length of chromosome 1
 
 const REFERENCE_TRACKS = ['sv-gene', '950a71e1-5229-459c-822f-d104506d24e8'];
@@ -81,10 +83,15 @@ const StructuralVariantsImage = (props: Props) => {
     };
   };
 
+  // Replace the ens-sv-browser component with a new one when reference region name changes
+  // (so that ens-sv-browser could find appropriate initial coordinates for alt genome)
+  const componentKey = `${props.referenceGenomeId}${props.referenceGenomeLocation.regionName}`;
+
   return (
-    <div>
+    <div className={styles.wrapper}>
       <ens-sv-browser
         ref={onMount}
+        key={componentKey}
         referenceGenomeId={props.referenceGenomeId}
         altGenomeId={props.altGenomeId}
         start={props.referenceGenomeLocation.start}

@@ -29,7 +29,11 @@ import type { GenomeGroupForStructuralVariants } from 'src/content/app/structura
 
 import styles from './StructuralVariantsTopBar.module.css';
 
-const StructuralVariantsTopBar = () => {
+type Props = {
+  standalone: boolean;
+};
+
+const StructuralVariantsTopBar = (props: Props) => {
   const {
     genomeGroups,
     genomesInGroup,
@@ -82,8 +86,12 @@ const StructuralVariantsTopBar = () => {
     changeReferenceGenomeLocation(locationString);
   };
 
+  const componentClasses = classNames(styles.topBar, {
+    [styles.topBarStandalone]: props.standalone
+  });
+
   return (
-    <div className={styles.topBar}>
+    <div className={componentClasses}>
       <span className={classNames(styles.withRightMargin, styles.light)}>
         Show
       </span>

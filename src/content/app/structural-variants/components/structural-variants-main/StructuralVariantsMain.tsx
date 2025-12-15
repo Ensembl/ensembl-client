@@ -24,21 +24,25 @@ import {
 
 import StructuralVariantsImage from 'src/content/app/structural-variants/components/structural-variants-image/StructuralVariantsImage';
 
+import styles from './StructuralVariantsMain.module.css';
+
 const StructuralVariantsMain = () => {
   const referenceGenome = useAppSelector(getReferenceGenome);
   const alternativeGenome = useAppSelector(getAlternativeGenome);
   const referenceGenomeLocation = useAppSelector(getReferenceLocation);
 
   if (!referenceGenome || !alternativeGenome || !referenceGenomeLocation) {
-    return <div>Please make a selection</div>;
+    return null;
   }
 
   return (
-    <StructuralVariantsImage
-      referenceGenomeId={referenceGenome.genome_id}
-      altGenomeId={alternativeGenome.genome_id}
-      referenceGenomeLocation={referenceGenomeLocation}
-    />
+    <div className={styles.container}>
+      <StructuralVariantsImage
+        referenceGenomeId={referenceGenome.genome_id}
+        altGenomeId={alternativeGenome.genome_id}
+        referenceGenomeLocation={referenceGenomeLocation}
+      />
+    </div>
   );
 };
 
