@@ -68,6 +68,20 @@ const structuralVariantsGeneralSlice = createSlice({
       state.referenceGenomeLocation = referenceGenomeLocation;
       state.alternativeGenomeLocation = alternativeGenomeLocation;
     },
+    setLocations(
+      state,
+      action: PayloadAction<{
+        reference?: GenomicLocation | null;
+        alternative?: GenomicLocation | null;
+      }>
+    ) {
+      if (action.payload.reference !== undefined) {
+        state.referenceGenomeLocation = action.payload.reference;
+      }
+      if (action.payload.alternative !== undefined) {
+        state.alternativeGenomeLocation = action.payload.alternative;
+      }
+    },
     setReferenceGenome(
       state,
       action: PayloadAction<{ genome: BriefGenomeSummary }>
@@ -91,6 +105,7 @@ const structuralVariantsGeneralSlice = createSlice({
 
 export const {
   setGenomesAndLocations,
+  setLocations,
   setReferenceGenome,
   setReferenceGenomeLocation,
   setAlternativeGenome

@@ -30,18 +30,24 @@ import {
 } from 'src/content/app/structural-variants/state/api/structuralVariantsApiSlice';
 import {
   setGenomesAndLocations,
-  setReferenceGenomeLocation
+  setLocations
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSlice';
 
 import {
   getReferenceGenome,
-  getReferenceLocation
+  getReferenceGenomeLocation,
+  getAlternativeGenomeLocation
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 const useStructuralVariantsRouting = () => {
   const [searchParams] = useSearchParams();
   const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
-  const referenceGenomeLocationFromRedux = useAppSelector(getReferenceLocation);
+  const referenceGenomeLocationFromRedux = useAppSelector(
+    getReferenceGenomeLocation
+  );
+  const altGenomeLocationFromRedux = useAppSelector(
+    getAlternativeGenomeLocation
+  );
   const dispatch = useAppDispatch();
 
   const referenceGenomeIdParam = searchParams.get('ref-genome-id');
@@ -75,6 +81,9 @@ const useStructuralVariantsRouting = () => {
   const referenceGenomeLocation = referenceLocationParam
     ? getLocationFromUrlParam(referenceLocationParam)
     : null;
+  const altGenomeLocation = altLocationParam
+    ? getLocationFromUrlParam(altLocationParam)
+    : null;
 
   useEffect(() => {
     if (
@@ -88,24 +97,30 @@ const useStructuralVariantsRouting = () => {
           referenceGenome,
           alternativeGenome: altGenome,
           referenceGenomeLocation,
-          alternativeGenomeLocation: null
+          alternativeGenomeLocation: altGenomeLocation
         })
       );
     } else if (
-      referenceGenomeLocation &&
-      referenceGenomeLocationFromRedux &&
-      areDifferentLocations(
+      hasLocationUpdated(
         referenceGenomeLocation,
         referenceGenomeLocationFromRedux
-      )
+      ) ||
+      hasLocationUpdated(altGenomeLocation, altGenomeLocationFromRedux)
     ) {
-      dispatch(setReferenceGenomeLocation(referenceGenomeLocation));
+      dispatch(
+        setLocations({
+          reference: referenceGenomeLocation,
+          alternative: altGenomeLocation
+        })
+      );
     }
   }, [
     referenceGenome,
     altGenome,
     referenceGenomeLocation,
-    referenceGenomeFromRedux
+    referenceGenomeFromRedux,
+    altGenomeLocation,
+    altGenomeLocationFromRedux
   ]);
 
   return {
@@ -122,6 +137,13 @@ const getLocationFromUrlParam = (locationString: string) => {
   } catch {
     return null;
   }
+};
+
+const hasLocationUpdated = (
+  loc1: GenomicLocation | null,
+  loc2: GenomicLocation | null
+) => {
+  return loc1 && loc2 && areDifferentLocations(loc1, loc2);
 };
 
 const areDifferentLocations = (

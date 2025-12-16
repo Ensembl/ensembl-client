@@ -19,7 +19,8 @@ import { useAppSelector } from 'src/store';
 import {
   getReferenceGenome,
   getAlternativeGenome,
-  getReferenceLocation
+  getReferenceGenomeLocation,
+  getAlternativeGenomeLocation
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 import StructuralVariantsImage from 'src/content/app/structural-variants/components/structural-variants-image/StructuralVariantsImage';
@@ -29,7 +30,8 @@ import styles from './StructuralVariantsMain.module.css';
 const StructuralVariantsMain = () => {
   const referenceGenome = useAppSelector(getReferenceGenome);
   const alternativeGenome = useAppSelector(getAlternativeGenome);
-  const referenceGenomeLocation = useAppSelector(getReferenceLocation);
+  const referenceGenomeLocation = useAppSelector(getReferenceGenomeLocation);
+  const altGenomeLocation = useAppSelector(getAlternativeGenomeLocation);
 
   if (!referenceGenome || !alternativeGenome || !referenceGenomeLocation) {
     return null;
@@ -41,6 +43,7 @@ const StructuralVariantsMain = () => {
         referenceGenomeId={referenceGenome.genome_id}
         altGenomeId={alternativeGenome.genome_id}
         referenceGenomeLocation={referenceGenomeLocation}
+        altGenomeLocation={altGenomeLocation}
       />
     </div>
   );

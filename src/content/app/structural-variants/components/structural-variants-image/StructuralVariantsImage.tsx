@@ -40,6 +40,7 @@ type Props = {
   referenceGenomeId: string;
   altGenomeId: string;
   referenceGenomeLocation: GenomicLocation;
+  altGenomeLocation: GenomicLocation | null;
 };
 
 const StructuralVariantsImage = (props: Props) => {
@@ -96,6 +97,8 @@ const StructuralVariantsImage = (props: Props) => {
         altGenomeId={props.altGenomeId}
         start={props.referenceGenomeLocation.start}
         end={props.referenceGenomeLocation.end}
+        altStart={props.altGenomeLocation?.start ?? 0}
+        altEnd={props.altGenomeLocation?.end ?? 0}
         regionName={props.referenceGenomeLocation.regionName}
         regionLength={CHROMOSOME_LENGTH}
         referenceTracks={REFERENCE_TRACKS}

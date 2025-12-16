@@ -28,12 +28,8 @@ import { StandardAppLayout } from 'src/shared/components/layout';
 import styles from './StructuralVariants.module.css';
 
 const StructuralVariants = () => {
-  const {
-    referenceGenomeIdParam,
-    referenceLocationParam,
-    altGenomeIdParam
-    // altLocationParam
-  } = useStructuralVariantsRouting();
+  const { referenceGenomeIdParam, referenceLocationParam, altGenomeIdParam } =
+    useStructuralVariantsRouting();
 
   const viewportWidth = useAppSelector(getBreakpointWidth);
 
