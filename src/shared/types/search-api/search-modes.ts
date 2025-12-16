@@ -14,29 +14,13 @@
  * limitations under the License.
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { FeatureSearchModeType } from "./search-constants";
 
-type SpeciesSelectorGeneSearchState = {
-  query: string;
+export type FeatureSearchModeType = typeof FeatureSearchModeType[keyof typeof FeatureSearchModeType];
+
+export type FeatureSearchMode = {
+  mode: 'Gene' | 'Variant';
+  label: string;
+  placeholder: string;
+  help?: string;
 };
-
-const initialState: SpeciesSelectorGeneSearchState = {
-  query: ''
-};
-
-const speciesSelectorGeneSearchSlice = createSlice({
-  name: 'species-selector-gene-search',
-  initialState,
-  reducers: {
-    setQuery: (state, action: PayloadAction<string>) => {
-      state.query = action.payload;
-    }
-  },
-  selectors: {
-    getQuery: (state) => state.query
-  }
-});
-
-export const { setQuery } = speciesSelectorGeneSearchSlice.actions;
-
-export default speciesSelectorGeneSearchSlice.reducer;
