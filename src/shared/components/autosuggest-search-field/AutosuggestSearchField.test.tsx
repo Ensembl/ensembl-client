@@ -45,9 +45,9 @@ const generateGroupOfMatches = (numberOfMatches = 2, title?: string) => {
 
 describe('<AutosuggestSearchField />', () => {
   const search = faker.lorem.word();
-  const onChange = jest.fn();
-  const onSelect = jest.fn();
-  const onSubmit = jest.fn();
+  const onChange = vi.fn();
+  const onSelect = vi.fn();
+  const onSubmit = vi.fn();
   const groupsOfMatches = times(2, () => generateGroupOfMatches());
 
   const minimalProps = {
@@ -57,7 +57,7 @@ describe('<AutosuggestSearchField />', () => {
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('appearance', () => {

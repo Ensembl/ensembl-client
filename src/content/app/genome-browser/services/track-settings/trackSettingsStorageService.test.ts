@@ -18,6 +18,8 @@ import 'fake-indexeddb/auto';
 import { openDB } from 'idb';
 import set from 'lodash/fp/set';
 
+import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+
 import IndexedDB from 'src/services/indexeddb-service';
 
 import {
@@ -55,7 +57,7 @@ const getDatabase = async () => {
   });
 };
 
-jest.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
+vi.spyOn(IndexedDB, 'getDB').mockImplementation(() => getDatabase());
 
 describe('trackSettingsStorageService', () => {
   afterEach(async () => {
@@ -86,10 +88,10 @@ describe('trackSettingsStorageService', () => {
     describe('saveTrackSettingsForGenome', () => {
       it('saves settings for multiple tracks at once', async () => {
         const genomeId = 'human';
-        const focusTrackId = 'focus';
+        const focusTrackId = TrackId.FOCUS_GENE;
         const track1Id = 'gene-track';
         const track2Id = 'plain-track';
-        const focusTrack = buildDefaultFocusGeneTrack(focusTrackId);
+        const focusTrack = buildDefaultFocusGeneTrack();
         const geneTrack = buildDefaultGeneTrack(track1Id);
         const plainTrack = buildDefaultRegularTrack(track2Id);
         const database = await getDatabase();
@@ -123,7 +125,7 @@ describe('trackSettingsStorageService', () => {
   describe('retrieving track settings', () => {
     const genomeId = 'human';
     const anotherGenomeId = 'wheat';
-    const focusTrackId = 'focus-gene';
+    const focusTrackId = TrackId.FOCUS_GENE;
     const geneTrackId = 'gene-track';
     const refSeqTrackId = 'reference-sequence-track';
     const oldGeneTrackId = 'old-gene-track';
@@ -138,7 +140,7 @@ describe('trackSettingsStorageService', () => {
     let oldGeneTrack: any;
 
     beforeEach(async () => {
-      focusTrack = buildDefaultFocusGeneTrack(focusTrackId);
+      focusTrack = buildDefaultFocusGeneTrack();
       geneTrack = buildDefaultGeneTrack(geneTrackId);
       refSeqTrack = buildDefaultRegularTrack(refSeqTrackId);
       oldGeneTrack = buildDefaultGeneTrack(oldGeneTrackId);
@@ -259,8 +261,8 @@ describe('trackSettingsStorageService', () => {
           (track) => track.trackId === refSeqTrack.id
         );
         expect(geneTrackBefore?.settings['transcript-label']).toBe(false);
-        expect(geneTrackBefore?.settings.name).toBe(false);
-        expect(refSeqTrackBefore?.settings.name).toBe(false);
+        expect(geneTrackBefore?.settings.name).toBe(true);
+        expect(refSeqTrackBefore?.settings.name).toBe(true);
 
         const updatedGeneTrackSettings = {
           ...geneTrack,
@@ -313,12 +315,10 @@ describe('trackSettingsStorageService', () => {
 
     describe('deleteTrackSettings', () => {
       it('deletes settings of one track', async () => {
-        const humanTracksBefore = await getTrackSettingsForGenome(
-          humanGenomeId
-        );
-        const wheatTracksBefore = await getTrackSettingsForGenome(
-          wheatGenomeId
-        );
+        const humanTracksBefore =
+          await getTrackSettingsForGenome(humanGenomeId);
+        const wheatTracksBefore =
+          await getTrackSettingsForGenome(wheatGenomeId);
         expect(humanTracksBefore.length).toBe(2);
         expect(wheatTracksBefore.length).toBe(1);
 
@@ -335,12 +335,10 @@ describe('trackSettingsStorageService', () => {
 
     describe('deleteTrackSettingsForGenome', () => {
       it('deletes settings of all track of a genome', async () => {
-        const humanTracksBefore = await getTrackSettingsForGenome(
-          humanGenomeId
-        );
-        const wheatTracksBefore = await getTrackSettingsForGenome(
-          wheatGenomeId
-        );
+        const humanTracksBefore =
+          await getTrackSettingsForGenome(humanGenomeId);
+        const wheatTracksBefore =
+          await getTrackSettingsForGenome(wheatGenomeId);
         expect(humanTracksBefore.length).toBe(2);
         expect(wheatTracksBefore.length).toBe(1);
 

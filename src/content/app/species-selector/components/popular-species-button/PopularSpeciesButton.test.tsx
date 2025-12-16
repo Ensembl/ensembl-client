@@ -29,7 +29,7 @@ const humanData: PopularSpecies = {
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 describe('<PopularSpeciesButton />', () => {
@@ -38,7 +38,7 @@ describe('<PopularSpeciesButton />', () => {
       <PopularSpeciesButton
         species={humanData}
         isSelected={false}
-        onClick={jest.fn()}
+        onClick={vi.fn()}
       />
     );
 
@@ -54,7 +54,7 @@ describe('<PopularSpeciesButton />', () => {
       <PopularSpeciesButton
         species={humanData}
         isSelected={true}
-        onClick={jest.fn()}
+        onClick={vi.fn()}
       />
     );
 
@@ -70,7 +70,7 @@ describe('<PopularSpeciesButton />', () => {
       <PopularSpeciesButton
         species={humanData}
         isSelected={false}
-        onClick={jest.fn()}
+        onClick={vi.fn()}
       />
     );
 
@@ -85,7 +85,7 @@ describe('<PopularSpeciesButton />', () => {
       <PopularSpeciesButton
         species={{ ...humanData, genomes_count: 1 }}
         isSelected={false}
-        onClick={jest.fn()}
+        onClick={vi.fn()}
       />
     );
 
@@ -95,7 +95,7 @@ describe('<PopularSpeciesButton />', () => {
   });
 
   it('calls the click handler when clicked', async () => {
-    const clickHandler = jest.fn();
+    const clickHandler = vi.fn();
     const { container } = render(
       <PopularSpeciesButton
         species={{ ...humanData, genomes_count: 1 }}

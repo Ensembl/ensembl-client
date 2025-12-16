@@ -25,7 +25,7 @@ import type { ServerFetch } from 'src/routes/routesConfig';
 
 const LazilyLoadedBrowser = lazy(() => import('./Browser'));
 
-const pageTitle = 'Genome browser — Ensembl';
+const pageTitle = 'Genome browser — Ensembl';
 const pageDescription = 'Ensembl genome browser';
 
 const BrowserPage = () => {

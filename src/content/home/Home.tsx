@@ -23,7 +23,9 @@ import CommunicationPanelButton from 'src/shared/components/communication-framew
 import {
   GenomeBrowserIcon,
   SpeciesSelectorIcon,
-  EntityViewerIcon
+  EntityViewerIcon,
+  BlastIcon,
+  VepIcon
 } from 'src/shared/components/app-icon';
 import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
 
@@ -111,11 +113,32 @@ const Home = () => {
                 </div>
               </div>
             </div>
+            <div className={styles.toolsList}>
+              <div className={styles.toolsListItem}>
+                <span className={styles.toolsListItemLabel}>Blast</span>
+                <Link
+                  to="/blast"
+                  onClick={() => handleButtonClick('blast')}
+                  className={styles.toolsButton}
+                >
+                  <BlastIcon />
+                </Link>
+              </div>
+              <div className={styles.toolsListItem}>
+                <Link
+                  to="/vep"
+                  onClick={() => handleButtonClick('vep')}
+                  className={styles.toolsButton}
+                >
+                  <VepIcon />
+                </Link>
+              </div>
+            </div>
           </div>
 
           <div className={styles.homeTopRight}>
             <HelpPopupButton
-              label="About using Ensembl"
+              label="Getting started"
               slug="ensembl-website-basics"
               labelClass={styles.helpLabel}
             />

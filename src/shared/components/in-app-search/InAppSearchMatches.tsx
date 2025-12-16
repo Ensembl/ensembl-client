@@ -45,7 +45,7 @@ import type {
 import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import type { AppName as AppNameForViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
 import type { InAppSearchMode } from './InAppSearch';
-import { FeatureSearchModeType } from 'src/shared/types/search-api/search-modes';
+import { FeatureSearchModeType } from 'src/shared/types/search-api/search-constants';
 
 import styles from './InAppSearch.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
@@ -301,16 +301,14 @@ const GeneMatchDetails = (
     onClick: (appName?: AppNameForViewInApp) => void;
   }
 ) => {
-  const { match, genomeIdForUrl } = props as {
-    match: GeneSearchMatch;
-    genomeIdForUrl: string;
-  };
-  const { unversioned_stable_id } = match;
+  const { match, genomeIdForUrl } = props;
+  const geneSearchMatch = match as GeneSearchMatch;
+  const { unversioned_stable_id } = geneSearchMatch;
 
   const formattedLocation = getFormattedLocation({
-    chromosome: match.slice.region.name,
-    start: match.slice.location.start,
-    end: match.slice.location.end
+    chromosome: geneSearchMatch.slice.region.name,
+    start: geneSearchMatch.slice.location.start,
+    end: geneSearchMatch.slice.location.end
   });
 
   const urlForGenomeBrowser = urlFor.browser({
@@ -341,20 +339,20 @@ const GeneMatchDetails = (
     <div className={styles.tooltipContent}>
       <div>
         <span className={styles.withExtraSpaceRight}>Biotype </span>
-        <span className={styles.strong}>{match.biotype}</span>
+        <span className={styles.strong}>{geneSearchMatch.biotype}</span>
       </div>
 
       <div>
-        <span>{getStrandDisplayName(match.slice.strand.code)}</span>
+        <span>{getStrandDisplayName(geneSearchMatch.slice.strand.code)}</span>
       </div>
 
       <div>{formattedLocation}</div>
 
       <div>
         <span className={classNames(styles.strong, styles.withExtraSpaceRight)}>
-          {match.transcript_count}{' '}
+          {geneSearchMatch.transcript_count}{' '}
         </span>
-        {pluralise('transcript', match.transcript_count)}
+        {pluralise('transcript', geneSearchMatch.transcript_count)}
       </div>
 
       <div>

@@ -36,6 +36,11 @@ import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectType
 import type { VariantDrawerView } from 'src/content/app/genome-browser/state/drawer/types';
 import type { VariantQueryResult } from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
+
 import TickCircleIcon from 'static/icons/icon_tick_circle.svg';
 
 import styles from './VariantSummary.module.css';
@@ -49,7 +54,7 @@ const VariantSummary = (props: Props) => {
   const focusVariant = useAppSelector((state) =>
     getFocusObjectById(state, variantId)
   ) as FocusVariant | null;
-  const { activeGenomeId } = useGenomeBrowserIds();
+  const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
 
   const { currentData: variantData, isFetching } = useGbVariantQuery(
     {
@@ -71,6 +76,18 @@ const VariantSummary = (props: Props) => {
 
   const { variant } = variantData;
   const preparedSummaryData = prepareVariantSummaryData(variant);
+
+  let entityViewerUrl;
+  if (focusVariant?.variant_id) {
+    const focusId = buildFocusIdForUrl({
+      type: 'variant',
+      objectId: focusVariant.variant_id
+    });
+    entityViewerUrl = urlFor.entityViewer({
+      genomeId: genomeIdForUrl,
+      entityId: focusId
+    });
+  }
 
   return (
     <>
@@ -157,6 +174,14 @@ const VariantSummary = (props: Props) => {
           <div className={styles.label}></div>
           <div className={styles.value}>
             <TickCircleIcon /> <span>has phenotype associations</span>
+          </div>
+        </div>
+      )}
+
+      {entityViewerUrl && (
+        <div className={styles.row}>
+          <div className={styles.value}>
+            <ViewInApp links={{ entityViewer: { url: entityViewerUrl } }} />
           </div>
         </div>
       )}

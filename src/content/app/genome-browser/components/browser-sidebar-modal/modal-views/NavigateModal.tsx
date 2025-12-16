@@ -31,8 +31,8 @@ import styles from './navigate-modal/NavigateModal.module.css';
 const NavigateModal = () => {
   return (
     <div className={styles.accordionContainer}>
-      <Accordion className={styles.navigateAccordion}>
-        <AccordionItem className={styles.navigateAccordionItem}>
+      <Accordion className={styles.navigateAccordion} preExpanded={['region']}>
+        <AccordionItem className={styles.navigateAccordionItem} uuid="region">
           <AccordionItemHeading>
             <AccordionItemButton className={styles.navigateAccordionItemButton}>
               Navigate this region
@@ -42,7 +42,7 @@ const NavigateModal = () => {
             <NavigateRegionModal />
           </AccordionItemPanel>
         </AccordionItem>
-        <AccordionItem className={styles.navigateAccordionItem}>
+        <AccordionItem className={styles.navigateAccordionItem} uuid="location">
           <AccordionItemHeading>
             <AccordionItemButton className={styles.navigateAccordionItemButton}>
               Go to new location

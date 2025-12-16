@@ -17,25 +17,25 @@
 import { BrowserStorageService, StorageKeys } from './browserStorageService';
 
 const mockStorageService = {
-  get: jest.fn(),
-  save: jest.fn(),
-  update: jest.fn(),
-  remove: jest.fn(),
-  removeAt: jest.fn(),
-  clearAll: jest.fn()
+  get: vi.fn(),
+  save: vi.fn(),
+  update: vi.fn(),
+  remove: vi.fn(),
+  removeAt: vi.fn(),
+  clearAll: vi.fn()
 };
 
 describe('BrowserStorageService', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('.getTrackPanels()', () => {
     it('gets saved track panels configuration from storage service', () => {
       const mockTrackPanels = { foo: 'doesnt really matter' };
-      jest
-        .spyOn(mockStorageService, 'get')
-        .mockImplementation(() => mockTrackPanels);
+      vi.spyOn(mockStorageService, 'get').mockImplementation(
+        () => mockTrackPanels
+      );
 
       const browserStorageService = new BrowserStorageService(
         mockStorageService
@@ -52,7 +52,7 @@ describe('BrowserStorageService', () => {
     });
 
     it('returns an empty object if there are no saved track panel configurations', () => {
-      jest.spyOn(mockStorageService, 'get').mockImplementation(() => null);
+      vi.spyOn(mockStorageService, 'get').mockImplementation(() => null);
 
       const browserStorageService = new BrowserStorageService(
         mockStorageService

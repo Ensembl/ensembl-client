@@ -22,13 +22,11 @@ import { ImageButton, Props as ImageButtonProps } from './ImageButton';
 
 import { Status } from 'src/shared/types/status';
 
-jest.mock(
-  'src/shared/components/tooltip/Tooltip',
-  () =>
-    ({ children }: { children: any }) => (
-      <div className="tooltip">{children}</div>
-    )
-);
+vi.mock('src/shared/components/tooltip/Tooltip', () => ({
+  default: ({ children }: { children: any }) => (
+    <div className="tooltip">{children}</div>
+  )
+}));
 
 const defaultProps = {
   image: '/image.svg'
@@ -101,9 +99,9 @@ describe('<ImageButton />', () => {
   });
 
   describe('behaviour on click', () => {
-    const onClick = jest.fn();
+    const onClick = vi.fn();
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it('calls the onClick prop when clicked', async () => {
@@ -140,7 +138,7 @@ describe('<ImageButton />', () => {
       description
     };
 
-    it('shows tooltip when moused over', () => {
+    it('shows tooltip when moused over', async () => {
       const { container } = renderImageButton(props);
       expect(container.querySelector('.tooltip')).toBeFalsy();
 

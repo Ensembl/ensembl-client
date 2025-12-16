@@ -77,7 +77,7 @@ const links = tuplesSample.reduce((result, tuple) => {
 
 describe('<ViewInApp />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('returns null if the links prop is empty', () => {
@@ -132,7 +132,7 @@ describe('<ViewInApp />', () => {
   });
 
   it('correctly handles links as functions', async () => {
-    const genomeBrowserLinkFn = jest.fn();
+    const genomeBrowserLinkFn = vi.fn();
     const links = {
       genomeBrowser: genomeBrowserLinkFn
     };
@@ -154,7 +154,7 @@ describe('<ViewInApp />', () => {
         entityViewer: { url: '/entity-viewer' },
         genomeBrowser: { url: '/genome-browser' }
       };
-      const clickHandlerMock = jest.fn();
+      const clickHandlerMock = vi.fn();
       const { getByTestId } = renderComponent({
         links,
         onAppClick: { genomeBrowser: clickHandlerMock }
@@ -180,7 +180,7 @@ describe('<ViewInApp />', () => {
         entityViewer: { url: '/entity-viewer' },
         genomeBrowser: { url: '/genome-browser' }
       };
-      const clickHandlerMock = jest.fn();
+      const clickHandlerMock = vi.fn();
       const { getByTestId } = renderComponent({
         links,
         onAnyAppClick: clickHandlerMock

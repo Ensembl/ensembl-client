@@ -245,7 +245,7 @@ describe('Accordion', () => {
 
     describe('onChange prop', () => {
       it('is invoked with an array of expanded items’ uuids, if there are any', async () => {
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         const { container } = render(
           <Accordion onChange={onChange}>
             <AccordionItem uuid={UUIDS.FOO}>
@@ -266,7 +266,7 @@ describe('Accordion', () => {
       });
 
       it('is invoked with an empty array, if no items are expanded', async () => {
-        const onChange = jest.fn();
+        const onChange = vi.fn();
         const { container } = render(
           <Accordion
             onChange={onChange}

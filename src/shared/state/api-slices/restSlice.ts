@@ -16,9 +16,8 @@
 
 import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react';
 
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import type { FetchBaseQueryError, FetchArgs } from '@reduxjs/toolkit/query';
 import type { SerializedError } from '@reduxjs/toolkit';
-import type { FetchArgs } from '@reduxjs/toolkit/dist/query';
 
 // all queries will retry up to 5 times upon server error with the status code within the 500 range
 // see docs: https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#automatic-retries

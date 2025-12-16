@@ -1,0 +1,3 @@
+FROM dockerhub.ebi.ac.uk/ensembl-web/ensembl-client-nginx:review
+
+COPY dist /usr/data/assets/staticfiles

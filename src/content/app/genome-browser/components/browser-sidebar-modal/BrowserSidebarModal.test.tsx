@@ -32,20 +32,19 @@ import {
 
 import { BrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-jest.mock('./modal-views/SearchModal', () => () => (
-  <div className="searchModal" />
-));
+vi.mock('./modal-views/SearchModal', () => ({
+  default: () => <div className="searchModal" />
+}));
 
-jest.mock('./modal-views/DownloadModal', () => () => (
-  <div className="downloadModal" />
-));
+vi.mock('./modal-views/DownloadModal', () => ({
+  default: () => <div className="downloadModal" />
+}));
 
-jest.mock(
-  'src/shared/components/close-button/CloseButton',
-  () => (props: { onClick: () => void }) => (
+vi.mock('src/shared/components/close-button/CloseButton', () => ({
+  default: (props: { onClick: () => void }) => (
     <button className="closeButton" onClick={props.onClick}></button>
   )
-);
+}));
 
 const mockState = createMockBrowserState();
 
@@ -64,7 +63,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
 
 describe('<TrackPanelModal />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {
@@ -120,7 +119,7 @@ describe('<TrackPanelModal />', () => {
 
       const closeButton = container.querySelector('button.closeButton');
 
-      jest.spyOn(browserSidebarModalActions, 'closeBrowserSidebarModal');
+      vi.spyOn(browserSidebarModalActions, 'closeBrowserSidebarModal');
 
       await userEvent.click(closeButton as HTMLElement);
       expect(

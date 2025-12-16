@@ -40,7 +40,7 @@ const speciesData = {
 const minimalProps = {
   species: speciesData as CommittedItem,
   isActive: true,
-  onClick: jest.fn()
+  onClick: vi.fn()
 };
 
 describe('<SelectedSpecies />', () => {
@@ -78,7 +78,7 @@ describe('<SelectedSpecies />', () => {
 
   describe('behaviour', () => {
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it('responds to clicks when inactive', async () => {

@@ -19,23 +19,23 @@ import privacyConfig from './privacyConfig';
 import { faker } from '@faker-js/faker';
 
 const mockStorageService = {
-  get: jest.fn(),
-  save: jest.fn(),
-  update: jest.fn(),
-  remove: jest.fn(),
-  removeAt: jest.fn(),
-  clearAll: jest.fn()
+  get: vi.fn(),
+  save: vi.fn(),
+  update: vi.fn(),
+  remove: vi.fn(),
+  removeAt: vi.fn(),
+  clearAll: vi.fn()
 };
 
 describe('PrivacyBannerService', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
   describe('.getPolicyVersion', () => {
     it('gets privacy policy version from storage service', () => {
-      jest
-        .spyOn(mockStorageService, 'get')
-        .mockImplementation(() => privacyConfig.version);
+      vi.spyOn(mockStorageService, 'get').mockImplementation(
+        () => privacyConfig.version
+      );
 
       const privacyBannerService = new PrivacyBannerService(mockStorageService);
       const result = privacyBannerService.getPolicyVersion();
@@ -60,9 +60,9 @@ describe('PrivacyBannerService', () => {
     it('shows banner if privacy version in local storage is different from config version', () => {
       const privacyBannerService = new PrivacyBannerService(mockStorageService);
       const returnDifferentVersion = () => faker.lorem.word();
-      jest
-        .spyOn(privacyBannerService, 'getPolicyVersion')
-        .mockImplementation(returnDifferentVersion);
+      vi.spyOn(privacyBannerService, 'getPolicyVersion').mockImplementation(
+        returnDifferentVersion
+      );
       const result = privacyBannerService.shouldShowBanner();
       expect(result).toEqual(true);
     });
@@ -70,9 +70,9 @@ describe('PrivacyBannerService', () => {
     it('does not show banner if privacy version in local storage is same as config version', () => {
       const privacyBannerService = new PrivacyBannerService(mockStorageService);
       const returnSameVersion = () => privacyConfig.version;
-      jest
-        .spyOn(privacyBannerService, 'getPolicyVersion')
-        .mockImplementation(returnSameVersion);
+      vi.spyOn(privacyBannerService, 'getPolicyVersion').mockImplementation(
+        returnSameVersion
+      );
       const result = privacyBannerService.shouldShowBanner();
       expect(result).toEqual(false);
     });

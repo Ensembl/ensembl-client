@@ -11,7 +11,7 @@
 .resultsWrapper {
   flex: 1; 
   min-height: 0;
-  width: 600px;
+  width: 100%;
   overflow-y: auto;
   margin-top: 20px;
 }

@@ -16,7 +16,7 @@
 
 import classNames from 'classnames';
 
-import SVGIcon from 'static/icons/icon_search.svg';
+import SVGIcon from 'static/icons/icon_launchbar_search.svg';
 
 import styles from './AppIcon.module.css';
 

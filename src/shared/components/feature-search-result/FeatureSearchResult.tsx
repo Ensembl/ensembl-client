@@ -35,7 +35,8 @@ import ViewInApp from '../view-in-app/ViewInApp';
 
 import styles from './FeatureSearchResult.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
-import { FeatureSearchModeType } from 'src/shared/types/search-api/search-modes';
+import { FeatureSearchModeType } from 'src/shared/types/search-api/search-constants';
+import SpeciesName from '../species-name/SpeciesName';
 
 type SearchMatchesWithSpecies = {
   speciesInfo: CommittedItem;
@@ -87,6 +88,9 @@ export const FeatureSearchResults = (props: {
     searchResults.matches
   );
 
+  const isGeneSearchMode =
+    featureSearchMode === FeatureSearchModeType.GENE_SEARCH_MODE;
+
   return (
     <div className={styles.resultsWrapper}>
       <table className={styles.resultsTable}>
@@ -99,6 +103,15 @@ export const FeatureSearchResults = (props: {
               </span>
               species
             </th>
+            {
+              isGeneSearchMode && (
+                <>
+                  <th>Release date</th>
+                  <th>Release type</th>
+                  <th>Assembly accession</th>
+                </>
+              )
+            }
             <th>{featureSearchMode}</th>
           </tr>
         </thead>
@@ -123,52 +136,44 @@ const FeatureSearchTableRows = (props: {
   const { featureSearchMode, data } = props;
   const { speciesInfo, searchMatches } = data;
 
-  const speciesElement = (
-    <div className={styles.speciesCell}>
-      <span>{speciesInfo.common_name ?? speciesInfo.scientific_name}</span>
-      <span className={styles.assemblyName}>{speciesInfo.assembly.name}</span>
-    </div>
-  );
+  const isGeneSearchMode =
+    featureSearchMode === FeatureSearchModeType.GENE_SEARCH_MODE;
+  const isVariantSearchMode =
+    featureSearchMode === FeatureSearchModeType.VARIANT_SEARCH_MODE;
 
-  if (searchMatches.length === 1) {
-    return (
-      <tr>
-        <td>{speciesElement}</td>
-        <td>
-          {featureSearchMode === FeatureSearchModeType.GENE_SEARCH_MODE && (
-            <GeneRecord match={searchMatches[0]} species={speciesInfo} />
-          )}
-          {featureSearchMode === FeatureSearchModeType.VARIANT_SEARCH_MODE && (
-            <VariantSearchRecord
-              match={searchMatches[0]}
-              species={speciesInfo}
-            />
-          )}
-        </td>
-      </tr>
-    );
-  } else {
-    return (
-      <>
-        {searchMatches.map((match, index) => (
+  return (
+    <>
+      {searchMatches.map((match, index) => {
+        const isFirstRow = index === 0;
+        const rowSpan = searchMatches.length;
+        return (
           <tr key={index}>
-            {index === 0 && (
-              <td rowSpan={searchMatches.length}>{speciesElement}</td>
+            {isFirstRow && (
+              <>
+                <td rowSpan={rowSpan}>
+                  <SpeciesName
+                    species={speciesInfo}
+                    className={styles.speciesName}
+                  />
+                </td>
+                {isGeneSearchMode && (
+                  <>
+                    <td rowSpan={rowSpan}>{speciesInfo.release.name}</td>
+                    <td rowSpan={rowSpan}>{speciesInfo.release.type}</td>
+                    <td rowSpan={rowSpan}>{speciesInfo.assembly.accession_id}</td>
+                  </>
+                )}
+              </>
             )}
             <td>
-              {featureSearchMode === FeatureSearchModeType.GENE_SEARCH_MODE && (
-                <GeneRecord match={match} species={speciesInfo} />
-              )}
-              {featureSearchMode ===
-                FeatureSearchModeType.VARIANT_SEARCH_MODE && (
-                <VariantSearchRecord match={match} species={speciesInfo} />
-              )}
+              {isGeneSearchMode && <GeneRecord match={match} species={speciesInfo} />}
+              {isVariantSearchMode && <VariantSearchRecord match={match} species={speciesInfo} />}
             </td>
           </tr>
-        ))}
-      </>
-    );
-  }
+        )
+      })}
+    </>
+  );
 };
 
 const VariantSearchRecord = (props: {

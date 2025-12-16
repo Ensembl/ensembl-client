@@ -24,6 +24,7 @@ import { LinearPercentageIndicator } from 'src/shared/components/proportion-indi
 import type { GeneHomology } from 'src/content/app/entity-viewer/state/api/types/geneHomology';
 import {
   type DataTableColumns,
+  SortingOrder,
   TableAction
 } from 'src/shared/components/data-table/dataTableTypes';
 
@@ -39,7 +40,14 @@ const GeneHomologyTable = (props: Props) => {
   return (
     <div>
       <DataTable
-        state={{ rowsPerPage: Infinity, data: prepareTableData(homologies) }}
+        state={{
+          rowsPerPage: Infinity,
+          data: prepareTableData(homologies),
+          sortingOptions: {
+            columnId: 'protein_similarity',
+            sortingOrder: SortingOrder.DESC
+          }
+        }}
         columns={tableColumns}
         disabledActions={[
           TableAction.FILTERS,

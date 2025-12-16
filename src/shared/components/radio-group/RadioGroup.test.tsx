@@ -21,7 +21,7 @@ import RadioGroup from './RadioGroup';
 import { faker } from '@faker-js/faker';
 import times from 'lodash/times';
 
-const onChange = jest.fn();
+const onChange = vi.fn();
 
 const createOption = () => ({
   value: faker.string.uuid(),
@@ -30,7 +30,7 @@ const createOption = () => ({
 
 describe('<RadioGroup />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const defaultProps = {

@@ -25,13 +25,13 @@ import BlastInputSequence from './BlastInputSequence';
 const testInput = 'AGCT'; // it shouldn't even matter for testing purposes
 
 const commonProps = {
-  onCommitted: jest.fn(),
+  onCommitted: vi.fn(),
   sequenceType: 'dna' as const
 };
 
 describe('<BlastInputSequence />', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('when empty', () => {
@@ -142,7 +142,7 @@ describe('<BlastInputSequence />', () => {
         typedInSequence,
         elementIndex
       );
-      jest.clearAllMocks();
+      vi.clearAllMocks();
 
       // if index is not passed at all
       rerender(<BlastInputSequence {...commonProps} />);
@@ -162,7 +162,7 @@ describe('<BlastInputSequence />', () => {
 
   describe('when filled', () => {
     it('clears the input locally and reports to the parent', async () => {
-      const onRemoveSequence = jest.fn();
+      const onRemoveSequence = vi.fn();
       const inputIndex = faker.datatype.boolean() ? 1 : undefined; // an input box may receive an index property
       const { container } = render(
         <BlastInputSequence

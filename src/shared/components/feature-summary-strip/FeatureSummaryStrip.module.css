@@ -14,10 +14,6 @@
   margin-left: 30px;
 }
 
-.featureSummaryStripGhosted {
-  color: var(--color-dark-grey);
-}
-
 .featureSummaryStripLabel,
 .featureNameEmphasized {
   display: inline-block;

@@ -25,6 +25,8 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import type { GeneHomology as GeneHomologyType } from 'src/content/app/entity-viewer/state/api/types/geneHomology';
 
+import styles from './GeneHomology.module.css';
+
 const GeneHomology = () => {
   const { activeGenomeId, parsedEntityId } = useEntityViewerIds();
 
@@ -54,15 +56,15 @@ const GeneHomology = () => {
 
   if (isFetching) {
     return <CircleLoader />;
-  } else if (isError) {
-    // might be smarter, and show this message only in 404-like errors; while showing something like 'Failed to fetch homology data' otherwise
-    return 'No data';
-  } else if (currentData?.homologies === null) {
-    // This means that Compara pipelines have not been run for this genome.
-    // We might want to show a more meaningful message here
-    return 'No data';
-  } else if (!currentData) {
-    return null; // this should not happen; but will make typescript happy
+  }
+
+  if (
+    isError ||
+    !currentData ||
+    !currentData.homologies ||
+    currentData.homologies.length === 0
+  ) {
+    return <span className={styles.noData}>No data</span>;
   }
 
   // We have checked above that both currentData and currentData.homologies exist;

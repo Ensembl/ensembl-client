@@ -41,7 +41,7 @@ const searchApiSlice = restApiSlice.injectEndpoints({
     searchVariants: builder.query<SearchResults, SearchParams>({
       query: (params) => {
         return {
-          url: `${config.searchApiBaseUrl}/variants`,
+          url: 'http://infra-gitlab-runner:8000/api/search/variants',
           method: 'POST',
           body: params
         };

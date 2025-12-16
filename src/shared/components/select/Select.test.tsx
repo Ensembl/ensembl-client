@@ -37,7 +37,7 @@ const createOptionGroup = (number = 5) => {
   };
 };
 
-const onSelect = jest.fn();
+const onSelect = vi.fn();
 
 describe('<Select />', () => {
   describe('basic functionality', () => {

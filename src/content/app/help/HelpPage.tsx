@@ -50,6 +50,7 @@ export const serverFetch: ServerFetch = async (params) => {
   const articlePromise = dispatch(getHelpArticle.initiate({ pathname: path }));
 
   const { data: article, error: articleError } = await articlePromise;
+  articlePromise.unsubscribe();
 
   if (isMissingResourceError(articleError)) {
     return {

@@ -22,12 +22,12 @@ import SlideToggle from './SlideToggle';
 
 const defaultProps = {
   isOn: false,
-  onChange: jest.fn()
+  onChange: vi.fn()
 };
 
 describe('SlideToggle', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {

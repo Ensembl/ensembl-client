@@ -1,6 +1,6 @@
 .container {
-  padding-left: var(--global-padding-left);
-  margin-top: 40px;
+  padding-left: var(--double-standard-gutter);
+  margin-top: 20px;
   padding-bottom: var(--global-padding-bottom);
 }
 
@@ -83,4 +83,38 @@
   height: 10px;
   width: 10px;
   background-color: var(--color-grey);
+}
+
+.globalFrequencyHeader {
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  align-items: center;
+  font-weight: var(--font-weight-bold);
+  width: 270px;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+.section + .section {
+  margin-top: 30px;
+}
+
+.sectionHead {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.sectionTitle {
+  font-weight: var(--font-weight-bold);
+  margin-right: 5px;
+}
+
+.showHide {
+  width: 330px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }

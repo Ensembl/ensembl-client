@@ -23,8 +23,8 @@ import GeneOverview from './GeneOverview';
 const mockGenomeId = 'genome_id';
 const mockGeneId = 'unversioned_gene_id';
 
-jest.mock('react-router-dom', () => ({
-  useParams: jest.fn(() => ({
+vi.mock('react-router-dom', () => ({
+  useParams: vi.fn(() => ({
     params: {
       entityId: mockGenomeId,
       mockGeneId
@@ -32,31 +32,41 @@ jest.mock('react-router-dom', () => ({
   }))
 }));
 
-jest.mock(
+vi.mock(
   'src/content/app/entity-viewer/state/api/entityViewerThoasSlice',
-  () => ({
-    useGeneOverviewQuery: jest.fn()
-  })
+  async () => {
+    const originalModule = await vi.importActual(
+      'src/content/app/entity-viewer/state/api/entityViewerThoasSlice'
+    );
+    return {
+      ...originalModule,
+      useGeneOverviewQuery: vi.fn()
+    };
+  }
 );
 
-jest.mock('src/store', () => ({ useAppDispatch: jest.fn() }));
+vi.mock('src/store', async () => {
+  const originalModule = await vi.importActual('src/store');
+  return {
+    ...originalModule,
+    useAppDispatch: vi.fn()
+  };
+});
 
-jest.mock('../publications/GenePublications', () => () => (
-  <div className="genePublications" />
-));
+vi.mock('../publications/GenePublications', () => ({
+  default: () => <div className="genePublications" />
+}));
 
-jest.mock(
-  'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds',
-  () => () => ({
+vi.mock('src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds', () => ({
+  default: () => ({
     genomeId: mockGenomeId,
     geneId: mockGeneId
   })
-);
+}));
 
-jest.mock(
-  'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
-  () => () => ({})
-);
+vi.mock('src/content/app/entity-viewer/hooks/useEntityViewerAnalytics', () => ({
+  default: () => ({})
+}));
 
 const geneName = 'gene_name';
 const geneSymbol = 'gene_symbol';
@@ -87,7 +97,7 @@ const completeGeneData = {
 
 describe('<GeneOverview />', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('loading', () => {

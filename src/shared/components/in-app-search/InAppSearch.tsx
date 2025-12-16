@@ -29,10 +29,12 @@ import {
 
 import FeatureSearchForm from '../feature-search-form/FeatureSearchForm';
 import {
-  FEATURE_SEARCH_MODES as featureSearchModes,
-  FeatureSearchMode,
-  FeatureSearchModeType
+  FeatureSearchMode
 } from 'src/shared/types/search-api/search-modes';
+import {
+  FEATURE_SEARCH_MODES as featureSearchModes,
+  FeatureSearchModeType
+} from 'src/shared/types/search-api/search-constants';
 import {
   useLazySearchGenesQuery,
   useLazySearchVariantsQuery
@@ -137,7 +139,7 @@ const InAppSearch = (props: Props) => {
     }
   };
 
-  const updateActiveFeatureSearchMode = (
+  const onSearchModeChange = (
     featureSearchMode: FeatureSearchMode
   ) => {
     setActiveSearchMode(featureSearchMode);
@@ -174,10 +176,10 @@ const InAppSearch = (props: Props) => {
         <FeatureSearchForm
           activeFeatureSearchMode={activeSearchMode}
           query={query}
-          searchLocation={mode}
+          searchPosition={mode}
           onSearchSubmit={onFeatureSearchSubmit}
           onClear={() => onFeatureSearchSubmit('')}
-          updateActiveFeatureSearchMode={updateActiveFeatureSearchMode}
+          onSearchModeChange={onSearchModeChange}
           resultsInfo={totalSearchHitsComponent}
         />
       </div>

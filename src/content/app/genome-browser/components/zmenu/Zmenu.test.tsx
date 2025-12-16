@@ -28,40 +28,51 @@ import { createZmenuPayload } from 'tests/fixtures/browser';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import * as browserGeneralSlice from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-const mockSetZmenus = jest.fn();
+const mockSetZmenus = vi.fn();
 
 const mockGenomeBrowser = new MockGenomeBrowser();
-jest.mock(
-  'src/content/app/genome-browser/hooks/useGenomeBrowser',
-  () => () => ({
+vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
+  default: () => ({
     genomeBrowser: mockGenomeBrowser,
     zmenus: { 1: {} },
     setZmenus: mockSetZmenus
   })
-);
+}));
 
-jest.mock(
+vi.mock(
   'src/content/app/genome-browser/state/track-panel/trackPanelSlice.ts',
-  () => ({
-    changeHighlightedTrackId: jest.fn(() => ({
-      type: 'change-track-highlight'
-    }))
-  })
+  async () => {
+    const originalModule = await vi.importActual(
+      'src/content/app/genome-browser/state/track-panel/trackPanelSlice.ts'
+    );
+    return {
+      ...originalModule,
+      changeHighlightedTrackId: vi.fn(() => ({
+        type: 'change-track-highlight'
+      }))
+    };
+  }
 );
 
-jest.mock('./ZmenuContent', () => () => (
-  <div data-test-id="zmenuContent">ZmenuContent</div>
-));
-jest.mock('./ZmenuInstantDownload', () => () => (
-  <div>ZmenuInstantDownload</div>
-));
-jest.mock('./zmenus/GeneAndOneTranscriptZmenu', () => () => (
-  <div data-test-id="gene-and-one-transcript-zmenu">
-    GeneAndOneTranscriptZmenu
-  </div>
-));
-jest.mock('./zmenus/VariantZmenu', () => () => <div>VariantZmenu</div>);
-jest.mock('./zmenus/RegulationZmenu', () => () => <div>RegulationZmenu</div>);
+vi.mock('./ZmenuContent', () => ({
+  default: () => <div data-test-id="zmenuContent">ZmenuContent</div>
+}));
+vi.mock('./ZmenuInstantDownload', () => ({
+  default: () => <div>ZmenuInstantDownload</div>
+}));
+vi.mock('./zmenus/GeneAndOneTranscriptZmenu', () => ({
+  default: () => (
+    <div data-test-id="gene-and-one-transcript-zmenu">
+      GeneAndOneTranscriptZmenu
+    </div>
+  )
+}));
+vi.mock('./zmenus/VariantZmenu', () => ({
+  default: () => <div>VariantZmenu</div>
+}));
+vi.mock('./zmenus/RegulationZmenu', () => ({
+  default: () => <div>RegulationZmenu</div>
+}));
 
 const chrName = faker.lorem.word();
 const startPosition = faker.number.int({ min: 1, max: 1000000 });

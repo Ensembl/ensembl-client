@@ -12,7 +12,7 @@ const prettierConfig = require('eslint-config-prettier');
 const reactPlugin = require('eslint-plugin-react');
 const reactHooksPlugin = require('eslint-plugin-react-hooks');
 const reactRecommended = require('eslint-plugin-react/configs/recommended');
-const jestPlugin = require('eslint-plugin-jest');
+const vitestPlugin = require('@vitest/eslint-plugin');
 
 
 module.exports = tseslint.config(
@@ -69,15 +69,14 @@ module.exports = tseslint.config(
     },
   },
 
-  // settings for eslint-plugin-jest
+  // settings for eslint-plugin-vitest
   {
     plugins: {
-      'jest': jestPlugin,
+      vitest: vitestPlugin
     },
     rules: {
-      'jest/no-focused-tests': 'error',
-      'jest/no-identical-title': 'error',
-      'jest/valid-expect': 'error'
+      ...vitestPlugin.configs.recommended.rules,
+      'vitest/no-focused-tests': 'error'
     },
   },
 );

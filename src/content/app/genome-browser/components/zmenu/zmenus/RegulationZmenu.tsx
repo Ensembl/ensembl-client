@@ -16,6 +16,8 @@
 
 import { useAppSelector } from 'src/store';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import ZmenuContent from '../ZmenuContent';
@@ -29,6 +31,10 @@ import type {
   ZmenuPayload,
   ZmenuContentRegulation
 } from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+
+import styles from '../Zmenu.module.css';
 
 type Props = {
   payload: ZmenuPayload;
@@ -38,8 +44,20 @@ type Props = {
 const RegulationZmenu = (props: Props) => {
   const { content } = props.payload;
   const genomeId = useAppSelector(getBrowserActiveGenomeId) || '';
+  const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
+  const activeSpecies = enabledCommittedSpecies.find(
+    (species) => species.genome_id === genomeId
+  );
 
   const featureMetadata = extractFeatureMetadata(props.payload);
+
+  let regulationExternalUrl;
+  if (activeSpecies) {
+    regulationExternalUrl = urlFor.regulationActivityExternalUrl(
+      activeSpecies,
+      featureMetadata.id
+    );
+  }
 
   const mainContent = (
     <div>
@@ -48,7 +66,14 @@ const RegulationZmenu = (props: Props) => {
         featureId={`regulation:${featureMetadata.id}`} /* we can't navigate to regulatory feature anyway */
         destroyZmenu={props.onDestroy}
       />
-      <ToggleButton label="Download" />
+      <div className={styles.zmenuActions}>
+        <ToggleButton label="Download" />
+        {regulationExternalUrl && (
+          <ExternalLink to={regulationExternalUrl}>
+            Regulatory activity
+          </ExternalLink>
+        )}
+      </div>
     </div>
   );
 

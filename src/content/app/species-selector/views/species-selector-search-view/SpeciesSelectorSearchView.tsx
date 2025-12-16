@@ -33,9 +33,11 @@ import { getCommittedSpecies } from '../../state/species-selector-general-slice/
 
 import {
   FeatureSearchMode,
+} from 'src/shared/types/search-api/search-modes';
+import {
   FEATURE_SEARCH_MODES as featureSearchModes,
   FeatureSearchModeType
-} from 'src/shared/types/search-api/search-modes';
+} from 'src/shared/types/search-api/search-constants';
 import { FeatureSearchResults } from 'src/shared/components/feature-search-result/FeatureSearchResult';
 import {
   setGeneQuery,
@@ -143,7 +145,7 @@ const SpeciesSelectorSearchView = () => {
     setSearchParams(searchParams, { replace: true });
   };
 
-  const updateActiveFeatureSearchMode = (
+  const onSearchModeChange = (
     featureSearchMode: FeatureSearchMode
   ) => {
     setActiveSearchMode(featureSearchMode);
@@ -165,7 +167,7 @@ const SpeciesSelectorSearchView = () => {
           query={query}
           onSearchSubmit={onFeatureSearchSubmit}
           onClear={() => onFeatureSearchSubmit('')}
-          updateActiveFeatureSearchMode={updateActiveFeatureSearchMode}
+          onSearchModeChange={onSearchModeChange}
         />
         <SearchScope />
         {isGeneSearchMode && (

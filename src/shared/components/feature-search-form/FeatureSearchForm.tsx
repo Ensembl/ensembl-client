@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, FormEvent, ReactNode, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, ReactNode, useState } from 'react';
 import { PrimaryButton } from '../button/Button';
 import ShadedInput from '../input/ShadedInput';
 import TextButton from '../text-button/TextButton';
 
 import {
   FeatureSearchMode,
-  FEATURE_SEARCH_MODES as featureSearchModes
 } from 'src/shared/types/search-api/search-modes';
+import {
+  FEATURE_SEARCH_MODES as featureSearchModes
+} from 'src/shared/types/search-api/search-constants';
 
 import styles from './FeatureSearchForm.module.css';
 import classNames from 'classnames';
@@ -30,10 +32,10 @@ import classNames from 'classnames';
 type Props = {
   query: string;
   activeFeatureSearchMode: FeatureSearchMode;
-  searchLocation?: string; // Ex: 'sidebar', 'interstitial'
+  searchPosition?: string; // Ex: 'sidebar', 'interstitial'
   onSearchSubmit: (query: string) => void;
   onClear: () => void;
-  updateActiveFeatureSearchMode: (mode: FeatureSearchMode) => void;
+  onSearchModeChange: (mode: FeatureSearchMode) => void;
   resultsInfo?: ReactNode;
 };
 
@@ -41,37 +43,37 @@ const FeatureSearchForm = (props: Props) => {
   const {
     query,
     activeFeatureSearchMode,
-    searchLocation,
-    updateActiveFeatureSearchMode,
+    searchPosition,
+    onSearchModeChange,
     onSearchSubmit,
     onClear,
     resultsInfo
   } = props;
 
   const [searchInput, setSearchInput] = useState(query);
-  const [shouldDisableSubmit, setShouldDisableSubmit] = useState(true);
+  const [prevQuery, setPrevQuery] = useState(query);
+  const [disableSubmit, setDisableSubmit] = useState(true);
 
-  useEffect(() => {
-    if (query !== searchInput) {
-      setSearchInput(query);
-      setShouldDisableSubmit(true);
-    }
-  }, [query]);
+  if (query !== prevQuery) {
+    setSearchInput(query);
+    setPrevQuery(query);
+    setDisableSubmit(true);
+  }
 
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setShouldDisableSubmit(true);
+    setDisableSubmit(true);
     onSearchSubmit(searchInput);
   };
 
   const onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newQuery = event.target.value;
     setSearchInput(newQuery);
-    setShouldDisableSubmit(false);
+    setDisableSubmit(false);
 
     if (newQuery.trim() === '') {
       onClear();
-      setShouldDisableSubmit(true);
+      setDisableSubmit(true);
     }
   };
 
@@ -85,13 +87,13 @@ const FeatureSearchForm = (props: Props) => {
       <div className={styles.tab}>
         {featureSearchModes.map((searchMode) =>
           searchMode.mode === activeFeatureSearchMode.mode ? (
-            <TextButton key={searchMode.mode} className={styles.activeTab}>
+            <TextButton key={searchMode.mode} className={styles.activeTab} disabled>
               {searchMode.label}
             </TextButton>
           ) : (
             <TextButton
               key={searchMode.mode}
-              onClick={() => updateActiveFeatureSearchMode(searchMode)}
+              onClick={() => onSearchModeChange(searchMode)}
             >
               {searchMode.label}
             </TextButton>
@@ -100,15 +102,15 @@ const FeatureSearchForm = (props: Props) => {
       </div>
       <form
         className={classNames({
-          [styles.searchForm]: searchLocation !== 'sidebar',
-          [styles.searchFormSidebar]: searchLocation === 'sidebar'
+          [styles.searchForm]: searchPosition !== 'sidebar',
+          [styles.searchFormSidebar]: searchPosition === 'sidebar'
         })}
         onSubmit={onFormSubmit}
       >
         <ShadedInput
           className={classNames({
-            [styles.searchField]: searchLocation !== 'sidebar',
-            [styles.searchFieldSidebar]: searchLocation === 'sidebar'
+            [styles.searchField]: searchPosition !== 'sidebar',
+            [styles.searchFieldSidebar]: searchPosition === 'sidebar'
           })}
           onInput={onQueryChange}
           value={searchInput || ''}
@@ -116,9 +118,9 @@ const FeatureSearchForm = (props: Props) => {
           placeholder={activeFeatureSearchMode.placeholder}
           type="search"
           ref={focusInput}
-          size={searchLocation === 'sidebar' ? 'small' : 'large'}
+          size={searchPosition === 'sidebar' ? 'small' : 'large'}
         />
-        {searchLocation === 'sidebar' ? (
+        {searchPosition === 'sidebar' ? (
           <div className={styles.sidebarBottomRow}>
             {resultsInfo && (
               <div className={styles.resultsInfo}>{resultsInfo}</div>
@@ -126,7 +128,7 @@ const FeatureSearchForm = (props: Props) => {
             <PrimaryButton
               type="submit"
               className={styles.submitSidebar}
-              disabled={shouldDisableSubmit}
+              disabled={disableSubmit}
             >
               Go
             </PrimaryButton>
@@ -135,13 +137,13 @@ const FeatureSearchForm = (props: Props) => {
           <PrimaryButton
             type="submit"
             className={styles.submit}
-            disabled={shouldDisableSubmit}
+            disabled={disableSubmit}
           >
             Go
           </PrimaryButton>
         )}
       </form>
-      {searchLocation === 'interstitial' && resultsInfo && (
+      {searchPosition === 'interstitial' && resultsInfo && (
         <div className={styles.resultsInfoInterstitial}>{resultsInfo}</div>
       )}
     </>

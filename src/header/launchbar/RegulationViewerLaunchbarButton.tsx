@@ -22,6 +22,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
 import LaunchbarButton from './LaunchbarButton';
+import ActivityViewerIcon from 'src/shared/components/app-icon/ActivityViewerIcon';
 
 const activityViewerRootPath = urlFor.regulatoryActivityViewer();
 
@@ -39,21 +40,7 @@ const RegulatoryActivityViewerLaunchbarButton = () => {
     <LaunchbarButton
       path={lastVisitedPath}
       description="Regulatory activity viewer"
-      icon={() => (
-        <div
-          style={{
-            display: 'flex',
-            height: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '20px',
-            lineHeight: 1,
-            color: 'white'
-          }}
-        >
-          R
-        </div>
-      )}
+      icon={ActivityViewerIcon}
       isActive={isActive}
       enabled={true}
     />

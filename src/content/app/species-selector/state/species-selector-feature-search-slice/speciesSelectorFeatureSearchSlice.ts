@@ -45,11 +45,6 @@ const speciesSelectorFeatureSearchSlice = createSlice({
       state.queries.variant = '';
     }
   },
-  selectors: {
-    getQueries: (state) => state.queries,
-    getGeneQuery: (state) => state.queries.gene,
-    getVariantQuery: (state) => state.queries.variant
-  }
 });
 
 export const { setGeneQuery, setVariantQuery, clearQueries } =

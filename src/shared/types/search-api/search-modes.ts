@@ -14,29 +14,13 @@
  * limitations under the License.
  */
 
+import { FeatureSearchModeType } from "./search-constants";
+
+export type FeatureSearchModeType = typeof FeatureSearchModeType[keyof typeof FeatureSearchModeType];
+
 export type FeatureSearchMode = {
   mode: 'Gene' | 'Variant';
   label: string;
   placeholder: string;
   help?: string;
 };
-
-export enum FeatureSearchModeType {
-  GENE_SEARCH_MODE = 'Gene',
-  VARIANT_SEARCH_MODE = 'Variant'
-}
-
-export const FEATURE_SEARCH_MODES: FeatureSearchMode[] = [
-  {
-    mode: FeatureSearchModeType.GENE_SEARCH_MODE,
-    label: 'Find a gene',
-    placeholder: 'Gene ID or name',
-    help: 'Find a gene using a stable ID (versioned or un-versioned), symbol or synonym'
-  },
-  {
-    mode: FeatureSearchModeType.VARIANT_SEARCH_MODE,
-    label: 'Find a variant',
-    placeholder: 'Variant ID',
-    help: 'Find a variant using rsID'
-  }
-];

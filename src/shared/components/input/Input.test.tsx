@@ -27,12 +27,12 @@ describe('<Input />', () => {
     id: 'testId',
     name: 'testInputName',
     placeholder: 'type here',
-    onChange: jest.fn(),
-    onFocus: jest.fn(),
-    onBlur: jest.fn(),
-    onKeyUp: jest.fn(),
-    onKeyDown: jest.fn(),
-    onKeyPress: jest.fn()
+    onChange: vi.fn(),
+    onFocus: vi.fn(),
+    onBlur: vi.fn(),
+    onKeyUp: vi.fn(),
+    onKeyDown: vi.fn(),
+    onKeyPress: vi.fn()
   };
 
   const getRenderedInputContainer = (props: InputProps) => {
@@ -40,7 +40,7 @@ describe('<Input />', () => {
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('rendering', () => {

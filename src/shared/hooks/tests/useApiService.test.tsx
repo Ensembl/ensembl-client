@@ -30,7 +30,7 @@ const mockErrorData = {
   message: 'error'
 };
 
-const onAbort = jest.fn();
+const onAbort = vi.fn();
 
 const mockEndpoint = faker.internet.url();
 
@@ -38,7 +38,9 @@ const mockSuccessfulFetch = (
   _: string,
   { signal }: { signal: AbortSignal }
 ) => {
-  signal && (signal.onabort = onAbort);
+  if (signal) {
+    signal.onabort = onAbort;
+  }
   return new Promise((resolve) => {
     setTimeout(() => resolve(mockSuccessData), 1);
   });
@@ -79,13 +81,13 @@ const TestingComponent = (props: TestingComponentProps) => {
 
 describe('useApiService', () => {
   beforeEach(() => {
-    jest
-      .spyOn(apiService, 'fetch')
-      .mockImplementation(mockSuccessfulFetch as any);
+    vi.spyOn(apiService, 'fetch').mockImplementation(
+      mockSuccessfulFetch as any
+    );
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it('fetches data', async () => {
@@ -111,7 +113,7 @@ describe('useApiService', () => {
   });
 
   it('returns error if request errored out', async () => {
-    jest.spyOn(apiService, 'fetch').mockImplementation(mockFailedFetch);
+    vi.spyOn(apiService, 'fetch').mockImplementation(mockFailedFetch);
     const { container } = render(<TestingComponent />);
 
     await screen.findByText(mockErrorData.message); // would error if not found
