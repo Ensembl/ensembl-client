@@ -67,6 +67,7 @@ const StructuralVariantsImage = (props: Props) => {
     navigate(url, { replace: true });
   };
   const onViewportChangeEndRef = useRef(onViewportChangeEnd);
+  onViewportChangeEndRef.current = onViewportChangeEnd;
 
   const onMount = (element: StructuralVariantsBrowser) => {
     const viewportChangeEndHandler = (event: Event) => {
