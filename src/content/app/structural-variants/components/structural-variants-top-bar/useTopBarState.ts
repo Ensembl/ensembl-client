@@ -24,7 +24,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
   getReferenceGenome,
   getAlternativeGenome,
-  getReferenceLocation
+  getReferenceGenomeLocation
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 import {
@@ -147,7 +147,7 @@ const useTopBarState = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
   const altGenomeFromRedux = useAppSelector(getAlternativeGenome);
-  const refGenomeLocationFromRedux = useAppSelector(getReferenceLocation);
+  const refGenomeLocationFromRedux = useAppSelector(getReferenceGenomeLocation);
   const navigate = useNavigate();
   const reduxDispatch = useAppDispatch();
 
@@ -253,7 +253,7 @@ const useTopBarState = () => {
 
     const url = urlFor.structuralVariantsViewer({
       referenceGenomeId: state.referenceGenome?.genome_id,
-      referenceGenomeLocation: state.refGenomeLocation as GenomicLocation,
+      referenceGenomeLocation: refGenomeLocation as GenomicLocation,
       altGenomeId: state.altGenome?.genome_id
     });
 

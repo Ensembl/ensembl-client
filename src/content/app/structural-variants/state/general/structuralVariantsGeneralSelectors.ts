@@ -22,5 +22,8 @@ export const getReferenceGenome = (state: RootState) =>
 export const getAlternativeGenome = (state: RootState) =>
   state.structuralVariants.general.alternativeGenome;
 
-export const getReferenceLocation = (state: RootState) =>
+export const getReferenceGenomeLocation = (state: RootState) =>
   state.structuralVariants.general.referenceGenomeLocation;
+
+export const getAlternativeGenomeLocation = (state: RootState) =>
+  state.structuralVariants.general.alternativeGenomeLocation;

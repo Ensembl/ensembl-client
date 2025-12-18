@@ -16,18 +16,53 @@
 
 import useStructuralVariantsRouting from 'src/content/app/structural-variants/hooks/useStructuralVariantsRouting';
 
+import { useAppSelector } from 'src/store';
+
+import { getBreakpointWidth } from 'src/global/globalSelectors';
+
 import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
 import StructuralVariantsTopBar from './components/structural-variants-top-bar/StructuralVariantsTopBar';
-import StructuralVariantsImage from './components/structural-variants-image/StructuralVariantsImage';
+import StructuralVariantsMain from './components/structural-variants-main/StructuralVariantsMain';
+import { StandardAppLayout } from 'src/shared/components/layout';
+
+import styles from './StructuralVariants.module.css';
 
 const StructuralVariants = () => {
-  useStructuralVariantsRouting();
+  const { referenceGenomeIdParam, referenceLocationParam, altGenomeIdParam } =
+    useStructuralVariantsRouting();
+
+  const viewportWidth = useAppSelector(getBreakpointWidth);
+
+  let view = 'standard';
+
+  if (!referenceGenomeIdParam || !altGenomeIdParam || !referenceLocationParam) {
+    view = 'interstitial';
+  }
+
+  if (view === 'interstitial') {
+    return (
+      <div className={styles.container}>
+        <StructuralVariantsAppBar />
+        <StructuralVariantsTopBar standalone={true} />
+        <div>Please make a selection</div>
+      </div>
+    );
+  }
 
   return (
-    <div>
+    <div className={styles.container}>
       <StructuralVariantsAppBar />
-      <StructuralVariantsTopBar />
-      <StructuralVariantsImage />
+      <StandardAppLayout
+        mainContent={<StructuralVariantsMain />}
+        sidebarContent={<div>Sidebar content</div>}
+        topbarContent={<StructuralVariantsTopBar standalone={false} />}
+        isSidebarOpen={true}
+        onSidebarToggle={() => {
+          return true;
+        }}
+        sidebarNavigation={null}
+        viewportWidth={viewportWidth}
+      />
     </div>
   );
 };

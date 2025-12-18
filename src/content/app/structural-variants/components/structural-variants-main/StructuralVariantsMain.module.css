@@ -1,0 +1,5 @@
+.container {
+  container-type: inline-size;
+  height: 100%;
+  overflow-y: auto;
+}
