@@ -24,6 +24,7 @@ import {
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 import StructuralVariantsImage from 'src/content/app/structural-variants/components/structural-variants-image/StructuralVariantsImage';
+import StructuralVariantsNavButtons from 'src/content/app/structural-variants/components/structural-variants-nav-buttons/StructuralVariantsNavButtons';
 
 import styles from './StructuralVariantsMain.module.css';
 
@@ -38,13 +39,23 @@ const StructuralVariantsMain = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <StructuralVariantsImage
-        referenceGenomeId={referenceGenome.genome_id}
-        altGenomeId={alternativeGenome.genome_id}
-        referenceGenomeLocation={referenceGenomeLocation}
-        altGenomeLocation={altGenomeLocation}
-      />
+    <div className={styles.grid}>
+      <div className={styles.imageControlsContainer}>
+        <StructuralVariantsNavButtons
+          referenceGenomeId={referenceGenome.genome_id}
+          altGenomeId={alternativeGenome.genome_id}
+          referenceGenomeLocation={referenceGenomeLocation}
+          altGenomeLocation={altGenomeLocation}
+        />
+      </div>
+      <div className={styles.imageContainer}>
+        <StructuralVariantsImage
+          referenceGenomeId={referenceGenome.genome_id}
+          altGenomeId={alternativeGenome.genome_id}
+          referenceGenomeLocation={referenceGenomeLocation}
+          altGenomeLocation={altGenomeLocation}
+        />
+      </div>
     </div>
   );
 };

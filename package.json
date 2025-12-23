@@ -30,6 +30,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@ensembl/ensembl-elements-common": "0.0.4",
     "@ensembl/ensembl-genome-browser": "0.6.11",
     "@ensembl/ensembl-structural-variants": "0.0.1",
     "@reduxjs/toolkit": "2.11.1",

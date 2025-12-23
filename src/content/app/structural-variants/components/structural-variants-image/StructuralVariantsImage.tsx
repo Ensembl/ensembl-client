@@ -29,8 +29,6 @@ import type {
 } from '@ensembl/ensembl-structural-variants';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
-import styles from './StructuralVariantsImage.module.css';
-
 const CHROMOSOME_LENGTH = 248956422; // length of chromosome 1
 
 const REFERENCE_TRACKS = ['sv-gene', '950a71e1-5229-459c-822f-d104506d24e8'];
@@ -90,27 +88,25 @@ const StructuralVariantsImage = (props: Props) => {
   const componentKey = `${props.referenceGenomeId}${props.referenceGenomeLocation.regionName}`;
 
   return (
-    <div className={styles.wrapper}>
-      <ens-sv-browser
-        ref={onMount}
-        key={componentKey}
-        referenceGenomeId={props.referenceGenomeId}
-        altGenomeId={props.altGenomeId}
-        start={props.referenceGenomeLocation.start}
-        end={props.referenceGenomeLocation.end}
-        altStart={props.altGenomeLocation?.start ?? 0}
-        altEnd={props.altGenomeLocation?.end ?? 0}
-        regionName={props.referenceGenomeLocation.regionName}
-        regionLength={CHROMOSOME_LENGTH}
-        referenceTracks={REFERENCE_TRACKS}
-        altTracks={ALT_TRACKS}
-        endpoints={{
-          genomeBrowser: 'https://dev-2020.ensembl.org/api/browser/data',
-          alignments: `${config.structuralVariantsApiBaseUrl}/alignments`,
-          variants: `${config.structuralVariantsApiBaseUrl}/variants`
-        }}
-      />
-    </div>
+    <ens-sv-browser
+      ref={onMount}
+      key={componentKey}
+      referenceGenomeId={props.referenceGenomeId}
+      altGenomeId={props.altGenomeId}
+      start={props.referenceGenomeLocation.start}
+      end={props.referenceGenomeLocation.end}
+      altStart={props.altGenomeLocation?.start ?? 0}
+      altEnd={props.altGenomeLocation?.end ?? 0}
+      regionName={props.referenceGenomeLocation.regionName}
+      regionLength={CHROMOSOME_LENGTH}
+      referenceTracks={REFERENCE_TRACKS}
+      altTracks={ALT_TRACKS}
+      endpoints={{
+        genomeBrowser: 'https://dev-2020.ensembl.org/api/browser/data',
+        alignments: `${config.structuralVariantsApiBaseUrl}/alignments`,
+        variants: `${config.structuralVariantsApiBaseUrl}/variants`
+      }}
+    />
   );
 };
 
