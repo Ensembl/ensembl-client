@@ -41,7 +41,7 @@ const StructuralVariants = () => {
 
   if (view === 'interstitial') {
     return (
-      <div className={styles.container}>
+      <div className={styles.containerInterstitial}>
         <StructuralVariantsAppBar />
         <StructuralVariantsTopBar standalone={true} />
         <div>Please make a selection</div>
