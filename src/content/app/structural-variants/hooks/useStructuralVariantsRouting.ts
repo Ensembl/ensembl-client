@@ -17,7 +17,7 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppDispatch } from 'src/store';
 
 import {
   getGenomicLocationFromString,
@@ -29,28 +29,12 @@ import {
   useGenomesInGroupQuery
 } from 'src/content/app/structural-variants/state/api/structuralVariantsApiSlice';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
-import {
-  setGenomesAndLocations,
-  setLocations
-} from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSlice';
-
-import {
-  getReferenceGenome,
-  getReferenceGenomeLocation,
-  getAlternativeGenomeLocation
-} from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
+import { setGenomesAndLocations } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSlice';
 
 import type { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 
 const useStructuralVariantsRouting = () => {
   const [searchParams] = useSearchParams();
-  const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
-  const referenceGenomeLocationFromRedux = useAppSelector(
-    getReferenceGenomeLocation
-  );
-  const altGenomeLocationFromRedux = useAppSelector(
-    getAlternativeGenomeLocation
-  );
   const dispatch = useAppDispatch();
 
   const referenceGenomeIdParam = searchParams.get('ref-genome-id');
@@ -58,83 +42,68 @@ const useStructuralVariantsRouting = () => {
   const referenceLocationParam = searchParams.get('ref-location');
   const altLocationParam = searchParams.get('alt-location');
 
-  const shouldFetch =
-    !referenceGenomeFromRedux && referenceGenomeIdParam && altGenomeIdParam;
-
-  const { data: genomeGroupsData } = useGenomeGroupsQuery(undefined, {
-    skip: !shouldFetch
+  const {
+    isValidating,
+    areUrlParamsValid,
+    isReferenceGenomeIdValid,
+    isAltGenomeIdValid,
+    referenceGenomeId,
+    altGenomeId,
+    referenceGenomeLocation,
+    altGenomeLocation,
+    isReferenceGenomeLocationValid,
+    isAltGenomeLocationValid,
+    referenceGenome,
+    altGenome
+  } = useCheckedParams({
+    referenceGenomeIdParam,
+    referenceLocationParam,
+    altGenomeIdParam,
+    altLocationParam
   });
 
-  const referenceGroup = genomeGroupsData?.genome_groups.find(
-    (group) => group.reference_genome.genome_id === referenceGenomeIdParam
-  );
-  const referenceGenome = referenceGroup?.reference_genome;
-  const isReferenceGenomeIdInvalid = genomeGroupsData && !referenceGenome;
-
-  const { currentData: genomesInGroup } = useGenomesInGroupQuery(
-    referenceGroup?.id ?? '',
-    {
-      skip: !referenceGroup || isReferenceGenomeIdInvalid
-    }
-  );
-  const altGenome = genomesInGroup?.genomes.find(
-    (genome) => genome.genome_id === altGenomeIdParam
-  );
-
-  const referenceGenomeLocation = referenceLocationParam
-    ? getLocationFromUrlParam(referenceLocationParam)
-    : null;
-  const altGenomeLocation = altLocationParam
-    ? getLocationFromUrlParam(altLocationParam)
-    : null;
-
   useEffect(() => {
-    if (
-      !referenceGenomeFromRedux &&
-      referenceGenome &&
-      altGenome &&
-      referenceGenomeLocation
-    ) {
-      dispatch(
-        setGenomesAndLocations({
-          referenceGenome,
-          alternativeGenome: altGenome,
-          referenceGenomeLocation,
-          alternativeGenomeLocation: altGenomeLocation
-        })
-      );
-    } else if (
-      hasLocationUpdated(
-        referenceGenomeLocation,
-        referenceGenomeLocationFromRedux
-      ) ||
-      hasLocationUpdated(altGenomeLocation, altGenomeLocationFromRedux)
-    ) {
-      dispatch(
-        setLocations({
-          reference: referenceGenomeLocation,
-          alternative: altGenomeLocation
-        })
-      );
+    if (isValidating || !areUrlParamsValid) {
+      return;
     }
+
+    dispatch(
+      setGenomesAndLocations({
+        referenceGenome,
+        alternativeGenome: altGenome,
+        referenceGenomeLocation,
+        alternativeGenomeLocation: altGenomeLocation
+      })
+    );
   }, [
     referenceGenome,
     altGenome,
     referenceGenomeLocation,
-    referenceGenomeFromRedux,
     altGenomeLocation,
-    altGenomeLocationFromRedux
+    isValidating,
+    areUrlParamsValid
   ]);
 
   return {
     referenceGenomeIdParam,
     altGenomeIdParam,
     referenceLocationParam,
-    altLocationParam
+    altLocationParam,
+    isValidating,
+    areUrlParamsValid,
+    isReferenceGenomeIdValid,
+    isAltGenomeIdValid,
+    referenceGenomeId,
+    altGenomeId,
+    referenceGenomeLocation,
+    altGenomeLocation,
+    isReferenceGenomeLocationValid,
+    isAltGenomeLocationValid,
+    referenceGenome,
+    altGenome
   };
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useCheckedParams = ({
   referenceGenomeIdParam,
   altGenomeIdParam,
@@ -153,16 +122,16 @@ const useCheckedParams = ({
     (group) => group.reference_genome.genome_id === referenceGenomeIdParam
   );
   const referenceGenome = referenceGroup?.reference_genome;
-  const isReferenceGenomeIdInvalid = genomeGroupsData && !referenceGenome;
+  const isReferenceGenomeIdValid = Boolean(genomeGroupsData && referenceGenome);
 
   const { isFetching: isFetchingGenomesInGroup, currentData: genomesInGroup } =
     useGenomesInGroupQuery(referenceGroup?.id ?? '', {
-      skip: !referenceGroup || isReferenceGenomeIdInvalid
+      skip: !referenceGroup || !isReferenceGenomeIdValid
     });
   const altGenome = genomesInGroup?.genomes.find(
     (genome) => genome.genome_id === altGenomeIdParam
   );
-  const isAltGenomeIdValid = genomesInGroup && altGenome;
+  const isAltGenomeIdValid = Boolean(genomesInGroup && altGenome);
 
   const {
     isFetching: isFetchingReferenceGenomeKaryotype,
@@ -212,16 +181,25 @@ const useCheckedParams = ({
     isFetchingReferenceGenomeKaryotype ||
     isFetchingAltGenomeKaryotype;
 
+  const areUrlParamsValid =
+    isReferenceGenomeIdValid &&
+    isAltGenomeIdValid &&
+    isReferenceGenomeLocationValid &&
+    isAltGenomeLocationValid;
+
   return {
     isValidating,
-    isReferenceGenomeIdValid: !isReferenceGenomeIdInvalid,
+    areUrlParamsValid,
+    isReferenceGenomeIdValid,
     isAltGenomeIdValid,
     referenceGenomeId: referenceGenome?.genome_id ?? null,
     altGenomeId: altGenome?.genome_id ?? null,
     referenceGenomeLocation,
     altGenomeLocation,
     isReferenceGenomeLocationValid,
-    isAltGenomeLocationValid
+    isAltGenomeLocationValid,
+    referenceGenome: referenceGenome ?? null,
+    altGenome: altGenome ?? null
   };
 };
 
@@ -263,32 +241,6 @@ const isLocationParameterValid = ({
       location: null
     };
   }
-};
-
-const getLocationFromUrlParam = (locationString: string) => {
-  try {
-    return getGenomicLocationFromString(locationString);
-  } catch {
-    return null;
-  }
-};
-
-const hasLocationUpdated = (
-  loc1: GenomicLocation | null,
-  loc2: GenomicLocation | null
-) => {
-  return loc1 && loc2 && areDifferentLocations(loc1, loc2);
-};
-
-const areDifferentLocations = (
-  loc1: GenomicLocation,
-  loc2: GenomicLocation
-) => {
-  return (
-    loc1.regionName !== loc2.regionName ||
-    loc1.start !== loc2.start ||
-    loc1.end !== loc2.end
-  );
 };
 
 export default useStructuralVariantsRouting;
