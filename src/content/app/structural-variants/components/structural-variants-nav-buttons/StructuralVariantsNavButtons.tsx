@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useRef, type DetailedHTMLProps, type HTMLAttributes } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@ensembl/ensembl-structural-variants/nav-buttons';
+import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -62,23 +62,10 @@ const StructuralVariantsNavButtons = (props: Props) => {
 
     navigate(url, { replace: true });
   };
-  const onViewportChangeRef = useRef(onViewportChange);
-  onViewportChangeRef.current = onViewportChange;
-
-  const onMount = (element: NavButtonsForStructuralVariantsBrowser) => {
-    const viewportChangeHandler = (event: Event) => {
-      onViewportChangeRef.current(event as CustomEvent<ViewportChangePayload>);
-    };
-    element.addEventListener('viewport-change', viewportChangeHandler);
-
-    return () => {
-      element.removeEventListener('viewport-change', viewportChangeHandler);
-    };
-  };
 
   return (
     <ens-sv-nav-buttons
-      ref={onMount}
+      onviewport-change={onViewportChange}
       start={props.referenceGenomeLocation.start}
       end={props.referenceGenomeLocation.end}
       altStart={props.altGenomeLocation?.start ?? 1}

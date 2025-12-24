@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useRef, type DetailedHTMLProps, type HTMLAttributes } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@ensembl/ensembl-structural-variants';
+import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 
 import config from 'config';
 
@@ -64,24 +64,6 @@ const StructuralVariantsImage = (props: Props) => {
 
     navigate(url, { replace: true });
   };
-  const onViewportChangeEndRef = useRef(onViewportChangeEnd);
-  onViewportChangeEndRef.current = onViewportChangeEnd;
-
-  const onMount = (element: StructuralVariantsBrowser) => {
-    const viewportChangeEndHandler = (event: Event) => {
-      const actualHandler = onViewportChangeEndRef.current;
-      actualHandler(event as CustomEvent<ViewportChangePayload>);
-    };
-
-    element.addEventListener('viewport-change-end', viewportChangeEndHandler);
-
-    return () => {
-      element.removeEventListener(
-        'viewport-change-end',
-        viewportChangeEndHandler
-      );
-    };
-  };
 
   // Replace the ens-sv-browser component with a new one when reference region name changes
   // (so that ens-sv-browser could find appropriate initial coordinates for alt genome)
@@ -89,7 +71,7 @@ const StructuralVariantsImage = (props: Props) => {
 
   return (
     <ens-sv-browser
-      ref={onMount}
+      onviewport-change-end={onViewportChangeEnd}
       key={componentKey}
       referenceGenomeId={props.referenceGenomeId}
       altGenomeId={props.altGenomeId}
