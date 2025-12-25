@@ -28,8 +28,12 @@ import { StandardAppLayout } from 'src/shared/components/layout';
 import styles from './StructuralVariants.module.css';
 
 const StructuralVariants = () => {
-  const { referenceGenomeIdParam, referenceLocationParam, altGenomeIdParam } =
-    useStructuralVariantsRouting();
+  const {
+    areUrlParamsValid,
+    referenceGenomeIdParam,
+    referenceLocationParam,
+    altGenomeIdParam
+  } = useStructuralVariantsRouting();
 
   const viewportWidth = useAppSelector(getBreakpointWidth);
 
@@ -45,6 +49,14 @@ const StructuralVariants = () => {
         <StructuralVariantsAppBar />
         <StructuralVariantsTopBar standalone={true} />
         <div>Please make a selection</div>
+      </div>
+    );
+  } else if (!areUrlParamsValid) {
+    return (
+      <div className={styles.containerInterstitial}>
+        <StructuralVariantsAppBar />
+        <StructuralVariantsTopBar standalone={true} />
+        <div>The url parameters are invalid</div>
       </div>
     );
   }
