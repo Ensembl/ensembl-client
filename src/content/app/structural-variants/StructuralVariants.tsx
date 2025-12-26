@@ -23,6 +23,7 @@ import { getBreakpointWidth } from 'src/global/globalSelectors';
 import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
 import StructuralVariantsTopBar from './components/structural-variants-top-bar/StructuralVariantsTopBar';
 import StructuralVariantsMain from './components/structural-variants-main/StructuralVariantsMain';
+import StructuralVariantsSidebar from './components/structural-variants-sidebar/StructuralVariantsSidebar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 
 import styles from './StructuralVariants.module.css';
@@ -67,7 +68,7 @@ const StructuralVariants = () => {
       <StructuralVariantsAppBar />
       <StandardAppLayout
         mainContent={<StructuralVariantsMain />}
-        sidebarContent={<div>Sidebar content</div>}
+        sidebarContent={<StructuralVariantsSidebar />}
         topbarContent={<StructuralVariantsTopBar standalone={false} />}
         isSidebarOpen={true}
         onSidebarToggle={() => {
