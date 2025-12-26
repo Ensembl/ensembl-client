@@ -1,0 +1,19 @@
+.container {
+  height: 100%;
+  overflow: auto;
+  padding: 21px calc(12px - var(--scrollbar-width)) 90px 12px;
+  scrollbar-gutter: stable;
+}
+
+
+/* Common legend styles */
+
+.legendSection {
+  margin-top: 32px;
+}
+
+.legendSectionHead {
+  font-weight: var(--font-weight-light);
+  border-bottom: 1px solid var(--color-dark-grey);
+  margin-bottom: 8px;
+}

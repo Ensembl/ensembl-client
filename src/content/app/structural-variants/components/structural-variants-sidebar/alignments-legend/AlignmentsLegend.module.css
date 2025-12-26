@@ -1,0 +1,11 @@
+.match {
+  background: #dbedff;
+}
+
+.mismatch {
+  border: 1px solid var(--color-medium-light-grey);
+}
+
+.inversion {
+  background: #f8c041;
+}
