@@ -16,8 +16,6 @@
 
 import { Legend, LegendItem, LegendMarker } from 'src/shared/components/legend';
 
-import { ALIGNMENT_COLORS } from '@ensembl/ensembl-structural-variants';
-
 import commonStyles from '../StructuralVariantsSidebar.module.css';
 import styles from './AlignmentsLegend.module.css';
 
@@ -27,9 +25,7 @@ const AlignmentsLegend = () => {
       <div className={commonStyles.legendSectionHead}>Alignment type</div>
       <Legend>
         <LegendItem>
-          <LegendMarker
-            style={{ backgroundColor: ALIGNMENT_COLORS.alignment }}
-          />
+          <LegendMarker className={styles.match} />
           <span>Match</span>
         </LegendItem>
         <LegendItem>
@@ -37,9 +33,7 @@ const AlignmentsLegend = () => {
           <span>No match</span>
         </LegendItem>
         <LegendItem>
-          <LegendMarker
-            style={{ backgroundColor: ALIGNMENT_COLORS.inversion }}
-          />
+          <LegendMarker className={styles.inversion} />
           <span>Inverted match</span>
         </LegendItem>
       </Legend>

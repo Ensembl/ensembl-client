@@ -1,5 +1,6 @@
 .match {
   background: #dbedff;
+  background: rgb(from var(--color-blue) r g b / 30%);
 }
 
 .mismatch {
@@ -8,4 +9,5 @@
 
 .inversion {
   background: #f8c041;
+  background: rgb(from var(--color-dark-yellow) r g b / 50%);
 }
