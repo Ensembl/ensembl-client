@@ -23,6 +23,8 @@ import {
   getAlternativeGenomeLocation
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
+import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
+
 import StructuralVariantsImage from 'src/content/app/structural-variants/components/structural-variants-image/StructuralVariantsImage';
 import StructuralVariantsNavButtons from 'src/content/app/structural-variants/components/structural-variants-nav-buttons/StructuralVariantsNavButtons';
 
@@ -34,7 +36,34 @@ const StructuralVariantsMain = () => {
   const referenceGenomeLocation = useAppSelector(getReferenceGenomeLocation);
   const altGenomeLocation = useAppSelector(getAlternativeGenomeLocation);
 
-  if (!referenceGenome || !alternativeGenome || !referenceGenomeLocation) {
+  const { currentData: referenceGenomeKaryotype } = useGenomeKaryotypeQuery(
+    referenceGenome?.genome_id ?? '',
+    {
+      skip: !referenceGenome
+    }
+  );
+
+  const { currentData: altGenomeKaryotype } = useGenomeKaryotypeQuery(
+    alternativeGenome?.genome_id ?? '',
+    {
+      skip: !referenceGenome
+    }
+  );
+
+  const referenceRegionLength = referenceGenomeKaryotype?.find(
+    (region) => region.name === referenceGenomeLocation?.regionName
+  )?.length;
+  const altRegionLength = altGenomeKaryotype?.find(
+    (region) => region.name === referenceGenomeLocation?.regionName
+  )?.length; // region name is the same between reference and alt genomes
+
+  if (
+    !referenceGenome ||
+    !alternativeGenome ||
+    !referenceGenomeLocation ||
+    !referenceRegionLength ||
+    !altRegionLength
+  ) {
     return null;
   }
 
@@ -46,6 +75,8 @@ const StructuralVariantsMain = () => {
           altGenomeId={alternativeGenome.genome_id}
           referenceGenomeLocation={referenceGenomeLocation}
           altGenomeLocation={altGenomeLocation}
+          regionLength={referenceRegionLength}
+          altRegionLength={altRegionLength}
         />
       </div>
       <div className={styles.imageContainer}>
@@ -54,6 +85,8 @@ const StructuralVariantsMain = () => {
           altGenomeId={alternativeGenome.genome_id}
           referenceGenomeLocation={referenceGenomeLocation}
           altGenomeLocation={altGenomeLocation}
+          regionLength={referenceRegionLength}
+          altRegionLength={altRegionLength}
         />
       </div>
     </div>

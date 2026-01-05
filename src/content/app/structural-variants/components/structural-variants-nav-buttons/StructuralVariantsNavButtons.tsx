@@ -30,6 +30,7 @@ type NavButtonsProperties = {
   altStart: number;
   altEnd: number;
   regionLength: number;
+  altRegionLength: number;
 };
 
 type Props = {
@@ -37,6 +38,8 @@ type Props = {
   altGenomeId: string;
   referenceGenomeLocation: GenomicLocation;
   altGenomeLocation: GenomicLocation | null;
+  regionLength: number;
+  altRegionLength: number;
 };
 
 const StructuralVariantsNavButtons = (props: Props) => {
@@ -70,7 +73,8 @@ const StructuralVariantsNavButtons = (props: Props) => {
       end={props.referenceGenomeLocation.end}
       altStart={props.altGenomeLocation?.start ?? 1}
       altEnd={props.altGenomeLocation?.end ?? Infinity}
-      regionLength={Infinity}
+      regionLength={props.regionLength}
+      altRegionLength={props.altRegionLength}
     />
   );
 };

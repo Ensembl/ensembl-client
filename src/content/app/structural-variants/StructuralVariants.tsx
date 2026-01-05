@@ -29,6 +29,7 @@ import styles from './StructuralVariants.module.css';
 
 const StructuralVariants = () => {
   const {
+    isValidating,
     areUrlParamsValid,
     referenceGenomeIdParam,
     referenceLocationParam,
@@ -51,7 +52,7 @@ const StructuralVariants = () => {
         <div>Please make a selection</div>
       </div>
     );
-  } else if (!areUrlParamsValid) {
+  } else if (!isValidating && !areUrlParamsValid) {
     return (
       <div className={styles.containerInterstitial}>
         <StructuralVariantsAppBar />

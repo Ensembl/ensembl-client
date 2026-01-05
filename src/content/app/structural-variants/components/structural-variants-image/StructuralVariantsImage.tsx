@@ -29,8 +29,6 @@ import type {
 } from '@ensembl/ensembl-structural-variants';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
-const CHROMOSOME_LENGTH = 248956422; // length of chromosome 1
-
 const REFERENCE_TRACKS = ['sv-gene', '950a71e1-5229-459c-822f-d104506d24e8'];
 const ALT_TRACKS = ['sv-gene', 'a8691c70-7d68-4322-937d-938affb1b4ea'];
 
@@ -39,6 +37,8 @@ type Props = {
   altGenomeId: string;
   referenceGenomeLocation: GenomicLocation;
   altGenomeLocation: GenomicLocation | null;
+  regionLength: number;
+  altRegionLength: number;
 };
 
 const StructuralVariantsImage = (props: Props) => {
@@ -80,7 +80,8 @@ const StructuralVariantsImage = (props: Props) => {
       altStart={props.altGenomeLocation?.start ?? 0}
       altEnd={props.altGenomeLocation?.end ?? 0}
       regionName={props.referenceGenomeLocation.regionName}
-      regionLength={CHROMOSOME_LENGTH}
+      regionLength={props.regionLength}
+      altRegionLength={props.altRegionLength}
       referenceTracks={REFERENCE_TRACKS}
       altTracks={ALT_TRACKS}
       endpoints={{
@@ -104,6 +105,7 @@ type StructuralVariantsBrowserProps = DetailedHTMLProps<
   regionLength: number;
   altStart?: number;
   altEnd?: number;
+  altRegionLength: number;
   referenceTracks: string[];
   altTracks: string[];
   endpoints: Endpoints;
