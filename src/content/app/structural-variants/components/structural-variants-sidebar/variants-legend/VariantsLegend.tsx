@@ -16,6 +16,8 @@
 
 import { Legend, LegendItem, LegendMarker } from 'src/shared/components/legend';
 
+import { ALIGNMENT_COLORS } from '@ensembl/ensembl-structural-variants';
+
 import commonStyles from '../StructuralVariantsSidebar.module.css';
 import styles from './VariantsLegend.module.css';
 
@@ -27,11 +29,15 @@ const VariantsLegend = () => {
       </div>
       <Legend>
         <LegendItem>
-          <LegendMarker className={styles.deletion} />
+          <LegendMarker
+            style={{ backgroundColor: ALIGNMENT_COLORS.deletion }}
+          />
           <span>Deletion or loss</span>
         </LegendItem>
         <LegendItem>
-          <LegendMarker className={styles.insertion} />
+          <LegendMarker
+            style={{ backgroundColor: ALIGNMENT_COLORS.insertion }}
+          />
           <span>Gain or insertion</span>
         </LegendItem>
         <LegendItem>
