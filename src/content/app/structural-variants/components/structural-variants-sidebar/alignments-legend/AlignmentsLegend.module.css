@@ -1,0 +1,11 @@
+.match {
+  background: rgb(from var(--color-blue) r g b / 30%); /* Ensembl blue, but at 30% opaicty */
+}
+
+.mismatch {
+  border: 1px solid var(--color-medium-light-grey);
+}
+
+.inversion {
+  background: rgb(from var(--color-dark-yellow) r g b / 50%); /* Ensembl dark yellow, but at 50% opaicty */
+}

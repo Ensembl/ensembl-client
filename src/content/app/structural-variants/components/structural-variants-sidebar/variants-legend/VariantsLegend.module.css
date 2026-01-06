@@ -1,0 +1,11 @@
+.deletion {
+  background-color: #ff595c;
+}
+
+.insertion {
+  background-color: #00f;
+}
+
+.other {
+  background-color: black;
+}
