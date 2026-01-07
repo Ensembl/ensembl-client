@@ -30,7 +30,7 @@ import type { GenomeGroupForStructuralVariants } from 'src/content/app/structura
 import styles from './StructuralVariantsTopBar.module.css';
 
 type Props = {
-  standalone: boolean;
+  standalone: boolean; // The flag is true when this component is rendered outside of StandardAppLayout (i.e. in interstitial views)
 };
 
 const StructuralVariantsTopBar = (props: Props) => {
