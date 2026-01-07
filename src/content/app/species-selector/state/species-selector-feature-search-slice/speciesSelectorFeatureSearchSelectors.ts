@@ -16,6 +16,14 @@
 
 import type { RootState } from 'src/store';
 
-export const getQuery = (state: RootState) => {
-  return state.speciesSelector.geneSearch.query;
+export const getGeneQuery = (state: RootState) => {
+  return state.speciesSelector.featureSearch.queries.gene;
+};
+
+export const getVariantQuery = (state: RootState) => {
+  return state.speciesSelector.featureSearch.queries.variant;
+};
+
+export const getFeatureQueries = (state: RootState) => {
+  return state.speciesSelector.featureSearch.queries;
 };

@@ -24,7 +24,6 @@ import { useAppDispatch } from 'src/store';
 import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
 
 import {
   openSidebarModal,
@@ -33,6 +32,7 @@ import {
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import styles from './GeneOverview.module.css';
+import SearchButton from 'src/shared/components/search-button/SearchButton';
 
 const GeneOverview = () => {
   const { genomeId, geneId } = useGeneViewIds();
@@ -130,9 +130,10 @@ const GeneOverview = () => {
 
       <section>
         <div className={styles.sectionContent}>
-          <GeneSearchButton
-            className={styles.geneSearchButton}
+          <SearchButton
             onClick={openSearch}
+            label="Find"
+            className={styles.searchButton}
           />
         </div>
       </section>
