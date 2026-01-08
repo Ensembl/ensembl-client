@@ -138,8 +138,9 @@ const StructuralVariantsInterstitial = (props: Props) => {
     );
   }
 
-  // If we reached this point, something is wrong, but we don't know what.
-  // Ask user to make a selection properly.
+  // All cases should have been accounted for above,
+  // and if we still have somehow reached this point, we do not know what is going on.
+  // Just ask the user to make a selection properly.
   return <StartMessage />;
 };
 
