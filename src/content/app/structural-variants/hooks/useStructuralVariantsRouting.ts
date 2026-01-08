@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useAppDispatch } from 'src/store';
@@ -54,7 +54,8 @@ const useStructuralVariantsRouting = () => {
     isReferenceGenomeLocationValid,
     isAltGenomeLocationValid,
     referenceGenome,
-    altGenome
+    altGenome,
+    isMissingAltGenomeRegion
   } = useCheckedParams({
     referenceGenomeIdParam,
     referenceLocationParam,
@@ -62,8 +63,20 @@ const useStructuralVariantsRouting = () => {
     altLocationParam
   });
 
+  // Reference and alt genome locations returned from useCheckedParams are plain objects
+  // created every time useCheckedParams runs. Memoize them to enable their use for props
+  // or dependency arrays of useEffect etc.
+  const memoizedReferenceGenomeLocation = useMemo(
+    () => referenceGenomeLocation,
+    [referenceLocationParam, isValidating]
+  );
+  const memoizedAltGenomeLocation = useMemo(
+    () => altGenomeLocation,
+    [altLocationParam, isValidating]
+  );
+
   useEffect(() => {
-    if (isValidating || !areUrlParamsValid) {
+    if (isValidating) {
       return;
     }
 
@@ -71,17 +84,16 @@ const useStructuralVariantsRouting = () => {
       setGenomesAndLocations({
         referenceGenome,
         alternativeGenome: altGenome,
-        referenceGenomeLocation,
-        alternativeGenomeLocation: altGenomeLocation
+        referenceGenomeLocation: memoizedReferenceGenomeLocation,
+        alternativeGenomeLocation: memoizedAltGenomeLocation
       })
     );
   }, [
     referenceGenome,
     altGenome,
-    referenceGenomeLocation,
-    altGenomeLocation,
-    isValidating,
-    areUrlParamsValid
+    memoizedReferenceGenomeLocation,
+    memoizedAltGenomeLocation,
+    isValidating
   ]);
 
   return {
@@ -95,10 +107,11 @@ const useStructuralVariantsRouting = () => {
     isAltGenomeIdValid,
     referenceGenomeId,
     altGenomeId,
-    referenceGenomeLocation,
-    altGenomeLocation,
+    referenceGenomeLocation: memoizedReferenceGenomeLocation,
+    altGenomeLocation: memoizedAltGenomeLocation,
     isReferenceGenomeLocationValid,
     isAltGenomeLocationValid,
+    isMissingAltGenomeRegion,
     referenceGenome,
     altGenome
   };
@@ -151,6 +164,7 @@ const useCheckedParams = ({
   let altGenomeLocation: GenomicLocation | null = null;
   let isReferenceGenomeLocationValid = true;
   let isAltGenomeLocationValid = true;
+  let isMissingAltGenomeRegion = false;
 
   if (referenceLocationParam && referenceGenomeKaryotype) {
     const refLocValidationResult = isLocationParameterValid({
@@ -172,6 +186,18 @@ const useCheckedParams = ({
       altGenomeLocation = altLocValidationResult.location;
     } else {
       isAltGenomeLocationValid = false;
+      isMissingAltGenomeRegion = altLocValidationResult.isMissingFromKaryotype;
+    }
+  }
+  if (!altLocationParam && referenceGenomeLocation && altGenomeKaryotype) {
+    // If there is no alt genome location parameter in the url,
+    // make sure that alt genome has a region with the same name as reference genomic region
+    const altGenomicRegion = altGenomeKaryotype.find(
+      (item) => item.name === referenceGenomeLocation.regionName
+    );
+    if (!altGenomicRegion) {
+      isAltGenomeLocationValid = false;
+      isMissingAltGenomeRegion = true;
     }
   }
 
@@ -198,6 +224,7 @@ const useCheckedParams = ({
     altGenomeLocation,
     isReferenceGenomeLocationValid,
     isAltGenomeLocationValid,
+    isMissingAltGenomeRegion, // a special and common kind of invalid alt genome location
     referenceGenome: referenceGenome ?? null,
     altGenome: altGenome ?? null
   };
@@ -210,13 +237,14 @@ const isLocationParameterValid = ({
   locationString: string;
   karyotype: GenomeKaryotypeItem[];
 }) => {
+  const notInKaryotypeErrorMessage = 'Region is not listed in karyotype';
   try {
     const parsedLocation = getGenomicLocationFromString(locationString);
     const regionFromKaryotype = karyotype.find(
       (region) => region.name === parsedLocation.regionName
     );
     if (!regionFromKaryotype) {
-      throw Error('Region is not listed in karyotype');
+      throw Error(notInKaryotypeErrorMessage);
     }
     const isStartValid =
       parsedLocation.start > 0 &&
@@ -232,14 +260,16 @@ const isLocationParameterValid = ({
       return {
         isValid: true,
         location: parsedLocation
-      };
+      } as const;
     }
-  } catch {
-    // TODO: maybe use different types of errors to show different types of error messages?
+  } catch (error: unknown) {
+    const isMissingFromKaryotype =
+      (error as Error).message === notInKaryotypeErrorMessage;
     return {
       isValid: false,
+      isMissingFromKaryotype,
       location: null
-    };
+    } as const;
   }
 };
 

@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-import useStructuralVariantsRouting from 'src/content/app/structural-variants/hooks/useStructuralVariantsRouting';
-
 import { useAppSelector } from 'src/store';
 
+import useStructuralVariantsRouting from 'src/content/app/structural-variants/hooks/useStructuralVariantsRouting';
+
 import { getBreakpointWidth } from 'src/global/globalSelectors';
+import {
+  getReferenceGenome,
+  getAlternativeGenome,
+  getReferenceGenomeLocation
+} from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
 import StructuralVariantsTopBar from './components/structural-variants-top-bar/StructuralVariantsTopBar';
 import StructuralVariantsMain from './components/structural-variants-main/StructuralVariantsMain';
 import StructuralVariantsSidebar from './components/structural-variants-sidebar/StructuralVariantsSidebar';
+import StructuralVariantsInterstitial from './components/structural-variants-interstitial/StructuralVariantsInterstitial';
 import { StandardAppLayout } from 'src/shared/components/layout';
 
 import styles from './StructuralVariants.module.css';
@@ -31,34 +37,62 @@ import styles from './StructuralVariants.module.css';
 const StructuralVariants = () => {
   const {
     isValidating,
-    areUrlParamsValid,
     referenceGenomeIdParam,
     referenceLocationParam,
-    altGenomeIdParam
+    altGenomeIdParam,
+    altLocationParam,
+    referenceGenome,
+    altGenome,
+    referenceGenomeLocation,
+    isReferenceGenomeIdValid,
+    isAltGenomeIdValid,
+    isReferenceGenomeLocationValid,
+    isAltGenomeLocationValid,
+    isMissingAltGenomeRegion
   } = useStructuralVariantsRouting();
-
   const viewportWidth = useAppSelector(getBreakpointWidth);
+  const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
+  const referenceGenomeLocationFromRedux = useAppSelector(
+    getReferenceGenomeLocation
+  );
+  const altGenomeFromRedux = useAppSelector(getAlternativeGenome);
 
-  let view = 'standard';
+  // To avoid showing the main screen while there isn't sufficient data to render it.
+  const isInitialValidation =
+    isValidating &&
+    (!referenceGenomeFromRedux ||
+      !altGenomeFromRedux ||
+      !referenceGenomeLocationFromRedux);
 
-  if (!referenceGenomeIdParam || !altGenomeIdParam || !referenceLocationParam) {
-    view = 'interstitial';
-  }
-
-  if (view === 'interstitial') {
+  if (
+    isInitialValidation ||
+    !referenceGenomeIdParam ||
+    !referenceLocationParam ||
+    !altGenomeIdParam ||
+    !isReferenceGenomeIdValid ||
+    !isAltGenomeIdValid ||
+    !isReferenceGenomeLocationValid ||
+    !isAltGenomeLocationValid
+  ) {
     return (
       <div className={styles.containerInterstitial}>
         <StructuralVariantsAppBar />
         <StructuralVariantsTopBar standalone={true} />
-        <div>Please make a selection</div>
-      </div>
-    );
-  } else if (!isValidating && !areUrlParamsValid) {
-    return (
-      <div className={styles.containerInterstitial}>
-        <StructuralVariantsAppBar />
-        <StructuralVariantsTopBar standalone={true} />
-        <div>The url parameters are invalid</div>
+        <StructuralVariantsInterstitial
+          isValidating={isValidating}
+          referenceGenome={referenceGenome}
+          altGenome={altGenome}
+          referenceGenomeIdParam={referenceGenomeIdParam}
+          referenceLocationParam={referenceLocationParam}
+          altGenomeIdParam={altGenomeIdParam}
+          altLocationParam={altLocationParam}
+          referenceGenomeLocation={referenceGenomeLocation}
+          isReferenceGenomeIdValid={isReferenceGenomeIdValid}
+          isReferenceGenomeLocationValid={isReferenceGenomeLocationValid}
+          isAltGenomeIdValid={isAltGenomeIdValid}
+          isAltGenomeLocationValid={isAltGenomeLocationValid}
+          isMissingAltGenomeRegion={isMissingAltGenomeRegion}
+        />
       </div>
     );
   }

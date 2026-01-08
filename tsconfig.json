@@ -5,6 +5,7 @@
     "declaration": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "lib": ["DOM", "DOM.Iterable", "DOM.AsyncIterable", "ESNext"],
     "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "bundler",
