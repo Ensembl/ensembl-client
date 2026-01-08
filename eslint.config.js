@@ -7,6 +7,7 @@
 /* eslint-disable */
 
 const eslint = require('@eslint/js');
+const { defineConfig } = require('eslint/config');
 const tseslint = require('typescript-eslint');
 const prettierConfig = require('eslint-config-prettier');
 const reactPlugin = require('eslint-plugin-react');
@@ -15,10 +16,11 @@ const reactRecommended = require('eslint-plugin-react/configs/recommended');
 const vitestPlugin = require('@vitest/eslint-plugin');
 
 
-module.exports = tseslint.config(
+module.exports = defineConfig(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   reactRecommended,
+  // reactHooksPlugin.configs.flat.recommended,  // uncomment this to work through eslint errors for react-hooks
   reactPlugin.configs.flat['jsx-runtime'],
   prettierConfig,
   {
@@ -60,6 +62,7 @@ module.exports = tseslint.config(
   },
 
   // settings for eslint-plugin-react-hooks
+  // remove this after enabling reactHooksPlugin.configs.flat.recommended (see above)
   {
     plugins: {
       'react-hooks': reactHooksPlugin,
