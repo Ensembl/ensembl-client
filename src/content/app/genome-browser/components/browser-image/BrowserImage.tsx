@@ -28,16 +28,19 @@ import GenomeBrowserError from 'src/content/app/genome-browser/components/genome
 import BrowserTrackLegend from 'src/content/app/genome-browser/components/browser-track-legend/BrowserTrackLegend';
 
 import {
+  getBrowserActiveGenomeId,
   getRegionEditorActive,
   getRegionFieldActive
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import styles from './BrowserImage.module.css';
+import { getAllTrackSettingsForGenome } from '../../state/track-settings/trackSettingsSelectors';
 
 export const BrowserImage = () => {
   const browserViewportRef = useRef<HTMLDivElement>(null);
   const browserContainerRef = useRef<HTMLDivElement>(null);
   const browserActivatedRef = useRef(false);
+  const [trackSettingsApplied, setTrackSettingsApplied] = useState(false);
   const [genomeBrowserError, setGenomeBrowserError] = useState<{
     type: string;
     payload: unknown;
@@ -47,10 +50,16 @@ export const BrowserImage = () => {
     activateGenomeBrowser,
     clearGenomeBrowser,
     genomeBrowser,
-    genomeBrowserService
+    genomeBrowserService,
+    toggleTrackSetting
   } = useGenomeBrowser();
 
   useGenomeBrowserPosition();
+
+  const genomeId = useAppSelector(getBrowserActiveGenomeId) as string;
+  const allTrackSettingsForGenome = useAppSelector((state) =>
+    getAllTrackSettingsForGenome(state, genomeId)
+  );
 
   const isRegionEditorActive = useAppSelector(getRegionEditorActive);
   const isRegionFieldActive = useAppSelector(getRegionFieldActive);
@@ -93,6 +102,23 @@ export const BrowserImage = () => {
         subscription?.unsubscribe();
       });
   }, [genomeBrowser]);
+
+  if (allTrackSettingsForGenome && genomeBrowser && !trackSettingsApplied) {
+    Object.entries(
+      allTrackSettingsForGenome?.settingsForIndividualTracks ?? {}
+    ).forEach(([, track]) => {
+      const settings = Object.keys(track.settings);
+
+      for (const trackSetting of settings) {
+        toggleTrackSetting({
+          trackId: track.id,
+          setting: trackSetting,
+          isEnabled: track.settings[trackSetting as keyof typeof track.settings]
+        });
+      }
+    });
+    setTrackSettingsApplied(true);
+  }
 
   const browserImageContents = (
     <div ref={browserViewportRef} className={styles.browserImageWrapper}>
