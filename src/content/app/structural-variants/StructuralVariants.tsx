@@ -53,8 +53,6 @@ const StructuralVariants = () => {
   } = useStructuralVariantsRouting();
   const viewportWidth = useAppSelector(getBreakpointWidth);
   const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
-  // const altGenomeFromRedux = useAppSelector(getAlternativeGenome);
-  // const referenceLocationFromRedux = useAppSelector(getReferenceGenomeLocation);
 
   const isInitialValidation = isValidating && !referenceGenomeFromRedux;
 

@@ -64,7 +64,7 @@ const useStructuralVariantsRouting = () => {
   });
 
   useEffect(() => {
-    if (isValidating || !areUrlParamsValid) {
+    if (isValidating) {
       return;
     }
 
