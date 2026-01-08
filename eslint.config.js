@@ -20,7 +20,7 @@ module.exports = defineConfig(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   reactRecommended,
-  // reactHooksPlugin.configs.flat.recommended,  // uncomment this to work through eslint errors for react-hooks
+  reactHooksPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
   prettierConfig,
   {
@@ -59,17 +59,6 @@ module.exports = defineConfig(
         version: 'detect' // Makes eslint-plugin-react automatically detect React version
       }
     }
-  },
-
-  // settings for eslint-plugin-react-hooks
-  // remove this after enabling reactHooksPlugin.configs.flat.recommended (see above)
-  {
-    plugins: {
-      'react-hooks': reactHooksPlugin,
-    },
-    rules: {
-      'react-hooks/rules-of-hooks': 2
-    },
   },
 
   // settings for eslint-plugin-vitest
