@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useAppDispatch } from 'src/store';
@@ -63,6 +63,15 @@ const useStructuralVariantsRouting = () => {
     altLocationParam
   });
 
+  const memoizedReferenceGenomeLocation = useMemo(
+    () => referenceGenomeLocation,
+    [isValidating]
+  );
+  const memoizedAltGenomeLocation = useMemo(
+    () => altGenomeLocation,
+    [isValidating]
+  );
+
   useEffect(() => {
     if (isValidating) {
       return;
@@ -72,17 +81,16 @@ const useStructuralVariantsRouting = () => {
       setGenomesAndLocations({
         referenceGenome,
         alternativeGenome: altGenome,
-        referenceGenomeLocation,
-        alternativeGenomeLocation: altGenomeLocation
+        referenceGenomeLocation: memoizedReferenceGenomeLocation,
+        alternativeGenomeLocation: memoizedAltGenomeLocation
       })
     );
   }, [
     referenceGenome,
     altGenome,
-    referenceGenomeLocation,
-    altGenomeLocation,
-    isValidating,
-    areUrlParamsValid
+    memoizedReferenceGenomeLocation,
+    memoizedAltGenomeLocation,
+    isValidating
   ]);
 
   return {
@@ -96,8 +104,8 @@ const useStructuralVariantsRouting = () => {
     isAltGenomeIdValid,
     referenceGenomeId,
     altGenomeId,
-    referenceGenomeLocation,
-    altGenomeLocation,
+    referenceGenomeLocation: memoizedReferenceGenomeLocation,
+    altGenomeLocation: memoizedAltGenomeLocation,
     isReferenceGenomeLocationValid,
     isAltGenomeLocationValid,
     isMissingAltGenomeRegion,
@@ -189,15 +197,6 @@ const useCheckedParams = ({
       isMissingAltGenomeRegion = true;
     }
   }
-
-  // NOTE: this check will become incorrect in the future if the structural variants viewer
-  // gets updated to the point where it can display
-  // if (
-  //   referenceGenomeLocation && altGenomeLocation &&
-  //   referenceGenomeLocation.regionName !== altGenomeLocation.regionName) {
-  //     // We are currently expecting the region
-  //     isAltGenomeLocationValid = false;
-  // }
 
   const isValidating =
     isFetchingGenomeGroups ||

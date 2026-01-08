@@ -35,7 +35,7 @@ import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 import styles from './StructuralVariantsInterstitial.module.css';
 
 /**
- * The purpose of this component is communicate why the main content
+ * The purpose of this component is to communicate why the main content
  * cannot be displayed.
  *
  * The common use cases are:
@@ -140,7 +140,7 @@ const StructuralVariantsInterstitial = (props: Props) => {
 
   // If we reached this point, something is wrong, but we don't know what.
   // Ask user to make a selection properly.
-  return <div>Weird</div>;
+  return <StartMessage />;
 };
 
 const StartMessage = () => {

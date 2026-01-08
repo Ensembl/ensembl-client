@@ -20,10 +20,9 @@ import useStructuralVariantsRouting from 'src/content/app/structural-variants/ho
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import {
-  getReferenceGenome
-  // getAlternativeGenome,
-  // getReferenceGenomeLocation,
-  // getAlternativeGenomeLocation
+  getReferenceGenome,
+  getAlternativeGenome,
+  getReferenceGenomeLocation
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
@@ -53,8 +52,17 @@ const StructuralVariants = () => {
   } = useStructuralVariantsRouting();
   const viewportWidth = useAppSelector(getBreakpointWidth);
   const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
+  const referenceGenomeLocationFromRedux = useAppSelector(
+    getReferenceGenomeLocation
+  );
+  const altGenomeFromRedux = useAppSelector(getAlternativeGenome);
 
-  const isInitialValidation = isValidating && !referenceGenomeFromRedux;
+  // To avoid showing the main screen while there isn't sufficient data to render it.
+  const isInitialValidation =
+    isValidating &&
+    (!referenceGenomeFromRedux ||
+      !altGenomeFromRedux ||
+      !referenceGenomeLocationFromRedux);
 
   if (
     isInitialValidation ||
