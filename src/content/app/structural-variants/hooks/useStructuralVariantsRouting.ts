@@ -63,13 +63,16 @@ const useStructuralVariantsRouting = () => {
     altLocationParam
   });
 
+  // Reference and alt genome locations returned from useCheckedParams are plain objects
+  // created every time useCheckedParams runs. Memoize them to enable their use for props
+  // or dependency arrays of useEffect etc.
   const memoizedReferenceGenomeLocation = useMemo(
     () => referenceGenomeLocation,
-    [isValidating]
+    [referenceLocationParam, isValidating]
   );
   const memoizedAltGenomeLocation = useMemo(
     () => altGenomeLocation,
-    [isValidating]
+    [altLocationParam, isValidating]
   );
 
   useEffect(() => {
