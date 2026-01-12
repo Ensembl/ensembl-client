@@ -1,0 +1,51 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { use } from 'react';
+
+import { StructuralVariantsImageContext } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
+
+import styles from './StructuralVariantsMain.module.css';
+
+const trackNamesMap: Record<string, string> = {
+  'sv-gene': 'Genes',
+  alignments: 'Genomic alignments'
+};
+
+const LeftColumn = () => {
+  const imageContext = use(StructuralVariantsImageContext);
+
+  if (!imageContext) {
+    throw new Error('This component requires StructuralVariantsImageContext');
+  }
+  const { tracks } = imageContext;
+
+  const trackLabels = tracks
+    .filter((track) => track.id in trackNamesMap)
+    .map((track) => (
+      <span
+        key={track.id}
+        className={styles.leftColumnLabel}
+        style={{ top: `${track.offset}px` }}
+      >
+        {trackNamesMap[track.id]}
+      </span>
+    ));
+
+  return <div className={styles.leftColumn}>{trackLabels}</div>;
+};
+
+export default LeftColumn;

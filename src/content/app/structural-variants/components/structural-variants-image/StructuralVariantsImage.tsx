@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@ensembl/ensembl-structural-variants';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
@@ -22,10 +23,13 @@ import config from 'config';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { StructuralVariantsImageContext } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
+
 import type {
   StructuralVariantsBrowser,
   Endpoints,
-  ViewportChangePayload
+  ViewportChangePayload,
+  TrackSummary
 } from '@ensembl/ensembl-structural-variants';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
@@ -43,6 +47,15 @@ type Props = {
 
 const StructuralVariantsImage = (props: Props) => {
   const navigate = useNavigate();
+  const imageContext = use(StructuralVariantsImageContext);
+
+  if (!imageContext) {
+    throw new Error(
+      'StructuralVariantsImage component should be used inside of StructuralVariantsImageContext'
+    );
+  }
+
+  const { setTracks } = imageContext;
 
   const onViewportChangeEnd = (event: CustomEvent<ViewportChangePayload>) => {
     const referenceGenomeLocation = event.detail.reference;
@@ -65,6 +78,10 @@ const StructuralVariantsImage = (props: Props) => {
     navigate(url, { replace: true });
   };
 
+  const onTrackPositionsChange = (event: CustomEvent<TrackSummary[]>) => {
+    setTracks(event.detail);
+  };
+
   // Replace the ens-sv-browser component with a new one when reference region name changes
   // (so that ens-sv-browser could find appropriate initial coordinates for alt genome)
   const componentKey = `${props.referenceGenomeId}${props.referenceGenomeLocation.regionName}`;
@@ -72,6 +89,7 @@ const StructuralVariantsImage = (props: Props) => {
   return (
     <ens-sv-browser
       onviewport-change-end={onViewportChangeEnd}
+      ontrack-positions-change={onTrackPositionsChange}
       key={componentKey}
       referenceGenomeId={props.referenceGenomeId}
       altGenomeId={props.altGenomeId}
