@@ -15,6 +15,16 @@
  */
 
 import { use } from 'react';
+import classNames from 'classnames';
+
+import { useAppSelector } from 'src/store';
+
+import {
+  getReferenceGenome,
+  getAlternativeGenome,
+  getReferenceGenomeLocation,
+  getAlternativeGenomeLocation
+} from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 import { StructuralVariantsImageContext } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
 
@@ -22,6 +32,10 @@ import styles from './StructuralVariantsMain.module.css';
 
 const LeftColumn = () => {
   const imageContext = use(StructuralVariantsImageContext);
+  const referenceGenome = useAppSelector(getReferenceGenome);
+  const referenceGenomeLocation = useAppSelector(getReferenceGenomeLocation);
+  const altGenome = useAppSelector(getAlternativeGenome);
+  const altGenomeLocation = useAppSelector(getAlternativeGenomeLocation);
 
   if (!imageContext) {
     throw new Error('This component requires StructuralVariantsImageContext');
@@ -33,27 +47,41 @@ const LeftColumn = () => {
 
   const [refGenomeGenesTrack, altGenomeGenesTrack] = geneTracks;
 
-  const refGenomeLabel = refGenomeGenesTrack ? (
-    <div
-      className={styles.leftColumnLabel}
-      style={{ top: `${refGenomeGenesTrack.offset}px` }}
-    >
-      <span>Top genome</span>
-    </div>
-  ) : null;
+  const refGenomeLabel =
+    referenceGenome && referenceGenomeLocation && refGenomeGenesTrack ? (
+      <div
+        className={styles.leftColumnLabel}
+        style={{ top: `${refGenomeGenesTrack.offset}px` }}
+      >
+        <div>
+          {referenceGenome.common_name ?? referenceGenome.scientific_name}
+        </div>
+        <div className={styles.light}>{referenceGenome.assembly.name}</div>
+        <div className={styles.regionName}>
+          <span className={styles.light}>Chr </span>{' '}
+          {referenceGenomeLocation.regionName}
+        </div>
+      </div>
+    ) : null;
 
-  const altGenomeLabel = altGenomeGenesTrack ? (
-    <div
-      className={styles.leftColumnLabel}
-      style={{ top: `${altGenomeGenesTrack.offset}px` }}
-    >
-      <span>Bottom genome</span>
-    </div>
-  ) : null;
+  const altGenomeLabel =
+    altGenome && altGenomeLocation && altGenomeGenesTrack ? (
+      <div
+        className={styles.leftColumnLabel}
+        style={{ top: `${altGenomeGenesTrack.offset}px` }}
+      >
+        <div>{altGenome.common_name ?? altGenome.scientific_name}</div>
+        <div className={styles.light}>{altGenome.assembly.name}</div>
+        <div className={styles.regionName}>
+          <span className={styles.light}>Chr </span>{' '}
+          {altGenomeLocation.regionName}
+        </div>
+      </div>
+    ) : null;
 
   const haplotypeVariantsLabel = alignmentsTrack ? (
     <span
-      className={styles.leftColumnLabel}
+      className={classNames(styles.leftColumnLabel, styles.strong)}
       style={{ top: `${alignmentsTrack.offset}px` }}
     >
       Haplotype variants
