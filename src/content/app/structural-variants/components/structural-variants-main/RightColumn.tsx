@@ -15,12 +15,13 @@
  */
 
 import { use } from 'react';
+import classNames from 'classnames';
 
 import { StructuralVariantsImageContext } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
 
 import styles from './StructuralVariantsMain.module.css';
 
-const LeftColumn = () => {
+const RightColumn = () => {
   const imageContext = use(StructuralVariantsImageContext);
 
   if (!imageContext) {
@@ -28,45 +29,19 @@ const LeftColumn = () => {
   }
   const { tracks } = imageContext;
 
-  const geneTracks = tracks.filter((track) => track.id === 'sv-gene');
-  const alignmentsTrack = tracks.find((track) => track.id === 'alignments');
+  const labelClasses = classNames(styles.rightColumnLabel, styles.light);
 
-  const [refGenomeGenesTrack, altGenomeGenesTrack] = geneTracks;
-
-  const refGenomeLabel = refGenomeGenesTrack ? (
-    <div
-      className={styles.leftColumnLabel}
-      style={{ top: `${refGenomeGenesTrack.offset}px` }}
-    >
-      <span>Top genome</span>
-    </div>
-  ) : null;
-
-  const altGenomeLabel = altGenomeGenesTrack ? (
-    <div
-      className={styles.leftColumnLabel}
-      style={{ top: `${altGenomeGenesTrack.offset}px` }}
-    >
-      <span>Bottom genome</span>
-    </div>
-  ) : null;
-
-  const haplotypeVariantsLabel = alignmentsTrack ? (
+  const trackLabels = tracks.map((track, index) => (
     <span
-      className={styles.leftColumnLabel}
-      style={{ top: `${alignmentsTrack.offset}px` }}
+      key={`${track.id}-${index}`}
+      className={labelClasses}
+      style={{ top: `${track.offset}px` }}
     >
-      Haplotype variants
+      {track.label}
     </span>
-  ) : null;
+  ));
 
-  return (
-    <div className={styles.leftColumn}>
-      {refGenomeLabel}
-      {haplotypeVariantsLabel}
-      {altGenomeLabel}
-    </div>
-  );
+  return <div className={styles.rightColumn}>{trackLabels}</div>;
 };
 
-export default LeftColumn;
+export default RightColumn;

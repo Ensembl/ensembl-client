@@ -29,6 +29,7 @@ import { StructuralVariantsImageContextProvider } from 'src/content/app/structur
 import StructuralVariantsImage from 'src/content/app/structural-variants/components/structural-variants-image/StructuralVariantsImage';
 import StructuralVariantsNavButtons from 'src/content/app/structural-variants/components/structural-variants-nav-buttons/StructuralVariantsNavButtons';
 import LeftColumn from './LeftColumn';
+import RightColumn from './RightColumn';
 
 import styles from './StructuralVariantsMain.module.css';
 
@@ -70,7 +71,10 @@ const StructuralVariantsMain = () => {
   }
 
   return (
-    <StructuralVariantsImageContextProvider>
+    <StructuralVariantsImageContextProvider
+      referenceGenomeId={referenceGenome.genome_id}
+      altGenomeId={alternativeGenome.genome_id}
+    >
       <div className={styles.grid}>
         <div className={styles.imageControlsContainer}>
           <StructuralVariantsNavButtons
@@ -93,6 +97,7 @@ const StructuralVariantsMain = () => {
             altRegionLength={altRegionLength}
           />
         </div>
+        <RightColumn />
       </div>
     </StructuralVariantsImageContextProvider>
   );

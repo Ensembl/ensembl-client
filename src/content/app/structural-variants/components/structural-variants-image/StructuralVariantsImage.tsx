@@ -33,9 +33,6 @@ import type {
 } from '@ensembl/ensembl-structural-variants';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
-const REFERENCE_TRACKS = ['sv-gene', '950a71e1-5229-459c-822f-d104506d24e8'];
-const ALT_TRACKS = ['sv-gene', 'a8691c70-7d68-4322-937d-938affb1b4ea'];
-
 type Props = {
   referenceGenomeId: string;
   altGenomeId: string;
@@ -56,6 +53,7 @@ const StructuralVariantsImage = (props: Props) => {
   }
 
   const { setTracks } = imageContext;
+  const { referenceGenomeTrackIds, altGenomeTrackIds } = imageContext;
 
   const onViewportChangeEnd = (event: CustomEvent<ViewportChangePayload>) => {
     const referenceGenomeLocation = event.detail.reference;
@@ -86,6 +84,10 @@ const StructuralVariantsImage = (props: Props) => {
   // (so that ens-sv-browser could find appropriate initial coordinates for alt genome)
   const componentKey = `${props.referenceGenomeId}${props.referenceGenomeLocation.regionName}`;
 
+  if (!referenceGenomeTrackIds.length) {
+    return null;
+  }
+
   return (
     <ens-sv-browser
       onviewport-change-end={onViewportChangeEnd}
@@ -100,8 +102,8 @@ const StructuralVariantsImage = (props: Props) => {
       regionName={props.referenceGenomeLocation.regionName}
       regionLength={props.regionLength}
       altRegionLength={props.altRegionLength}
-      referenceTracks={REFERENCE_TRACKS}
-      altTracks={ALT_TRACKS}
+      referenceTracks={referenceGenomeTrackIds}
+      altTracks={altGenomeTrackIds}
       endpoints={{
         genomeBrowser: 'https://dev-2020.ensembl.org/api/browser/data',
         alignments: `${config.structuralVariantsApiBaseUrl}/alignments`,

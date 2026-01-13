@@ -6,6 +6,7 @@
     "top-left image-controls-top top-right"
     "left sv-image right";
   column-gap: 16px;
+  align-items: start;
   height: 100%;
   overflow-y: auto;
   padding-top: 12px;
@@ -24,7 +25,7 @@
 
 .imageContainer {
   grid-area: sv-image;
-  border: 1px dotted var(--color-dark-grey);
+  border: 1px dashed var(--color-dark-grey);
   border-radius: 4px;
 }
 
@@ -37,6 +38,21 @@
   position: absolute;
   right: 0;
   max-width: 150px;
-  font-weight: var(--font-weight-light);
   font-size: 11px;
+}
+
+.rightColumn {
+  grid-area: right;
+  position: relative;
+}
+
+.rightColumnLabel {
+  position: absolute;
+  left: 0;
+  max-width: 150px;
+  font-size: 11px;
+}
+
+.light {
+  font-weight: var(--font-weight-light);
 }
