@@ -25,8 +25,11 @@ import {
 
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
+import { StructuralVariantsImageContextProvider } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
 import StructuralVariantsImage from 'src/content/app/structural-variants/components/structural-variants-image/StructuralVariantsImage';
 import StructuralVariantsNavButtons from 'src/content/app/structural-variants/components/structural-variants-nav-buttons/StructuralVariantsNavButtons';
+import LeftColumn from './LeftColumn';
+import RightColumn from './RightColumn';
 
 import styles from './StructuralVariantsMain.module.css';
 
@@ -68,28 +71,35 @@ const StructuralVariantsMain = () => {
   }
 
   return (
-    <div className={styles.grid}>
-      <div className={styles.imageControlsContainer}>
-        <StructuralVariantsNavButtons
-          referenceGenomeId={referenceGenome.genome_id}
-          altGenomeId={alternativeGenome.genome_id}
-          referenceGenomeLocation={referenceGenomeLocation}
-          altGenomeLocation={altGenomeLocation}
-          regionLength={referenceRegionLength}
-          altRegionLength={altRegionLength}
-        />
+    <StructuralVariantsImageContextProvider
+      referenceGenomeId={referenceGenome.genome_id}
+      altGenomeId={alternativeGenome.genome_id}
+    >
+      <div className={styles.grid}>
+        <div className={styles.imageControlsContainer}>
+          <StructuralVariantsNavButtons
+            referenceGenomeId={referenceGenome.genome_id}
+            altGenomeId={alternativeGenome.genome_id}
+            referenceGenomeLocation={referenceGenomeLocation}
+            altGenomeLocation={altGenomeLocation}
+            regionLength={referenceRegionLength}
+            altRegionLength={altRegionLength}
+          />
+        </div>
+        <LeftColumn />
+        <div className={styles.imageContainer}>
+          <StructuralVariantsImage
+            referenceGenomeId={referenceGenome.genome_id}
+            altGenomeId={alternativeGenome.genome_id}
+            referenceGenomeLocation={referenceGenomeLocation}
+            altGenomeLocation={altGenomeLocation}
+            regionLength={referenceRegionLength}
+            altRegionLength={altRegionLength}
+          />
+        </div>
+        <RightColumn />
       </div>
-      <div className={styles.imageContainer}>
-        <StructuralVariantsImage
-          referenceGenomeId={referenceGenome.genome_id}
-          altGenomeId={alternativeGenome.genome_id}
-          referenceGenomeLocation={referenceGenomeLocation}
-          altGenomeLocation={altGenomeLocation}
-          regionLength={referenceRegionLength}
-          altRegionLength={altRegionLength}
-        />
-      </div>
-    </div>
+    </StructuralVariantsImageContextProvider>
   );
 };
 

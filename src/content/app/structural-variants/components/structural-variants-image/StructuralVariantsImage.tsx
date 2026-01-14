@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@ensembl/ensembl-structural-variants';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
@@ -22,15 +23,15 @@ import config from 'config';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { StructuralVariantsImageContext } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
+
 import type {
   StructuralVariantsBrowser,
   Endpoints,
-  ViewportChangePayload
+  ViewportChangePayload,
+  TrackSummary
 } from '@ensembl/ensembl-structural-variants';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
-
-const REFERENCE_TRACKS = ['sv-gene', '950a71e1-5229-459c-822f-d104506d24e8'];
-const ALT_TRACKS = ['sv-gene', 'a8691c70-7d68-4322-937d-938affb1b4ea'];
 
 type Props = {
   referenceGenomeId: string;
@@ -43,6 +44,16 @@ type Props = {
 
 const StructuralVariantsImage = (props: Props) => {
   const navigate = useNavigate();
+  const imageContext = use(StructuralVariantsImageContext);
+
+  if (!imageContext) {
+    throw new Error(
+      'StructuralVariantsImage component should be used inside of StructuralVariantsImageContext'
+    );
+  }
+
+  const { setTracks } = imageContext;
+  const { referenceGenomeTrackIds, altGenomeTrackIds } = imageContext;
 
   const onViewportChangeEnd = (event: CustomEvent<ViewportChangePayload>) => {
     const referenceGenomeLocation = event.detail.reference;
@@ -65,13 +76,22 @@ const StructuralVariantsImage = (props: Props) => {
     navigate(url, { replace: true });
   };
 
+  const onTrackPositionsChange = (event: CustomEvent<TrackSummary[]>) => {
+    setTracks(event.detail);
+  };
+
   // Replace the ens-sv-browser component with a new one when reference region name changes
   // (so that ens-sv-browser could find appropriate initial coordinates for alt genome)
   const componentKey = `${props.referenceGenomeId}${props.referenceGenomeLocation.regionName}`;
 
+  if (!referenceGenomeTrackIds.length) {
+    return null;
+  }
+
   return (
     <ens-sv-browser
       onviewport-change-end={onViewportChangeEnd}
+      ontrack-positions-change={onTrackPositionsChange}
       key={componentKey}
       referenceGenomeId={props.referenceGenomeId}
       altGenomeId={props.altGenomeId}
@@ -82,8 +102,8 @@ const StructuralVariantsImage = (props: Props) => {
       regionName={props.referenceGenomeLocation.regionName}
       regionLength={props.regionLength}
       altRegionLength={props.altRegionLength}
-      referenceTracks={REFERENCE_TRACKS}
-      altTracks={ALT_TRACKS}
+      referenceTracks={referenceGenomeTrackIds}
+      altTracks={altGenomeTrackIds}
       endpoints={{
         genomeBrowser: 'https://dev-2020.ensembl.org/api/browser/data',
         alignments: `${config.structuralVariantsApiBaseUrl}/alignments`,

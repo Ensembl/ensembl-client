@@ -5,9 +5,12 @@
   grid-template-areas:
     "top-left image-controls-top top-right"
     "left sv-image right";
+  column-gap: 16px;
+  align-items: start;
   height: 100%;
   overflow-y: auto;
   padding-top: 12px;
+  scrollbar-gutter: stable;
 }
 
 .imageControlsContainer {
@@ -22,4 +25,43 @@
 
 .imageContainer {
   grid-area: sv-image;
+  border: 1px dashed var(--color-dark-grey);
+  border-radius: 4px;
+}
+
+.leftColumn {
+  grid-area: left;
+  position: relative;
+}
+
+.leftColumnLabel {
+  position: absolute;
+  right: 0;
+  max-width: 150px;
+  font-size: 11px;
+  text-align: right;
+}
+
+.regionName {
+  margin-top: 0.4rem;
+}
+
+.rightColumn {
+  grid-area: right;
+  position: relative;
+}
+
+.rightColumnLabel {
+  position: absolute;
+  left: 0;
+  max-width: 150px;
+  font-size: 11px;
+}
+
+.strong {
+  font-weight: var(--font-weight-bold);
+}
+
+.light {
+  font-weight: var(--font-weight-light);
 }
