@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { use } from 'react';
+import { use, type DetailedHTMLProps, type HTMLAttributes } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@ensembl/ensembl-structural-variants';
-import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 
 import config from 'config';
 
@@ -29,7 +28,7 @@ import type {
   StructuralVariantsBrowser,
   Endpoints,
   ViewportChangePayload,
-  TrackSummary
+  TrackPositionsChangeEvent
 } from '@ensembl/ensembl-structural-variants';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
@@ -76,8 +75,8 @@ const StructuralVariantsImage = (props: Props) => {
     navigate(url, { replace: true });
   };
 
-  const onTrackPositionsChange = (event: CustomEvent<TrackSummary[]>) => {
-    setTracks(event.detail);
+  const onTrackPositionsChange = (event: TrackPositionsChangeEvent) => {
+    setTracks(event.detail.tracks);
   };
 
   // Replace the ens-sv-browser component with a new one when reference region name changes
