@@ -1,0 +1,7 @@
+.wrapper {
+  position: relative; /* For tooltip positioning */
+}
+
+.tooltipAnchor {
+  position: absolute
+}

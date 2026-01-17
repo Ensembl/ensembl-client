@@ -1,0 +1,48 @@
+/* The styles in this file have been copied from Zmenu.module.css, with changed class names */
+
+.anchor {
+  position: absolute;
+}
+
+.toolbox {
+  max-width: 400px;
+  min-width: 250px;
+  word-break: break-all;
+}
+
+.section {
+  margin: 0;
+  margin-bottom: 1em;
+}
+
+.paragraph {
+  display: block;
+}
+
+.contentBlock:not(:last-child) {
+  margin-right: 1.1em;
+}
+
+.markupStrong {
+  font-weight: var(--font-weight-bold);
+}
+
+.markupLight {
+  font-weight: var(--font-weight-light);
+}
+
+.markupEmphasis {
+  font-style: italic;
+}
+
+.zmenuLinksGrid {
+  display: grid;
+  grid-template-columns: auto [app-links] 1fr;
+  align-items: center;
+}
+
+.zmenuAppLinks {
+  grid-column: app-links;
+  justify-self: end;
+}
+
