@@ -41,10 +41,12 @@ export default function useOutsideClick<T extends HTMLElement | null>(
   // so that if the callback called in handleClickOutside function needs to access any changing values in the parent component,
   // those values always are current (to prevent bugs caused by stale closures)
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside, { capture: true });
+    document.addEventListener('pointerdown', handleClickOutside, {
+      capture: true
+    });
 
     return () => {
-      document.removeEventListener('click', handleClickOutside, true);
+      document.removeEventListener('pointerdown', handleClickOutside, true);
     };
   });
 }

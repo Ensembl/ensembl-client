@@ -16,6 +16,7 @@
 
 import {
   useState,
+  useRef,
   use,
   type DetailedHTMLProps,
   type HTMLAttributes
@@ -28,9 +29,7 @@ import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { StructuralVariantsImageContext } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
-import PointerBox, {
-  Position as PointerBoxPosition
-} from 'src/shared/components/pointer-box/PointerBox';
+import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
 import TooltipContent from '../structural-variants-feature-tooltip/TooltipContent';
 
 import type {
@@ -58,7 +57,10 @@ const StructuralVariantsImage = (props: Props) => {
   const [featureMessage, setFeatureMessage] =
     useState<FeatureClickEventDetails | null>(null);
   const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
+  // NOTE: the line below isn't great; ideally, the tooltip would be able to adjust its position automatically
+  const [toolboxPosition, setToolboxPosition] = useState(ToolboxPosition.RIGHT);
   const imageContext = use(StructuralVariantsImageContext);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   if (!imageContext) {
     throw new Error(
@@ -95,6 +97,13 @@ const StructuralVariantsImage = (props: Props) => {
   };
 
   const onFeatureMessage = (event: CustomEvent<FeatureClickEventDetails>) => {
+    const { width: containerWidth } =
+      containerRef.current!.getBoundingClientRect();
+    if (event.detail.payload.x > containerWidth / 2) {
+      setToolboxPosition(ToolboxPosition.LEFT);
+    } else {
+      setToolboxPosition(ToolboxPosition.RIGHT);
+    }
     setFeatureMessage(event.detail);
   };
 
@@ -117,7 +126,7 @@ const StructuralVariantsImage = (props: Props) => {
   }
 
   return (
-    <div className={styles.wrapper}>
+    <div ref={containerRef} className={styles.wrapper}>
       <ens-sv-browser
         onviewport-change-end={onViewportChangeEnd}
         ontrack-positions-change={onTrackPositionsChange}
@@ -151,14 +160,13 @@ const StructuralVariantsImage = (props: Props) => {
         />
       )}
       {featureMessage && popupAnchor && (
-        <PointerBox
+        <Toolbox
           anchor={popupAnchor}
-          position={PointerBoxPosition.RIGHT_BOTTOM}
+          position={toolboxPosition}
           onOutsideClick={onPopupClose}
-          renderInsideAnchor={true}
         >
           <TooltipContent content={featureMessage.payload.content} />
-        </PointerBox>
+        </Toolbox>
       )}
     </div>
   );

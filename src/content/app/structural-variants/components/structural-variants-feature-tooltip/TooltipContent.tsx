@@ -33,11 +33,11 @@ export const TooltipContent = (props: ZmenuContentProps) => {
   const { content: sections } = props;
 
   const renderedContent = (
-    <>
+    <div className={styles.container}>
       {sections.map((section, index) => (
         <ContentSection key={index} content={section} />
       ))}
-    </>
+    </div>
   );
 
   return renderedContent;

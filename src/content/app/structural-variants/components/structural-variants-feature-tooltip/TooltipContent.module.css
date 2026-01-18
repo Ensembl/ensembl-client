@@ -1,12 +1,8 @@
 /* The styles in this file have been copied from Zmenu.module.css, with changed class names */
 
-.anchor {
-  position: absolute;
-}
-
-.toolbox {
-  max-width: 400px;
-  min-width: 250px;
+.container {
+  max-width: 360px;
+  min-width: 200px;
   word-break: break-all;
 }
 

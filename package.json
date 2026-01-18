@@ -14,7 +14,6 @@
   "license": "MIT",
   "scripts": {
     "prepare": "husky",
-    "prestart": "npm install --no-save",
     "start": "NODE_ENV=development TS_NODE_PROJECT=tsconfig.tooling.json ts-node --transpile-only scripts/start",
     "prebuild": "rimraf ./dist",
     "build": "NODE_ENV=production TS_NODE_PROJECT=tsconfig.tooling.json ts-node --transpile-only scripts/build",
@@ -32,7 +31,7 @@
   "dependencies": {
     "@ensembl/ensembl-elements-common": "0.0.4",
     "@ensembl/ensembl-genome-browser": "0.6.11",
-    "@ensembl/ensembl-structural-variants": "0.0.3",
+    "@ensembl/ensembl-structural-variants": "0.0.4",
     "@reduxjs/toolkit": "2.11.2",
     "@sentry/browser": "10.32.1",
     "classnames": "2.5.1",
