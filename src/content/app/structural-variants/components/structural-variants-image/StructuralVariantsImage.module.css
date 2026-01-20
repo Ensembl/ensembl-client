@@ -1,0 +1,15 @@
+.wrapper {
+  position: relative; /* For tooltip positioning */
+}
+
+.tooltipAnchor {
+  position: absolute;
+  /* In Safari 26.2 (20623.1.14.18.4),
+    the genome browser canvas in a web component is painted over the tooltip
+    (likely because of canvas's position: sticky).
+    The will-change: transform rule below forces the anchor
+    and the tooltip associated with it into a separate layer,
+    which seems to help with the Safari bug.
+  */
+  will-change: transform;
+}

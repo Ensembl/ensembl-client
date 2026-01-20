@@ -71,17 +71,10 @@ You can BLAST against a range of databases (proteins, transcripts, and genomic s
 ### Deployment (interal use only)
 - `npm run deploy-docs` — Builds the Storybook application and deploys it, along with the docs for Genome browser, to Github Pages ([link](https://ensembl.github.io/ensembl-client))
 
-## Development
+## Development notes
 
-Developers wishing to investigate or contribute to the ensembl-client codebase may also wish to install an IDE. We recommend VS Code, as it has great support for TypeScript and React.js.
+If you are working on a package that is a dependency of `ensembl-client`'s and want to test it locally in `ensembl-client` without publishing it first, you may find the following command useful:
 
-### VS Code Extensions
+`npm install <path to build directory> --install-links`
 
-The default setup of VS Code is sufficient for development, but its functionality can be extended further with these extensions:
-
-- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens): Extends the existing support for `git`.
-- [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode): Automated code formatting. Prettier is built into `webpack`, however it is not fit for formatting the code on the fly. It is currently disabled in `webpack`, so using this extension is recommended.
-- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint): Adds ESLint support to VS Code.
-- [stylelint](https://marketplace.visualstudio.com/items?itemName=shinnn.stylelint): Adds `stylelint` support to VS Code.
-- [SVG Viewer](https://marketplace.visualstudio.com/items?itemName=cssho.vscode-svgviewer): By default, VS Code will show SVG images only as a code file. This extension will add functionality, to let you view the SVG files as images.
-- [vscode-icons](https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons): By default, VS Code does not have icon support for many of the configuration files and formats used in the code. This extension adds those missing icons and more.
+Without the `--install-links` flag, `npm install <path to build directory>` creates a symlink to the directory, which, for packages with peer dependencies, may result in problems during module resolution.

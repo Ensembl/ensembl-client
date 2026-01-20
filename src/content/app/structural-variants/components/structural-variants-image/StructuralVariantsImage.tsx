@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { use, type DetailedHTMLProps, type HTMLAttributes } from 'react';
+import {
+  useState,
+  useRef,
+  use,
+  type DetailedHTMLProps,
+  type HTMLAttributes
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@ensembl/ensembl-structural-variants';
 
@@ -23,14 +29,19 @@ import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { StructuralVariantsImageContext } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
+import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
+import TooltipContent from '../structural-variants-feature-tooltip/TooltipContent';
 
 import type {
   StructuralVariantsBrowser,
   Endpoints,
   ViewportChangePayload,
-  TrackPositionsChangeEvent
+  TrackPositionsChangeEvent,
+  FeatureClickEventDetails
 } from '@ensembl/ensembl-structural-variants';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
+
+import styles from './StructuralVariantsImage.module.css';
 
 type Props = {
   referenceGenomeId: string;
@@ -43,7 +54,13 @@ type Props = {
 
 const StructuralVariantsImage = (props: Props) => {
   const navigate = useNavigate();
+  const [featureMessage, setFeatureMessage] =
+    useState<FeatureClickEventDetails | null>(null);
+  const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
+  // NOTE: the line below isn't great; ideally, the tooltip would be able to adjust its position automatically
+  const [toolboxPosition, setToolboxPosition] = useState(ToolboxPosition.RIGHT);
   const imageContext = use(StructuralVariantsImageContext);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   if (!imageContext) {
     throw new Error(
@@ -79,6 +96,27 @@ const StructuralVariantsImage = (props: Props) => {
     setTracks(event.detail.tracks);
   };
 
+  const onFeatureMessage = (event: CustomEvent<FeatureClickEventDetails>) => {
+    const { width: containerWidth } =
+      containerRef.current!.getBoundingClientRect();
+    if (event.detail.payload.x > containerWidth / 2) {
+      setToolboxPosition(ToolboxPosition.LEFT);
+    } else {
+      setToolboxPosition(ToolboxPosition.RIGHT);
+    }
+    setFeatureMessage(event.detail);
+  };
+
+  const onPopupAnchorMounted = (element: HTMLSpanElement) => {
+    setPopupAnchor(element);
+
+    return () => setPopupAnchor(null);
+  };
+
+  const onPopupClose = () => {
+    setFeatureMessage(null);
+  };
+
   // Replace the ens-sv-browser component with a new one when reference region name changes
   // (so that ens-sv-browser could find appropriate initial coordinates for alt genome)
   const componentKey = `${props.referenceGenomeId}${props.referenceGenomeLocation.regionName}`;
@@ -88,27 +126,49 @@ const StructuralVariantsImage = (props: Props) => {
   }
 
   return (
-    <ens-sv-browser
-      onviewport-change-end={onViewportChangeEnd}
-      ontrack-positions-change={onTrackPositionsChange}
-      key={componentKey}
-      referenceGenomeId={props.referenceGenomeId}
-      altGenomeId={props.altGenomeId}
-      start={props.referenceGenomeLocation.start}
-      end={props.referenceGenomeLocation.end}
-      altStart={props.altGenomeLocation?.start ?? 0}
-      altEnd={props.altGenomeLocation?.end ?? 0}
-      regionName={props.referenceGenomeLocation.regionName}
-      regionLength={props.regionLength}
-      altRegionLength={props.altRegionLength}
-      referenceTracks={referenceGenomeTrackIds}
-      altTracks={altGenomeTrackIds}
-      endpoints={{
-        genomeBrowser: 'https://dev-2020.ensembl.org/api/browser/data',
-        alignments: `${config.structuralVariantsApiBaseUrl}/alignments`,
-        variants: `${config.structuralVariantsApiBaseUrl}/variants`
-      }}
-    />
+    <div ref={containerRef} className={styles.wrapper}>
+      <ens-sv-browser
+        onviewport-change-end={onViewportChangeEnd}
+        ontrack-positions-change={onTrackPositionsChange}
+        onfeature-message={onFeatureMessage}
+        key={componentKey}
+        referenceGenomeId={props.referenceGenomeId}
+        altGenomeId={props.altGenomeId}
+        start={props.referenceGenomeLocation.start}
+        end={props.referenceGenomeLocation.end}
+        altStart={props.altGenomeLocation?.start ?? 0}
+        altEnd={props.altGenomeLocation?.end ?? 0}
+        regionName={props.referenceGenomeLocation.regionName}
+        regionLength={props.regionLength}
+        altRegionLength={props.altRegionLength}
+        referenceTracks={referenceGenomeTrackIds}
+        altTracks={altGenomeTrackIds}
+        endpoints={{
+          genomeBrowser: 'https://dev-2020.ensembl.org/api/browser/data',
+          alignments: `${config.structuralVariantsApiBaseUrl}/alignments`,
+          variants: `${config.structuralVariantsApiBaseUrl}/variants`
+        }}
+      />
+      {featureMessage && (
+        <span
+          ref={onPopupAnchorMounted}
+          className={styles.tooltipAnchor}
+          style={{
+            left: `${featureMessage.payload.x}px`,
+            top: `${featureMessage.payload.y}px`
+          }}
+        />
+      )}
+      {featureMessage && popupAnchor && (
+        <Toolbox
+          anchor={popupAnchor}
+          position={toolboxPosition}
+          onOutsideClick={onPopupClose}
+        >
+          <TooltipContent content={featureMessage.payload.content} />
+        </Toolbox>
+      )}
+    </div>
   );
 };
 
