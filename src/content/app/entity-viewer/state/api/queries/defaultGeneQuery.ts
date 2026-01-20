@@ -250,9 +250,7 @@ type DefaultEntityViewerTranscriptMetadata = Pick2<
 
 export type DefaultEntityViewerGene = GeneFields &
   GeneSlice & {
-    transcripts_page: {
-      transcripts: DefaultEntityViewerTranscript[];
-    };
+    transcripts: DefaultEntityViewerTranscript[];
   };
 
 export type DefaultEntityViewerGeneQueryResult = {

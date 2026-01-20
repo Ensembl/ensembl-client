@@ -64,7 +64,7 @@ const GeneFunction = (props: Props) => {
     .secondaryTab as GeneFunctionTabName;
 
   const { genomeId, entityId } = useParams() as { [key: string]: string };
-  const transcripts = props.gene.transcripts_page.transcripts;
+  const transcripts = props.gene.transcripts;
   const { trackTabChange } = useEntityViewerAnalytics();
 
   const changeTab = useCallback(

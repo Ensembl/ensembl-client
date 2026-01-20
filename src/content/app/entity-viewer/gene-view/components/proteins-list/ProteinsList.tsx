@@ -60,7 +60,7 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   const filters = useSelector(getFilters);
   const filteredTranscripts = filterTranscripts(
-    props.gene.transcripts_page.transcripts,
+    props.gene.transcripts,
     filters
   );
 
@@ -74,13 +74,11 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   useExpandedDefaultTranscript({
     geneStableId: props.gene.stable_id,
-    transcripts: props.gene.transcripts_page.transcripts,
+    transcripts: props.gene.transcripts,
     skip: Boolean(proteinIdToFocus)
   });
 
-  const longestProteinLength = getLongestProteinLength(
-    props.gene.transcripts_page
-  );
+  const longestProteinLength = getLongestProteinLength(props.gene);
 
   return !proteinCodingTranscripts.length ? (
     <div>No transcripts to show with the filters selected</div>

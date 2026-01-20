@@ -58,10 +58,7 @@ const DefaultTranscriptslist = (props: Props) => {
 
   const { gene } = props;
 
-  const filteredTranscripts = filterTranscripts(
-    gene.transcripts_page.transcripts,
-    filters
-  );
+  const filteredTranscripts = filterTranscripts(gene.transcripts, filters);
 
   const sortingFunction =
     getTranscriptSortingFunction<DefaultEntityViewerTranscript>(sortingRule);
@@ -69,7 +66,7 @@ const DefaultTranscriptslist = (props: Props) => {
 
   useExpandedDefaultTranscript({
     geneStableId: gene.stable_id,
-    transcripts: gene.transcripts_page.transcripts
+    transcripts: gene.transcripts
   });
 
   return (

@@ -184,7 +184,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
             [styles.openFilterLabelContainer]: isFilterPanelOpen
           })}
         >
-          {props.gene.transcripts_page.transcripts.length > 5 && (
+          {props.gene.transcripts.length > 5 && (
             <div className={styles.filterLabelWrapper}>
               <ShowHide
                 className={isFilterPanelOpen ? styles.showHide : undefined}
@@ -202,7 +202,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
           <div className={styles.filtersWrapper}>
             <TranscriptsFilter
               toggleFilterPanel={toggleFilterPanel}
-              transcripts={props.gene.transcripts_page.transcripts}
+              transcripts={props.gene.transcripts}
             />
           </div>
         )}

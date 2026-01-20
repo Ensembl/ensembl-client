@@ -40,12 +40,10 @@ import styles from './GeneOverviewImage.module.css';
 type Gene = Pick<FullGene, 'stable_id'> &
   Pick3<FullGene, 'slice', 'location', 'start' | 'end' | 'length'> &
   Pick3<FullGene, 'slice', 'strand', 'code'> & {
-    transcripts_page: {
-      transcripts: Array<
-        UnsplicedTranscriptProps['transcript'] &
-          Pick3<FullTranscript, 'slice', 'location', 'start' | 'end' | 'length'>
-      >;
-    };
+    transcripts: Array<
+      UnsplicedTranscriptProps['transcript'] &
+        Pick3<FullTranscript, 'slice', 'location', 'start' | 'end' | 'length'>
+    >;
   };
 
 export type GeneOverviewImageProps = {
@@ -85,7 +83,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
     .domain([geneStart, geneEnd])
     .rangeRound([0, GENE_IMAGE_WIDTH]);
 
-  const renderedTranscripts = props.gene.transcripts_page.transcripts.map(
+  const renderedTranscripts = props.gene.transcripts.map(
     (transcript, index) => {
       const { start: transcriptStart, end: transcriptEnd } =
         getFeatureCoordinates(transcript);
@@ -142,7 +140,7 @@ const StrandIndicator = (props: GeneOverviewImageProps) => {
 };
 
 const NumberOfTranscripts = (props: GeneOverviewImageProps) => {
-  const transcripts = props.gene.transcripts_page.transcripts;
+  const transcripts = props.gene.transcripts;
   return (
     <div className={styles.numberOfTranscripts}>
       <span className={styles.transcriptsCount}>{transcripts.length}</span>

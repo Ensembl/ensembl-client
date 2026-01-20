@@ -27,7 +27,7 @@ import {
   TranscriptsListItemInfoProps
 } from './TranscriptsListItemInfo';
 
-import { createGeneWithPaginatedTranscripts } from 'tests/fixtures/entity-viewer/gene';
+import { createGene } from 'tests/fixtures/entity-viewer/gene';
 import {
   createProteinCodingTranscript,
   createTranscriptMetadata
@@ -55,7 +55,7 @@ vi.mock('src/shared/components/instant-download', () => ({
 }));
 
 const transcript = createProteinCodingTranscript();
-const gene = createGeneWithPaginatedTranscripts({ transcripts: [transcript] });
+const gene = createGene({ transcripts: [transcript] });
 const expandDownload = false;
 const expandMoreInfo = false;
 
