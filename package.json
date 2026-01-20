@@ -14,6 +14,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "husky",
+    "prestart": "npm install --no-save",
     "start": "NODE_ENV=development TS_NODE_PROJECT=tsconfig.tooling.json ts-node --transpile-only scripts/start",
     "prebuild": "rimraf ./dist",
     "build": "NODE_ENV=production TS_NODE_PROJECT=tsconfig.tooling.json ts-node --transpile-only scripts/build",
