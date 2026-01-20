@@ -33,22 +33,23 @@ import {
 
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
-import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
+import type {
+  DefaultEntityViewerGene,
+  DefaultEntityViewerTranscript
+} from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import styles from './ProteinsList.module.css';
 
-type Transcript =
-  DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number];
-export type ProteinCodingTranscript = Transcript & {
+export type ProteinCodingTranscript = DefaultEntityViewerTranscript & {
   product_generating_contexts: {
     product: NonNullable<
-      Transcript['product_generating_contexts'][number]['product']
+      DefaultEntityViewerTranscript['product_generating_contexts'][number]['product']
     >;
   }[];
 };
 
 export type ProteinsListProps = {
-  gene: DefaultEntityViewerGeneQueryResult['gene'];
+  gene: DefaultEntityViewerGene;
 };
 
 const ProteinsList = (props: ProteinsListProps) => {
@@ -59,11 +60,12 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   const filters = useSelector(getFilters);
   const filteredTranscripts = filterTranscripts(
-    props.gene.transcripts,
+    props.gene.transcripts_page.transcripts,
     filters
   );
 
-  const sortingFunction = getTranscriptSortingFunction<Transcript>(sortingRule);
+  const sortingFunction =
+    getTranscriptSortingFunction<DefaultEntityViewerTranscript>(sortingRule);
   const sortedTranscripts = sortingFunction(filteredTranscripts);
 
   const proteinCodingTranscripts = sortedTranscripts.filter(
@@ -72,11 +74,13 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   useExpandedDefaultTranscript({
     geneStableId: props.gene.stable_id,
-    transcripts: props.gene.transcripts,
+    transcripts: props.gene.transcripts_page.transcripts,
     skip: Boolean(proteinIdToFocus)
   });
 
-  const longestProteinLength = getLongestProteinLength(props.gene);
+  const longestProteinLength = getLongestProteinLength(
+    props.gene.transcripts_page
+  );
 
   return !proteinCodingTranscripts.length ? (
     <div>No transcripts to show with the filters selected</div>

@@ -58,12 +58,12 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
-import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
+import type { DefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import styles from './GeneView.module.css';
 
 type GeneViewWithDataProps = {
-  gene: DefaultEntityViewerGeneQueryResult['gene'];
+  gene: DefaultEntityViewerGene;
 };
 
 const GeneView = () => {
@@ -82,7 +82,7 @@ const GeneView = () => {
 
   useEffect(() => {
     dispatch(resetFilterPanel());
-  }, [geneId]);
+  }, [geneId, dispatch]);
 
   // TODO decide about error handling
   if (isFetching) {
@@ -101,6 +101,7 @@ const GeneView = () => {
 const COMPONENT_ID = 'entity_viewer_gene_view';
 
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
+  const { gene } = props;
   const { genomeIdForUrl, entityIdInUrl } = useGeneViewIds();
   const [rulerTicks, setRulerTicks] = useState<TicksAndScale | null>(null);
 
@@ -146,7 +147,6 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   };
 
   useEffect(() => {
-    const { gene } = props;
     // TODO: check, isn't gene always supposed to be present?
     if (!genomeId || !gene) {
       return;
@@ -165,7 +165,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         })
       );
     };
-  }, [genomeId, props.gene]);
+  }, [genomeId, gene, dispatch]);
 
   return (
     <div className={styles.geneView} ref={targetElementRef}>
@@ -184,7 +184,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
             [styles.openFilterLabelContainer]: isFilterPanelOpen
           })}
         >
-          {props.gene.transcripts.length > 5 && (
+          {props.gene.transcripts_page.transcripts.length > 5 && (
             <div className={styles.filterLabelWrapper}>
               <ShowHide
                 className={isFilterPanelOpen ? styles.showHide : undefined}
@@ -202,7 +202,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
           <div className={styles.filtersWrapper}>
             <TranscriptsFilter
               toggleFilterPanel={toggleFilterPanel}
-              transcripts={props.gene.transcripts}
+              transcripts={props.gene.transcripts_page.transcripts}
             />
           </div>
         )}
@@ -234,7 +234,6 @@ const useGeneViewRouting = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { search } = useLocation();
-  // TODO: discuss – is using URLSearchParams better than using the querystring package?
 
   const urlSearchParams = new URLSearchParams(search);
   const view = urlSearchParams.get('view');
@@ -254,7 +253,15 @@ const useGeneViewRouting = () => {
       });
       navigate(url, { replace: true });
     }
-  }, [view, viewInRedux, genomeIdForUrl]);
+  }, [
+    view,
+    viewInRedux,
+    genomeIdForUrl,
+    entityIdInUrl,
+    dispatch,
+    proteinId,
+    navigate
+  ]);
 
   return {
     genomeId: activeGenomeId,

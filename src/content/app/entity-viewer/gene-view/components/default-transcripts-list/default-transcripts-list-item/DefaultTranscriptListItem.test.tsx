@@ -29,7 +29,7 @@ import {
 
 import { createProteinCodingTranscript } from 'tests/fixtures/entity-viewer/transcript';
 import {
-  createGene,
+  createGeneWithPaginatedTranscripts,
   createRulerTicks
 } from 'tests/fixtures/entity-viewer/gene';
 
@@ -86,7 +86,7 @@ const mockState = {
 
 const defaultProps = {
   transcriptPosition: 1,
-  gene: createGene(),
+  gene: createGeneWithPaginatedTranscripts(),
   transcript: createProteinCodingTranscript(),
   rulerTicks: createRulerTicks(),
   expandTranscript: false,

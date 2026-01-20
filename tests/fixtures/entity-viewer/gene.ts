@@ -27,6 +27,12 @@ import {
 import type { FullGene } from 'src/shared/types/core-api/gene';
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
+type GeneWithPaginatedTranscripts = Omit<FullGene, 'transcripts'> & {
+  transcripts_page: {
+    transcripts: ProteinCodingTranscript[];
+  };
+};
+
 type GeneFixture = Omit<FullGene, 'transcripts'> & {
   transcripts: ProteinCodingTranscript[];
 };
@@ -65,6 +71,17 @@ export const createGene = (
     },
     ...fragment
   };
+};
+
+export const createGeneWithPaginatedTranscripts = (
+  fragment: Partial<GeneFixture> = {}
+): GeneWithPaginatedTranscripts => {
+  const gene = createGene(fragment);
+  (gene as any).transcripts_page = {
+    transcripts: gene.transcripts
+  };
+  delete (gene as any).transcripts;
+  return gene as unknown as GeneWithPaginatedTranscripts;
 };
 
 const getScale = () => {

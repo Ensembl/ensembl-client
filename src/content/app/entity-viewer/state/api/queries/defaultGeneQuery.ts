@@ -210,7 +210,7 @@ type ProductGeneratingContextOnDefaultTranscript = Pick<
   product: ProductOnDefaultTranscript | null;
 };
 
-type DefaultEntityViewerTranscript = Pick<
+export type DefaultEntityViewerTranscript = Pick<
   FullTranscript,
   'stable_id' | 'unversioned_stable_id'
 > &
@@ -248,9 +248,11 @@ type DefaultEntityViewerTranscriptMetadata = Pick2<
   > | null;
 };
 
-type DefaultEntityViewerGene = GeneFields &
+export type DefaultEntityViewerGene = GeneFields &
   GeneSlice & {
-    transcripts: DefaultEntityViewerTranscript[];
+    transcripts_page: {
+      transcripts: DefaultEntityViewerTranscript[];
+    };
   };
 
 export type DefaultEntityViewerGeneQueryResult = {
