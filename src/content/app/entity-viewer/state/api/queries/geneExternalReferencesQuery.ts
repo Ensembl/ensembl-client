@@ -44,7 +44,6 @@ const transcriptFieldsFragment = gql`
     product_generating_contexts {
       product_type
       product {
-        length
         external_references {
           accession_id
           name
@@ -125,7 +124,6 @@ type QueriedProductGeneratingContext = Pick<
 
 type QueriedProduct = {
   external_references: QueriedExternalReference[];
-  length: number;
 };
 
 export type GeneWithExternalReferences = Pick<
