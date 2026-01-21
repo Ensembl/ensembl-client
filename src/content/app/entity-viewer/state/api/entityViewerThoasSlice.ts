@@ -27,7 +27,8 @@ import {
 } from './queries/genePageMetaQuery';
 import {
   defaultGeneQuery,
-  type DefaultEntityViewerGeneQueryResult
+  type DefaultEntityViewerGeneQueryResult,
+  type DefaultEntityViewerGeneWithTranscriptsPage
 } from './queries/defaultGeneQuery';
 import {
   geneSummaryQuery,
@@ -115,7 +116,12 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         url: config.coreApiUrl,
         body: defaultGeneQuery,
         variables: params
-      })
+      }),
+      transformResponse: (response: {
+        gene: DefaultEntityViewerGeneWithTranscriptsPage;
+      }) => {
+        return transformGeneInResponse(response);
+      }
     }),
     geneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
       query: (params) => ({
@@ -261,7 +267,7 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
               genes: responses.map(({ gene }) => gene)
             }
           };
-        } catch (error) {
+        } catch {
           return {
             error: {
               status: 500,
@@ -285,6 +291,42 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
     })
   })
 });
+
+type GeneWithTranscriptsPage<T> = {
+  transcripts_page: {
+    transcripts: T;
+  };
+};
+
+type GeneWithTranscripts<T> = {
+  transcripts: T;
+};
+
+const transformGeneInResponse = <
+  T,
+  G extends GeneWithTranscriptsPage<T>
+>(response: {
+  gene: G;
+}) => {
+  const transformedResponse = {
+    gene: moveTranscriptsFieldFromTranscriptsPage<T, G>(response.gene)
+  };
+  return transformedResponse;
+};
+
+const moveTranscriptsFieldFromTranscriptsPage = <
+  T,
+  G1 extends GeneWithTranscriptsPage<T>
+>(
+  geneWithTranscriptsPage: G1
+): Omit<G1, 'transcripts_page'> & GeneWithTranscripts<T> => {
+  const { transcripts_page, ...otherGeneFields } = geneWithTranscriptsPage;
+  const transformedGene = {
+    ...otherGeneFields,
+    transcripts: transcripts_page.transcripts
+  };
+  return transformedGene;
+};
 
 const addAlleleUrlId = <
   T extends {
