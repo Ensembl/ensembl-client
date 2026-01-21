@@ -21,6 +21,41 @@ type Params = {
   geneId: string;
 };
 
+const transcriptFieldsFragment = gql`
+  fragment transcriptFields on Transcript {
+    stable_id
+    slice {
+      location {
+        length
+      }
+    }
+    product_generating_contexts {
+      product_type
+      product {
+        length
+      }
+    }
+    metadata {
+      biotype {
+        label
+        value
+      }
+      canonical {
+        value
+        label
+      }
+      mane {
+        value
+        label
+        ncbi_transcript {
+          id
+          url
+        }
+      }
+    }
+  }
+`;
+
 const trackPanelGeneQuery = (params: Params) => gql`
   query TrackPanelGene {
     gene(by_id: { genome_id: "${params.genomeId}", stable_id: "${params.geneId}" }) {
@@ -44,40 +79,14 @@ const trackPanelGeneQuery = (params: Params) => gql`
           label
         }
       }
-      transcripts {
-        stable_id
-        slice {
-          location {
-            length
-          }
-        }
-        product_generating_contexts {
-          product_type
-          product {
-            length
-          }
-        }
-        metadata {
-          biotype {
-            label
-            value
-          }
-          canonical {
-            value
-            label
-          }
-          mane {
-            value
-            label
-            ncbi_transcript {
-              id
-              url
-            }
-          }
+      transcripts_page(page: 1, per_page: 100) {
+        transcripts {
+          ...transcriptFields
         }
       }
     }
   }
+  ${transcriptFieldsFragment}
 `;
 
 export default trackPanelGeneQuery;

@@ -21,6 +21,7 @@ import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import trackPanelGeneQuery from './queries/trackPanelGeneQuery';
 import {
   geneSummaryQuery,
+  type GeneSummaryWithPaginatedTranscripts,
   type GeneSummaryQueryResult
 } from './queries/geneSummaryQuery';
 import {
@@ -37,6 +38,8 @@ import {
 } from 'src/content/app/genome-browser/state/api/queries/variantQuery';
 import { regionQuery, type RegionQueryResult } from './queries/regionQuery';
 
+import { transformGeneInResponse } from 'src/shared/helpers/coreApiHelpers';
+
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { TrackPanelGene } from '../types/track-panel-gene';
 
@@ -45,6 +48,15 @@ type TranscriptQueryParams = { genomeId: string; transcriptId: string };
 type RegionQueryParams = { genomeId: string; regionName: string };
 type VariantQueryParams = { genomeId: string; variantId: string };
 
+type TrackPanelGeneWithPaginatedTranscripts = Omit<
+  TrackPanelGene,
+  'transcripts'
+> & {
+  transcripts_page: {
+    transcripts: TrackPanelGene['transcripts'];
+  };
+};
+
 const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getTrackPanelGene: builder.query<{ gene: TrackPanelGene }, GeneQueryParams>(
@@ -52,7 +64,12 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
         query: (params) => ({
           url: config.coreApiUrl,
           body: trackPanelGeneQuery(params)
-        })
+        }),
+        transformResponse(response: {
+          gene: TrackPanelGeneWithPaginatedTranscripts;
+        }) {
+          return transformGeneInResponse(response);
+        }
       }
     ),
     gbGeneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
@@ -60,7 +77,12 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
         url: config.coreApiUrl,
         body: geneSummaryQuery,
         variables: params
-      })
+      }),
+      transformResponse(response: {
+        gene: GeneSummaryWithPaginatedTranscripts;
+      }) {
+        return transformGeneInResponse(response);
+      }
     }),
     gbTranscriptSummary: builder.query<
       TranscriptSummaryQueryResult,

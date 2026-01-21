@@ -36,6 +36,7 @@ import {
 } from './queries/geneSummaryQuery';
 import {
   geneExternalReferencesQuery,
+  type GeneWithExternalReferencesAndTranscriptsPage,
   type GeneExternalReferencesQueryResult
 } from './queries/geneExternalReferencesQuery';
 import {
@@ -81,6 +82,8 @@ import {
   type GeneForVariantTranscriptConsequencesResponse,
   type TranscriptForVariantTranscriptConsequencesResponse
 } from './queries/variantTranscriptConsequencesQueries';
+
+import { transformGeneInResponse } from 'src/shared/helpers/coreApiHelpers';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
 type TranscriptQueryParams = { genomeId: string; transcriptId: string };
@@ -145,7 +148,12 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         url: config.coreApiUrl,
         body: geneExternalReferencesQuery,
         variables: params
-      })
+      }),
+      transformResponse(response: {
+        gene: GeneWithExternalReferencesAndTranscriptsPage;
+      }) {
+        return transformGeneInResponse(response);
+      }
     }),
     geneForSequenceDownload: builder.query<
       GeneForSequenceDownloadQueryResult,
@@ -291,42 +299,6 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
     })
   })
 });
-
-type GeneWithTranscriptsPage<T> = {
-  transcripts_page: {
-    transcripts: T;
-  };
-};
-
-type GeneWithTranscripts<T> = {
-  transcripts: T;
-};
-
-const transformGeneInResponse = <
-  T,
-  G extends GeneWithTranscriptsPage<T>
->(response: {
-  gene: G;
-}) => {
-  const transformedResponse = {
-    gene: moveTranscriptsFieldFromTranscriptsPage<T, G>(response.gene)
-  };
-  return transformedResponse;
-};
-
-const moveTranscriptsFieldFromTranscriptsPage = <
-  T,
-  G1 extends GeneWithTranscriptsPage<T>
->(
-  geneWithTranscriptsPage: G1
-): Omit<G1, 'transcripts_page'> & GeneWithTranscripts<T> => {
-  const { transcripts_page, ...otherGeneFields } = geneWithTranscriptsPage;
-  const transformedGene = {
-    ...otherGeneFields,
-    transcripts: transcripts_page.transcripts
-  };
-  return transformedGene;
-};
 
 const addAlleleUrlId = <
   T extends {

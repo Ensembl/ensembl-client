@@ -23,6 +23,54 @@ import type { FullProductGeneratingContext } from 'src/shared/types/core-api/pro
 import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 import type { ExternalReference } from 'src/shared/types/core-api/externalReference';
 
+const transcriptFieldsFragment = gql`
+  fragment transcriptFields on Transcript {
+    stable_id
+    slice {
+      location {
+        length
+      }
+    }
+    external_references {
+      accession_id
+      name
+      description
+      url
+      source {
+        id
+        name
+      }
+    }
+    product_generating_contexts {
+      product_type
+      product {
+        length
+        external_references {
+          accession_id
+          name
+          description
+          url
+          source {
+            id
+            name
+          }
+        }
+      }
+    }
+    metadata {
+      canonical {
+        value
+      }
+      mane {
+        value
+      }
+      biotype {
+        value
+      }
+    }
+  }
+`;
+
 export const geneExternalReferencesQuery = gql`
   query GeneExternalReferences($geneId: String!, $genomeId: String!) {
     gene(by_id: { stable_id: $geneId, genome_id: $genomeId }) {
@@ -38,53 +86,14 @@ export const geneExternalReferencesQuery = gql`
           name
         }
       }
-      transcripts {
-        stable_id
-        slice {
-          location {
-            length
-          }
-        }
-        external_references {
-          accession_id
-          name
-          description
-          url
-          source {
-            id
-            name
-          }
-        }
-        product_generating_contexts {
-          product_type
-          product {
-            length
-            external_references {
-              accession_id
-              name
-              description
-              url
-              source {
-                id
-                name
-              }
-            }
-          }
-        }
-        metadata {
-          canonical {
-            value
-          }
-          mane {
-            value
-          }
-          biotype {
-            value
-          }
+      transcripts_page(page: 1, per_page: 100) {
+        transcripts {
+          ...transcriptFields
         }
       }
     }
   }
+  ${transcriptFieldsFragment}
 `;
 
 export type QueriedExternalReference = Pick<
@@ -119,11 +128,23 @@ type QueriedProduct = {
   length: number;
 };
 
-type QueriedGene = Pick<FullGene, 'stable_id' | 'symbol'> & {
+export type GeneWithExternalReferences = Pick<
+  FullGene,
+  'stable_id' | 'symbol'
+> & {
   external_references: QueriedExternalReference[];
   transcripts: QueriedTranscript[];
 };
 
+export type GeneWithExternalReferencesAndTranscriptsPage = Omit<
+  GeneWithExternalReferences,
+  'transcripts'
+> & {
+  transcripts_page: {
+    transcripts: GeneWithExternalReferences['transcripts'];
+  };
+};
+
 export type GeneExternalReferencesQueryResult = {
-  gene: QueriedGene;
+  gene: GeneWithExternalReferences;
 };
