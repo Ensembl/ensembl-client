@@ -27,7 +27,8 @@ import {
 } from './queries/genePageMetaQuery';
 import {
   defaultGeneQuery,
-  type DefaultEntityViewerGeneQueryResult
+  type DefaultEntityViewerGeneQueryResult,
+  type DefaultEntityViewerGeneWithTranscriptsPage
 } from './queries/defaultGeneQuery';
 import {
   geneSummaryQuery,
@@ -35,6 +36,7 @@ import {
 } from './queries/geneSummaryQuery';
 import {
   geneExternalReferencesQuery,
+  type GeneWithExternalReferencesAndTranscriptsPage,
   type GeneExternalReferencesQueryResult
 } from './queries/geneExternalReferencesQuery';
 import {
@@ -81,6 +83,8 @@ import {
   type TranscriptForVariantTranscriptConsequencesResponse
 } from './queries/variantTranscriptConsequencesQueries';
 
+import { transformGeneInResponse } from 'src/shared/helpers/coreApiHelpers';
+
 type GeneQueryParams = { genomeId: string; geneId: string };
 type TranscriptQueryParams = { genomeId: string; transcriptId: string };
 type ProductQueryParams = { productId: string; genomeId: string };
@@ -115,7 +119,12 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         url: config.coreApiUrl,
         body: defaultGeneQuery,
         variables: params
-      })
+      }),
+      transformResponse: (response: {
+        gene: DefaultEntityViewerGeneWithTranscriptsPage;
+      }) => {
+        return transformGeneInResponse(response);
+      }
     }),
     geneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
       query: (params) => ({
@@ -139,7 +148,12 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         url: config.coreApiUrl,
         body: geneExternalReferencesQuery,
         variables: params
-      })
+      }),
+      transformResponse(response: {
+        gene: GeneWithExternalReferencesAndTranscriptsPage;
+      }) {
+        return transformGeneInResponse(response);
+      }
     }),
     geneForSequenceDownload: builder.query<
       GeneForSequenceDownloadQueryResult,
@@ -261,7 +275,7 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
               genes: responses.map(({ gene }) => gene)
             }
           };
-        } catch (error) {
+        } catch {
           return {
             error: {
               status: 500,

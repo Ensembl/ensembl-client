@@ -33,22 +33,23 @@ import {
 
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
-import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
+import type {
+  DefaultEntityViewerGene,
+  DefaultEntityViewerTranscript
+} from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import styles from './ProteinsList.module.css';
 
-type Transcript =
-  DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number];
-export type ProteinCodingTranscript = Transcript & {
+export type ProteinCodingTranscript = DefaultEntityViewerTranscript & {
   product_generating_contexts: {
     product: NonNullable<
-      Transcript['product_generating_contexts'][number]['product']
+      DefaultEntityViewerTranscript['product_generating_contexts'][number]['product']
     >;
   }[];
 };
 
 export type ProteinsListProps = {
-  gene: DefaultEntityViewerGeneQueryResult['gene'];
+  gene: DefaultEntityViewerGene;
 };
 
 const ProteinsList = (props: ProteinsListProps) => {
@@ -63,7 +64,8 @@ const ProteinsList = (props: ProteinsListProps) => {
     filters
   );
 
-  const sortingFunction = getTranscriptSortingFunction<Transcript>(sortingRule);
+  const sortingFunction =
+    getTranscriptSortingFunction<DefaultEntityViewerTranscript>(sortingRule);
   const sortedTranscripts = sortingFunction(filteredTranscripts);
 
   const proteinCodingTranscripts = sortedTranscripts.filter(

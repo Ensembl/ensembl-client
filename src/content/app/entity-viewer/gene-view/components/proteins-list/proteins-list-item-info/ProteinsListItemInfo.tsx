@@ -48,13 +48,13 @@ import { SWISSPROT_SOURCE } from 'src/content/app/entity-viewer/gene-view/compon
 
 import { LoadingState } from 'src/shared/types/loading-state';
 import type { ExternalReference as ExternalReferenceType } from 'src/shared/types/core-api/externalReference';
-import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
+import type { DefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 import type { ProteinCodingTranscript } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/ProteinsList';
 
 import styles from './ProteinsListItemInfo.module.css';
 
 export type Props = {
-  gene: DefaultEntityViewerGeneQueryResult['gene'];
+  gene: DefaultEntityViewerGene;
   transcript: ProteinCodingTranscript;
   trackLength: number;
 };
@@ -82,21 +82,20 @@ const ProteinsListItemInfo = (props: Props) => {
     genomeId: genomeId as string
   });
 
+  if (summaryStatsLoadingState === LoadingState.LOADING && !displayXref) {
+    // if displayXref is absent, we cannot fetch relevant data from PDBe;
+    // so pretend that we've successfully completed the request
+    setSummaryStatsLoadingState(LoadingState.SUCCESS);
+  }
+
   useEffect(() => {
     const abortController = new AbortController();
-    if (summaryStatsLoadingState === LoadingState.LOADING && !displayXref) {
-      // if displayXref is absent, we cannot fetch relevant data from PDBe; so pretend that we've successfully completed the request
-      setSummaryStatsLoadingState(LoadingState.SUCCESS);
-      return;
-    }
 
     if (summaryStatsLoadingState === LoadingState.LOADING && displayXref) {
       fetchProteinSummaryStats(displayXref.accession_id, abortController.signal)
         .then((response) => {
           if (!abortController.signal.aborted) {
-            response
-              ? setProteinSummaryStats(response as ProteinStats)
-              : setProteinSummaryStats(null);
+            setProteinSummaryStats(response);
             setSummaryStatsLoadingState(LoadingState.SUCCESS);
           }
         })
