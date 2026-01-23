@@ -1,0 +1,30 @@
+.container {
+  max-width: 360px;
+  min-width: 200px;
+  word-break: break-all;
+}
+
+.section {
+  margin: 0;
+  margin-bottom: 1em;
+}
+
+.paragraph {
+  display: block;
+}
+
+.contentBlock:not(:last-child) {
+  margin-right: 1.1em;
+}
+
+.markupStrong {
+  font-weight: var(--font-weight-bold);
+}
+
+.markupLight {
+  font-weight: var(--font-weight-light);
+}
+
+.markupEmphasis {
+  font-style: italic;
+}

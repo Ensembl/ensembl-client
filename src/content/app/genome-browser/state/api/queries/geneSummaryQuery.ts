@@ -21,6 +21,15 @@ import type { FullGene } from 'src/shared/types/core-api/gene';
 import type { FullTranscript } from 'src/shared/types/core-api/transcript';
 import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
 
+const transcriptFieldsFragment = gql`
+  fragment transcriptFields on Transcript {
+    stable_id
+    product_generating_contexts {
+      product_type
+    }
+  }
+`;
+
 export const geneSummaryQuery = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
@@ -29,10 +38,9 @@ export const geneSummaryQuery = gql`
       stable_id
       unversioned_stable_id
       symbol
-      transcripts {
-        stable_id
-        product_generating_contexts {
-          product_type
+      transcripts_page(page: 1, per_page: 100) {
+        transcripts {
+          ...transcriptFields
         }
       }
       slice {
@@ -63,6 +71,7 @@ export const geneSummaryQuery = gql`
       }
     }
   }
+  ${transcriptFieldsFragment}
 `;
 
 type Transcript = Pick<FullTranscript, 'stable_id'> & {
@@ -94,6 +103,15 @@ type GeneSummary = Pick<
   Pick4<FullGene, 'slice', 'region', 'sequence', 'checksum'> & {
     transcripts: Transcript[];
   };
+
+export type GeneSummaryWithPaginatedTranscripts = Omit<
+  GeneSummary,
+  'transcripts'
+> & {
+  transcripts_page: {
+    transcripts: GeneSummary['transcripts'];
+  };
+};
 
 export type GeneSummaryQueryResult = {
   gene: GeneSummary;

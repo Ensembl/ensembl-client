@@ -19,7 +19,6 @@ import { Pick2, Pick3 } from 'ts-multipick';
 import type { FullGene } from 'src/shared/types/core-api/gene';
 import type { FullTranscript } from 'src/shared/types/core-api/transcript';
 import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
-import type { Product } from 'src/shared/types/core-api/product';
 
 type GeneFields = Pick<
   FullGene,
@@ -32,12 +31,10 @@ type GeneSlice = Pick3<FullGene, 'slice', 'region', 'name'> &
 type TranscriptFields = Pick<FullTranscript, 'stable_id'>;
 type TranscriptSlice = Pick3<FullTranscript, 'slice', 'location', 'length'>;
 type TranscriptPGCs = {
-  product_generating_contexts: (Pick<
+  product_generating_contexts: Pick<
     FullProductGeneratingContext,
     'product_type'
-  > & {
-    product: Pick<Product, 'length'> | null;
-  })[];
+  >[];
 };
 type TranscriptMetadata = Pick3<
   FullTranscript,

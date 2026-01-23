@@ -235,7 +235,7 @@ const useFocusGene = (params: UseFocusGeneParams) => {
 
   // apply track settings other than several transcripts
   useEffect(() => {
-    if (!geneStableId || !focusGeneTrackSettings) {
+    if (!geneStableId || !focusGeneTrackSettings || !genomeBrowser) {
       return;
     }
 
@@ -243,7 +243,7 @@ const useFocusGene = (params: UseFocusGeneParams) => {
       focusGeneTrackSettings.settings,
       genomeBrowserMethods
     );
-  }, [focusGeneTrackSettings]);
+  }, [genomeBrowser, focusGeneTrackSettings]);
 
   const setVisibleTranscriptIds = (transcriptIds: string[]) => {
     dispatch(

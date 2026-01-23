@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /genome-browser/
 Disallow: /blast/
 Disallow: /vep/
-Disallow: /species-selector/search/
+Disallow: /species-selector/search

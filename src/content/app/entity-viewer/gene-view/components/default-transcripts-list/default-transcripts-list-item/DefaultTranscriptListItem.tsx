@@ -28,15 +28,18 @@ import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-v
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
-import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
+import type {
+  DefaultEntityViewerGene,
+  DefaultEntityViewerTranscript
+} from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.module.css';
 import styles from './DefaultTranscriptListItem.module.css';
 
 export type DefaultTranscriptListItemProps = {
   transcriptPosition: number;
-  gene: DefaultEntityViewerGeneQueryResult['gene'];
-  transcript: DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number];
+  gene: DefaultEntityViewerGene;
+  transcript: DefaultEntityViewerTranscript;
   rulerTicks: TicksAndScale;
   expandTranscript: boolean;
   expandDownload: boolean;

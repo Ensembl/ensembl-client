@@ -1,0 +1,67 @@
+.grid {
+  display: grid;
+  grid-template-columns: 150px 1fr 150px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "top-left image-controls-top top-right"
+    "left sv-image right";
+  column-gap: 16px;
+  align-items: start;
+  height: 100%;
+  overflow-y: auto;
+  padding-top: 12px;
+  scrollbar-gutter: stable;
+}
+
+.imageControlsContainer {
+  grid-area: image-controls-top;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  height: 30px;
+  padding-left: var(--double-standard-gutter);
+  padding-right: var(--standard-gutter);
+}
+
+.imageContainer {
+  grid-area: sv-image;
+  border: 1px dashed var(--color-dark-grey);
+  border-radius: 4px;
+}
+
+.leftColumn {
+  grid-area: left;
+  position: relative;
+}
+
+.leftColumnLabel {
+  position: absolute;
+  right: 0;
+  max-width: 150px;
+  font-size: 11px;
+  text-align: right;
+}
+
+.regionName {
+  margin-top: 0.4rem;
+}
+
+.rightColumn {
+  grid-area: right;
+  position: relative;
+}
+
+.rightColumnLabel {
+  position: absolute;
+  left: 0;
+  max-width: 150px;
+  font-size: 11px;
+}
+
+.strong {
+  font-weight: var(--font-weight-bold);
+}
+
+.light {
+  font-weight: var(--font-weight-light);
+}

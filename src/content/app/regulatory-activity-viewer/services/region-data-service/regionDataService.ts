@@ -379,7 +379,7 @@ const fetchLocation = (params: RegionDetailsQueryAction['payload']) => {
   const { assemblyId, regionName, start, end } = params;
   const locationForUrl = `${regionName}:${start}-${end}`;
   const releaseName = '2025-02'; // TODO: pass genome release with payload
-  const endpointUrl = `${config.regulationApiBaseUrl}/annotation/v0.5/release/${releaseName}/assembly/${assemblyId}?location=${locationForUrl}`;
+  const endpointUrl = `${config.regulationApiBaseUrl}/annotation/v0.6/release/${releaseName}/assembly/${assemblyId}?location=${locationForUrl}`;
 
   return observableFetch<OverviewRegion>(endpointUrl);
 };

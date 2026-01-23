@@ -14,20 +14,103 @@
  * limitations under the License.
  */
 
+import { useAppSelector } from 'src/store';
+
 import useStructuralVariantsRouting from 'src/content/app/structural-variants/hooks/useStructuralVariantsRouting';
+
+import { getBreakpointWidth } from 'src/global/globalSelectors';
+import {
+  getReferenceGenome,
+  getAlternativeGenome,
+  getReferenceGenomeLocation
+} from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
 import StructuralVariantsTopBar from './components/structural-variants-top-bar/StructuralVariantsTopBar';
-import StructuralVariantsImage from './components/structural-variants-image/StructuralVariantsImage';
+import StructuralVariantsMain from './components/structural-variants-main/StructuralVariantsMain';
+import StructuralVariantsSidebar from './components/structural-variants-sidebar/StructuralVariantsSidebar';
+import StructuralVariantsInterstitial from './components/structural-variants-interstitial/StructuralVariantsInterstitial';
+import { StandardAppLayout } from 'src/shared/components/layout';
+
+import styles from './StructuralVariants.module.css';
 
 const StructuralVariants = () => {
-  useStructuralVariantsRouting();
+  const {
+    isValidating,
+    referenceGenomeIdParam,
+    referenceLocationParam,
+    altGenomeIdParam,
+    altLocationParam,
+    referenceGenome,
+    altGenome,
+    referenceGenomeLocation,
+    isReferenceGenomeIdValid,
+    isAltGenomeIdValid,
+    isReferenceGenomeLocationValid,
+    isAltGenomeLocationValid,
+    isMissingAltGenomeRegion
+  } = useStructuralVariantsRouting();
+  const viewportWidth = useAppSelector(getBreakpointWidth);
+  const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
+  const referenceGenomeLocationFromRedux = useAppSelector(
+    getReferenceGenomeLocation
+  );
+  const altGenomeFromRedux = useAppSelector(getAlternativeGenome);
+
+  // To avoid showing the main screen while there isn't sufficient data to render it.
+  const isInitialValidation =
+    isValidating &&
+    (!referenceGenomeFromRedux ||
+      !altGenomeFromRedux ||
+      !referenceGenomeLocationFromRedux);
+
+  if (
+    isInitialValidation ||
+    !referenceGenomeIdParam ||
+    !referenceLocationParam ||
+    !altGenomeIdParam ||
+    !isReferenceGenomeIdValid ||
+    !isAltGenomeIdValid ||
+    !isReferenceGenomeLocationValid ||
+    !isAltGenomeLocationValid
+  ) {
+    return (
+      <div className={styles.containerInterstitial}>
+        <StructuralVariantsAppBar />
+        <StructuralVariantsTopBar standalone={true} />
+        <StructuralVariantsInterstitial
+          isValidating={isValidating}
+          referenceGenome={referenceGenome}
+          altGenome={altGenome}
+          referenceGenomeIdParam={referenceGenomeIdParam}
+          referenceLocationParam={referenceLocationParam}
+          altGenomeIdParam={altGenomeIdParam}
+          altLocationParam={altLocationParam}
+          referenceGenomeLocation={referenceGenomeLocation}
+          isReferenceGenomeIdValid={isReferenceGenomeIdValid}
+          isReferenceGenomeLocationValid={isReferenceGenomeLocationValid}
+          isAltGenomeIdValid={isAltGenomeIdValid}
+          isAltGenomeLocationValid={isAltGenomeLocationValid}
+          isMissingAltGenomeRegion={isMissingAltGenomeRegion}
+        />
+      </div>
+    );
+  }
 
   return (
-    <div>
+    <div className={styles.container}>
       <StructuralVariantsAppBar />
-      <StructuralVariantsTopBar />
-      <StructuralVariantsImage />
+      <StandardAppLayout
+        mainContent={<StructuralVariantsMain />}
+        sidebarContent={<StructuralVariantsSidebar />}
+        topbarContent={<StructuralVariantsTopBar standalone={false} />}
+        isSidebarOpen={true}
+        onSidebarToggle={() => {
+          return true;
+        }}
+        sidebarNavigation={null}
+        viewportWidth={viewportWidth}
+      />
     </div>
   );
 };

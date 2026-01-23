@@ -46,7 +46,10 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
-import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
+import type {
+  DefaultEntityViewerGene,
+  DefaultEntityViewerTranscript
+} from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
@@ -54,8 +57,8 @@ import transcriptsListStyles from '../DefaultTranscriptsList.module.css';
 import styles from './TranscriptsListItemInfo.module.css';
 
 export type TranscriptsListItemInfoProps = {
-  gene: DefaultEntityViewerGeneQueryResult['gene'];
-  transcript: DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number];
+  gene: DefaultEntityViewerGene;
+  transcript: DefaultEntityViewerTranscript;
   expandDownload: boolean;
   expandMoreInfo: boolean;
 };

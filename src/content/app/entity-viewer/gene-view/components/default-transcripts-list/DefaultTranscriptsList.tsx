@@ -33,15 +33,15 @@ import {
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
-import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
+import type {
+  DefaultEntityViewerGene,
+  DefaultEntityViewerTranscript
+} from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import styles from './DefaultTranscriptsList.module.css';
 
-type Transcript =
-  DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number];
-
 export type Props = {
-  gene: DefaultEntityViewerGeneQueryResult['gene'];
+  gene: DefaultEntityViewerGene;
   rulerTicks: TicksAndScale;
 };
 
@@ -60,7 +60,8 @@ const DefaultTranscriptslist = (props: Props) => {
 
   const filteredTranscripts = filterTranscripts(gene.transcripts, filters);
 
-  const sortingFunction = getTranscriptSortingFunction<Transcript>(sortingRule);
+  const sortingFunction =
+    getTranscriptSortingFunction<DefaultEntityViewerTranscript>(sortingRule);
   const sortedTranscripts = sortingFunction(filteredTranscripts);
 
   useExpandedDefaultTranscript({

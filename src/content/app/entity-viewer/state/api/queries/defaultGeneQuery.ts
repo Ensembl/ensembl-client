@@ -24,6 +24,115 @@ import type { FullProductGeneratingContext } from 'src/shared/types/core-api/pro
 import type { Product } from 'src/shared/types/core-api/product';
 import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
+const transcriptFieldsFragment = gql`
+  fragment transcriptFields on Transcript {
+    stable_id
+    unversioned_stable_id
+    slice {
+      location {
+        start
+        end
+        length
+      }
+      region {
+        name
+      }
+      strand {
+        code
+      }
+    }
+    relative_location {
+      start
+      end
+    }
+    spliced_exons {
+      relative_location {
+        start
+        end
+      }
+      exon {
+        stable_id
+        slice {
+          location {
+            length
+          }
+        }
+      }
+    }
+    product_generating_contexts {
+      product_type
+      cds {
+        relative_start
+        relative_end
+      }
+      cdna {
+        length
+      }
+      phased_exons {
+        start_phase
+        end_phase
+        exon {
+          stable_id
+        }
+      }
+      product {
+        stable_id
+        unversioned_stable_id
+        length
+        external_references {
+          accession_id
+          name
+          description
+          source {
+            id
+          }
+        }
+      }
+    }
+    external_references {
+      accession_id
+      name
+      url
+      source {
+        id
+        name
+      }
+    }
+    metadata {
+      biotype {
+        label
+        value
+        definition
+      }
+      tsl {
+        label
+        value
+      }
+      appris {
+        label
+        value
+      }
+      canonical {
+        value
+        label
+        definition
+      }
+      mane {
+        value
+        label
+        definition
+        ncbi_transcript {
+          id
+          url
+        }
+      }
+      gencode_basic {
+        label
+      }
+    }
+  }
+`;
+
 export const defaultGeneQuery = gql`
   query DefaultEntityViewerGene($genomeId: String!, $geneId: String!) {
     gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
@@ -41,114 +150,14 @@ export const defaultGeneQuery = gql`
           code
         }
       }
-      transcripts {
-        stable_id
-        unversioned_stable_id
-        slice {
-          location {
-            start
-            end
-            length
-          }
-          region {
-            name
-          }
-          strand {
-            code
-          }
-        }
-        relative_location {
-          start
-          end
-        }
-        spliced_exons {
-          relative_location {
-            start
-            end
-          }
-          exon {
-            stable_id
-            slice {
-              location {
-                length
-              }
-            }
-          }
-        }
-        product_generating_contexts {
-          product_type
-          cds {
-            relative_start
-            relative_end
-          }
-          cdna {
-            length
-          }
-          phased_exons {
-            start_phase
-            end_phase
-            exon {
-              stable_id
-            }
-          }
-          product {
-            stable_id
-            unversioned_stable_id
-            length
-            external_references {
-              accession_id
-              name
-              description
-              source {
-                id
-              }
-            }
-          }
-        }
-        external_references {
-          accession_id
-          name
-          url
-          source {
-            id
-            name
-          }
-        }
-        metadata {
-          biotype {
-            label
-            value
-            definition
-          }
-          tsl {
-            label
-            value
-          }
-          appris {
-            label
-            value
-          }
-          canonical {
-            value
-            label
-            definition
-          }
-          mane {
-            value
-            label
-            definition
-            ncbi_transcript {
-              id
-              url
-            }
-          }
-          gencode_basic {
-            label
-          }
+      transcripts_page(page: 1, per_page: 100) {
+        transcripts {
+          ...transcriptFields
         }
       }
     }
   }
+  ${transcriptFieldsFragment}
 `;
 
 type GeneFields = Pick<
@@ -210,7 +219,7 @@ type ProductGeneratingContextOnDefaultTranscript = Pick<
   product: ProductOnDefaultTranscript | null;
 };
 
-type DefaultEntityViewerTranscript = Pick<
+export type DefaultEntityViewerTranscript = Pick<
   FullTranscript,
   'stable_id' | 'unversioned_stable_id'
 > &
@@ -248,9 +257,16 @@ type DefaultEntityViewerTranscriptMetadata = Pick2<
   > | null;
 };
 
-type DefaultEntityViewerGene = GeneFields &
+export type DefaultEntityViewerGene = GeneFields &
   GeneSlice & {
     transcripts: DefaultEntityViewerTranscript[];
+  };
+
+export type DefaultEntityViewerGeneWithTranscriptsPage = GeneFields &
+  GeneSlice & {
+    transcripts_page: {
+      transcripts: DefaultEntityViewerTranscript[];
+    };
   };
 
 export type DefaultEntityViewerGeneQueryResult = {

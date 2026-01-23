@@ -2,11 +2,14 @@
   --flat-input-width: 200px;
   display: flex;
   align-items: center;
+  padding-left: var(--standard-gutter);
+  white-space: nowrap;
+}
+
+.topBarStandalone {
   height: 38px; /* NOTE: there is a --topbar-height variable in StandardAppLayout */
   background: var(--color-light-grey);
   box-shadow: 0 2px 3px var(--color-grey);
-  padding-left: var(--standard-gutter);
-  white-space: nowrap;
 }
 
 .withBothMargins {

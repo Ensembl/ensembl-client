@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useReducer } from 'react';
+import { useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
@@ -24,7 +24,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
   getReferenceGenome,
   getAlternativeGenome,
-  getReferenceLocation
+  getReferenceGenomeLocation
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 import {
@@ -60,9 +60,9 @@ const initialState: TopBarState = {
 
 type SetGenomesAndLocationAction = {
   type: 'set_genomes_and_location';
-  referenceGenome: BriefGenomeSummary;
-  altGenome: BriefGenomeSummary;
-  refGenomeLocation: GenomicLocation;
+  referenceGenome: BriefGenomeSummary | null;
+  altGenome: BriefGenomeSummary | null;
+  refGenomeLocation: GenomicLocation | null;
 };
 
 type ChangeReferenceGenomeAction = {
@@ -147,12 +147,9 @@ const useTopBarState = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
   const altGenomeFromRedux = useAppSelector(getAlternativeGenome);
-  const refGenomeLocationFromRedux = useAppSelector(getReferenceLocation);
+  const refGenomeLocationFromRedux = useAppSelector(getReferenceGenomeLocation);
   const navigate = useNavigate();
   const reduxDispatch = useAppDispatch();
-
-  const [prevRefGenomeLocationFromRedux, setPrevGenomeLocationFromRedux] =
-    useState<GenomicLocation | null>(refGenomeLocationFromRedux);
 
   const referenceGenomeId = state.referenceGenome?.genome_id;
 
@@ -160,37 +157,27 @@ const useTopBarState = () => {
     referenceGenomeId
   });
 
-  if (
-    !state.referenceGenome &&
-    !state.altGenome &&
-    !state.refGenomeLocation &&
-    referenceGenomeFromRedux &&
-    altGenomeFromRedux &&
-    refGenomeLocationFromRedux
-  ) {
-    dispatch({
-      type: 'set_genomes_and_location',
-      referenceGenome: referenceGenomeFromRedux,
-      altGenome: altGenomeFromRedux,
-      refGenomeLocation: refGenomeLocationFromRedux
-    });
+  // Automatic state updates
+  if (!state.isEditing) {
+    // update the state based on redux values
+    if (
+      state.referenceGenome !== referenceGenomeFromRedux ||
+      state.altGenome !== altGenomeFromRedux ||
+      state.refGenomeLocation !== refGenomeLocationFromRedux
+    ) {
+      dispatch({
+        type: 'set_genomes_and_location',
+        referenceGenome: referenceGenomeFromRedux,
+        altGenome: altGenomeFromRedux,
+        refGenomeLocation: refGenomeLocationFromRedux
+      });
+    }
   } else if (!state.refGenomeLocation && exampleLocation) {
     const location = getGenomicLocationFromString(exampleLocation);
     dispatch({
       type: 'change_reference_genome_location',
       location
     });
-  }
-  if (
-    refGenomeLocationFromRedux &&
-    refGenomeLocationFromRedux !== prevRefGenomeLocationFromRedux
-  ) {
-    dispatch({
-      type: 'change_reference_genome_location',
-      location: refGenomeLocationFromRedux,
-      isEditing: false
-    });
-    setPrevGenomeLocationFromRedux(refGenomeLocationFromRedux);
   }
 
   const canSubmitSelection =
@@ -253,11 +240,11 @@ const useTopBarState = () => {
 
     const url = urlFor.structuralVariantsViewer({
       referenceGenomeId: state.referenceGenome?.genome_id,
-      referenceGenomeLocation: state.refGenomeLocation as GenomicLocation,
+      referenceGenomeLocation: refGenomeLocation as GenomicLocation,
       altGenomeId: state.altGenome?.genome_id
     });
 
-    navigate(url, { replace: true });
+    navigate(url);
   };
 
   let referenceGenomeLocationString: string;

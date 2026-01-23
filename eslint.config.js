@@ -7,6 +7,7 @@
 /* eslint-disable */
 
 const eslint = require('@eslint/js');
+const { defineConfig } = require('eslint/config');
 const tseslint = require('typescript-eslint');
 const prettierConfig = require('eslint-config-prettier');
 const reactPlugin = require('eslint-plugin-react');
@@ -15,10 +16,11 @@ const reactRecommended = require('eslint-plugin-react/configs/recommended');
 const vitestPlugin = require('@vitest/eslint-plugin');
 
 
-module.exports = tseslint.config(
+module.exports = defineConfig(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   reactRecommended,
+  reactHooksPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
   prettierConfig,
   {
@@ -57,16 +59,6 @@ module.exports = tseslint.config(
         version: 'detect' // Makes eslint-plugin-react automatically detect React version
       }
     }
-  },
-
-  // settings for eslint-plugin-react-hooks
-  {
-    plugins: {
-      'react-hooks': reactHooksPlugin,
-    },
-    rules: {
-      'react-hooks/rules-of-hooks': 2
-    },
   },
 
   // settings for eslint-plugin-vitest

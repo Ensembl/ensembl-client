@@ -67,33 +67,11 @@ const structuralVariantsGeneralSlice = createSlice({
       state.alternativeGenome = alternativeGenome;
       state.referenceGenomeLocation = referenceGenomeLocation;
       state.alternativeGenomeLocation = alternativeGenomeLocation;
-    },
-    setReferenceGenome(
-      state,
-      action: PayloadAction<{ genome: BriefGenomeSummary }>
-    ) {
-      const { genome } = action.payload;
-      state.referenceGenome = genome;
-      state.alternativeGenome = null;
-    },
-    setReferenceGenomeLocation(state, action: PayloadAction<GenomicLocation>) {
-      state.referenceGenomeLocation = action.payload;
-    },
-    setAlternativeGenome(
-      state,
-      action: PayloadAction<{ genome: BriefGenomeSummary }>
-    ) {
-      const { genome } = action.payload;
-      state.alternativeGenome = genome;
     }
   }
 });
 
-export const {
-  setGenomesAndLocations,
-  setReferenceGenome,
-  setReferenceGenomeLocation,
-  setAlternativeGenome
-} = structuralVariantsGeneralSlice.actions;
+export const { setGenomesAndLocations } =
+  structuralVariantsGeneralSlice.actions;
 
 export default structuralVariantsGeneralSlice.reducer;
