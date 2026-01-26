@@ -26,13 +26,11 @@ import { updateSpeciesSidebarModalForGenome } from 'src/content/app/species/stat
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
-
+import SearchButton from 'src/shared/components/search-button/SearchButton';
 import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { SpeciesSidebarModalView } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
-
-import SearchButton from 'src/shared/components/search-button/SearchButton';
 
 import styles from './SpeciesPageSidebar.module.css';
 

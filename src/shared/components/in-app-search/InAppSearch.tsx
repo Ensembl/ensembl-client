@@ -16,36 +16,38 @@
 
 import { useEffect, useState } from 'react';
 
+import classNames from 'classnames';
+
 import analyticsTracking from 'src/services/analytics-service';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
-import { CircleLoader } from 'src/shared/components/loader';
-import InAppSearchMatches from './InAppSearchMatches';
-
+import { useAppDispatch, useAppSelector } from 'src/store';
+import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
+import {
+  useLazySearchGenesQuery,
+  useLazySearchVariantsQuery
+} from 'src/shared/state/api-slices/searchApiSlice';
 import {
   updateGeneQuery,
   updateVariantQuery,
   type AppName
 } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
+import { CircleLoader } from 'src/shared/components/loader';
+import InAppSearchMatches from './InAppSearchMatches';
+
 import FeatureSearchForm from '../feature-search-form/FeatureSearchForm';
-import {
-  FeatureSearchMode
-} from 'src/shared/types/search-api/search-modes';
+
 import {
   FEATURE_SEARCH_MODES as featureSearchModes,
   FeatureSearchModeType
 } from 'src/shared/types/search-api/search-constants';
-import {
-  useLazySearchGenesQuery,
-  useLazySearchVariantsQuery
-} from 'src/shared/state/api-slices/searchApiSlice';
 
-import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { SearchResults } from 'src/shared/types/search-api/search-results';
-import classNames from 'classnames';
-import { useAppDispatch, useAppSelector } from 'src/store';
-import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import type {
+  FeatureSearchMode
+} from 'src/shared/types/search-api/search-modes';
 
 import styles from './InAppSearch.module.css';
 

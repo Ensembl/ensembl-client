@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, FormEvent, ReactNode, useState } from 'react';
+import { useState, ChangeEvent, FormEvent, type ReactNode } from 'react';
+import classNames from 'classnames';
+
 import { PrimaryButton } from '../button/Button';
 import ShadedInput from '../input/ShadedInput';
 import TextButton from '../text-button/TextButton';
 
 import {
-  FeatureSearchMode,
-} from 'src/shared/types/search-api/search-modes';
-import {
   FEATURE_SEARCH_MODES as featureSearchModes
 } from 'src/shared/types/search-api/search-constants';
+import type {
+  FeatureSearchMode,
+} from 'src/shared/types/search-api/search-modes';
 
 import styles from './FeatureSearchForm.module.css';
-import classNames from 'classnames';
 
 type Props = {
   query: string;

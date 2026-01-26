@@ -21,29 +21,29 @@ import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import ModalView from 'src/shared/components/modal-view/ModalView';
-import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
-
+import { useAppDispatch, useAppSelector } from 'src/store';
 import {
   useLazySearchGenesQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
-import { useAppDispatch, useAppSelector } from 'src/store';
 import { getCommittedSpecies } from '../../state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-
-import {
-  FeatureSearchMode,
-} from 'src/shared/types/search-api/search-modes';
-import {
-  FEATURE_SEARCH_MODES as featureSearchModes,
-  FeatureSearchModeType
-} from 'src/shared/types/search-api/search-constants';
-import { FeatureSearchResults } from 'src/shared/components/feature-search-result/FeatureSearchResult';
 import {
   setGeneQuery,
   setVariantQuery
 } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSlice';
 import { getFeatureQueries } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSelectors';
+
+import {
+  FEATURE_SEARCH_MODES as featureSearchModes,
+  FeatureSearchModeType
+} from 'src/shared/types/search-api/search-constants';
+import type {
+  FeatureSearchMode,
+} from 'src/shared/types/search-api/search-modes';
+
+import ModalView from 'src/shared/components/modal-view/ModalView';
+import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
+import { FeatureSearchResults } from 'src/shared/components/feature-search-result/FeatureSearchResult';
 
 import styles from './SpeciesSelectorSearchView.module.css';
 import radioStyles from 'src/shared/components/radio-group/RadioGroup.module.css';

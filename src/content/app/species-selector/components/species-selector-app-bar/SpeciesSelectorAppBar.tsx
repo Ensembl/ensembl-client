@@ -28,11 +28,10 @@ import SpeciesManagerIndicator from 'src/shared/components/species-manager-indic
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
-
-import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-
 import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 import SearchButton from 'src/shared/components/search-button/SearchButton';
+
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './SpeciesSelectorAppBar.module.css';
 

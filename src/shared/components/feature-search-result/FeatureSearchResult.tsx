@@ -17,26 +17,26 @@
 import { useState, useRef } from 'react';
 import classNames from 'classnames';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import {
-  GeneSearchMatch,
-  SearchMatch,
-  VariantSearchMatch
-} from 'src/shared/types/search-api/search-match';
-
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
-import { SearchResults } from 'src/shared/types/search-api/search-results';
 import PointerBox, {
   Position as PointerBoxPosition
 } from 'src/shared/components/pointer-box/PointerBox';
 import ViewInApp from '../view-in-app/ViewInApp';
+import SpeciesName from '../species-name/SpeciesName';
+
+import { FeatureSearchModeType } from 'src/shared/types/search-api/search-constants';
+import type {
+  GeneSearchMatch,
+  SearchMatch,
+  VariantSearchMatch
+} from 'src/shared/types/search-api/search-match';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './FeatureSearchResult.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
-import { FeatureSearchModeType } from 'src/shared/types/search-api/search-constants';
-import SpeciesName from '../species-name/SpeciesName';
 
 type SearchMatchesWithSpecies = {
   speciesInfo: CommittedItem;
