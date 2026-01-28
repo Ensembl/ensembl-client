@@ -20,7 +20,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getFeatureSearchModeByLocation, FeatureSearchMode } from 'src/shared/helpers/searchModeHelpers';
+import { getFeatureSearchModeByLocation, FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import {

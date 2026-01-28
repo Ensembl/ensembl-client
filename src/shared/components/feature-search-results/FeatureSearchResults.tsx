@@ -18,7 +18,7 @@ import { useState, useRef } from 'react';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { FeatureSearchMode } from 'src/shared/helpers/searchModeHelpers';
+import { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import PointerBox, {

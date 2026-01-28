@@ -21,7 +21,7 @@ import classNames from 'classnames';
 import analyticsTracking from 'src/services/analytics-service';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { FeatureSearchMode } from 'src/shared/helpers/searchModeHelpers';
+import { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';

@@ -26,7 +26,7 @@ import {
   getFeatureSearchLabelsByMode,
   getFeatureSearchModes,
   type FeatureSearchModeType 
-} from 'src/shared/helpers/searchModeHelpers';
+} from 'src/shared/helpers/featureSearchHelpers';
 
 import { PrimaryButton } from '../button/Button';
 import ShadedInput from '../input/ShadedInput';
