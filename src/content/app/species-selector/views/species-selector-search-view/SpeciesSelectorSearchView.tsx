@@ -36,7 +36,7 @@ import { getFeatureQueries } from '../../state/species-selector-feature-search-s
 
 import ModalView from 'src/shared/components/modal-view/ModalView';
 import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
-import { FeatureSearchResults } from 'src/shared/components/feature-search-result/FeatureSearchResult';
+import { FeatureSearchResults } from 'src/shared/components/feature-search-results/FeatureSearchResults';
 
 import styles from './SpeciesSelectorSearchView.module.css';
 import radioStyles from 'src/shared/components/radio-group/RadioGroup.module.css';

@@ -35,7 +35,7 @@ import type {
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-import styles from './FeatureSearchResult.module.css';
+import styles from './FeatureSearchResults.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
 type SearchMatchesWithSpecies = {
