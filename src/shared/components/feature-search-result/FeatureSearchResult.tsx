@@ -18,6 +18,7 @@ import { useState, useRef } from 'react';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { FeatureSearchMode } from 'src/shared/helpers/searchModeHelpers';
 
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import PointerBox, {
@@ -26,7 +27,6 @@ import PointerBox, {
 import ViewInApp from '../view-in-app/ViewInApp';
 import SpeciesName from '../species-name/SpeciesName';
 
-import { FeatureSearchModeType } from 'src/shared/types/search-api/search-constants';
 import type {
   GeneSearchMatch,
   SearchMatch,
@@ -88,8 +88,7 @@ export const FeatureSearchResults = (props: {
     searchResults.matches
   );
 
-  const isGeneSearchMode =
-    featureSearchMode === FeatureSearchModeType.GENE_SEARCH_MODE;
+  const isGeneSearchMode = featureSearchMode === FeatureSearchMode.GENE_SEARCH_MODE;
 
   return (
     <div className={styles.resultsWrapper}>
@@ -137,9 +136,9 @@ const FeatureSearchTableRows = (props: {
   const { speciesInfo, searchMatches } = data;
 
   const isGeneSearchMode =
-    featureSearchMode === FeatureSearchModeType.GENE_SEARCH_MODE;
+    featureSearchMode === FeatureSearchMode.GENE_SEARCH_MODE;
   const isVariantSearchMode =
-    featureSearchMode === FeatureSearchModeType.VARIANT_SEARCH_MODE;
+    featureSearchMode === FeatureSearchMode.VARIANT_SEARCH_MODE;
 
   return (
     <>

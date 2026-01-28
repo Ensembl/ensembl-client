@@ -20,6 +20,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getFeatureSearchModeByLocation, FeatureSearchMode } from 'src/shared/helpers/searchModeHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import {
@@ -32,14 +33,6 @@ import {
   setVariantQuery
 } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSlice';
 import { getFeatureQueries } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSelectors';
-
-import {
-  FEATURE_SEARCH_MODES as featureSearchModes,
-  FeatureSearchModeType
-} from 'src/shared/types/search-api/search-constants';
-import type {
-  FeatureSearchMode,
-} from 'src/shared/types/search-api/search-modes';
 
 import ModalView from 'src/shared/components/modal-view/ModalView';
 import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
@@ -56,16 +49,8 @@ const SpeciesSelectorSearchView = () => {
   const featureQueries = useAppSelector(getFeatureQueries);
   const committedSpecies = useAppSelector(getCommittedSpecies);
 
-  const initialMode = location.pathname.includes('/variant')
-    ? featureSearchModes.find(
-        (m) => m.mode === FeatureSearchModeType.VARIANT_SEARCH_MODE
-      )!
-    : featureSearchModes.find(
-        (m) => m.mode === FeatureSearchModeType.GENE_SEARCH_MODE
-      )!;
-
-  const [activeSearchMode, setActiveSearchMode] =
-    useState<FeatureSearchMode>(initialMode);
+  const initialMode = getFeatureSearchModeByLocation(location.pathname);
+  const [activeSearchMode, setActiveSearchMode] = useState<string>(initialMode);
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
@@ -75,16 +60,11 @@ const SpeciesSelectorSearchView = () => {
 
   const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
 
-  const featureSearchModeToKey = {
-    [FeatureSearchModeType.GENE_SEARCH_MODE]: 'gene' as const,
-    [FeatureSearchModeType.VARIANT_SEARCH_MODE]: 'variant' as const
-  };
-  const query = featureQueries[featureSearchModeToKey[activeSearchMode.mode]];
+
+  const query = featureQueries[activeSearchMode.toLowerCase() as keyof typeof featureQueries];
   const queryFromParams = searchParams.get('query') || '';
-  const isGeneSearchMode =
-    activeSearchMode.mode === FeatureSearchModeType.GENE_SEARCH_MODE;
-  const isVariantSearchMode =
-    activeSearchMode.mode === FeatureSearchModeType.VARIANT_SEARCH_MODE;
+  const isGeneSearchMode = activeSearchMode === FeatureSearchMode.GENE_SEARCH_MODE;
+  const isVariantSearchMode = activeSearchMode === FeatureSearchMode.VARIANT_SEARCH_MODE;
 
   useEffect(() => {
     // load from url only on first render or refresh
@@ -146,13 +126,12 @@ const SpeciesSelectorSearchView = () => {
   };
 
   const onSearchModeChange = (
-    featureSearchMode: FeatureSearchMode
+    featureSearchMode: string
   ) => {
     setActiveSearchMode(featureSearchMode);
-
-    const currentQuery =
-      featureQueries[featureSearchModeToKey[featureSearchMode.mode]];
-    let path = `${urlFor.speciesSelector()}/search/${featureSearchMode.mode.toLowerCase()}`;
+    const featureSearchModeLC = featureSearchMode.toLowerCase();
+    const currentQuery = featureQueries[featureSearchModeLC as keyof typeof featureQueries];
+    let path = `${urlFor.speciesSelector()}/search/${featureSearchModeLC}`;
     if (currentQuery) {
       path += `?query=${encodeURIComponent(currentQuery)}`;
     }
@@ -173,7 +152,7 @@ const SpeciesSelectorSearchView = () => {
         {isGeneSearchMode && (
           <div className={styles.resultsWrapper}>
             <FeatureSearchResults
-              featureSearchMode={activeSearchMode.mode}
+              featureSearchMode={activeSearchMode}
               speciesList={committedSpecies}
               searchResults={currentGeneSearchResults}
             />
@@ -182,7 +161,7 @@ const SpeciesSelectorSearchView = () => {
         {isVariantSearchMode && (
           <div className={styles.resultsWrapper}>
             <FeatureSearchResults
-              featureSearchMode={activeSearchMode.mode}
+              featureSearchMode={activeSearchMode}
               speciesList={committedSpecies}
               searchResults={currentVariantSearchResults}
             />

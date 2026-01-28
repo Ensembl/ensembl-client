@@ -27,6 +27,7 @@ import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormat
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { FeatureSearchMode } from 'src/shared/helpers/searchModeHelpers';
 
 import analyticsTracking from 'src/services/analytics-service';
 
@@ -45,7 +46,6 @@ import type {
 import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import type { AppName as AppNameForViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
 import type { InAppSearchMode } from './InAppSearch';
-import { FeatureSearchModeType } from 'src/shared/types/search-api/search-constants';
 
 import styles from './InAppSearch.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
@@ -74,9 +74,9 @@ const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
 
   const { matches } = results;
   const isGeneSearchMode =
-    featureSearchMode === FeatureSearchModeType.GENE_SEARCH_MODE;
+    featureSearchMode === FeatureSearchMode.GENE_SEARCH_MODE;
   const isVariantSearchMode =
-    featureSearchMode === FeatureSearchModeType.VARIANT_SEARCH_MODE;
+    featureSearchMode === FeatureSearchMode.VARIANT_SEARCH_MODE;
 
   return (
     <div className={styles.searchMatches}>

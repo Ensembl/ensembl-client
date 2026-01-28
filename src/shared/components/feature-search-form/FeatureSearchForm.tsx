@@ -22,22 +22,25 @@ import {
 } from 'react';
 import classNames from 'classnames';
 
+import { 
+  getFeatureSearchLabelsByMode,
+  getFeatureSearchModes,
+  type FeatureSearchModeType 
+} from 'src/shared/helpers/searchModeHelpers';
+
 import { PrimaryButton } from '../button/Button';
 import ShadedInput from '../input/ShadedInput';
 import TextButton from '../text-button/TextButton';
-
-import { FEATURE_SEARCH_MODES as featureSearchModes } from 'src/shared/types/search-api/search-constants';
-import type { FeatureSearchMode } from 'src/shared/types/search-api/search-modes';
 
 import styles from './FeatureSearchForm.module.css';
 
 type Props = {
   query: string;
-  activeFeatureSearchMode: FeatureSearchMode;
+  activeFeatureSearchMode: string;
   searchPosition?: string; // Ex: 'sidebar', 'interstitial'
   onSearchSubmit: (query: string) => void;
   onClear: () => void;
-  onSearchModeChange: (mode: FeatureSearchMode) => void;
+  onSearchModeChange: (mode: string) => void;
   resultsInfo?: ReactNode;
 };
 
@@ -84,26 +87,32 @@ const FeatureSearchForm = (props: Props) => {
     input?.focus();
   };
 
+  const activeFeatureSearchModeLabels =
+    getFeatureSearchLabelsByMode(activeFeatureSearchMode as FeatureSearchModeType);
+
   return (
     <>
       <div className={styles.tab}>
-        {featureSearchModes.map((searchMode) =>
-          searchMode.mode === activeFeatureSearchMode.mode ? (
+        {getFeatureSearchModes().map((searchMode) => {
+          const searchModeLabels = 
+            getFeatureSearchLabelsByMode(searchMode as FeatureSearchModeType);
+          return searchMode === activeFeatureSearchMode ? (
             <TextButton
-              key={searchMode.mode}
+              key={searchMode}
               className={styles.activeTab}
               disabled
             >
-              {searchMode.label}
+              {searchModeLabels.label}
             </TextButton>
           ) : (
             <TextButton
-              key={searchMode.mode}
+              key={searchMode}
               onClick={() => onSearchModeChange(searchMode)}
             >
-              {searchMode.label}
+              {searchModeLabels.label}
             </TextButton>
           )
+        }
         )}
       </div>
       <form
@@ -120,8 +129,8 @@ const FeatureSearchForm = (props: Props) => {
           })}
           onInput={onQueryChange}
           value={searchInput || ''}
-          help={activeFeatureSearchMode.help}
-          placeholder={activeFeatureSearchMode.placeholder}
+          help={activeFeatureSearchModeLabels.help}
+          placeholder={activeFeatureSearchModeLabels.placeholder}
           type="search"
           ref={focusInput}
           size={searchPosition === 'sidebar' ? 'small' : 'large'}

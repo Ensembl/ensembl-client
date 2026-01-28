@@ -21,6 +21,7 @@ import classNames from 'classnames';
 import analyticsTracking from 'src/services/analytics-service';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import { FeatureSearchMode } from 'src/shared/helpers/searchModeHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
@@ -39,15 +40,7 @@ import InAppSearchMatches from './InAppSearchMatches';
 
 import FeatureSearchForm from '../feature-search-form/FeatureSearchForm';
 
-import {
-  FEATURE_SEARCH_MODES as featureSearchModes,
-  FeatureSearchModeType
-} from 'src/shared/types/search-api/search-constants';
-
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
-import type {
-  FeatureSearchMode
-} from 'src/shared/types/search-api/search-modes';
 
 import styles from './InAppSearch.module.css';
 
@@ -66,11 +59,8 @@ const InAppSearch = (props: Props) => {
   const { app, genomeId, genomeIdForUrl, mode } = props;
   const dispatch = useAppDispatch();
 
-  const initialMode = featureSearchModes.find(
-    (m) => m.mode === FeatureSearchModeType.GENE_SEARCH_MODE
-  )!;
-  const [activeSearchMode, setActiveSearchMode] =
-    useState<FeatureSearchMode>(initialMode);
+  const initialMode = FeatureSearchMode.GENE_SEARCH_MODE;
+  const [activeSearchMode, setActiveSearchMode] = useState<string>(initialMode);
 
   const inAppFeatureQueries = useAppSelector((state) =>
     getInAppFeatureQueries(state, app, genomeId)
@@ -82,17 +72,9 @@ const InAppSearch = (props: Props) => {
     useLazySearchVariantsQuery();
   const { currentData: currentVariantSearchResults } = variantSearchResults;
 
-  const featureSearchModeToKey = {
-    [FeatureSearchModeType.GENE_SEARCH_MODE]: 'gene' as const,
-    [FeatureSearchModeType.VARIANT_SEARCH_MODE]: 'variant' as const
-  };
-  const query =
-    inAppFeatureQueries[featureSearchModeToKey[activeSearchMode.mode]];
-
-  const isGeneSearchMode =
-    activeSearchMode.mode === FeatureSearchModeType.GENE_SEARCH_MODE;
-  const isVariantSearchMode =
-    activeSearchMode.mode === FeatureSearchModeType.VARIANT_SEARCH_MODE;
+  const query = inAppFeatureQueries[activeSearchMode.toLowerCase() as keyof typeof inAppFeatureQueries];
+  const isGeneSearchMode = activeSearchMode === FeatureSearchMode.GENE_SEARCH_MODE;
+  const isVariantSearchMode = activeSearchMode === FeatureSearchMode.VARIANT_SEARCH_MODE;
 
   useEffect(() => {
     if (!query) {
@@ -142,7 +124,7 @@ const InAppSearch = (props: Props) => {
   };
 
   const onSearchModeChange = (
-    featureSearchMode: FeatureSearchMode
+    featureSearchMode: string
   ) => {
     setActiveSearchMode(featureSearchMode);
   };
@@ -158,12 +140,12 @@ const InAppSearch = (props: Props) => {
   const totalSearchHitsComponent = isGeneSearchResultsDefined ? (
     <TotalSearchHits
       results={currentGeneSearchResults}
-      featureSearchMode={activeSearchMode.mode}
+      featureSearchMode={activeSearchMode}
     />
   ) : isVariantSearchResultsDefined ? (
     <TotalSearchHits
       results={currentVariantSearchResults}
-      featureSearchMode={activeSearchMode.mode}
+      featureSearchMode={activeSearchMode}
     />
   ) : undefined;
 
@@ -191,7 +173,7 @@ const InAppSearch = (props: Props) => {
         <div className={resultsContainerClass}>
           <InAppSearchMatches
             results={currentGeneSearchResults}
-            featureSearchMode={activeSearchMode.mode}
+            featureSearchMode={activeSearchMode}
             app={app}
             mode={mode}
             genomeIdForUrl={genomeIdForUrl}
@@ -203,7 +185,7 @@ const InAppSearch = (props: Props) => {
         <div className={resultsContainerClass}>
           <InAppSearchMatches
             results={currentVariantSearchResults}
-            featureSearchMode={activeSearchMode.mode}
+            featureSearchMode={activeSearchMode}
             app={app}
             mode={mode}
             genomeIdForUrl={genomeIdForUrl}
