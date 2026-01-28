@@ -32,7 +32,7 @@
   "dependencies": {
     "@ensembl/ensembl-elements-common": "0.0.4",
     "@ensembl/ensembl-genome-browser": "0.6.11",
-    "@ensembl/ensembl-structural-variants": "0.0.5",
+    "@ensembl/ensembl-structural-variants": "0.0.6",
     "@reduxjs/toolkit": "2.11.2",
     "@sentry/browser": "10.34.0",
     "classnames": "2.5.1",
