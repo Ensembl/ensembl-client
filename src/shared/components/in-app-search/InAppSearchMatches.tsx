@@ -93,7 +93,7 @@ const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
       {isVariantSearchMode &&
         matches.map((match, index) => {
           const variantMatch = match as VariantSearchMatch;
-          const key = `${variantMatch.region_name}:${variantMatch.region_name}:${variantMatch.start}`;
+          const key = `${variantMatch.variant_name}:${variantMatch.region_name}:${variantMatch.start}`;
           return (
             <InAppVariantSearchMatch
               key={key}

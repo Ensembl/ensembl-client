@@ -32,12 +32,14 @@ import { PrimaryButton } from '../button/Button';
 import ShadedInput from '../input/ShadedInput';
 import TextButton from '../text-button/TextButton';
 
+import type { InAppSearchMode } from '../in-app-search/InAppSearch';
+
 import styles from './FeatureSearchForm.module.css';
 
 type Props = {
   query: string;
   activeFeatureSearchMode: FeatureSearchMode;
-  searchPosition?: string; // Ex: 'sidebar', 'interstitial'
+  searchPosition?: InAppSearchMode; // Ex: 'sidebar', 'interstitial'
   onSearchSubmit: (query: string) => void;
   onClear: () => void;
   onSearchModeChange: (mode: FeatureSearchMode) => void;
