@@ -40,6 +40,7 @@ import InAppSearchMatches from './InAppSearchMatches';
 import FeatureSearchForm from '../feature-search-form/FeatureSearchForm';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import styles from './InAppSearch.module.css';
 
@@ -59,7 +60,7 @@ const InAppSearch = (props: Props) => {
   const dispatch = useAppDispatch();
 
   const initialMode = 'gene';
-  const [activeSearchMode, setActiveSearchMode] = useState<string>(initialMode);
+  const [activeSearchMode, setActiveSearchMode] = useState<FeatureSearchMode>(initialMode);
 
   const inAppFeatureQueries = useAppSelector((state) =>
     getInAppFeatureQueries(state, app, genomeId)
@@ -123,7 +124,7 @@ const InAppSearch = (props: Props) => {
   };
 
   const onSearchModeChange = (
-    featureSearchMode: string
+    featureSearchMode: FeatureSearchMode
   ) => {
     setActiveSearchMode(featureSearchMode);
   };
@@ -198,7 +199,7 @@ const InAppSearch = (props: Props) => {
 
 const TotalSearchHits = (props: {
   results: SearchResults;
-  featureSearchMode: string;
+  featureSearchMode: FeatureSearchMode;
 }) => {
   const { results, featureSearchMode } = props;
   return (

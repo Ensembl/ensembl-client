@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+const featureSearchModes = ['gene', 'variant'] as const;
+
+export type FeatureSearchMode = typeof featureSearchModes[number];
+
 export type FeatureSearchLabels = {
   label: string;
   placeholder: string;
   help?: string;
 };
 
-const featureSearchModes: Record<string, FeatureSearchLabels> = {
+const featureSearchModeLabels: Record<FeatureSearchMode, FeatureSearchLabels> = {
   gene: {
     label: 'Find a gene',
     placeholder: 'Gene ID or name',
@@ -33,15 +37,15 @@ const featureSearchModes: Record<string, FeatureSearchLabels> = {
   }
 };
 
-export const getFeatureSearchModeTypes = () => {
-  return Object.keys(featureSearchModes);
+export const getFeatureSearchModes = () => {
+  return featureSearchModes;
 }
 
-export const getFeatureSearchLabelsByMode = (mode: string): FeatureSearchLabels => {
-  return featureSearchModes[mode];
+export const getFeatureSearchLabelsByMode = (mode: FeatureSearchMode): FeatureSearchLabels => {
+  return featureSearchModeLabels[mode];
 };
 
-export const getFeatureSearchModeByLocation = (locationPathname: string): string => {
+export const getFeatureSearchModeByLocation = (locationPathname: string): FeatureSearchMode => {
   return locationPathname.includes('/variant')
     ? 'variant'
     : 'gene';

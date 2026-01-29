@@ -20,7 +20,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getFeatureSearchModeByLocation } from 'src/shared/helpers/featureSearchHelpers';
+import { getFeatureSearchModeByLocation, type FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import {
@@ -50,7 +50,7 @@ const SpeciesSelectorSearchView = () => {
   const committedSpecies = useAppSelector(getCommittedSpecies);
 
   const initialMode = getFeatureSearchModeByLocation(location.pathname);
-  const [activeSearchMode, setActiveSearchMode] = useState<string>(initialMode);
+  const [activeSearchMode, setActiveSearchMode] = useState<FeatureSearchMode>(initialMode);
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
@@ -60,7 +60,7 @@ const SpeciesSelectorSearchView = () => {
 
   const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
 
-  const query = featureQueries[activeSearchMode as keyof typeof featureQueries];
+  const query = featureQueries[activeSearchMode];
   const queryFromParams = searchParams.get('query') || '';
   const isGeneSearchMode = activeSearchMode === 'gene';
   const isVariantSearchMode = activeSearchMode === 'variant';
@@ -125,10 +125,10 @@ const SpeciesSelectorSearchView = () => {
   };
 
   const onSearchModeChange = (
-    featureSearchMode: string
+    featureSearchMode: FeatureSearchMode
   ) => {
     setActiveSearchMode(featureSearchMode);
-    const currentQuery = featureQueries[featureSearchMode as keyof typeof featureQueries];
+    const currentQuery = featureQueries[featureSearchMode];
     let path = `${urlFor.speciesSelector()}/search/${featureSearchMode}`;
     if (currentQuery) {
       path += `?query=${encodeURIComponent(currentQuery)}`;

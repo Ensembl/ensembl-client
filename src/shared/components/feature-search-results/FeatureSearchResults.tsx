@@ -33,6 +33,7 @@ import type {
 } from 'src/shared/types/search-api/search-match';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import styles from './FeatureSearchResults.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
@@ -69,7 +70,7 @@ const getGroupedSearchMatches = (
 
 export const FeatureSearchResults = (props: {
   speciesList: CommittedItem[];
-  featureSearchMode: string;
+  featureSearchMode: FeatureSearchMode;
   searchResults?: SearchResults;
 }) => {
   const { featureSearchMode, speciesList, searchResults } = props;

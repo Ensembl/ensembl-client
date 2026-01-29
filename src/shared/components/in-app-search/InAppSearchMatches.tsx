@@ -45,13 +45,14 @@ import type {
 import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import type { AppName as AppNameForViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
 import type { InAppSearchMode } from './InAppSearch';
+import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import styles from './InAppSearch.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
 type InAppSearchMatchesProps = {
   results?: SearchResults;
-  featureSearchMode: string;
+  featureSearchMode: FeatureSearchMode;
   app: AppName;
   mode: InAppSearchMode;
   genomeIdForUrl: string; // TODO: remove this when backend starts including this id in the response
