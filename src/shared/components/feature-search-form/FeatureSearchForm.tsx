@@ -22,11 +22,7 @@ import {
 } from 'react';
 import classNames from 'classnames';
 
-import { 
-  getFeatureSearchLabelsByMode,
-  getFeatureSearchModes,
-  type FeatureSearchModeType 
-} from 'src/shared/helpers/featureSearchHelpers';
+import { getFeatureSearchLabelsByMode, getFeatureSearchModeTypes } from 'src/shared/helpers/featureSearchHelpers';
 
 import { PrimaryButton } from '../button/Button';
 import ShadedInput from '../input/ShadedInput';
@@ -87,15 +83,14 @@ const FeatureSearchForm = (props: Props) => {
     input?.focus();
   };
 
-  const activeFeatureSearchModeLabels =
-    getFeatureSearchLabelsByMode(activeFeatureSearchMode as FeatureSearchModeType);
+  const activeFeatureSearchModeLabels = getFeatureSearchLabelsByMode(activeFeatureSearchMode);
 
   return (
     <>
       <div className={styles.tab}>
-        {getFeatureSearchModes().map((searchMode) => {
+        {getFeatureSearchModeTypes().map((searchMode) => {
           const searchModeLabels = 
-            getFeatureSearchLabelsByMode(searchMode as FeatureSearchModeType);
+            getFeatureSearchLabelsByMode(searchMode);
           return searchMode === activeFeatureSearchMode ? (
             <TextButton
               key={searchMode}

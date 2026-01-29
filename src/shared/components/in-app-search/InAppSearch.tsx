@@ -21,7 +21,6 @@ import classNames from 'classnames';
 import analyticsTracking from 'src/services/analytics-service';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
@@ -59,7 +58,7 @@ const InAppSearch = (props: Props) => {
   const { app, genomeId, genomeIdForUrl, mode } = props;
   const dispatch = useAppDispatch();
 
-  const initialMode = FeatureSearchMode.GENE_SEARCH_MODE;
+  const initialMode = 'gene';
   const [activeSearchMode, setActiveSearchMode] = useState<string>(initialMode);
 
   const inAppFeatureQueries = useAppSelector((state) =>
@@ -72,9 +71,9 @@ const InAppSearch = (props: Props) => {
     useLazySearchVariantsQuery();
   const { currentData: currentVariantSearchResults } = variantSearchResults;
 
-  const query = inAppFeatureQueries[activeSearchMode.toLowerCase() as keyof typeof inAppFeatureQueries];
-  const isGeneSearchMode = activeSearchMode === FeatureSearchMode.GENE_SEARCH_MODE;
-  const isVariantSearchMode = activeSearchMode === FeatureSearchMode.VARIANT_SEARCH_MODE;
+  const query = inAppFeatureQueries[activeSearchMode as keyof typeof inAppFeatureQueries];
+  const isGeneSearchMode = activeSearchMode === 'gene';
+  const isVariantSearchMode = activeSearchMode === 'variant';
 
   useEffect(() => {
     if (!query) {

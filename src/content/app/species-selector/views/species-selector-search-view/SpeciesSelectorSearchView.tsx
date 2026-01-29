@@ -20,7 +20,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getFeatureSearchModeByLocation, FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
+import { getFeatureSearchModeByLocation } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import {
@@ -60,11 +60,10 @@ const SpeciesSelectorSearchView = () => {
 
   const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
 
-
-  const query = featureQueries[activeSearchMode.toLowerCase() as keyof typeof featureQueries];
+  const query = featureQueries[activeSearchMode as keyof typeof featureQueries];
   const queryFromParams = searchParams.get('query') || '';
-  const isGeneSearchMode = activeSearchMode === FeatureSearchMode.GENE_SEARCH_MODE;
-  const isVariantSearchMode = activeSearchMode === FeatureSearchMode.VARIANT_SEARCH_MODE;
+  const isGeneSearchMode = activeSearchMode === 'gene';
+  const isVariantSearchMode = activeSearchMode === 'variant';
 
   useEffect(() => {
     // load from url only on first render or refresh
@@ -129,9 +128,8 @@ const SpeciesSelectorSearchView = () => {
     featureSearchMode: string
   ) => {
     setActiveSearchMode(featureSearchMode);
-    const featureSearchModeLC = featureSearchMode.toLowerCase();
-    const currentQuery = featureQueries[featureSearchModeLC as keyof typeof featureQueries];
-    let path = `${urlFor.speciesSelector()}/search/${featureSearchModeLC}`;
+    const currentQuery = featureQueries[featureSearchMode as keyof typeof featureQueries];
+    let path = `${urlFor.speciesSelector()}/search/${featureSearchMode}`;
     if (currentQuery) {
       path += `?query=${encodeURIComponent(currentQuery)}`;
     }

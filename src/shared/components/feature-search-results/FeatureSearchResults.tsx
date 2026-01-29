@@ -18,7 +18,6 @@ import { useState, useRef } from 'react';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import PointerBox, {
@@ -88,7 +87,9 @@ export const FeatureSearchResults = (props: {
     searchResults.matches
   );
 
-  const isGeneSearchMode = featureSearchMode === FeatureSearchMode.GENE_SEARCH_MODE;
+  const isGeneSearchMode = featureSearchMode === 'gene';
+  const capitalizedFeatureSearchMode =
+    featureSearchMode.charAt(0).toUpperCase() + featureSearchMode.slice(1);
 
   return (
     <div className={styles.resultsWrapper}>
@@ -111,7 +112,7 @@ export const FeatureSearchResults = (props: {
                 </>
               )
             }
-            <th>{featureSearchMode}</th>
+            <th>{capitalizedFeatureSearchMode}</th>
           </tr>
         </thead>
         <tbody>
@@ -135,10 +136,8 @@ const FeatureSearchTableRows = (props: {
   const { featureSearchMode, data } = props;
   const { speciesInfo, searchMatches } = data;
 
-  const isGeneSearchMode =
-    featureSearchMode === FeatureSearchMode.GENE_SEARCH_MODE;
-  const isVariantSearchMode =
-    featureSearchMode === FeatureSearchMode.VARIANT_SEARCH_MODE;
+  const isGeneSearchMode = featureSearchMode === 'gene';
+  const isVariantSearchMode = featureSearchMode === 'variant';
 
   return (
     <>
@@ -309,18 +308,16 @@ const GeneRecord = (props: { match: SearchMatch; species: CommittedItem }) => {
 };
 
 export const NoResults = (props: { featureSearchMode: string }) => {
-  const featureSearchModeLower = props.featureSearchMode.toLowerCase();
-
   return (
     <div className={styles.noResults}>
       <p>
         Found in <span className={styles.speciesCount}>0</span> species
       </p>
       <p className={styles.warning}>
-        Sorry, we can’t find this {featureSearchModeLower} in any of your
+        Sorry, we can’t find this {props.featureSearchMode} in any of your
         species in use
       </p>
-      <p>Please use a different {featureSearchModeLower} identifier</p>
+      <p>Please use a different {props.featureSearchMode} identifier</p>
     </div>
   );
 };

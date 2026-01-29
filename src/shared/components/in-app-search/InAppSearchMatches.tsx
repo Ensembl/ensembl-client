@@ -27,7 +27,6 @@ import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormat
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import analyticsTracking from 'src/services/analytics-service';
 
@@ -73,10 +72,8 @@ const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
   }
 
   const { matches } = results;
-  const isGeneSearchMode =
-    featureSearchMode === FeatureSearchMode.GENE_SEARCH_MODE;
-  const isVariantSearchMode =
-    featureSearchMode === FeatureSearchMode.VARIANT_SEARCH_MODE;
+  const isGeneSearchMode = featureSearchMode === 'gene';
+  const isVariantSearchMode = featureSearchMode === 'variant';
 
   return (
     <div className={styles.searchMatches}>
