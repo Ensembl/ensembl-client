@@ -129,11 +129,7 @@ const SpeciesSelectorSearchView = () => {
   ) => {
     setActiveSearchMode(featureSearchMode);
     const currentQuery = featureQueries[featureSearchMode];
-    let path = `${urlFor.speciesSelector()}/search/${featureSearchMode}`;
-    if (currentQuery) {
-      path += `?query=${encodeURIComponent(currentQuery)}`;
-    }
-    navigate(urlFor.speciesSelectorFeatureSearch(path), { replace: true });
+    navigate(urlFor.speciesSelectorFeatureSearch(featureSearchMode, currentQuery), { replace: true });
   };
 
   return (

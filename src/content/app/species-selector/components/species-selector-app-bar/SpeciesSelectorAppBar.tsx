@@ -76,8 +76,7 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
 
   const onSearchOpen = () => {
     // open gene search by default
-    const path = `${urlFor.speciesSelector()}/search/gene`;
-    navigate(urlFor.speciesSelectorFeatureSearch(path, storedGeneSearchQuery));
+    navigate(urlFor.speciesSelectorFeatureSearch('gene', storedGeneSearchQuery));
   };
 
   const onSearchClose = () => {
