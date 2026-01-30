@@ -37,15 +37,22 @@ import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import TextButton from 'src/shared/components/text-button/TextButton';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
-import type { SearchMatch } from 'src/shared/types/search-api/search-match';
+import type {
+  GeneSearchMatch,
+  SearchMatch,
+  VariantSearchMatch
+} from 'src/shared/types/search-api/search-match';
 import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import type { AppName as AppNameForViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
 import type { InAppSearchMode } from './InAppSearch';
+import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import styles from './InAppSearch.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
-type InAppSearchMatchesProps = SearchResults & {
+type InAppSearchMatchesProps = {
+  results?: SearchResults;
+  featureSearchMode: FeatureSearchMode;
   app: AppName;
   mode: InAppSearchMode;
   genomeIdForUrl: string; // TODO: remove this when backend starts including this id in the response
@@ -53,23 +60,52 @@ type InAppSearchMatchesProps = SearchResults & {
 };
 
 const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
-  const componentClasses = classNames(styles.searchMatches, {
-    [styles.searchMatchesInSidebar]: props.mode === 'sidebar'
-  });
+  const {
+    results,
+    featureSearchMode,
+    app,
+    mode,
+    genomeIdForUrl,
+    onMatchNavigation
+  } = props;
+  if (!results) {
+    return;
+  }
+
+  const { matches } = results;
+  const isGeneSearchMode = featureSearchMode === 'gene';
+  const isVariantSearchMode = featureSearchMode === 'variant';
 
   return (
-    <div className={componentClasses}>
-      {props.matches.map((match, index) => (
-        <InAppSearchMatch
-          key={match.stable_id}
-          match={match}
-          app={props.app}
-          mode={props.mode}
-          genomeIdForUrl={props.genomeIdForUrl}
-          position={index + 1}
-          onMatchNavigation={props.onMatchNavigation}
-        />
-      ))}
+    <div className={styles.searchMatches}>
+      {isGeneSearchMode &&
+        matches.map((match, index) => (
+          <InAppGeneSearchMatch
+            key={(match as GeneSearchMatch).stable_id}
+            match={match as GeneSearchMatch}
+            app={app}
+            mode={mode}
+            genomeIdForUrl={genomeIdForUrl}
+            position={index + 1}
+            onMatchNavigation={onMatchNavigation}
+          />
+        ))}
+      {isVariantSearchMode &&
+        matches.map((match, index) => {
+          const variantMatch = match as VariantSearchMatch;
+          const key = `${variantMatch.variant_name}:${variantMatch.region_name}:${variantMatch.start}`;
+          return (
+            <InAppVariantSearchMatch
+              key={key}
+              match={variantMatch}
+              app={app}
+              mode={mode}
+              genomeIdForUrl={genomeIdForUrl}
+              position={index + 1}
+              onMatchNavigation={onMatchNavigation}
+            />
+          );
+        })}
     </div>
   );
 };
@@ -83,13 +119,107 @@ type InAppSearchMatchProps = {
   onMatchNavigation?: () => void;
 };
 
-const InAppSearchMatch = (props: InAppSearchMatchProps) => {
-  const {
-    app,
-    mode,
-    position,
-    match: { symbol, stable_id }
-  } = props;
+const InAppVariantSearchMatch = (props: InAppSearchMatchProps) => {
+  const { app, mode, position, match, genomeIdForUrl } = props;
+  const { region_name, start, variant_name } = match as VariantSearchMatch;
+  const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
+  const dispatch = useAppDispatch();
+  const anchorRef = useRef<HTMLSpanElement>(null);
+  const variantIdForUrl = `${region_name}:${start}:${variant_name}`;
+
+  const onMatchClick = () => {
+    setShouldShowTooltip(!shouldShowTooltip);
+
+    if (app === 'entityViewer') {
+      analyticsTracking.trackEvent({
+        category: `${app}_${mode}_search`,
+        action: 'select_link',
+        label: variantIdForUrl,
+        value: position
+      });
+    }
+  };
+
+  const onAppClick = (selectedAppName?: AppNameForViewInApp) => {
+    if (app === 'genomeBrowser') {
+      dispatch(changeHighlightedTrackId(''));
+    }
+
+    if (app === 'entityViewer') {
+      analyticsTracking.trackEvent({
+        category: `${app}_${mode}_search`,
+        action: 'select_app',
+        label: selectedAppName
+      });
+    }
+
+    setShouldShowTooltip(!shouldShowTooltip);
+    props.onMatchNavigation?.();
+  };
+
+  const hideTooltip = () => setShouldShowTooltip(false);
+
+  const urlForGenomeBrowser = urlFor.browser({
+    genomeId: genomeIdForUrl,
+    focus: buildFocusIdForUrl({ type: 'variant', objectId: variantIdForUrl })
+  });
+
+  const urlForEntityViewer = urlFor.entityViewer({
+    genomeId: genomeIdForUrl,
+    entityId: buildFocusIdForUrl({
+      type: 'variant',
+      objectId: variantIdForUrl
+    })
+  });
+
+  // NOTE: If this panel opens in genome browser, we should add `replaceState: true`
+  // to the genomeBrowser link config below
+  const links = {
+    genomeBrowser: {
+      url: urlForGenomeBrowser
+    },
+    entityViewer: {
+      url: urlForEntityViewer
+    }
+  };
+
+  return (
+    <>
+      <div className={styles.searchMatch} onClick={onMatchClick}>
+        <TextButton className={styles.searchMatchButton}>
+          {variant_name}
+        </TextButton>
+        <span
+          className={getSearchMatchAnchorClasses(props.mode)}
+          ref={anchorRef}
+        />
+      </div>
+      {shouldShowTooltip && anchorRef.current && (
+        <PointerBox
+          anchor={anchorRef.current}
+          position={
+            props.mode === 'interstitial'
+              ? PointerBoxPosition.RIGHT_BOTTOM
+              : PointerBoxPosition.BOTTOM_RIGHT
+          }
+          autoAdjust={true}
+          className={classNames(
+            styles.tooltip,
+            pointerBoxStyles.pointerBoxShadow
+          )}
+          onOutsideClick={hideTooltip}
+          onClose={hideTooltip}
+        >
+          <ViewInApp theme="dark" links={links} onAnyAppClick={onAppClick} />
+        </PointerBox>
+      )}
+    </>
+  );
+};
+
+const InAppGeneSearchMatch = (props: InAppSearchMatchProps) => {
+  const { app, mode, position, match } = props;
+  const { symbol, stable_id } = match as GeneSearchMatch;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
   const dispatch = useAppDispatch();
   const anchorRef = useRef<HTMLSpanElement>(null);
@@ -157,25 +287,26 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
           onOutsideClick={hideTooltip}
           onClose={hideTooltip}
         >
-          <MatchDetails {...props} onClick={onAppClick} />
+          <GeneMatchDetails {...props} onClick={onAppClick} />
         </PointerBox>
       )}
     </>
   );
 };
 
-const MatchDetails = (
+const GeneMatchDetails = (
   props: Pick<InAppSearchMatchProps, 'match' | 'mode' | 'genomeIdForUrl'> & {
     onClick: (appName?: AppNameForViewInApp) => void;
   }
 ) => {
   const { match, genomeIdForUrl } = props;
-  const { unversioned_stable_id } = match;
+  const geneSearchMatch = match as GeneSearchMatch;
+  const { unversioned_stable_id } = geneSearchMatch;
 
   const formattedLocation = getFormattedLocation({
-    chromosome: match.slice.region.name,
-    start: match.slice.location.start,
-    end: match.slice.location.end
+    chromosome: geneSearchMatch.slice.region.name,
+    start: geneSearchMatch.slice.location.start,
+    end: geneSearchMatch.slice.location.end
   });
 
   const urlForGenomeBrowser = urlFor.browser({
@@ -206,20 +337,20 @@ const MatchDetails = (
     <div className={styles.tooltipContent}>
       <div>
         <span className={styles.withExtraSpaceRight}>Biotype </span>
-        <span className={styles.strong}>{match.biotype}</span>
+        <span className={styles.strong}>{geneSearchMatch.biotype}</span>
       </div>
 
       <div>
-        <span>{getStrandDisplayName(match.slice.strand.code)}</span>
+        <span>{getStrandDisplayName(geneSearchMatch.slice.strand.code)}</span>
       </div>
 
       <div>{formattedLocation}</div>
 
       <div>
         <span className={classNames(styles.strong, styles.withExtraSpaceRight)}>
-          {match.transcript_count}{' '}
+          {geneSearchMatch.transcript_count}{' '}
         </span>
-        {pluralise('transcript', match.transcript_count)}
+        {pluralise('transcript', geneSearchMatch.transcript_count)}
       </div>
 
       <div>

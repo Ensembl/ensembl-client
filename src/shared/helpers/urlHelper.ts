@@ -20,6 +20,7 @@ import {
   getGenomicLocationString,
   type GenomicLocation
 } from 'src/shared/helpers/genomicLocationHelpers';
+import type { FeatureSearchMode } from './featureSearchHelpers';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
@@ -82,8 +83,11 @@ export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
   return query ? `${path}?${query}` : path;
 };
 
-export const speciesSelectorGeneSearch = (searchInput?: string) => {
-  const path = `${speciesSelectorPath}/search/gene`;
+export const speciesSelectorFeatureSearch = (
+  featureSearchMode: FeatureSearchMode,
+  searchInput?: string
+) => {
+  const path = `${speciesSelector()}/search/${featureSearchMode}`;
   const urlSearchParams = new URLSearchParams('');
 
   if (searchInput) {

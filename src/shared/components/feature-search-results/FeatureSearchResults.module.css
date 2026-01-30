@@ -1,0 +1,95 @@
+.noResults {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  margin-left: var(--inner-block-offset-left);
+}
+
+.noResults p {
+  margin: 0;
+}
+
+/* Using the :where selector to drop selector specificity, so that it does not compete with .speciesCount class */
+:where(.noResults p:first-child) {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.speciesCount {
+  font-weight: var(--font-weight-bold);
+  padding: 0 0.5ch;
+}
+
+.warning {
+  color: var(--color-red);
+}
+
+.resultsWrapper {
+  height: 100%;
+  width: 800px;
+  overflow-y: auto;
+}
+
+.resultsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.resultsTable thead tr {
+  position: sticky;
+  top: 0;
+  background-color: var(--color-light-grey);
+}
+
+.resultsTable th {
+  text-align: left;
+  box-shadow: inset 0 -1px 0 var(--table-head-border-color, var(--color-blue)); /* same as in Table.module.css */
+  padding: 0 0.5rem 0.4rem 1rem;
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.resultsTable td {
+  padding: 0.4rem 0.5rem 0.4rem 1rem;
+  border-bottom: 1px solid var(--color-medium-light-grey);
+}
+
+.resultsTable td:not(:last-child) {
+  vertical-align: top;
+}
+
+.speciesName [data-part="common-name"],
+.speciesName [data-part="scientific-name"],
+.speciesName [data-part="assembly-id"] {
+  font-weight: normal;
+}
+
+.speciesName [data-part="assembly-name"] {
+  font-size: 11px;
+  font-weight: var(--font-weight-light);
+}
+
+.variantMatch {
+  color: var(--color-blue);
+  cursor: pointer;
+}
+
+.geneMatch {
+  color: var(--color-blue);
+  cursor: pointer;
+}
+
+.geneSymbol {
+  font-weight: var(--font-weight-bold);
+  margin-right: 8px;
+}
+
+.closeButton {
+  position: absolute;
+  right: var(--standard-gutter);
+  top: var(--standard-gutter);
+}
+
+.tooltip {
+  --pointer-box-padding: 12px 20px;
+}

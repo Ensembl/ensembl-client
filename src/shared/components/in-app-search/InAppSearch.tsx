@@ -14,35 +14,33 @@
  * limitations under the License.
  */
 
-import { FormEvent, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+
 import classNames from 'classnames';
-import upperFirst from 'lodash/upperFirst';
-
-import { useAppDispatch } from 'src/store';
-
-import {
-  search,
-  clearSearch,
-  updateQuery
-} from 'src/shared/state/in-app-search/inAppSearchSlice';
-import {
-  getSearchQuery,
-  getSearchResults
-} from 'src/shared/state/in-app-search/inAppSearchSelectors';
-
-import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import analyticsTracking from 'src/services/analytics-service';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
-import ShadedInput from 'src/shared/components/input/ShadedInput';
-import { PrimaryButton } from 'src/shared/components/button/Button';
+import { useAppDispatch, useAppSelector } from 'src/store';
+import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
+import {
+  useLazySearchGenesQuery,
+  useLazySearchVariantsQuery
+} from 'src/shared/state/api-slices/searchApiSlice';
+import {
+  updateGeneQuery,
+  updateVariantQuery,
+  type AppName
+} from 'src/shared/state/in-app-search/inAppSearchSlice';
+
 import { CircleLoader } from 'src/shared/components/loader';
 import InAppSearchMatches from './InAppSearchMatches';
 
-import type { RootState } from 'src/store';
-import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
+import FeatureSearchForm from '../feature-search-form/FeatureSearchForm';
+
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import styles from './InAppSearch.module.css';
 
@@ -59,113 +57,159 @@ export type Props = {
 
 const InAppSearch = (props: Props) => {
   const { app, genomeId, genomeIdForUrl, mode } = props;
-  const [isLoading, setIsLoading] = useState(false);
-  const query = useSelector((state: RootState) =>
-    getSearchQuery(state, app, genomeId)
-  );
-  const searchResult = useSelector((state: RootState) =>
-    getSearchResults(state, app, genomeId)
-  );
   const dispatch = useAppDispatch();
 
-  const onQueryChange = (event: FormEvent<HTMLInputElement>) => {
-    const query = event.currentTarget.value;
-    if (!query) {
-      clear();
-    }
-    dispatch(updateQuery({ app, genomeId, query }));
-  };
+  const initialMode = 'gene';
+  const [activeSearchMode, setActiveSearchMode] = useState<FeatureSearchMode>(initialMode);
 
-  const onSearchSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    setIsLoading(true);
-    props.onSearchSubmit?.(query);
+  const inAppFeatureQueries = useAppSelector((state) =>
+    getInAppFeatureQueries(state, app, genomeId)
+  );
+
+  const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
+  const { currentData: currentGeneSearchResults } = geneSearchResults;
+  const [triggerVariantSearch, variantSearchResults] =
+    useLazySearchVariantsQuery();
+  const { currentData: currentVariantSearchResults } = variantSearchResults;
+
+  const query = inAppFeatureQueries[activeSearchMode as keyof typeof inAppFeatureQueries];
+  const isGeneSearchMode = activeSearchMode === 'gene';
+  const isVariantSearchMode = activeSearchMode === 'variant';
+
+  useEffect(() => {
+    if (!query) {
+      return;
+    }
 
     const searchParams = {
-      app,
-      genome_id: genomeId,
-      query,
+      genome_ids: [genomeId],
+      query: query,
       page: 1,
       per_page: 50
     };
 
-    try {
-      await dispatch(search(searchParams));
+    if (isGeneSearchMode) {
+      triggerGeneSearch(searchParams);
+    }
 
-      if (app === 'entityViewer') {
-        analyticsTracking.trackEvent({
-          category: `${app}_${mode}_search`,
-          action: 'submit_search',
-          label: query
-        });
+    if (isVariantSearchMode) {
+      triggerVariantSearch(searchParams);
+    }
+  }, [query]);
+
+  const onFeatureSearchSubmit = (input: string) => {
+    const isEmpty = input.trim() === '';
+
+    if (isGeneSearchMode) {
+      dispatch(updateGeneQuery({ app, genomeId, query: input }));
+
+      if (isEmpty) {
+        geneSearchResults.reset();
       }
-    } finally {
-      setIsLoading(false);
+    } else if (isVariantSearchMode) {
+      dispatch(updateVariantQuery({ app, genomeId, query: input }));
+
+      if (isEmpty) {
+        variantSearchResults.reset();
+      }
+    }
+
+    if (app === 'entityViewer') {
+      analyticsTracking.trackEvent({
+        category: `${app}_${mode}_search`,
+        action: 'submit_search',
+        label: query
+      });
     }
   };
 
-  const clear = () => {
-    dispatch(clearSearch({ app, genomeId }));
+  const onSearchModeChange = (
+    featureSearchMode: FeatureSearchMode
+  ) => {
+    setActiveSearchMode(featureSearchMode);
   };
 
-  const helpText =
-    'Find a gene using a stable ID (versioned or un-versioned), symbol or synonym; wildcards are also supported';
+  const isGeneSearchResultsDefined =
+    isGeneSearchMode && currentGeneSearchResults;
+  const isVariantSearchResultsDefined =
+    isVariantSearchMode && currentVariantSearchResults;
+  const isLoading =
+    (isGeneSearchMode && geneSearchResults.isFetching) ||
+    (isVariantSearchMode && variantSearchResults.isFetching);
+
+  const totalSearchHitsComponent = isGeneSearchResultsDefined ? (
+    <TotalSearchHits
+      results={currentGeneSearchResults}
+      featureSearchMode={activeSearchMode}
+    />
+  ) : isVariantSearchResultsDefined ? (
+    <TotalSearchHits
+      results={currentVariantSearchResults}
+      featureSearchMode={activeSearchMode}
+    />
+  ) : undefined;
+
+  const resultsContainerClass = classNames({
+    [styles.resultsContainer]: mode !== 'sidebar',
+    [styles.resultsContainerSidebar]: mode === 'sidebar'
+  });
 
   return (
-    <div
-      className={classNames(styles.inAppSearch, {
-        [styles.inAppSearchInInterstitial]: mode === 'interstitial'
-      })}
-    >
-      <form
-        className={getInAppSearchTopStyles(mode)}
-        onSubmit={onSearchSubmit}
-        data-test-id="in-app search top"
-      >
-        <div className={styles.label}>Find a gene in this species</div>
-        <ShadedInput
-          placeholder="Gene ID or name..."
-          type="search"
-          value={query}
-          onInput={onQueryChange}
-          className={styles.searchField}
-          help={helpText}
-          size={mode === 'interstitial' ? 'large' : 'small'}
+    <div className={styles.inAppSearch}>
+      <div className={styles.inAppSearchFormContainer}>
+        <FeatureSearchForm
+          activeFeatureSearchMode={activeSearchMode}
+          query={query}
+          searchPosition={mode}
+          onSearchSubmit={onFeatureSearchSubmit}
+          onClear={() => onFeatureSearchSubmit('')}
+          onSearchModeChange={onSearchModeChange}
+          resultsInfo={totalSearchHitsComponent}
         />
-        <PrimaryButton
-          className={styles.searchButton}
-          disabled={!query || isLoading}
-        >
-          Go
-        </PrimaryButton>
-        {!isLoading && searchResult && (
-          <div className={styles.hitsCount}>
-            <span className={styles.hitsNumber}>
-              {formatNumber(searchResult.meta.total_hits)}
-            </span>{' '}
-            {pluralise('gene', searchResult.meta.total_hits)}
-          </div>
-        )}
-      </form>
-      {isLoading ? (
-        <CircleLoader className={styles.spinner} size="small" />
-      ) : (
-        searchResult && (
+      </div>
+
+      {isLoading && <CircleLoader className={styles.spinner} size="small" />}
+      {!isLoading && isGeneSearchResultsDefined && (
+        <div className={resultsContainerClass}>
           <InAppSearchMatches
-            {...searchResult}
+            results={currentGeneSearchResults}
+            featureSearchMode={activeSearchMode}
             app={app}
             mode={mode}
             genomeIdForUrl={genomeIdForUrl}
             onMatchNavigation={props.onMatchNavigation}
           />
-        )
+        </div>
+      )}
+      {!isLoading && isVariantSearchResultsDefined && (
+        <div className={resultsContainerClass}>
+          <InAppSearchMatches
+            results={currentVariantSearchResults}
+            featureSearchMode={activeSearchMode}
+            app={app}
+            mode={mode}
+            genomeIdForUrl={genomeIdForUrl}
+            onMatchNavigation={props.onMatchNavigation}
+          />
+        </div>
       )}
     </div>
   );
 };
 
-const getInAppSearchTopStyles = (mode: InAppSearchMode) => {
-  return styles[`inAppSearchTop${upperFirst(mode)}`];
+const TotalSearchHits = (props: {
+  results: SearchResults;
+  featureSearchMode: FeatureSearchMode;
+}) => {
+  const { results, featureSearchMode } = props;
+  return (
+    <div>
+      <span className={styles.hitsNumber}>
+        {formatNumber(results.meta.total_hits)}
+      </span>{' '}
+      {pluralise(featureSearchMode, results.meta.total_hits)}
+    </div>
+  );
 };
 
 export default InAppSearch;

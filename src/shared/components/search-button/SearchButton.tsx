@@ -14,8 +14,29 @@
  * limitations under the License.
  */
 
-import type { RootState } from 'src/store';
+import classNames from 'classnames';
 
-export const getQuery = (state: RootState) => {
-  return state.speciesSelector.geneSearch.query;
+import SearchIcon from 'static/icons/icon_search.svg';
+
+import styles from './SearchButton.module.css';
+
+type Props = {
+  onClick: () => void;
+  label: string;
+  className?: string;
 };
+
+const SearchButton = (props: Props) => {
+  const componentClasses = classNames(styles.searchButton, props.className);
+
+  return (
+    <button onClick={props.onClick} className={componentClasses}>
+      <span>{props.label}</span>
+      <span className={styles.searchIconWrapper}>
+        <SearchIcon className={styles.searchIcon} />
+      </span>
+    </button>
+  );
+};
+
+export default SearchButton;

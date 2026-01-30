@@ -21,15 +21,15 @@ import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import { getQuery as readStoredGeneQuery } from 'src/content/app/species-selector/state/species-selector-gene-search-slice/speciesSelectorGeneSearchSelectors';
+import { getGeneQuery } from 'src/content/app/species-selector/state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSelectors';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
-import GeneSearchButton from 'src/shared/components/gene-search-button/GeneSearchButton';
-import GeneSearchCloseButton from 'src/shared/components/gene-search-button/GeneSearchCloseButton';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
+import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
+import SearchButton from 'src/shared/components/search-button/SearchButton';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
@@ -41,6 +41,12 @@ export const placeholderMessage =
 export const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
 );
+
+const isInSearchMode = (pathname: string) => {
+  return (
+    pathname.includes('/search/gene') || pathname.includes('/search/variant')
+  );
+};
 
 export const SpeciesSelectorAppBar = () => {
   const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
@@ -63,31 +69,32 @@ export const SpeciesSelectorAppBar = () => {
 };
 
 const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
-  const storedGeneSearchQuery = useAppSelector(readStoredGeneQuery);
+  const storedGeneSearchQuery = useAppSelector(getGeneQuery);
   const navigate = useNavigate();
   const location = useLocation();
-  const isInGeneSearchMode = location.pathname.includes('/search/gene');
+  const inSearchMode = isInSearchMode(location.pathname);
 
-  const onGeneSearchOpen = () => {
-    navigate(urlFor.speciesSelectorGeneSearch(storedGeneSearchQuery));
+  const onSearchOpen = () => {
+    // open gene search by default
+    navigate(urlFor.speciesSelectorFeatureSearch('gene', storedGeneSearchQuery));
   };
 
-  const onGeneSearchClose = () => {
+  const onSearchClose = () => {
     navigate(-1);
   };
 
-  const geneSearchButton = !isInGeneSearchMode ? (
-    <GeneSearchButton onClick={onGeneSearchOpen} />
+  const searchModeButton = !inSearchMode ? (
+    <SearchButton onClick={onSearchOpen} label="Find genes or variants" />
   ) : (
-    <GeneSearchCloseButton onClick={onGeneSearchClose} />
+    <CloseButtonWithLabel onClick={onSearchClose} />
   );
 
   return (
     <div className={styles.grid}>
       <SelectedSpeciesList selectedSpecies={props.selectedSpecies} />
       <div className={styles.aside}>
-        {geneSearchButton}
-        {!isInGeneSearchMode && (
+        {searchModeButton}
+        {!inSearchMode && (
           <span className={styles.selectTabMessage}>
             Select a tab to see a Species home page
           </span>
@@ -100,7 +107,7 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
 const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const isInGeneSearchMode = location.pathname.includes('/search/gene');
+  const inSearchMode = isInSearchMode(location.pathname);
 
   const showSpeciesPage = (species: CommittedItem) => {
     const genomeIdForUrl = species.genome_tag ?? species.genome_id;
@@ -111,7 +118,7 @@ const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
     navigate(speciesPageUrl);
   };
 
-  const conditionalSpeciesProps = !isInGeneSearchMode
+  const conditionalSpeciesProps = !inSearchMode
     ? ({ theme: 'blue' } as const)
     : ({ theme: 'grey', disabled: true } as const);
 

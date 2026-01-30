@@ -18,7 +18,7 @@ import type { Strand } from 'src/shared/types/core-api/strand';
 
 type SearchMatchType = 'Gene'; // so far, search only returns genes
 
-export type SearchMatch = {
+export type GeneSearchMatch = {
   type: SearchMatchType;
   stable_id: string;
   unversioned_stable_id: string;
@@ -40,3 +40,12 @@ export type SearchMatch = {
     };
   };
 };
+
+export type VariantSearchMatch = {
+  variant_name: string;
+  genome_id: string;
+  region_name: string;
+  start: number;
+};
+
+export type SearchMatch = GeneSearchMatch | VariantSearchMatch;

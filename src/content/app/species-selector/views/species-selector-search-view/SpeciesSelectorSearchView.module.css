@@ -1,0 +1,32 @@
+.main {
+  --inner-block-offset-left: 20px;
+  padding-bottom: var(--global-padding-bottom);
+  padding-left: var(--global-padding-left);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.resultsWrapper {
+  flex: 1; 
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  margin-top: 20px;
+}
+
+/* FIXME: remove the pseudo-radio elements when we replace them with real radio buttons */
+.pseudoRadioGroup {
+  --radio-label-font-weight: var(--font-weight-normal);
+  display: flex;
+  column-gap: 2rem;
+  margin-left: var(--inner-block-offset-left);
+  margin-top: 10px;
+}
+
+.pseudoRadioDisabled > * {
+  --radio-background-color: var(--color-light-grey);
+  --radio-label-font-weight: var(--font-weight-light);
+  cursor: default !important; /* yes, !important is terrible; but this is a temporary hack anyway */
+}
