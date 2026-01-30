@@ -22,7 +22,7 @@ import {
 } from 'react';
 import classNames from 'classnames';
 
-import { 
+import {
   getFeatureSearchLabelsByMode,
   getFeatureSearchModes,
   type FeatureSearchMode
@@ -89,20 +89,17 @@ const FeatureSearchForm = (props: Props) => {
     input?.focus();
   };
 
-  const activeFeatureSearchModeLabels = getFeatureSearchLabelsByMode(activeFeatureSearchMode);
+  const activeFeatureSearchModeLabels = getFeatureSearchLabelsByMode(
+    activeFeatureSearchMode
+  );
 
   return (
     <>
       <div className={styles.tab}>
         {getFeatureSearchModes().map((searchMode) => {
-          const searchModeLabels = 
-            getFeatureSearchLabelsByMode(searchMode);
+          const searchModeLabels = getFeatureSearchLabelsByMode(searchMode);
           return searchMode === activeFeatureSearchMode ? (
-            <TextButton
-              key={searchMode}
-              className={styles.activeTab}
-              disabled
-            >
+            <TextButton key={searchMode} className={styles.activeTab} disabled>
               {searchModeLabels.label}
             </TextButton>
           ) : (
@@ -112,9 +109,8 @@ const FeatureSearchForm = (props: Props) => {
             >
               {searchModeLabels.label}
             </TextButton>
-          )
-        }
-        )}
+          );
+        })}
       </div>
       <form
         className={classNames({
@@ -125,8 +121,7 @@ const FeatureSearchForm = (props: Props) => {
       >
         <ShadedInput
           className={classNames({
-            [styles.searchField]: searchPosition !== 'sidebar',
-            [styles.searchFieldSidebar]: searchPosition === 'sidebar'
+            [styles.searchField]: searchPosition !== 'sidebar'
           })}
           onInput={onQueryChange}
           value={searchInput || ''}

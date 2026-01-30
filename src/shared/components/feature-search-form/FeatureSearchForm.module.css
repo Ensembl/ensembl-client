@@ -31,15 +31,10 @@
   gap: 15px;
 }
 
-.searchFieldSidebar {
-  width: 100%;
-}
-
 .sidebarBottomRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
 }
 
 .resultsInfo {
