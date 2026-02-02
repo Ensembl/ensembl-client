@@ -21,7 +21,7 @@ import classNames from 'classnames';
 import analyticsTracking from 'src/services/analytics-service';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { getErrorMessage, isNotFound } from 'src/shared/helpers/fetchHelper';
+import { getErrorMessage, isNotFoundError } from 'src/shared/helpers/fetchHelper';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
@@ -184,7 +184,7 @@ const InAppSearch = (props: Props) => {
       )}
       {!isLoading && isVariantSearchMode && (
         <div className={resultsContainerClass}>
-          {isNotFound(variantSearchError) ? (
+          {isNotFoundError(variantSearchError) ? (
             <span className={styles.warning}>{getErrorMessage(variantSearchError)}</span>
             ) : isVariantSearchResultsDefined ? (
               <InAppSearchMatches

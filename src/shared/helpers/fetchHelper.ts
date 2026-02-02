@@ -22,7 +22,7 @@ import { LoadingState } from 'src/shared/types/loading-state';
 export const shouldFetch = (status: LoadingState) =>
   ![LoadingState.LOADING, LoadingState.SUCCESS].includes(status);
 
-export const isNotFound = (error: FetchBaseQueryError | SerializedError | undefined) => {
+export const isNotFoundError = (error: FetchBaseQueryError | SerializedError | undefined) => {
   return error && 'status' in error && error.status === 404;
 }
 

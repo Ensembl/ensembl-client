@@ -20,7 +20,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getErrorMessage, isNotFound } from 'src/shared/helpers/fetchHelper';
+import { getErrorMessage, isNotFoundError } from 'src/shared/helpers/fetchHelper';
 import { getFeatureSearchModeByLocation, type FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -156,7 +156,7 @@ const SpeciesSelectorSearchView = () => {
         {isVariantSearchMode && (
           <div className={styles.resultsWrapper}>
             {
-              isNotFound(variantSearchError) ? (
+              isNotFoundError(variantSearchError) ? (
                 <span className={styles.warning}>{getErrorMessage(variantSearchError)}</span>
               ) : currentVariantSearchResults ? (
                 <FeatureSearchResults
