@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext, type ChangeEvent } from 'react';
+import { useContext, type InputEventHandler } from 'react';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import { TableContext } from 'src/shared/components/data-table/DataTable';
@@ -52,10 +52,10 @@ const Pagination = () => {
     return null;
   }
 
-  const onChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  const onChange: InputEventHandler<HTMLSelectElement> = (event) => {
     dispatch({
       type: 'set_rows_per_page',
-      payload: Number(event.target.value) as RowsPerPage
+      payload: Number(event.currentTarget.value) as RowsPerPage
     });
   };
 
