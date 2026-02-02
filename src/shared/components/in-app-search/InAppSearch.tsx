@@ -70,7 +70,7 @@ const InAppSearch = (props: Props) => {
   const { currentData: currentGeneSearchResults } = geneSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
-  const { currentData: currentVariantSearchResults } = variantSearchResults;
+  const { currentData: currentVariantSearchResults, error: variantSearchError } = variantSearchResults;
 
   const query = inAppFeatureQueries[activeSearchMode as keyof typeof inAppFeatureQueries];
   const isGeneSearchMode = activeSearchMode === 'gene';
@@ -154,6 +154,8 @@ const InAppSearch = (props: Props) => {
     [styles.resultsContainerSidebar]: mode === 'sidebar'
   });
 
+  const isNotFound = (error: any) => error && 'status' in error && error.status === 404;
+
   return (
     <div className={styles.inAppSearch}>
       <div className={styles.inAppSearchFormContainer}>
@@ -181,16 +183,21 @@ const InAppSearch = (props: Props) => {
           />
         </div>
       )}
-      {!isLoading && isVariantSearchResultsDefined && (
+      {!isLoading && isVariantSearchMode && (
         <div className={resultsContainerClass}>
-          <InAppSearchMatches
-            results={currentVariantSearchResults}
-            featureSearchMode={activeSearchMode}
-            app={app}
-            mode={mode}
-            genomeIdForUrl={genomeIdForUrl}
-            onMatchNavigation={props.onMatchNavigation}
-          />
+          {isNotFound(variantSearchError) ? (
+            <span className={styles.warning}>Variation data is not currently available for this genome</span>
+            ) : isVariantSearchResultsDefined ? (
+              <InAppSearchMatches
+                results={currentVariantSearchResults}
+                featureSearchMode={activeSearchMode}
+                app={app}
+                mode={mode}
+                genomeIdForUrl={genomeIdForUrl}
+                onMatchNavigation={props.onMatchNavigation}
+              />
+            ) : null
+          }
         </div>
       )}
     </div>

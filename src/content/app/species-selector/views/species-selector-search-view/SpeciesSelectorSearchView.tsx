@@ -56,7 +56,7 @@ const SpeciesSelectorSearchView = () => {
   const { currentData: currentGeneSearchResults } = geneSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
-  const { currentData: currentVariantSearchResults } = variantSearchResults;
+  const { currentData: currentVariantSearchResults, error: variantSearchError } = variantSearchResults;
 
   const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
 
@@ -132,6 +132,8 @@ const SpeciesSelectorSearchView = () => {
     navigate(urlFor.speciesSelectorFeatureSearch(featureSearchMode, currentQuery), { replace: true });
   };
 
+  const isNotFound = (error: any) => error && 'status' in error && error.status === 404;
+
   return (
     <ModalView onClose={onClose}>
       <div className={styles.main}>
@@ -154,11 +156,17 @@ const SpeciesSelectorSearchView = () => {
         )}
         {isVariantSearchMode && (
           <div className={styles.resultsWrapper}>
-            <FeatureSearchResults
-              featureSearchMode={activeSearchMode}
-              speciesList={committedSpecies}
-              searchResults={currentVariantSearchResults}
-            />
+            {
+              isNotFound(variantSearchError) ? (
+                <span className={styles.warning}>Variation data is not currently available for selected genomes</span>
+              ) : currentVariantSearchResults ? (
+                <FeatureSearchResults
+                  featureSearchMode={activeSearchMode}
+                  speciesList={committedSpecies}
+                  searchResults={currentVariantSearchResults}
+                />
+              ) : null
+            }
           </div>
         )}
       </div>

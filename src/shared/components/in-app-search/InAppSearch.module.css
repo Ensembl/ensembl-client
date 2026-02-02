@@ -86,3 +86,8 @@
 .strong {
   font-weight: var(--font-weight-bold);
 }
+
+.warning {
+  color: var(--color-red);
+}
+
