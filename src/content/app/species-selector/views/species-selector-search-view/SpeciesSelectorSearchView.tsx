@@ -20,6 +20,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getErrorMessage, isNotFound } from 'src/shared/helpers/fetchHelper';
 import { getFeatureSearchModeByLocation, type FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -132,8 +133,6 @@ const SpeciesSelectorSearchView = () => {
     navigate(urlFor.speciesSelectorFeatureSearch(featureSearchMode, currentQuery), { replace: true });
   };
 
-  const isNotFound = (error: any) => error && 'status' in error && error.status === 404;
-
   return (
     <ModalView onClose={onClose}>
       <div className={styles.main}>
@@ -158,7 +157,7 @@ const SpeciesSelectorSearchView = () => {
           <div className={styles.resultsWrapper}>
             {
               isNotFound(variantSearchError) ? (
-                <span className={styles.warning}>Variation data is not currently available for selected genomes</span>
+                <span className={styles.warning}>{getErrorMessage(variantSearchError)}</span>
               ) : currentVariantSearchResults ? (
                 <FeatureSearchResults
                   featureSearchMode={activeSearchMode}

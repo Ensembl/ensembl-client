@@ -21,6 +21,7 @@ import classNames from 'classnames';
 import analyticsTracking from 'src/services/analytics-service';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import { getErrorMessage, isNotFound } from 'src/shared/helpers/fetchHelper';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
@@ -154,8 +155,6 @@ const InAppSearch = (props: Props) => {
     [styles.resultsContainerSidebar]: mode === 'sidebar'
   });
 
-  const isNotFound = (error: any) => error && 'status' in error && error.status === 404;
-
   return (
     <div className={styles.inAppSearch}>
       <div className={styles.inAppSearchFormContainer}>
@@ -186,7 +185,7 @@ const InAppSearch = (props: Props) => {
       {!isLoading && isVariantSearchMode && (
         <div className={resultsContainerClass}>
           {isNotFound(variantSearchError) ? (
-            <span className={styles.warning}>Variation data is not currently available for this genome</span>
+            <span className={styles.warning}>{getErrorMessage(variantSearchError)}</span>
             ) : isVariantSearchResultsDefined ? (
               <InAppSearchMatches
                 results={currentVariantSearchResults}
