@@ -30,3 +30,7 @@
   --radio-label-font-weight: var(--font-weight-light);
   cursor: default !important; /* yes, !important is terrible; but this is a temporary hack anyway */
 }
+
+.warning {
+  color: var(--color-red);
+}

@@ -20,6 +20,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getErrorMessage, isNotFoundError } from 'src/shared/helpers/fetchHelper';
 import { getFeatureSearchModeByLocation, type FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -56,7 +57,7 @@ const SpeciesSelectorSearchView = () => {
   const { currentData: currentGeneSearchResults } = geneSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
-  const { currentData: currentVariantSearchResults } = variantSearchResults;
+  const { currentData: currentVariantSearchResults, error: variantSearchError } = variantSearchResults;
 
   const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
 
@@ -154,11 +155,17 @@ const SpeciesSelectorSearchView = () => {
         )}
         {isVariantSearchMode && (
           <div className={styles.resultsWrapper}>
-            <FeatureSearchResults
-              featureSearchMode={activeSearchMode}
-              speciesList={committedSpecies}
-              searchResults={currentVariantSearchResults}
-            />
+            {
+              isNotFoundError(variantSearchError) ? (
+                <span className={styles.warning}>{getErrorMessage(variantSearchError)}</span>
+              ) : currentVariantSearchResults ? (
+                <FeatureSearchResults
+                  featureSearchMode={activeSearchMode}
+                  speciesList={committedSpecies}
+                  searchResults={currentVariantSearchResults}
+                />
+              ) : null
+            }
           </div>
         )}
       </div>

@@ -21,6 +21,7 @@ import classNames from 'classnames';
 import analyticsTracking from 'src/services/analytics-service';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import { getErrorMessage, isNotFoundError } from 'src/shared/helpers/fetchHelper';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
@@ -70,7 +71,7 @@ const InAppSearch = (props: Props) => {
   const { currentData: currentGeneSearchResults } = geneSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
-  const { currentData: currentVariantSearchResults } = variantSearchResults;
+  const { currentData: currentVariantSearchResults, error: variantSearchError } = variantSearchResults;
 
   const query = inAppFeatureQueries[activeSearchMode as keyof typeof inAppFeatureQueries];
   const isGeneSearchMode = activeSearchMode === 'gene';
@@ -181,16 +182,21 @@ const InAppSearch = (props: Props) => {
           />
         </div>
       )}
-      {!isLoading && isVariantSearchResultsDefined && (
+      {!isLoading && isVariantSearchMode && (
         <div className={resultsContainerClass}>
-          <InAppSearchMatches
-            results={currentVariantSearchResults}
-            featureSearchMode={activeSearchMode}
-            app={app}
-            mode={mode}
-            genomeIdForUrl={genomeIdForUrl}
-            onMatchNavigation={props.onMatchNavigation}
-          />
+          {isNotFoundError(variantSearchError) ? (
+            <span className={styles.warning}>{getErrorMessage(variantSearchError)}</span>
+            ) : isVariantSearchResultsDefined ? (
+              <InAppSearchMatches
+                results={currentVariantSearchResults}
+                featureSearchMode={activeSearchMode}
+                app={app}
+                mode={mode}
+                genomeIdForUrl={genomeIdForUrl}
+                onMatchNavigation={props.onMatchNavigation}
+              />
+            ) : null
+          }
         </div>
       )}
     </div>
