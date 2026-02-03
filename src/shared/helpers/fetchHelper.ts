@@ -22,16 +22,20 @@ import { LoadingState } from 'src/shared/types/loading-state';
 export const shouldFetch = (status: LoadingState) =>
   ![LoadingState.LOADING, LoadingState.SUCCESS].includes(status);
 
-export const isNotFoundError = (error: FetchBaseQueryError | SerializedError | undefined) => {
+export const isNotFoundError = (
+  error: FetchBaseQueryError | SerializedError | undefined
+) => {
   return error && 'status' in error && error.status === 404;
-}
+};
 
-export const getErrorMessage = (error: FetchBaseQueryError | SerializedError | undefined) => {
-  if (error && 'data' in error && error.data && typeof error.data === 'object') {
+export const getErrorMessage = (
+  error: FetchBaseQueryError | SerializedError | undefined
+) => {
+  if (error && 'data' in error && typeof error.data === 'object') {
     const { detail } = error.data as { detail?: string };
     if (detail) {
       return detail;
     }
   }
   return 'An unexpected error occurred..';
-}
+};
