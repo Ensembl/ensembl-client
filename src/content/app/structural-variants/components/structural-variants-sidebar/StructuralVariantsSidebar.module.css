@@ -1,11 +1,3 @@
-.container {
-  height: 100%;
-  overflow: auto;
-  padding: 21px calc(12px - var(--scrollbar-width)) 90px 12px;
-  scrollbar-gutter: stable;
-}
-
-
 /* Common legend styles */
 
 .legendSection {

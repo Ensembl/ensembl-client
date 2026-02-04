@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import AlignmentsLegend from '../alignments-legend/AlignmentsLegend';
+import VariantsLegend from '../variants-legend/VariantsLegend';
 
-import generalSlice from './general/structuralVariantsGeneralSlice';
-import uiSlice from './ui/uiSlice';
-import tracksSlice from './tracks/tracksSlice';
+const SidebarDefaultView = () => {
+  return (
+    <>
+      <AlignmentsLegend />
+      <VariantsLegend />
+    </>
+  );
+};
 
-export default combineReducers({
-  general: generalSlice,
-  ui: uiSlice,
-  tracks: tracksSlice
-});
+export default SidebarDefaultView;

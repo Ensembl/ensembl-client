@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import type { RootState } from 'src/store';
 
-import generalSlice from './general/structuralVariantsGeneralSlice';
-import uiSlice from './ui/uiSlice';
-import tracksSlice from './tracks/tracksSlice';
+export const getIsSidebarOpen = (state: RootState) =>
+  state.structuralVariants.ui.isSidebarOpen;
 
-export default combineReducers({
-  general: generalSlice,
-  ui: uiSlice,
-  tracks: tracksSlice
-});
+export const getSidebarView = (state: RootState) =>
+  state.structuralVariants.ui.sidebarView;

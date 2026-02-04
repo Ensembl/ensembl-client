@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react';
+
 import { useAppSelector } from 'src/store';
 
 import useStructuralVariantsRouting from 'src/content/app/structural-variants/hooks/useStructuralVariantsRouting';
@@ -30,6 +32,7 @@ import StructuralVariantsTopBar from './components/structural-variants-top-bar/S
 import StructuralVariantsMain from './components/structural-variants-main/StructuralVariantsMain';
 import StructuralVariantsSidebar from './components/structural-variants-sidebar/StructuralVariantsSidebar';
 import StructuralVariantsInterstitial from './components/structural-variants-interstitial/StructuralVariantsInterstitial';
+import SidebarNavigation from './components/structural-variants-sidebar/sidebar-navigation/SidebarNavigation';
 import { StandardAppLayout } from 'src/shared/components/layout';
 
 import styles from './StructuralVariants.module.css';
@@ -50,7 +53,6 @@ const StructuralVariants = () => {
     isAltGenomeLocationValid,
     isMissingAltGenomeRegion
   } = useStructuralVariantsRouting();
-  const viewportWidth = useAppSelector(getBreakpointWidth);
   const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
   const referenceGenomeLocationFromRedux = useAppSelector(
     getReferenceGenomeLocation
@@ -97,18 +99,36 @@ const StructuralVariants = () => {
     );
   }
 
+  return <MainView />;
+};
+
+const MainView = () => {
+  const viewportWidth = useAppSelector(getBreakpointWidth);
+  const mainContent = useMemo(() => {
+    return <StructuralVariantsMain />;
+  }, []);
+  const sidebarContent = useMemo(() => {
+    return <StructuralVariantsSidebar />;
+  }, []);
+  const topbarContent = useMemo(() => {
+    return <StructuralVariantsTopBar standalone={false} />;
+  }, []);
+  const sidebarNavigation = useMemo(() => {
+    return <SidebarNavigation />;
+  }, []);
+
   return (
     <div className={styles.container}>
       <StructuralVariantsAppBar />
       <StandardAppLayout
-        mainContent={<StructuralVariantsMain />}
-        sidebarContent={<StructuralVariantsSidebar />}
-        topbarContent={<StructuralVariantsTopBar standalone={false} />}
+        mainContent={mainContent}
+        sidebarContent={sidebarContent}
+        sidebarNavigation={sidebarNavigation}
+        topbarContent={topbarContent}
         isSidebarOpen={true}
         onSidebarToggle={() => {
           return true;
         }}
-        sidebarNavigation={null}
         viewportWidth={viewportWidth}
       />
     </div>

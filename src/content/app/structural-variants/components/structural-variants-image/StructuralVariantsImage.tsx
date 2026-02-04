@@ -24,9 +24,13 @@ import {
 import { useNavigate } from 'react-router-dom';
 import '@ensembl/ensembl-structural-variants';
 
+import { useAppSelector } from 'src/store';
+
 import config from 'config';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { getTrackIds } from 'src/content/app/structural-variants/state/tracks/tracksSelectors';
 
 import { StructuralVariantsImageContext } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
 import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
@@ -53,6 +57,7 @@ type Props = {
 };
 
 const StructuralVariantsImage = (props: Props) => {
+  const { referenceGenomeId, altGenomeId } = props;
   const navigate = useNavigate();
   const [featureMessage, setFeatureMessage] =
     useState<FeatureClickEventDetails | null>(null);
@@ -61,6 +66,9 @@ const StructuralVariantsImage = (props: Props) => {
   const [toolboxPosition, setToolboxPosition] = useState(ToolboxPosition.RIGHT);
   const imageContext = use(StructuralVariantsImageContext);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const trackIds = useAppSelector((state) => {
+    return getTrackIds(state, referenceGenomeId, altGenomeId);
+  });
 
   if (!imageContext) {
     throw new Error(
@@ -69,7 +77,6 @@ const StructuralVariantsImage = (props: Props) => {
   }
 
   const { setTracks } = imageContext;
-  const { referenceGenomeTrackIds, altGenomeTrackIds } = imageContext;
 
   const onViewportChangeEnd = (event: CustomEvent<ViewportChangePayload>) => {
     const referenceGenomeLocation = event.detail.reference;
@@ -121,7 +128,7 @@ const StructuralVariantsImage = (props: Props) => {
   // (so that ens-sv-browser could find appropriate initial coordinates for alt genome)
   const componentKey = `${props.referenceGenomeId}${props.referenceGenomeLocation.regionName}`;
 
-  if (!referenceGenomeTrackIds.length) {
+  if (!trackIds.referenceGenomeTrackIds.length) {
     return null;
   }
 
@@ -141,8 +148,8 @@ const StructuralVariantsImage = (props: Props) => {
         regionName={props.referenceGenomeLocation.regionName}
         regionLength={props.regionLength}
         altRegionLength={props.altRegionLength}
-        referenceTracks={referenceGenomeTrackIds}
-        altTracks={altGenomeTrackIds}
+        referenceTracks={trackIds.referenceGenomeTrackIds}
+        altTracks={trackIds.altGenomeTrackIds}
         endpoints={{
           genomeBrowser: 'https://dev-2020.ensembl.org/api/browser/data',
           alignments: `${config.structuralVariantsApiBaseUrl}/alignments`,
