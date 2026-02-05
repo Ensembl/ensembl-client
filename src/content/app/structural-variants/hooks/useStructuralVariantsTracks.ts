@@ -38,12 +38,12 @@ const useTracksFromTrackApi = (params: {
   altGenomeId?: string | null;
 }) => {
   const { referenceGenomeId } = params;
-  const { currentData: referenceGenomeTracks } = useGenomeTracksQuery(
-    referenceGenomeId ?? '',
-    {
-      skip: !referenceGenomeId
-    }
-  );
+  const {
+    isFetching: areReferenceGenomeTracksLoading,
+    currentData: referenceGenomeTracks
+  } = useGenomeTracksQuery(referenceGenomeId ?? '', {
+    skip: !referenceGenomeId
+  });
 
   const flattenedReferenceGenomeTracks = referenceGenomeTracks
     ? referenceGenomeTracks.flatMap((category) => category.track_list)
@@ -56,6 +56,7 @@ const useTracksFromTrackApi = (params: {
     .filter((track) => !!track);
 
   return {
+    areReferenceGenomeTracksLoading,
     referenceGenomeTracks: relevantTracks
   };
 };

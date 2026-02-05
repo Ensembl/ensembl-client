@@ -40,7 +40,7 @@ import { Status } from 'src/shared/types/status';
 
 import styles from './SidebarConfigurationView.module.css';
 
-const SidebarDefaultView = () => {
+const SidebarConfigurationView = () => {
   const referenceGenome = useAppSelector(getReferenceGenome);
   const altGenome = useAppSelector(getAlternativeGenome);
   const referenceGenomeId = referenceGenome?.genome_id ?? '';
@@ -100,4 +100,4 @@ const SidebarDefaultView = () => {
   );
 };
 
-export default SidebarDefaultView;
+export default SidebarConfigurationView;

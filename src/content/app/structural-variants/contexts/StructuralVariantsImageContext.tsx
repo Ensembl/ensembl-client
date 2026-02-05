@@ -46,13 +46,15 @@ export const StructuralVariantsImageContextProvider = (props: {
 }) => {
   const { referenceGenomeId, altGenomeId } = props;
   const [tracks, setTracks] = useState<TrackSummary[]>([]);
-  const { referenceGenomeTracks } = useStructuralVariantsTracks({
-    referenceGenomeId,
-    altGenomeId
-  });
+  const { referenceGenomeTracks, areReferenceGenomeTracksLoading } =
+    useStructuralVariantsTracks({
+      referenceGenomeId,
+      altGenomeId
+    });
   useStoredTrackIds({
     referenceGenomeId,
     altGenomeId,
+    areReferenceGenomeTracksLoading,
     referenceGenomeTrackIds: referenceGenomeTracks.map(
       (track) => track.track_id
     )
