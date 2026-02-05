@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-import AlignmentsLegend from './alignments-legend/AlignmentsLegend';
-import VariantsLegend from './variants-legend/VariantsLegend';
+import { useMemo } from 'react';
 
-import styles from './StructuralVariantsSidebar.module.css';
+import { useAppSelector } from 'src/store';
+
+import { getSidebarView } from 'src/content/app/structural-variants/state/ui/uiSelectors';
+
+import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
+import DefaultSidebarView from './sidebar-default-view/SidebarDefaultView';
+import SidebarConfigurationView from './sidebar-configuration-view/SidebarConfigurationView';
 
 const StructuralVariantsSidebar = () => {
-  return (
-    <div className={styles.container}>
-      <AlignmentsLegend />
-      <VariantsLegend />
-    </div>
-  );
+  const sidebarView = useAppSelector(getSidebarView);
+
+  const content = useMemo(() => {
+    if (sidebarView === 'default') {
+      return <DefaultSidebarView />;
+    } else {
+      return <SidebarConfigurationView />;
+    }
+  }, [sidebarView]);
+
+  return <Sidebar>{content}</Sidebar>;
 };
 
 export default StructuralVariantsSidebar;

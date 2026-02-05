@@ -1,0 +1,5 @@
+.track {
+  display: grid;
+  grid-template-columns: 1fr 16px;
+  column-gap: 20px;
+}
