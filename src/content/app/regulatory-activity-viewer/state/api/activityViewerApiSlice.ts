@@ -91,7 +91,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       query: (params) => {
         const { assemblyId } = params;
         return {
-          url: `${config.regulationApiBaseUrl}/annotation/v0.6/release/${releaseName}/assembly/${assemblyId}/availability`
+          url: `${config.regulationApiBaseUrl}/annotation/v0.7/release/${releaseName}/assembly/${assemblyId}/availability`
         };
       }
     }),
@@ -99,7 +99,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       query: (params) => {
         const { assemblyId, location } = params;
         return {
-          url: `${config.regulationApiBaseUrl}/annotation/v0.6/release/${releaseName}/assembly/${assemblyId}?location=${location}`
+          url: `${config.regulationApiBaseUrl}/annotation/v0.7/release/${releaseName}/assembly/${assemblyId}?location=${location}`
         };
       }
     }),
@@ -107,7 +107,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       queryFn: async (params, _, __, baseQuery) => {
         const { assemblyId, geneId } = params;
         try {
-          const url = `${config.regulationApiBaseUrl}/annotation/v0.6/release/${releaseName}/assembly/${assemblyId}/gene/${geneId}`;
+          const url = `${config.regulationApiBaseUrl}/annotation/v0.7/release/${releaseName}/assembly/${assemblyId}/gene/${geneId}`;
           const result = await baseQuery(url);
           return {
             data: result.data as FocusGene
