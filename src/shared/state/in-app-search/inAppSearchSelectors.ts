@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
+import { createSelector } from '@reduxjs/toolkit';
+
 import type { RootState } from 'src/store';
 import type { AppName } from './inAppSearchSlice';
 
-export const getInAppFeatureQueries = (
-  state: RootState,
-  appName: AppName,
-  genomeId: string
-) => {
-  return (
-    state.inAppSearch[appName][genomeId]?.queries || { gene: '', variant: '' }
-  );
-};
+export const getInAppFeatureQueries = createSelector(
+  [
+    (state: RootState, appName: AppName, genomeId: string) => {
+      return state.inAppSearch[appName][genomeId]?.queries;
+    }
+  ],
+  (queries) => {
+    return queries ?? { gene: '', variant: '' };
+  }
+);
