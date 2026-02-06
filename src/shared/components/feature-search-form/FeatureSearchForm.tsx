@@ -16,8 +16,8 @@
 
 import {
   useState,
-  type ChangeEvent,
-  type FormEvent,
+  type InputEvent,
+  type SubmitEvent,
   type ReactNode
 } from 'react';
 import classNames from 'classnames';
@@ -67,14 +67,14 @@ const FeatureSearchForm = (props: Props) => {
     setDisableSubmit(true);
   }
 
-  const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onFormSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setDisableSubmit(true);
     onSearchSubmit(searchInput);
   };
 
-  const onQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newQuery = event.target.value;
+  const onQueryChange = (event: InputEvent<HTMLInputElement>) => {
+    const newQuery = event.currentTarget.value;
     setSearchInput(newQuery);
     setDisableSubmit(false);
 
