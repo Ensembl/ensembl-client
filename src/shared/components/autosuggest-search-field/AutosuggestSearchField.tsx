@@ -19,7 +19,7 @@ import {
   useEffect,
   useRef,
   type KeyboardEvent,
-  type ChangeEvent
+  type InputEventHandler
 } from 'react';
 import classNames from 'classnames';
 
@@ -168,14 +168,14 @@ const AutosuggestSearchField = (props: Props) => {
   };
 
   const handleBlur = () => {
-    props.onBlur && props.onBlur();
+    props.onBlur?.();
   };
 
   const handleFocus = () => {
     if (!canShowSuggesions) {
       setCanShowSuggestions(true);
     }
-    props.onFocus && props.onFocus();
+    props.onFocus?.();
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -196,7 +196,7 @@ const AutosuggestSearchField = (props: Props) => {
     setHighlightedItemIndex(itemIndex);
   };
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange: InputEventHandler<HTMLInputElement> = (event) => {
     const value = event.currentTarget.value;
 
     if (value !== props.search) {
@@ -227,11 +227,11 @@ const AutosuggestSearchField = (props: Props) => {
 
   const shouldShowSuggestions = Boolean(
     props.search &&
-      !props.notFound &&
-      matchGroups.length > 0 &&
-      canShowSuggesions &&
-      !isSelected &&
-      !preventSuggestionsProp
+    !props.notFound &&
+    matchGroups.length > 0 &&
+    canShowSuggesions &&
+    !isSelected &&
+    !preventSuggestionsProp
   );
 
   const className = classNames(

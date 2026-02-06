@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   defaultSeverity: 'warning',
   extends: ['stylelint-config-standard'],
   rules: {
