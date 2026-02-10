@@ -248,7 +248,7 @@ const useTopBarState = () => {
   };
 
   let referenceGenomeLocationString: string;
-  if (state.refGenomeLocationDraft) {
+  if (state.refGenomeLocationDraft !== null) {
     referenceGenomeLocationString = state.refGenomeLocationDraft;
   } else if (state.refGenomeLocation) {
     referenceGenomeLocationString = getFormattedLocation({

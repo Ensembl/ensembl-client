@@ -91,7 +91,7 @@ const StructuralVariantsTopBar = (props: Props) => {
   });
 
   return (
-    <div className={componentClasses}>
+    <form className={componentClasses}>
       <span className={classNames(styles.withRightMargin, styles.light)}>
         Show
       </span>
@@ -139,7 +139,7 @@ const StructuralVariantsTopBar = (props: Props) => {
       >
         Go
       </PrimaryButton>
-    </div>
+    </form>
   );
 };
 
