@@ -46,7 +46,7 @@ export const StructuralVariantsImageContextProvider = (props: {
 }) => {
   const { referenceGenomeId, altGenomeId } = props;
   const [tracks, setTracks] = useState<TrackSummary[]>([]);
-  const { referenceGenomeTracks, areReferenceGenomeTracksLoading } =
+  const { referenceGenomeTracks, altGenomeTracks, areTracksLoading } =
     useStructuralVariantsTracks({
       referenceGenomeId,
       altGenomeId
@@ -54,10 +54,11 @@ export const StructuralVariantsImageContextProvider = (props: {
   useStoredTrackIds({
     referenceGenomeId,
     altGenomeId,
-    areReferenceGenomeTracksLoading,
+    areTracksLoading,
     referenceGenomeTrackIds: referenceGenomeTracks.map(
       (track) => track.track_id
-    )
+    ),
+    altGenomeTrackIds: altGenomeTracks.map((track) => track.track_id)
   });
 
   if (!referenceGenomeTracks.length) {
@@ -69,7 +70,7 @@ export const StructuralVariantsImageContextProvider = (props: {
     if (trackLabelsMap[track.id]) {
       label = trackLabelsMap[track.id];
     } else {
-      const matchedTrack = referenceGenomeTracks.find(
+      const matchedTrack = [...referenceGenomeTracks, ...altGenomeTracks].find(
         (t) => t.track_id === track.id
       );
       if (matchedTrack) {

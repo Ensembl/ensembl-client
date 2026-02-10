@@ -33,32 +33,48 @@ const labelFragmentsForFindingTracks = [
  * - Select track ids that are relevant for the structural variants view
  */
 
-const useTracksFromTrackApi = (params: {
+const useStructuralVariantsTracks = (params: {
   referenceGenomeId?: string | null;
   altGenomeId?: string | null;
 }) => {
-  const { referenceGenomeId } = params;
+  const { referenceGenomeId, altGenomeId } = params;
   const {
     isFetching: areReferenceGenomeTracksLoading,
     currentData: referenceGenomeTracks
   } = useGenomeTracksQuery(referenceGenomeId ?? '', {
     skip: !referenceGenomeId
   });
+  const {
+    isFetching: areAltGenomeTracksLoading,
+    currentData: altGenomeTracks
+  } = useGenomeTracksQuery(altGenomeId ?? '', {
+    skip: !altGenomeId
+  });
 
   const flattenedReferenceGenomeTracks = referenceGenomeTracks
     ? referenceGenomeTracks.flatMap((category) => category.track_list)
     : [];
+  const flattenedAltGenomeTracks = altGenomeTracks
+    ? altGenomeTracks.flatMap((category) => category.track_list)
+    : [];
 
-  const relevantTracks = labelFragmentsForFindingTracks
+  const relevantReferenceGenomeTracks = labelFragmentsForFindingTracks
     .map((regex) =>
       flattenedReferenceGenomeTracks.find((track) => regex.test(track.label))
     )
     .filter((track) => !!track);
+  const relevantAltGenomeTracks = labelFragmentsForFindingTracks
+    .map((regex) =>
+      flattenedAltGenomeTracks.find((track) => regex.test(track.label))
+    )
+    .filter((track) => !!track);
 
   return {
-    areReferenceGenomeTracksLoading,
-    referenceGenomeTracks: relevantTracks
+    areTracksLoading:
+      areReferenceGenomeTracksLoading || areAltGenomeTracksLoading,
+    referenceGenomeTracks: relevantReferenceGenomeTracks,
+    altGenomeTracks: relevantAltGenomeTracks
   };
 };
 
-export default useTracksFromTrackApi;
+export default useStructuralVariantsTracks;
