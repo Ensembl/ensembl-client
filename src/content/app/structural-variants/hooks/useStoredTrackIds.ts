@@ -34,14 +34,16 @@ const defaultTrackIds = ['sv-gene'];
 const useStoredTrackIds = (params: {
   referenceGenomeId: string;
   altGenomeId: string;
-  areReferenceGenomeTracksLoading: boolean;
+  areTracksLoading: boolean;
   referenceGenomeTrackIds: string[];
+  altGenomeTrackIds: string[];
 }) => {
   const {
     referenceGenomeId,
     altGenomeId,
-    areReferenceGenomeTracksLoading,
-    referenceGenomeTrackIds
+    areTracksLoading,
+    referenceGenomeTrackIds,
+    altGenomeTrackIds
   } = params;
   const trackIdsFromRedux = useAppSelector((state) => {
     return getTrackIds(state, referenceGenomeId, altGenomeId);
@@ -52,27 +54,29 @@ const useStoredTrackIds = (params: {
     trackIdsFromRedux.referenceGenomeTrackIds.length > 0;
 
   useEffect(() => {
-    if (areReferenceGenomeTracksLoading || hasTrackIdsInRedux) {
+    if (areTracksLoading || hasTrackIdsInRedux) {
       return;
     }
     const allReferenceGenomeTrackIds = [
       ...defaultTrackIds,
       ...referenceGenomeTrackIds
     ];
+    const allAltGenomeTracks = [...defaultTrackIds, ...altGenomeTrackIds];
 
     dispatch(
       setTracks({
         referenceGenomeId,
         altGenomeId,
         referenceGenomeTrackIds: allReferenceGenomeTrackIds,
-        altGenomeTrackIds: defaultTrackIds
+        altGenomeTrackIds: allAltGenomeTracks
       })
     );
   }, [
     referenceGenomeId,
     altGenomeId,
-    areReferenceGenomeTracksLoading,
+    areTracksLoading,
     referenceGenomeTrackIds,
+    altGenomeTrackIds,
     hasTrackIdsInRedux,
     dispatch
   ]);

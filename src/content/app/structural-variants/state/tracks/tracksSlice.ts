@@ -85,35 +85,55 @@ const tracksSlice = createSlice({
       action: PayloadAction<{
         referenceGenomeId: string;
         altGenomeId: string;
-        referenceGenomeTrackIds: string[];
+        referenceGenomeTrackIds?: string[];
+        altGenomeTrackIds?: string[];
       }>
     ) {
       ensureStateForGenomePair({ state, ...action.payload });
       const genomePairId = createGenomePairId(action.payload);
       const genomePairState = state[genomePairId];
-      // [...new Set([...genomePairState.hiddenTrackIds, ...action.payload.trackIds])]
-      genomePairState.trackIds.referenceGenomeTrackIds =
-        genomePairState.trackIds.referenceGenomeTrackIds.filter(
-          (trackId) => !action.payload.referenceGenomeTrackIds.includes(trackId)
-        );
+
+      if ('referenceGenomeTrackIds' in action.payload) {
+        genomePairState.trackIds.referenceGenomeTrackIds =
+          genomePairState.trackIds.referenceGenomeTrackIds.filter(
+            (trackId) =>
+              !action.payload.referenceGenomeTrackIds!.includes(trackId)
+          );
+      } else if ('altGenomeTrackIds' in action.payload) {
+        genomePairState.trackIds.altGenomeTrackIds =
+          genomePairState.trackIds.altGenomeTrackIds.filter(
+            (trackId) => !action.payload.altGenomeTrackIds!.includes(trackId)
+          );
+      }
     },
     showTracks(
       state,
       action: PayloadAction<{
         referenceGenomeId: string;
         altGenomeId: string;
-        referenceGenomeTrackIds: string[];
+        referenceGenomeTrackIds?: string[];
+        altGenomeTrackIds?: string[];
       }>
     ) {
       ensureStateForGenomePair({ state, ...action.payload });
       const genomePairId = createGenomePairId(action.payload);
       const genomePairState = state[genomePairId];
-      genomePairState.trackIds.referenceGenomeTrackIds = [
-        ...new Set([
-          ...genomePairState.trackIds.referenceGenomeTrackIds,
-          ...action.payload.referenceGenomeTrackIds
-        ])
-      ];
+
+      if ('referenceGenomeTrackIds' in action.payload) {
+        genomePairState.trackIds.referenceGenomeTrackIds = [
+          ...new Set([
+            ...genomePairState.trackIds.referenceGenomeTrackIds,
+            ...(action.payload.referenceGenomeTrackIds as string[])
+          ])
+        ];
+      } else if ('altGenomeTrackIds' in action.payload) {
+        genomePairState.trackIds.altGenomeTrackIds = [
+          ...new Set([
+            ...genomePairState.trackIds.altGenomeTrackIds,
+            ...(action.payload.altGenomeTrackIds as string[])
+          ])
+        ];
+      }
     }
   }
 });
