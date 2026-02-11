@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -40,13 +41,17 @@ const CommunicationPanelButton = (props: Props) => {
     useNotifications();
   const showCommunicationPanel = useAppSelector(isCommunicationPanelOpen);
   const dispatch = useAppDispatch();
+  const location = useLocation();
 
   useEffect(() => {
+    if (location.pathname.startsWith('/contact-us')) {
+      dispatch(openCommunicationPanel());
+    }
     // automatically open communication panel if there is an important notification
     if (notifications.some((notification) => notification.important)) {
       dispatch(openCommunicationPanel());
     }
-  }, [notifications]);
+  }, [notifications, location.pathname, dispatch]);
 
   const onClick = () => {
     dispatch(openCommunicationPanel());

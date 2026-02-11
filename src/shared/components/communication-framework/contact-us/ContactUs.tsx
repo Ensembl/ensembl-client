@@ -15,6 +15,7 @@
  */
 
 import { useRef, useState } from 'react';
+import { useLocation } from 'react-router';
 
 import { ContactUsInitialForm } from './contact-us-form';
 import { Invitation, Header } from './preform-header/PreformHeader';
@@ -25,7 +26,11 @@ import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMed
 import styles from './ContactUs.module.css';
 
 const ContactUs = () => {
-  const [shouldShowForm, setShouldShowForm] = useState(false);
+  const location = useLocation();
+  const isContactUsRoute = location.pathname.startsWith('/contact-us');
+  // if the user has navigated to the contact us page directly via URL, show the form immediately
+  // otherwise, show the form to contact us when the clicks on contact us button
+  const [shouldShowForm, setShouldShowForm] = useState(isContactUsRoute);
   const elementRef = useRef<HTMLDivElement | null>(null);
 
   if (shouldShowForm) {

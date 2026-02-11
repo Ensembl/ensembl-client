@@ -117,6 +117,10 @@ const routes: RouteConfig[] = [
     serverFetch: helpPageServerFetch
   },
   {
+    path: '/contact-us/*',
+    element: <HomePage />
+  },
+  {
     path: '*',
     element: <NotFoundErrorScreen />
   }
