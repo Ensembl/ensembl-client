@@ -151,7 +151,7 @@ const StructuralVariantsImage = (props: Props) => {
         referenceTracks={trackIds.referenceGenomeTrackIds}
         altTracks={trackIds.altGenomeTrackIds}
         endpoints={{
-          genomeBrowser: '/api/browser/data',
+          genomeBrowser: config.genomeBrowserBackendBaseUrl,
           alignments: `${config.structuralVariantsApiBaseUrl}/alignments`,
           variants: `${config.structuralVariantsApiBaseUrl}/variants`
         }}
