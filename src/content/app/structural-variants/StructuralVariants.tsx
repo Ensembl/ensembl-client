@@ -33,6 +33,7 @@ import StructuralVariantsMain from './components/structural-variants-main/Struct
 import StructuralVariantsSidebar from './components/structural-variants-sidebar/StructuralVariantsSidebar';
 import StructuralVariantsInterstitial from './components/structural-variants-interstitial/StructuralVariantsInterstitial';
 import SidebarNavigation from './components/structural-variants-sidebar/sidebar-navigation/SidebarNavigation';
+import StructuralVariantsSidebarToolstrip from 'src/content/app/structural-variants/components/structural-variants-sidebar/structural-variants-sidebar-toolstrip/StructuralVariantsSidebarToolstrip';
 import { StandardAppLayout } from 'src/shared/components/layout';
 
 import styles from './StructuralVariants.module.css';
@@ -110,6 +111,9 @@ const MainView = () => {
   const sidebarContent = useMemo(() => {
     return <StructuralVariantsSidebar />;
   }, []);
+  const sidebarToolstripContent = useMemo(() => {
+    return <StructuralVariantsSidebarToolstrip />;
+  }, []);
   const topbarContent = useMemo(() => {
     return <StructuralVariantsTopBar standalone={false} />;
   }, []);
@@ -123,6 +127,7 @@ const MainView = () => {
       <StandardAppLayout
         mainContent={mainContent}
         sidebarContent={sidebarContent}
+        sidebarToolstripContent={sidebarToolstripContent}
         sidebarNavigation={sidebarNavigation}
         topbarContent={topbarContent}
         isSidebarOpen={true}

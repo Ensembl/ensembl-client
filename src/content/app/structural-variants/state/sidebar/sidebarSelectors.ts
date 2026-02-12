@@ -17,7 +17,10 @@
 import type { RootState } from 'src/store';
 
 export const getIsSidebarOpen = (state: RootState) =>
-  state.structuralVariants.ui.isSidebarOpen;
+  state.structuralVariants.sidebar.isSidebarOpen;
 
 export const getSidebarView = (state: RootState) =>
-  state.structuralVariants.ui.sidebarView;
+  state.structuralVariants.sidebar.sidebarView;
+
+export const getSidebarModalView = (state: RootState) =>
+  state.structuralVariants.sidebar.sidebarModalView;

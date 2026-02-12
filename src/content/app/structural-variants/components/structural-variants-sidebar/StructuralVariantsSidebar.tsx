@@ -18,14 +18,19 @@ import { useMemo } from 'react';
 
 import { useAppSelector } from 'src/store';
 
-import { getSidebarView } from 'src/content/app/structural-variants/state/ui/uiSelectors';
+import {
+  getSidebarView,
+  getSidebarModalView
+} from 'src/content/app/structural-variants/state/sidebar/sidebarSelectors';
 
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import DefaultSidebarView from './sidebar-default-view/SidebarDefaultView';
 import SidebarConfigurationView from './sidebar-configuration-view/SidebarConfigurationView';
+import StructuralVariantsSidebarModal from 'src/content/app/structural-variants/components/structural-variants-sidebar/structural-variants-sidebar-modal/StructuralVariantsSidebarModal';
 
 const StructuralVariantsSidebar = () => {
   const sidebarView = useAppSelector(getSidebarView);
+  const sidebarModalView = useAppSelector(getSidebarModalView);
 
   const content = useMemo(() => {
     if (sidebarView === 'default') {
@@ -34,6 +39,10 @@ const StructuralVariantsSidebar = () => {
       return <SidebarConfigurationView />;
     }
   }, [sidebarView]);
+
+  if (sidebarModalView) {
+    return <StructuralVariantsSidebarModal />;
+  }
 
   return <Sidebar>{content}</Sidebar>;
 };

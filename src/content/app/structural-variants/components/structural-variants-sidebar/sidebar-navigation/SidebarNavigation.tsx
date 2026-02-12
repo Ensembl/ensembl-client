@@ -18,12 +18,12 @@ import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
-import { getSidebarView } from 'src/content/app/structural-variants/state/ui/uiSelectors';
+import { getSidebarView } from 'src/content/app/structural-variants/state/sidebar/sidebarSelectors';
 
 import {
   setSidebarView,
   type SidebarView
-} from 'src/content/app/structural-variants/state/ui/uiSlice';
+} from 'src/content/app/structural-variants/state/sidebar/sidebarSlice';
 
 import TextButton from 'src/shared/components/text-button/TextButton';
 

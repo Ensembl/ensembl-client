@@ -20,17 +20,21 @@ export type MainContentBottomView = 'epigenomes-list' | 'dataviz';
 
 export type SidebarView = 'default' | 'configuration';
 
+export type SidebarModalView = 'search';
+
 type State = {
   isSidebarOpen: boolean;
   sidebarView: SidebarView;
+  sidebarModalView: SidebarModalView | null;
 };
 
 const initialState: State = {
   isSidebarOpen: true,
-  sidebarView: 'default'
+  sidebarView: 'default',
+  sidebarModalView: null
 };
 
-const uiSlice = createSlice({
+const sidebarSlice = createSlice({
   name: 'structural-variants-viewer-ui',
   initialState,
   reducers: {
@@ -43,10 +47,34 @@ const uiSlice = createSlice({
     setSidebarView(state, action: PayloadAction<{ view: SidebarView }>) {
       const { view } = action.payload;
       state.sidebarView = view;
+    },
+    openSidebarModal(state, action: PayloadAction<{ view: SidebarModalView }>) {
+      state.sidebarModalView = action.payload.view;
+    },
+    closeSidebarModal(state) {
+      state.sidebarModalView = null;
+    },
+    toggleSidebarModal(
+      state,
+      action: PayloadAction<{ view: SidebarModalView }>
+    ) {
+      const view = action.payload.view;
+      if (state.sidebarModalView === view) {
+        state.sidebarModalView = null;
+      } else {
+        state.sidebarModalView = view;
+      }
     }
   }
 });
 
-export const { setSidebarView, openSidebar, closeSidebar } = uiSlice.actions;
+export const {
+  setSidebarView,
+  openSidebar,
+  closeSidebar,
+  openSidebarModal,
+  closeSidebarModal,
+  toggleSidebarModal
+} = sidebarSlice.actions;
 
-export default uiSlice.reducer;
+export default sidebarSlice.reducer;
