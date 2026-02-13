@@ -16,7 +16,7 @@
 
 import { useMemo } from 'react';
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import useStructuralVariantsRouting from 'src/content/app/structural-variants/hooks/useStructuralVariantsRouting';
 
@@ -26,6 +26,9 @@ import {
   getAlternativeGenome,
   getReferenceGenomeLocation
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
+import { getIsSidebarOpen } from 'src/content/app/structural-variants/state/sidebar/sidebarSelectors';
+
+import { toggleSidebar } from 'src/content/app/structural-variants/state/sidebar/sidebarSlice';
 
 import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
 import StructuralVariantsTopBar from './components/structural-variants-top-bar/StructuralVariantsTopBar';
@@ -104,6 +107,9 @@ const StructuralVariants = () => {
 };
 
 const MainView = () => {
+  const isSidebarOpen = useAppSelector(getIsSidebarOpen);
+  const dispatch = useAppDispatch();
+
   const viewportWidth = useAppSelector(getBreakpointWidth);
   const mainContent = useMemo(() => {
     return <StructuralVariantsMain />;
@@ -121,6 +127,10 @@ const MainView = () => {
     return <SidebarNavigation />;
   }, []);
 
+  const onSidebarToggle = () => {
+    dispatch(toggleSidebar());
+  };
+
   return (
     <div className={styles.container}>
       <StructuralVariantsAppBar />
@@ -130,10 +140,8 @@ const MainView = () => {
         sidebarToolstripContent={sidebarToolstripContent}
         sidebarNavigation={sidebarNavigation}
         topbarContent={topbarContent}
-        isSidebarOpen={true}
-        onSidebarToggle={() => {
-          return true;
-        }}
+        isSidebarOpen={isSidebarOpen}
+        onSidebarToggle={onSidebarToggle}
         viewportWidth={viewportWidth}
       />
     </div>

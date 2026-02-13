@@ -44,6 +44,9 @@ const sidebarSlice = createSlice({
     closeSidebar(state) {
       state.isSidebarOpen = false;
     },
+    toggleSidebar(state) {
+      state.isSidebarOpen = !state.isSidebarOpen;
+    },
     setSidebarView(state, action: PayloadAction<{ view: SidebarView }>) {
       const { view } = action.payload;
       state.sidebarView = view;
@@ -72,6 +75,7 @@ export const {
   setSidebarView,
   openSidebar,
   closeSidebar,
+  toggleSidebar,
   openSidebarModal,
   closeSidebarModal,
   toggleSidebarModal
