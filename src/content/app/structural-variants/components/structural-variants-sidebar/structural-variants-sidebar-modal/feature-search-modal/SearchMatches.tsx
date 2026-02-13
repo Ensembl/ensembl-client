@@ -15,6 +15,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
+import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -26,6 +27,7 @@ import type { GeneSearchMatch } from 'src/shared/types/search-api/search-match';
 import type { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 
 import sharedStyles from 'src/shared/components/in-app-search/InAppSearch.module.css';
+import styles from './FeatureSearchModal.module.css';
 
 const SearchMatches = ({
   matches,
@@ -67,25 +69,36 @@ const SearchMatches = ({
     navigate(url);
   };
 
+  const searchMatchesContainerClasses = classNames(
+    sharedStyles.searchMatches,
+    styles.searchMatches
+  );
+
   return (
-    <div className={sharedStyles.resultsContainer}>
-      {navigableMatches.map((match) => (
-        <div key={match.stable_id}>
-          <TextButton onClick={() => onMatchSelect(match)}>
-            {match.symbol ?? match.stable_id}
-          </TextButton>
-        </div>
-      ))}
+    <div>
+      <div className={searchMatchesContainerClasses}>
+        {navigableMatches.map((match) => (
+          <div key={match.stable_id}>
+            <TextButton onClick={() => onMatchSelect(match)}>
+              {match.symbol ?? match.stable_id}
+            </TextButton>
+          </div>
+        ))}
+      </div>
 
       {nonNavigableMatches.length > 0 && (
         <>
-          <div>Genes from unavailable chromosomes</div>
+          <div className={styles.searchMatchesSectionHead}>
+            Genes from unavailable chromosomes
+          </div>
 
-          {nonNavigableMatches.map((match) => (
-            <div key={match.stable_id}>
-              <span>{match.symbol ?? match.stable_id}</span>
-            </div>
-          ))}
+          <div className={searchMatchesContainerClasses}>
+            {nonNavigableMatches.map((match) => (
+              <div key={match.stable_id}>
+                <span>{match.symbol ?? match.stable_id}</span>
+              </div>
+            ))}
+          </div>
         </>
       )}
     </div>

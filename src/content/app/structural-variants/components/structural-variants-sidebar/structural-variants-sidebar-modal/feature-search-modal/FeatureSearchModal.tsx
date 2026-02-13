@@ -30,6 +30,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 import type { GeneSearchMatch } from 'src/shared/types/search-api/search-match';
 
 import sharedStyles from 'src/shared/components/in-app-search/InAppSearch.module.css';
+import styles from './FeatureSearchModal.module.css';
 
 /**
  * QUESTIONS:
@@ -37,11 +38,10 @@ import sharedStyles from 'src/shared/components/in-app-search/InAppSearch.module
  * - Is there anything else reusable from InAppSearch?
  */
 
-const noop = () => true;
-
 const FeatureSearchModal = () => {
   // const [ searchQuery, setSearchQuery ] = useState<string | null>(null);
-  const [trigger, { isFetching, currentData }] = useLazySearchGenesQuery();
+  const [trigger, { isFetching, currentData, reset }] =
+    useLazySearchGenesQuery();
   const referenceGenome = useAppSelector(getReferenceGenome);
   const altGenome = useAppSelector(getAlternativeGenome);
 
@@ -62,19 +62,21 @@ const FeatureSearchModal = () => {
   // };
 
   return (
-    <>
-      <FeatureSearchForm onSearchSubmit={onSearchSubmit} onClear={noop} />
-      {isFetching && (
-        <CircleLoader className={sharedStyles.spinner} size="small" />
-      )}
-      {currentData && (
-        <SearchMatches
-          referenceGenomeId={referenceGenome!.genome_id}
-          altGenomeId={altGenome!.genome_id}
-          matches={currentData.matches as GeneSearchMatch[]}
-        />
-      )}
-    </>
+    <div className={styles.container}>
+      <FeatureSearchForm onSearchSubmit={onSearchSubmit} onClear={reset} />
+      <div className={sharedStyles.resultsContainerSidebar}>
+        {isFetching && (
+          <CircleLoader className={sharedStyles.spinner} size="small" />
+        )}
+        {currentData && (
+          <SearchMatches
+            referenceGenomeId={referenceGenome!.genome_id}
+            altGenomeId={altGenome!.genome_id}
+            matches={currentData.matches as GeneSearchMatch[]}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 

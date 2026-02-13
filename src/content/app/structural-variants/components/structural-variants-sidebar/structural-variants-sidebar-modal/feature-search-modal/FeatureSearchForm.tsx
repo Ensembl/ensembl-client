@@ -56,10 +56,9 @@ const FeatureSearchForm = (props: Props) => {
     setInput(newQuery);
     setHasSubmitted(false);
 
-    // if (newQuery.trim() === '') {
-    //   onClear();
-    //   setDisableSubmit(true);
-    // }
+    if (newQuery.trim() === '') {
+      props.onClear();
+    }
   };
 
   const shouldDisableSubmit = input.trim() === '' || hasSubmitted;

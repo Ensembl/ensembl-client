@@ -1,0 +1,13 @@
+.container {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.searchMatches {
+  row-gap: 0.5rem;
+}
+
+.searchMatchesSectionHead {
+  margin: 1rem 0 0.6rem;
+}
