@@ -16,9 +16,10 @@
 
 import {
   useState,
+  useCallback,
   type InputEvent,
   type SubmitEvent,
-  type ReactNode
+  type ReactNode,
 } from 'react';
 import classNames from 'classnames';
 
@@ -85,9 +86,9 @@ const FeatureSearchForm = (props: Props) => {
   };
 
   // NOTE: future versions of React will stop passing null to ref callbacks; so update function signature when this happens
-  const focusInput = (input: HTMLInputElement | null) => {
+  const focusInput = useCallback((input: HTMLInputElement | null) => {
     input?.focus();
-  };
+  }, []);
 
   const activeFeatureSearchModeLabels = getFeatureSearchLabelsByMode(
     activeFeatureSearchMode
