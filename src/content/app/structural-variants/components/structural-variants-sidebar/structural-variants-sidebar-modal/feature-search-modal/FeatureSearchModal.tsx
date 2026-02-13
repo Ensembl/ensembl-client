@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import { useNavigate } from 'react-router-dom';
-
 import { useAppSelector } from 'src/store';
-
-import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import {
   getReferenceGenome,
@@ -26,13 +22,14 @@ import {
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 import { useLazySearchGenesQuery } from 'src/shared/state/api-slices/searchApiSlice';
-import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import FeatureSearchForm from './FeatureSearchForm';
-import TextButton from 'src/shared/components/text-button/TextButton';
+import SearchMatches from './SearchMatches';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import type { GeneSearchMatch } from 'src/shared/types/search-api/search-match';
-import type { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
+
+import sharedStyles from 'src/shared/components/in-app-search/InAppSearch.module.css';
 
 /**
  * QUESTIONS:
@@ -44,7 +41,7 @@ const noop = () => true;
 
 const FeatureSearchModal = () => {
   // const [ searchQuery, setSearchQuery ] = useState<string | null>(null);
-  const [trigger, { currentData }] = useLazySearchGenesQuery();
+  const [trigger, { isFetching, currentData }] = useLazySearchGenesQuery();
   const referenceGenome = useAppSelector(getReferenceGenome);
   const altGenome = useAppSelector(getAlternativeGenome);
 
@@ -67,6 +64,9 @@ const FeatureSearchModal = () => {
   return (
     <>
       <FeatureSearchForm onSearchSubmit={onSearchSubmit} onClear={noop} />
+      {isFetching && (
+        <CircleLoader className={sharedStyles.spinner} size="small" />
+      )}
       {currentData && (
         <SearchMatches
           referenceGenomeId={referenceGenome!.genome_id}
@@ -76,137 +76,6 @@ const FeatureSearchModal = () => {
       )}
     </>
   );
-};
-
-const SearchMatches = ({
-  matches,
-  referenceGenomeId,
-  altGenomeId
-}: {
-  referenceGenomeId: string;
-  altGenomeId: string;
-  matches: GeneSearchMatch[];
-}) => {
-  const navigate = useNavigate();
-  const { currentData: referenceGenomeKaryotype } =
-    useGenomeKaryotypeQuery(referenceGenomeId);
-  const { currentData: altGenomeKaryotype } =
-    useGenomeKaryotypeQuery(altGenomeId);
-
-  if (!referenceGenomeKaryotype || !altGenomeKaryotype) {
-    return null;
-  }
-
-  const { navigableMatches, nonNavigableMatches } = partitionSearchMatches({
-    matches,
-    referenceGenomeKaryotype,
-    altGenomeKaryotype
-  });
-
-  const onMatchSelect = (match: GeneSearchMatch) => {
-    const referenceGenomeLocation = calculateViewportLocation({
-      match,
-      referenceGenomeKaryotype
-    });
-
-    const url = urlFor.structuralVariantsViewer({
-      referenceGenomeId,
-      altGenomeId,
-      referenceGenomeLocation
-    });
-
-    navigate(url);
-  };
-
-  return (
-    <div>
-      {navigableMatches.map((match) => (
-        <div key={match.stable_id}>
-          <TextButton onClick={() => onMatchSelect(match)}>
-            {match.symbol ?? match.stable_id}
-          </TextButton>
-        </div>
-      ))}
-
-      {nonNavigableMatches.length > 0 && (
-        <>
-          <div>Genes from unavailable chromosomes</div>
-
-          {nonNavigableMatches.map((match) => (
-            <div key={match.stable_id}>
-              <span>{match.symbol ?? match.stable_id}</span>
-            </div>
-          ))}
-        </>
-      )}
-    </div>
-  );
-};
-
-const partitionSearchMatches = ({
-  matches,
-  referenceGenomeKaryotype,
-  altGenomeKaryotype
-}: {
-  matches: GeneSearchMatch[];
-  referenceGenomeKaryotype: GenomeKaryotypeItem[];
-  altGenomeKaryotype: GenomeKaryotypeItem[];
-}) => {
-  const navigableMatches: GeneSearchMatch[] = [];
-  const nonNavigableMatches: GeneSearchMatch[] = [];
-
-  for (const match of matches) {
-    const isRefRegionAvailable = referenceGenomeKaryotype.some(
-      (item) => item.name === match.slice.region.name
-    );
-    const isAltRegionAvailable = altGenomeKaryotype.some(
-      (item) => item.name === match.slice.region.name
-    );
-
-    if (isRefRegionAvailable && isAltRegionAvailable) {
-      navigableMatches.push(match);
-    } else {
-      nonNavigableMatches.push(match);
-    }
-  }
-
-  return {
-    navigableMatches,
-    nonNavigableMatches
-  };
-};
-
-/**
- *
- */
-const calculateViewportLocation = ({
-  match,
-  referenceGenomeKaryotype
-}: {
-  match: GeneSearchMatch;
-  referenceGenomeKaryotype: GenomeKaryotypeItem[];
-}) => {
-  const regionName = match.slice.region.name;
-  const region = referenceGenomeKaryotype.find(
-    (item) => item.name === regionName
-  ) as GenomeKaryotypeItem;
-  const regionLength = region.length;
-
-  // Let's say target gene should occupy two quarters of the viewport
-  const geneLength = match.slice.location.end - match.slice.location.start + 1;
-  const desiredViewportBpLength = geneLength * 2;
-  const quarterViewportLength = Math.ceil(desiredViewportBpLength / 4);
-  const start = Math.max(1, match.slice.location.start - quarterViewportLength);
-  const end = Math.min(
-    regionLength,
-    match.slice.location.end + quarterViewportLength
-  );
-
-  return {
-    regionName,
-    start,
-    end
-  };
 };
 
 export default FeatureSearchModal;
