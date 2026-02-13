@@ -17,11 +17,11 @@
 import { combineReducers } from 'redux';
 
 import generalSlice from './general/structuralVariantsGeneralSlice';
-import uiSlice from './ui/uiSlice';
+import sidebarSlice from './sidebar/sidebarSlice';
 import tracksSlice from './tracks/tracksSlice';
 
 export default combineReducers({
   general: generalSlice,
-  ui: uiSlice,
+  sidebar: sidebarSlice,
   tracks: tracksSlice
 });

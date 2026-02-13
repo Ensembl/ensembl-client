@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
+import { useAppDispatch } from 'src/store';
+
+import { toggleSidebarModal } from 'src/content/app/structural-variants/state/sidebar/sidebarSlice';
+
+import SearchButton from 'src/shared/components/search-button/SearchButton';
 import AlignmentsLegend from '../alignments-legend/AlignmentsLegend';
 import VariantsLegend from '../variants-legend/VariantsLegend';
 
 const SidebarDefaultView = () => {
+  const dispatch = useAppDispatch();
+
+  const onGeneSearchClick = () => {
+    dispatch(toggleSidebarModal({ view: 'search' }));
+  };
+
   return (
     <>
+      <div>
+        <SearchButton label="Find a gene" onClick={onGeneSearchClick} />
+      </div>
       <AlignmentsLegend />
       <VariantsLegend />
     </>

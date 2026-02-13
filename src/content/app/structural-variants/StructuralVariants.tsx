@@ -16,7 +16,7 @@
 
 import { useMemo } from 'react';
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import useStructuralVariantsRouting from 'src/content/app/structural-variants/hooks/useStructuralVariantsRouting';
 
@@ -26,6 +26,9 @@ import {
   getAlternativeGenome,
   getReferenceGenomeLocation
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
+import { getIsSidebarOpen } from 'src/content/app/structural-variants/state/sidebar/sidebarSelectors';
+
+import { toggleSidebar } from 'src/content/app/structural-variants/state/sidebar/sidebarSlice';
 
 import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
 import StructuralVariantsTopBar from './components/structural-variants-top-bar/StructuralVariantsTopBar';
@@ -33,6 +36,7 @@ import StructuralVariantsMain from './components/structural-variants-main/Struct
 import StructuralVariantsSidebar from './components/structural-variants-sidebar/StructuralVariantsSidebar';
 import StructuralVariantsInterstitial from './components/structural-variants-interstitial/StructuralVariantsInterstitial';
 import SidebarNavigation from './components/structural-variants-sidebar/sidebar-navigation/SidebarNavigation';
+import StructuralVariantsSidebarToolstrip from 'src/content/app/structural-variants/components/structural-variants-sidebar/structural-variants-sidebar-toolstrip/StructuralVariantsSidebarToolstrip';
 import { StandardAppLayout } from 'src/shared/components/layout';
 
 import styles from './StructuralVariants.module.css';
@@ -103,12 +107,18 @@ const StructuralVariants = () => {
 };
 
 const MainView = () => {
+  const isSidebarOpen = useAppSelector(getIsSidebarOpen);
+  const dispatch = useAppDispatch();
+
   const viewportWidth = useAppSelector(getBreakpointWidth);
   const mainContent = useMemo(() => {
     return <StructuralVariantsMain />;
   }, []);
   const sidebarContent = useMemo(() => {
     return <StructuralVariantsSidebar />;
+  }, []);
+  const sidebarToolstripContent = useMemo(() => {
+    return <StructuralVariantsSidebarToolstrip />;
   }, []);
   const topbarContent = useMemo(() => {
     return <StructuralVariantsTopBar standalone={false} />;
@@ -117,18 +127,21 @@ const MainView = () => {
     return <SidebarNavigation />;
   }, []);
 
+  const onSidebarToggle = () => {
+    dispatch(toggleSidebar());
+  };
+
   return (
     <div className={styles.container}>
       <StructuralVariantsAppBar />
       <StandardAppLayout
         mainContent={mainContent}
         sidebarContent={sidebarContent}
+        sidebarToolstripContent={sidebarToolstripContent}
         sidebarNavigation={sidebarNavigation}
         topbarContent={topbarContent}
-        isSidebarOpen={true}
-        onSidebarToggle={() => {
-          return true;
-        }}
+        isSidebarOpen={isSidebarOpen}
+        onSidebarToggle={onSidebarToggle}
         viewportWidth={viewportWidth}
       />
     </div>
