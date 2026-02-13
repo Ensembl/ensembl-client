@@ -84,11 +84,6 @@ const FeatureSearchForm = (props: Props) => {
     }
   };
 
-  // NOTE: future versions of React will stop passing null to ref callbacks; so update function signature when this happens
-  const focusInput = (input: HTMLInputElement | null) => {
-    input?.focus();
-  };
-
   const activeFeatureSearchModeLabels = getFeatureSearchLabelsByMode(
     activeFeatureSearchMode
   );
@@ -128,7 +123,7 @@ const FeatureSearchForm = (props: Props) => {
           help={activeFeatureSearchModeLabels.help}
           placeholder={activeFeatureSearchModeLabels.placeholder}
           type="search"
-          ref={focusInput}
+          autoFocus={true}
           size={searchPosition === 'sidebar' ? 'small' : 'large'}
         />
         {searchPosition === 'sidebar' ? (
