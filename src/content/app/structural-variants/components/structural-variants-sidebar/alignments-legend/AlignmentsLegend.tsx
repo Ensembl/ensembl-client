@@ -23,7 +23,7 @@ const AlignmentsLegend = () => {
   return (
     <div className={commonStyles.legendSection}>
       <div className={commonStyles.legendSectionHead}>Alignment type</div>
-      <Legend>
+      <Legend className={styles.legend}>
         <LegendItem>
           <LegendMarker className={styles.match} />
           <span>Match</span>

@@ -27,7 +27,8 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 
 // Reusing styles of a shared component
-import styles from 'src/shared/components/feature-search-form/FeatureSearchForm.module.css';
+import sharedStyles from 'src/shared/components/feature-search-form/FeatureSearchForm.module.css';
+import styles from './FeatureSearchModal.module.css';
 
 type Props = {
   onSearchSubmit: (query: string) => void;
@@ -64,26 +65,31 @@ const FeatureSearchForm = (props: Props) => {
   const shouldDisableSubmit = input.trim() === '' || hasSubmitted;
 
   return (
-    <form className={styles.searchFormSidebar} onSubmit={onFormSubmit}>
-      <ShadedInput
-        onInput={onQueryChange}
-        help={helpText}
-        placeholder={placeholderText}
-        type="search"
-        autoFocus={true}
-        size="small"
-      />
-      <div className={styles.sidebarBottomRow}>
-        {resultsInfo && <div className={styles.resultsInfo}>{resultsInfo}</div>}
-        <PrimaryButton
-          type="submit"
-          className={styles.submitSidebar}
-          disabled={shouldDisableSubmit}
-        >
-          Go
-        </PrimaryButton>
-      </div>
-    </form>
+    <div>
+      <div className={styles.inputLabel}>Find a gene in the reference</div>
+      <form className={sharedStyles.searchFormSidebar} onSubmit={onFormSubmit}>
+        <ShadedInput
+          onInput={onQueryChange}
+          help={helpText}
+          placeholder={placeholderText}
+          type="search"
+          autoFocus={true}
+          size="small"
+        />
+        <div className={sharedStyles.sidebarBottomRow}>
+          {resultsInfo && (
+            <div className={sharedStyles.resultsInfo}>{resultsInfo}</div>
+          )}
+          <PrimaryButton
+            type="submit"
+            className={sharedStyles.submitSidebar}
+            disabled={shouldDisableSubmit}
+          >
+            Go
+          </PrimaryButton>
+        </div>
+      </form>
+    </div>
   );
 };
 

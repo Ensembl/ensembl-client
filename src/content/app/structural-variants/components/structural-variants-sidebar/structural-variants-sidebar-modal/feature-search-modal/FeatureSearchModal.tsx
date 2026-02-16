@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react';
+
 import { useAppSelector } from 'src/store';
 
 import {
@@ -39,7 +41,6 @@ import styles from './FeatureSearchModal.module.css';
  */
 
 const FeatureSearchModal = () => {
-  // const [ searchQuery, setSearchQuery ] = useState<string | null>(null);
   const [trigger, { isFetching, currentData, reset }] =
     useLazySearchGenesQuery();
   const referenceGenome = useAppSelector(getReferenceGenome);
@@ -52,18 +53,29 @@ const FeatureSearchModal = () => {
       page: 1,
       per_page: 50
     });
-    // setSearchQuery(query);
   };
 
-  // const onClear = () => setSearchQuery(null);
+  const resultsCount = useMemo(() => {
+    if (!currentData) {
+      return null;
+    }
+    const numMatches = currentData.matches.length;
 
-  // const onSearchMatchNavigation = () => {
-  //   dispatch(closeSidebarModal());
-  // };
+    return (
+      <span>
+        <span className={styles.resultsCount}>{numMatches}</span>
+        <span> genes</span>
+      </span>
+    );
+  }, [currentData]);
 
   return (
     <div className={styles.container}>
-      <FeatureSearchForm onSearchSubmit={onSearchSubmit} onClear={reset} />
+      <FeatureSearchForm
+        onSearchSubmit={onSearchSubmit}
+        onClear={reset}
+        resultsInfo={resultsCount}
+      />
       <div className={sharedStyles.resultsContainerSidebar}>
         {isFetching && (
           <CircleLoader className={sharedStyles.spinner} size="small" />

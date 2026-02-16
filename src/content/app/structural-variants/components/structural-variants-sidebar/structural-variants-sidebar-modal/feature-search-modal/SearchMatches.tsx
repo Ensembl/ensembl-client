@@ -80,7 +80,7 @@ const SearchMatches = ({
         {navigableMatches.map((match) => (
           <div key={match.stable_id}>
             <TextButton onClick={() => onMatchSelect(match)}>
-              {match.symbol ?? match.stable_id}
+              <GeneResult gene={match} />
             </TextButton>
           </div>
         ))}
@@ -89,19 +89,32 @@ const SearchMatches = ({
       {nonNavigableMatches.length > 0 && (
         <>
           <div className={styles.searchMatchesSectionHead}>
-            Genes from unavailable chromosomes
+            Not available in the alignment with this alternative genome:
           </div>
 
           <div className={searchMatchesContainerClasses}>
             {nonNavigableMatches.map((match) => (
               <div key={match.stable_id}>
-                <span>{match.symbol ?? match.stable_id}</span>
+                <GeneResult gene={match} />
               </div>
             ))}
           </div>
         </>
       )}
     </div>
+  );
+};
+
+const GeneResult = ({ gene }: { gene: GeneSearchMatch }) => {
+  if (!gene.symbol) {
+    return <span>{gene.stable_id}</span>;
+  }
+
+  return (
+    <span className={styles.geneResult}>
+      <span>{gene.symbol} </span>
+      <span>{gene.stable_id}</span>
+    </span>
   );
 };
 

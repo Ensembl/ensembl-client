@@ -27,7 +27,7 @@ const VariantsLegend = () => {
       <div className={commonStyles.legendSectionHead}>
         Haplotype variant type
       </div>
-      <Legend>
+      <Legend className={styles.legend}>
         <LegendItem>
           <LegendMarker
             style={{ backgroundColor: ALIGNMENT_COLORS.deletion }}
