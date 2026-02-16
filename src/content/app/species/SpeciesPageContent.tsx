@@ -46,6 +46,7 @@ import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseBu
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './SpeciesPage.module.css';
 
@@ -104,25 +105,13 @@ const SpeciesPageContent = () => {
     return null; // TODO: consider some kind of a spinner?
   }
 
-  const SidebarContent = () => {
-    const isSpeciesSidebarModalOpened = useAppSelector(
-      getIsSpeciesSidebarModalOpened
-    );
-
-    return isSpeciesSidebarModalOpened ? (
-      <SpeciesSidebarModal />
-    ) : (
-      <SpeciesPageSidebar data={speciesDetails} />
-    );
-  };
-
   return (
     <div className={styles.speciesPage}>
       <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
 
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
-        sidebarContent={<SidebarContent />}
+        sidebarContent={<SidebarContent speciesDetails={speciesDetails} />}
         sidebarNavigation={null}
         topbarContent={<TopBar isSidebarOpen={sidebarStatus} />}
         isSidebarOpen={sidebarStatus}
@@ -133,6 +122,17 @@ const SpeciesPageContent = () => {
         viewportWidth={BreakpointWidth.DESKTOP}
       />
     </div>
+  );
+};
+
+const SidebarContent = (props: { speciesDetails: GenomeInfo }) => {
+  const isSpeciesSidebarModalOpened = useAppSelector(
+    getIsSpeciesSidebarModalOpened
+  );
+  return isSpeciesSidebarModalOpened ? (
+    <SpeciesSidebarModal />
+  ) : (
+    <SpeciesPageSidebar data={props.speciesDetails} />
   );
 };
 
