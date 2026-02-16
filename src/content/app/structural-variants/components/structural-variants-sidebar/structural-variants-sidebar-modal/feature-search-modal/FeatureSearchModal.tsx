@@ -34,12 +34,6 @@ import type { GeneSearchMatch } from 'src/shared/types/search-api/search-match';
 import sharedStyles from 'src/shared/components/in-app-search/InAppSearch.module.css';
 import styles from './FeatureSearchModal.module.css';
 
-/**
- * QUESTIONS:
- * - Can FeatureSearchForm component be reused here?
- * - Is there anything else reusable from InAppSearch?
- */
-
 const FeatureSearchModal = () => {
   const [trigger, { isFetching, currentData, reset }] =
     useLazySearchGenesQuery();

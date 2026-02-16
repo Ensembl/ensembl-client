@@ -40,6 +40,14 @@ const labels = getFeatureSearchLabelsByMode('gene');
 const helpText = labels.help as string;
 const placeholderText = labels.placeholder;
 
+/**
+ * This component is, to a large extent, a copy of the FeatureSearchForm shared component.
+ *
+ * What makes it different though is that:
+ * - It can only search for genes
+ * - The label that usually says "Find a gene" is different
+ */
+
 const FeatureSearchForm = (props: Props) => {
   const { onSearchSubmit, resultsInfo } = props;
 

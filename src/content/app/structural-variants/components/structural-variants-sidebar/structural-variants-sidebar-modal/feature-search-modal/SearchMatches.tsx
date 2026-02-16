@@ -29,6 +29,18 @@ import type { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 import sharedStyles from 'src/shared/components/in-app-search/InAppSearch.module.css';
 import styles from './FeatureSearchModal.module.css';
 
+/**
+ * This component is, to a large extent, a copy of the search matches in InAppSearch.
+ *
+ * What makes it different though is that:
+ * - Upon clicking on a search match, it does not show the tooltip ("jump menu")
+ *   with view-in-app buttons, but instead immediately updates the alignment view
+ * - Since not every gene available in the reference genome can also be viewed in the alternative genome
+ *   (because alternative genomes don't always have a full set of assembled chromosomes),
+ *   it separates gene search matches into the ones that can be clicked (meaning that alignments for them exist),
+ *   and the ones that can't.
+ */
+
 const SearchMatches = ({
   matches,
   referenceGenomeId,
