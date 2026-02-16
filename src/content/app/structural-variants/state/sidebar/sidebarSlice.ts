@@ -49,6 +49,8 @@ const sidebarSlice = createSlice({
     },
     setSidebarView(state, action: PayloadAction<{ view: SidebarView }>) {
       const { view } = action.payload;
+      state.isSidebarOpen = true; // open sidebar if it is closed
+      state.sidebarModalView = null; // close sidebar modal if it is open
       state.sidebarView = view;
     },
     openSidebarModal(state, action: PayloadAction<{ view: SidebarModalView }>) {
