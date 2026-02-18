@@ -35,6 +35,7 @@ import { getTrackIds } from 'src/content/app/structural-variants/state/tracks/tr
 import { StructuralVariantsImageContext } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
 import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
 import TooltipContent from '../structural-variants-feature-tooltip/TooltipContent';
+import TooltipBottomContent from '../structural-variants-feature-tooltip/TooltipBottomContent';
 
 import type {
   StructuralVariantsBrowser,
@@ -173,6 +174,10 @@ const StructuralVariantsImage = (props: Props) => {
           onOutsideClick={onPopupClose}
         >
           <TooltipContent content={featureMessage.payload.content} />
+          <TooltipBottomContent
+            genomeId={referenceGenomeId}
+            payload={featureMessage.payload}
+          />
         </Toolbox>
       )}
     </div>
