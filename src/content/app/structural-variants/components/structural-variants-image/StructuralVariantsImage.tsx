@@ -178,7 +178,7 @@ const StructuralVariantsImage = (props: Props) => {
         >
           <TooltipContent content={featureMessage.payload.content} />
           <TooltipBottomContent
-            genomeId={getGenomeIdForUrlFromFeatureMessage({
+            genome={getGenomeForTooltip({
               message: featureMessage,
               referenceGenome,
               altGenome
@@ -194,13 +194,8 @@ const StructuralVariantsImage = (props: Props) => {
 /**
  * A message emitted by the structural variants browser upon a click on a feature
  * contains a genome id, which can be the id of either the reference, or the alternative genome.
- * The purpose of this function is to return a string to be used as a genome id in urls.
- * Such a string can be either the genome id itself, or a genome tag if it exists for the genome.
- * Thus, the task of this function is to:
- *   - find whether the message refers to the reference or to the alternative genome
- *   - if the genome has a genome tag, return that; otherwise, return genome uuid itself
  */
-const getGenomeIdForUrlFromFeatureMessage = ({
+const getGenomeForTooltip = ({
   message,
   referenceGenome,
   altGenome
@@ -211,12 +206,14 @@ const getGenomeIdForUrlFromFeatureMessage = ({
 }) => {
   const { genome_id } = message;
   if (referenceGenome.genome_id === genome_id) {
-    return referenceGenome.genome_tag ?? referenceGenome.genome_id;
+    return referenceGenome;
   } else if (altGenome.genome_id === genome_id) {
-    return altGenome.genome_tag ?? altGenome.genome_id;
+    return altGenome;
   } else {
     // this should never happen
-    return genome_id;
+    throw new Error(
+      'Genome id does not match either the reference or the alternative genome'
+    );
   }
 };
 

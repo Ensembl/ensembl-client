@@ -34,8 +34,17 @@ import {
 
 import styles from './TooltipContent.module.css';
 
+// Minimal set of genome information sufficient to generate links to internal pages,
+// or, externally, to the regulation subsite
+type MinimalGenomeInfo = {
+  genome_id: string;
+  genome_tag: string | null;
+  scientific_name: string; // <-- for links to regulation subsite
+  release: { name: string }; // <-- for links to regulation subsite
+};
+
 type Props = {
-  genomeId: string;
+  genome: MinimalGenomeInfo;
   payload: FeatureClickEventDetails['payload'];
 };
 
@@ -53,7 +62,7 @@ const TooltipBottomContent = (props: Props) => {
     if (geneData) {
       return (
         <BottomContentGene
-          genomeId={props.genomeId}
+          genome={props.genome}
           payload={geneData.metadata as ZmenuContentGeneMetadata}
         />
       );
@@ -64,7 +73,7 @@ const TooltipBottomContent = (props: Props) => {
     if (variantData) {
       return (
         <BottomContentVariant
-          genomeId={props.genomeId}
+          genome={props.genome}
           payload={variantData.metadata as ZmenuContentVariantMetadata}
         />
       );
@@ -75,27 +84,28 @@ const TooltipBottomContent = (props: Props) => {
 // NOTE: consider genome tag when using genome id for url
 
 const BottomContentGene = ({
-  genomeId,
+  genome,
   payload
 }: {
-  genomeId: string;
+  genome: MinimalGenomeInfo;
   payload: ZmenuContentGeneMetadata;
 }) => {
   const geneFocusId = buildFocusIdForUrl({
     type: 'gene',
     objectId: payload.unversioned_id
   });
+  const genomeIdForUrl = getGenomeIdForUrl(genome);
 
   const links = {
     genomeBrowser: {
       url: urlFor.browser({
-        genomeId,
+        genomeId: genomeIdForUrl,
         focus: geneFocusId
       })
     },
     entityViewer: {
       url: urlFor.entityViewer({
-        genomeId,
+        genomeId: genomeIdForUrl,
         entityId: geneFocusId
       })
     }
@@ -109,10 +119,10 @@ const BottomContentGene = ({
 };
 
 const BottomContentVariant = ({
-  genomeId,
+  genome,
   payload
 }: {
-  genomeId: string;
+  genome: MinimalGenomeInfo;
   payload: ZmenuContentVariantMetadata;
 }) => {
   const variantId = buildFocusVariantId({
@@ -120,17 +130,18 @@ const BottomContentVariant = ({
     start: payload.start,
     variantName: payload.id
   });
+  const genomeIdForUrl = getGenomeIdForUrl(genome);
 
   const links = {
     genomeBrowser: {
       url: urlFor.browser({
-        genomeId,
+        genomeId: genomeIdForUrl,
         focus: variantId
       })
     },
     entityViewer: {
       url: urlFor.entityViewer({
-        genomeId,
+        genomeId: genomeIdForUrl,
         entityId: variantId
       })
     }
@@ -141,6 +152,10 @@ const BottomContentVariant = ({
       <ViewInApp className={styles.viewIn} theme="dark" links={links} />
     </div>
   );
+};
+
+const getGenomeIdForUrl = (genome: MinimalGenomeInfo) => {
+  return genome.genome_tag ?? genome.genome_id;
 };
 
 export default TooltipBottomContent;
