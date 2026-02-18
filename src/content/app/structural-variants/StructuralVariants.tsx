@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
@@ -28,7 +28,10 @@ import {
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 import { getIsSidebarOpen } from 'src/content/app/structural-variants/state/sidebar/sidebarSelectors';
 
-import { toggleSidebar } from 'src/content/app/structural-variants/state/sidebar/sidebarSlice';
+import {
+  toggleSidebar,
+  closeSidebarModal
+} from 'src/content/app/structural-variants/state/sidebar/sidebarSlice';
 
 import StructuralVariantsAppBar from './components/structural-variants-app-bar/StructuralVariantsAppBar';
 import StructuralVariantsTopBar from './components/structural-variants-top-bar/StructuralVariantsTopBar';
@@ -109,6 +112,14 @@ const StructuralVariants = () => {
 const MainView = () => {
   const isSidebarOpen = useAppSelector(getIsSidebarOpen);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    return () => {
+      // when the component is unmounted, make sure the sidebar modal
+      // (whose state is tracked in redux) gets closed
+      dispatch(closeSidebarModal());
+    };
+  }, [dispatch]);
 
   const viewportWidth = useAppSelector(getBreakpointWidth);
   const mainContent = useMemo(() => {
