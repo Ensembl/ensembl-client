@@ -89,8 +89,8 @@ const StructuralVariantsMain = () => {
         <LeftColumn />
         <div className={styles.imageContainer}>
           <StructuralVariantsImage
-            referenceGenomeId={referenceGenome.genome_id}
-            altGenomeId={alternativeGenome.genome_id}
+            referenceGenome={referenceGenome}
+            altGenome={alternativeGenome}
             referenceGenomeLocation={referenceGenomeLocation}
             altGenomeLocation={altGenomeLocation}
             regionLength={referenceRegionLength}
