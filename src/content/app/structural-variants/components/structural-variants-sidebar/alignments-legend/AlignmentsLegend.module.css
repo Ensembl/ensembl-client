@@ -1,3 +1,7 @@
+.legend {
+  padding-left: 10px;
+}
+
 .match {
   background: rgb(from var(--color-blue) r g b / 30%); /* Ensembl blue, but at 30% opaicty */
 }

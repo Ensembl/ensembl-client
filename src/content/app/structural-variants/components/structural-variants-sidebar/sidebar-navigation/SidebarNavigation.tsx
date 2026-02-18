@@ -18,12 +18,16 @@ import classNames from 'classnames';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
-import { getSidebarView } from 'src/content/app/structural-variants/state/ui/uiSelectors';
+import {
+  getIsSidebarOpen,
+  getSidebarView,
+  getSidebarModalView
+} from 'src/content/app/structural-variants/state/sidebar/sidebarSelectors';
 
 import {
   setSidebarView,
   type SidebarView
-} from 'src/content/app/structural-variants/state/ui/uiSlice';
+} from 'src/content/app/structural-variants/state/sidebar/sidebarSlice';
 
 import TextButton from 'src/shared/components/text-button/TextButton';
 
@@ -32,6 +36,10 @@ import styles from './SidebarNavigation.module.css';
 const SidebarNavigation = () => {
   const dispatch = useAppDispatch();
   const activeView = useAppSelector(getSidebarView);
+  const isSidebarOpen = useAppSelector(getIsSidebarOpen);
+  const sidebarModalView = useAppSelector(getSidebarModalView);
+
+  const isSidebarModalOpen = sidebarModalView !== null;
 
   const onViewChange = (view: SidebarView) => {
     dispatch(
@@ -42,27 +50,31 @@ const SidebarNavigation = () => {
   };
 
   const isDefaultTabSelected = activeView === 'default';
+  const isDefaultTabActive =
+    isDefaultTabSelected && isSidebarOpen && !isSidebarModalOpen;
   const defaultTabClasses = classNames(styles.tab, {
-    [styles.activeTab]: isDefaultTabSelected
+    [styles.activeTab]: isDefaultTabActive
   });
 
   const isConfigurationTabSelected = activeView === 'configuration';
+  const isConfigurationTabActive =
+    isConfigurationTabSelected && isSidebarOpen && !isSidebarModalOpen;
   const configurationTabClasses = classNames(styles.tab, {
-    [styles.activeTab]: isConfigurationTabSelected
+    [styles.activeTab]: isConfigurationTabActive
   });
 
   return (
     <div className={styles.container}>
       <TextButton
         onClick={() => onViewChange('default')}
-        disabled={isDefaultTabSelected}
+        disabled={isDefaultTabActive}
         className={defaultTabClasses}
       >
         In this region
       </TextButton>
       <TextButton
         onClick={() => onViewChange('configuration')}
-        disabled={isConfigurationTabSelected}
+        disabled={isConfigurationTabActive}
         className={configurationTabClasses}
       >
         Configure tracks
