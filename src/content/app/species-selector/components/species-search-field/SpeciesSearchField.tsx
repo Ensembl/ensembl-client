@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, type FormEvent } from 'react';
+import { useState, type InputEvent, type SubmitEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -28,14 +28,14 @@ export type Props = {
   query: string;
   onSearchSubmit: (query: string) => void | (() => void);
   canSubmit?: boolean;
-  onInput?: ((event: FormEvent<HTMLInputElement>) => void) | (() => void);
+  onInput?: ((event: InputEvent<HTMLInputElement>) => void) | (() => void);
   onClose?: () => void;
 };
 
 export const SpeciesSearchField = (props: Props) => {
   const { query, onInput, canSubmit = true, onClose } = props;
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     props.onSearchSubmit(query);
   };
@@ -81,7 +81,7 @@ const WrappedSpeciesSearchField = (props: Omit<Props, 'query'>) => {
     searchParams.get('query') || ''
   );
 
-  const onInput = (event: FormEvent<HTMLInputElement>) => {
+  const onInput = (event: InputEvent<HTMLInputElement>) => {
     setSearchInput(event.currentTarget.value);
     props.onInput?.(event);
   };
