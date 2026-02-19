@@ -203,7 +203,7 @@ const TopSection = (props: TopSectionProps) => {
         <div className={styles.searchFieldWrapper}>
           <SpeciesSearchField
             query={query}
-            onInput={props.onSearchInput}
+            onInput={onSearchInput}
             canSubmit={props.canSubmitSearch}
             onSearchSubmit={props.onSearchSubmit}
             onClose={props.onClose}
