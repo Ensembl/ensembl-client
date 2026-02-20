@@ -22,8 +22,6 @@ import {
 } from 'src/shared/helpers/genomicLocationHelpers';
 import type { FeatureSearchMode } from './featureSearchHelpers';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-
 export const home = () => '/';
 
 type BrowserUrlParams = {
@@ -286,7 +284,10 @@ export const refget = (params: RefgetUrlParams) => {
 };
 
 export const regulationActivityExternalUrl = (
-  species: CommittedItem,
+  species: {
+    scientific_name: string;
+    release: { name: string };
+  },
   featureId: string
 ) => {
   const speciesName = species.scientific_name.toLowerCase().replace(' ', '_');

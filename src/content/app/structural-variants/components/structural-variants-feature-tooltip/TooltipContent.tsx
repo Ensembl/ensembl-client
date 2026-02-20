@@ -25,11 +25,11 @@ import type {
 
 import styles from './TooltipContent.module.css';
 
-export type ZmenuContentProps = {
+export type TooltipContentProps = {
   content: MessageSection[];
 };
 
-export const TooltipContent = (props: ZmenuContentProps) => {
+export const TooltipContent = (props: TooltipContentProps) => {
   const { content: sections } = props;
 
   const renderedContent = (

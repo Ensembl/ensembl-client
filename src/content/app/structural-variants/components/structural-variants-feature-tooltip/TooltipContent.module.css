@@ -28,3 +28,8 @@
 .markupEmphasis {
   font-style: italic;
 }
+
+.appLinks {
+  display: flex;
+  justify-content: end;
+}

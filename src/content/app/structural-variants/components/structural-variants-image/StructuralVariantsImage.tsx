@@ -35,6 +35,7 @@ import { getTrackIds } from 'src/content/app/structural-variants/state/tracks/tr
 import { StructuralVariantsImageContext } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
 import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
 import TooltipContent from '../structural-variants-feature-tooltip/TooltipContent';
+import TooltipBottomContent from '../structural-variants-feature-tooltip/TooltipBottomContent';
 
 import type {
   StructuralVariantsBrowser,
@@ -44,12 +45,13 @@ import type {
   FeatureClickEventDetails
 } from '@ensembl/ensembl-structural-variants';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
+import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './StructuralVariantsImage.module.css';
 
 type Props = {
-  referenceGenomeId: string;
-  altGenomeId: string;
+  referenceGenome: BriefGenomeSummary;
+  altGenome: BriefGenomeSummary;
   referenceGenomeLocation: GenomicLocation;
   altGenomeLocation: GenomicLocation | null;
   regionLength: number;
@@ -57,7 +59,9 @@ type Props = {
 };
 
 const StructuralVariantsImage = (props: Props) => {
-  const { referenceGenomeId, altGenomeId } = props;
+  const { referenceGenome, altGenome } = props;
+  const referenceGenomeId = referenceGenome.genome_id;
+  const altGenomeId = altGenome.genome_id;
   const navigate = useNavigate();
   const [featureMessage, setFeatureMessage] =
     useState<FeatureClickEventDetails | null>(null);
@@ -84,8 +88,8 @@ const StructuralVariantsImage = (props: Props) => {
     const regionName = props.referenceGenomeLocation.regionName;
 
     const url = urlFor.structuralVariantsViewer({
-      referenceGenomeId: props.referenceGenomeId,
-      altGenomeId: props.altGenomeId,
+      referenceGenomeId,
+      altGenomeId,
       referenceGenomeLocation: {
         regionName,
         ...referenceGenomeLocation
@@ -126,7 +130,7 @@ const StructuralVariantsImage = (props: Props) => {
 
   // Replace the ens-sv-browser component with a new one when reference region name changes
   // (so that ens-sv-browser could find appropriate initial coordinates for alt genome)
-  const componentKey = `${props.referenceGenomeId}${props.referenceGenomeLocation.regionName}`;
+  const componentKey = `${referenceGenomeId}${props.referenceGenomeLocation.regionName}`;
 
   if (!trackIds.referenceGenomeTrackIds.length) {
     return null;
@@ -139,8 +143,8 @@ const StructuralVariantsImage = (props: Props) => {
         ontrack-positions-change={onTrackPositionsChange}
         onfeature-message={onFeatureMessage}
         key={componentKey}
-        referenceGenomeId={props.referenceGenomeId}
-        altGenomeId={props.altGenomeId}
+        referenceGenomeId={referenceGenomeId}
+        altGenomeId={altGenomeId}
         start={props.referenceGenomeLocation.start}
         end={props.referenceGenomeLocation.end}
         altStart={props.altGenomeLocation?.start ?? 0}
@@ -173,10 +177,44 @@ const StructuralVariantsImage = (props: Props) => {
           onOutsideClick={onPopupClose}
         >
           <TooltipContent content={featureMessage.payload.content} />
+          <TooltipBottomContent
+            genome={getGenomeForTooltip({
+              message: featureMessage,
+              referenceGenome,
+              altGenome
+            })}
+            payload={featureMessage.payload}
+          />
         </Toolbox>
       )}
     </div>
   );
+};
+
+/**
+ * A message emitted by the structural variants browser upon a click on a feature
+ * contains a genome id, which can be the id of either the reference, or the alternative genome.
+ */
+const getGenomeForTooltip = ({
+  message,
+  referenceGenome,
+  altGenome
+}: {
+  message: FeatureClickEventDetails;
+  referenceGenome: BriefGenomeSummary;
+  altGenome: BriefGenomeSummary;
+}) => {
+  const { genome_id } = message;
+  if (referenceGenome.genome_id === genome_id) {
+    return referenceGenome;
+  } else if (altGenome.genome_id === genome_id) {
+    return altGenome;
+  } else {
+    // this should never happen
+    throw new Error(
+      'Genome id does not match either the reference or the alternative genome'
+    );
+  }
 };
 
 type StructuralVariantsBrowserProps = DetailedHTMLProps<
