@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { useState, useLayoutEffect, useDeferredValue } from 'react';
+import {
+  useState,
+  useLayoutEffect,
+  useDeferredValue,
+  type InputEvent
+} from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
@@ -26,7 +31,7 @@ import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/species-sel
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
 import AddSpecies from 'src/content/app/species-selector/components/species-search-field/AddSpecies';
-import SpeciesSearchField from '../species-search-field/SpeciesSearchField';
+import { SpeciesSearchField } from '../species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 import GenomesFilterField from 'src/content/app/species-selector/components/genomes-filter-field/GenomesFilterField';
@@ -72,7 +77,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
   // trigger the query before the component had a chance to render
   useLayoutEffect(() => {
     searchTrigger({ query });
-  }, [query]);
+  }, [query, searchTrigger]);
 
   const onSearchInput = () => {
     if (!canSubmitSearch) {
@@ -137,6 +142,14 @@ type TopSectionProps = {
 };
 
 const TopSection = (props: TopSectionProps) => {
+  const [query, setQuery] = useState(props.query);
+
+  const onSearchInput = (event: InputEvent<HTMLInputElement>) => {
+    const input = event.currentTarget.value;
+    setQuery(input);
+    props.onSearchInput();
+  };
+
   if (props.isLoading) {
     return (
       <>
@@ -156,12 +169,22 @@ const TopSection = (props: TopSectionProps) => {
     return (
       <section className={styles.topSection}>
         <div className={styles.searchFieldWrapper}>
-          <AddSpecies
-            query={props.query}
-            canAdd={props.canAddGenomes}
-            onAdd={props.onGenomesAdd}
-            onClose={props.onClose}
-          />
+          {props.canAddGenomes ? (
+            <AddSpecies
+              query={query}
+              canAdd={true}
+              onAdd={props.onGenomesAdd}
+              onClose={props.onClose}
+            />
+          ) : (
+            <SpeciesSearchField
+              query={query}
+              onInput={onSearchInput}
+              canSubmit={props.canSubmitSearch}
+              onSearchSubmit={props.onSearchSubmit}
+              onClose={props.onClose}
+            />
+          )}
         </div>
         <div className={styles.resultsSummaryWrapper}>
           <SpeciesSearchResultsSummary searchResults={props.searchResults} />
@@ -179,7 +202,8 @@ const TopSection = (props: TopSectionProps) => {
       <section className={styles.topSection}>
         <div className={styles.searchFieldWrapper}>
           <SpeciesSearchField
-            onInput={props.onSearchInput}
+            query={query}
+            onInput={onSearchInput}
             canSubmit={props.canSubmitSearch}
             onSearchSubmit={props.onSearchSubmit}
             onClose={props.onClose}
