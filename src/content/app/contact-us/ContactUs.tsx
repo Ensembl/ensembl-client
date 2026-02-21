@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-import noop from 'lodash/noop';
+import { DefaultContactUsForm } from './components/contact-us-form';
 
-import SubmitSlider from 'src/content/app/contact-us/components/contact-us-form/submit-slider/SubmitSlider';
-
-const DefaultStoryComponent = () => {
-  return <SubmitSlider isDisabled={false} onSlideCompleted={noop} />;
+const ContactUs = () => {
+  return (
+    <div>
+      <DefaultContactUsForm />
+    </div>
+  );
 };
 
-export const DefaultStory = {
-  name: 'default',
-  render: DefaultStoryComponent
-};
-
-export default {
-  title: 'Components/Shared Components/SubmitSlider'
-};
+export default ContactUs;

@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import noop from 'lodash/noop';
+/**
+ * The intention is to eventually have multiple forms
+ * designed to address different problems. This index file
+ * will list the multiple forms.
+ */
 
-import SubmitSlider from 'src/content/app/contact-us/components/contact-us-form/submit-slider/SubmitSlider';
-
-const DefaultStoryComponent = () => {
-  return <SubmitSlider isDisabled={false} onSlideCompleted={noop} />;
-};
-
-export const DefaultStory = {
-  name: 'default',
-  render: DefaultStoryComponent
-};
-
-export default {
-  title: 'Components/Shared Components/SubmitSlider'
-};
+export { default as DefaultContactUsForm } from './default/ContactUsDefaultForm';

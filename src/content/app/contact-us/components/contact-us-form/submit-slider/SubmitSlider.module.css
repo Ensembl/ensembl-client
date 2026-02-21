@@ -1,0 +1,56 @@
+.container {
+  --track-width: 220px;
+  --slider-height: 30px;
+  width: var(--track-width);
+  position: relative;
+  user-select: none;
+}
+
+.track {
+  position: relative;
+  width: var(--track-width);
+  height: var(--slider-height);
+  background-color: white;
+  border: 1px solid var(--color-grey);
+  border-radius: 5px;
+  z-index: 1;
+}
+
+.slider {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 90px;
+  height: 100%;
+  background-color: var(--color-blue);
+  border-radius: 4px;
+  cursor: grab;
+}
+
+.sliderDragged {
+  cursor: grabbing;
+}
+
+.sliderSnappingBack {
+  transition: transform 0.08s ease-in;
+}
+
+.sliderDisabled {
+  background-color: var(--color-grey);
+  pointer-events: none;
+  cursor: default;
+}
+
+.submitButton {
+  position: absolute;
+  right: 0;
+  height: var(--slider-height);
+}
+
+.chevron {
+  --chevron-fill: white;
+}

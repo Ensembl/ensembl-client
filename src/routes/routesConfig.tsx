@@ -47,6 +47,9 @@ import AboutPage, {
 import HelpPage, {
   serverFetch as helpPageServerFetch
 } from 'src/content/app/help/HelpPage';
+import ContactUsPage, {
+  serverFetch as contactUsServerFetch
+} from 'src/content/app/contact-us/ContactUsPage';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 type ServerFetchParams = {
@@ -115,6 +118,11 @@ const routes: RouteConfig[] = [
     path: '/help/*',
     element: <HelpPage />,
     serverFetch: helpPageServerFetch
+  },
+  {
+    path: '/contact-us/',
+    element: <ContactUsPage />,
+    serverFetch: contactUsServerFetch
   },
   {
     path: '*',
