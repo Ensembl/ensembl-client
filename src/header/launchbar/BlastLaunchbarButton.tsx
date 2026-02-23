@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-
 import { useAppSelector } from 'src/store';
 
 import { isSuccessfulBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 
 import { getUnviewedBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+
+import useLastVisitedPath from './useLastVisitedPath';
 
 import LaunchbarButtonWithNotification from './LaunchbarButtonWithNotification';
 import { BlastIcon } from 'src/shared/components/app-icon';
@@ -30,14 +29,7 @@ const BLAST_APP_ROOT_PATH = '/blast';
 
 const BlastLaunchbarButton = () => {
   const unviewedSubmissions = useAppSelector(getUnviewedBlastSubmissions);
-  const location = useLocation();
-  const [blastAppPath, setBlastAppPath] = useState(BLAST_APP_ROOT_PATH);
-
-  useEffect(() => {
-    if (location.pathname.startsWith(BLAST_APP_ROOT_PATH)) {
-      setBlastAppPath(location.pathname);
-    }
-  }, [[location.pathname]]);
+  const blastAppPath = useLastVisitedPath({ rootPath: BLAST_APP_ROOT_PATH });
 
   const getNotification = () => {
     if (unviewedSubmissions.length > 0) {
