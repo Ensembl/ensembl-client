@@ -39,7 +39,8 @@ export type LaunchbarButtonProps = {
 const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   props: LaunchbarButtonProps
 ) => {
-  const routeMatch = useMatch({ path: props.path, end: false });
+  const pathnameFromProp = props.path.split('?')[0]; // remove query parameters
+  const routeMatch = useMatch({ path: pathnameFromProp, end: false });
   const isRouteMatched = Boolean(routeMatch);
   const isButtonEnabled = props.enabled ?? true;
 

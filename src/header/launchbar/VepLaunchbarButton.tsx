@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router';
-
 import { useAppSelector } from 'src/store';
 
 import { getUnviewedVepSubmissions } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
+
+import useLastVisitedPath from './useLastVisitedPath';
 
 import LaunchbarButtonWithNotification from './LaunchbarButtonWithNotification';
 import { VepIcon } from 'src/shared/components/app-icon';
@@ -34,14 +33,14 @@ const VEP_APP_ROOT_PATH = '/vep';
  */
 const VepLaunchbarButton = () => {
   const unviewedVepSubmissions = useAppSelector(getUnviewedVepSubmissions);
-  const vepPath = usePathForVepNavigationButton();
+  const lastVisitedPath = useLastVisitedPath({ rootPath: VEP_APP_ROOT_PATH });
 
   const notification = getNotification(unviewedVepSubmissions);
 
   // TODO: add the code to enable notifications after submissions have been enabled
   return (
     <LaunchbarButtonWithNotification
-      path={vepPath}
+      path={lastVisitedPath}
       description="VEP"
       icon={VepIcon}
       notification={notification}
@@ -65,25 +64,6 @@ const getNotification = (submissions: VepSubmissionWithoutInputFile[]) => {
   }
 
   return hasUnfinishedJobs ? 'red' : hasViewableJobs ? 'green' : null;
-};
-
-/**
- * Store the latest path within the /vep namespace that the user visits;
- * so that when user navigates away and then presses the VEP launchbar button,
- * he is taken back to that latest VEP view.
- * Notice that this, of course, will not survive a browser refresh.
- */
-const usePathForVepNavigationButton = () => {
-  const location = useLocation();
-  const [vepAppPath, setVepAppPath] = useState(VEP_APP_ROOT_PATH);
-
-  useEffect(() => {
-    if (location.pathname.startsWith(VEP_APP_ROOT_PATH)) {
-      setVepAppPath(location.pathname);
-    }
-  }, [[location.pathname]]);
-
-  return vepAppPath;
 };
 
 export default VepLaunchbarButton;
