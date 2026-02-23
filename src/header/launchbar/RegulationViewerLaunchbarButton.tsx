@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { useLocation } from 'react-router';
-
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { isProductionEnvironment } from 'src/shared/helpers/environment';
@@ -28,7 +26,6 @@ import ActivityViewerIcon from 'src/shared/components/app-icon/ActivityViewerIco
 const activityViewerRootPath = urlFor.regulatoryActivityViewer();
 
 const RegulatoryActivityViewerLaunchbarButton = () => {
-  const location = useLocation();
   const lastVisitedPath = useLastVisitedPath({
     rootPath: activityViewerRootPath
   });
@@ -37,14 +34,11 @@ const RegulatoryActivityViewerLaunchbarButton = () => {
     return null;
   }
 
-  const isActive = location.pathname.startsWith(activityViewerRootPath);
-
   return (
     <LaunchbarButton
       path={lastVisitedPath}
       description="Regulatory activity viewer"
       icon={ActivityViewerIcon}
-      isActive={isActive}
       enabled={true}
     />
   );
