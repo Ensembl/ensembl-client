@@ -14,12 +14,29 @@
  * limitations under the License.
  */
 
+import privacyConfig from 'src/shared/components/privacy-banner/privacyConfig';
+
 import { DefaultContactUsForm } from './components/contact-us-form';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
+
+import styles from './ContactUs.module.css';
 
 const ContactUs = () => {
   return (
-    <div>
+    <div className={styles.page}>
       <DefaultContactUsForm />
+      <footer>
+        <div className={styles.personalData}>
+          <span className={styles.light}>How we use your personal data </span>
+          <ExternalLink to={privacyConfig.policyUrl}>
+            Privacy policy
+          </ExternalLink>
+        </div>
+        <div className={styles.footerLevel2}>
+          <SocialMediaLinks />
+        </div>
+      </footer>
     </div>
   );
 };

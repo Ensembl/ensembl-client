@@ -25,7 +25,7 @@ import {
 } from 'react';
 import classNames from 'classnames';
 
-import { submitForm } from '../submitForm';
+// import { submitForm } from '../submitForm';
 import noEarlierThan from 'src/shared/utils/noEarlierThan';
 import useSavedForm from '../hooks/useSavedForm';
 
@@ -244,10 +244,12 @@ const ContactUsDefaultForm = () => {
 
       setSubmissionState(LoadingState.LOADING);
 
-      const submitPromise = submitForm({
-        ...stateRef.current,
-        form_type: FORM_NAME
-      });
+      // TODO: RESTORE FORM SUBMISSION!!!
+      // const submitPromise = submitForm({
+      //   ...stateRef.current,
+      //   form_type: FORM_NAME
+      // });
+      const submitPromise = Promise.resolve();
 
       noEarlierThan(submitPromise, 1000)
         .then(() => {

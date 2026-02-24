@@ -1,5 +1,7 @@
 .submissionSuccess {
-  min-height: 570px;
+  max-width: var(--max-form-width); /* from ContactUsForm.module.css */
+  padding-left: var(--global-padding-left);
+  padding-top: 20px;
 }
 
 .submissionSuccess p {
@@ -7,5 +9,5 @@
 }
 
 .submissionSuccess .thankyou {
-  margin: 2rem 0 1.5rem;
+  margin: 36px 0 30px;
 }
