@@ -269,7 +269,11 @@ const ContactUsDefaultForm = () => {
   );
 
   if (submissionState === LoadingState.SUCCESS) {
-    return <SubmissionSuccess />;
+    return (
+      <div className={commonStyles.container}>
+        <SubmissionSuccess />
+      </div>
+    );
   }
 
   const containerClasses = classNames(commonStyles.container, {
