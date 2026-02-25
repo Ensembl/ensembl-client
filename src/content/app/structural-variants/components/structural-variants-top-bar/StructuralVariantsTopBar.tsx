@@ -73,7 +73,7 @@ const StructuralVariantsTopBar = (props: Props) => {
 
   const getReferenceGenomeGroupId = () => {
     if (referenceGenome) {
-      const group = genomeGroups!.find(
+      const group = genomeGroups?.find(
         (group) =>
           group.reference_genome.genome_id === referenceGenome.genome_id
       );
