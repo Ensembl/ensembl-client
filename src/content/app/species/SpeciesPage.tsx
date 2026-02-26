@@ -34,13 +34,21 @@ import { getPathParameters, useUrlParams } from 'src/shared/hooks/useUrlParams';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 import type { AppDispatch } from 'src/store';
+import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
 const LazylyLoadedSpeciesPageContent = lazy(
   () => import('./SpeciesPageContent')
 );
 
-const defaultTitle = 'Species page — Ensembl';
+const defaultTitle = 'Species page — Ensembl';
 const defaultDescription = 'Species home page';
+
+const buildPageTitle = (genomeInfo: BriefGenomeSummary) => {
+  const speciesName = getDisplayName(genomeInfo);
+  const assemblyName = genomeInfo.assembly.name;
+  const title = `${speciesName}, ${assemblyName} — Ensembl`;
+  return title;
+};
 
 const SpeciesPage = () => {
   const hasMounted = useHasMounted();
@@ -52,7 +60,7 @@ const SpeciesPage = () => {
     getGenomeByUrlId(state, genomeIdInUrl as string)
   );
 
-  const title = species ? `${getDisplayName(species)} — Ensembl` : defaultTitle;
+  const title = species ? buildPageTitle(species) : defaultTitle;
 
   useEffect(() => {
     if (!title) {
@@ -65,7 +73,7 @@ const SpeciesPage = () => {
         description: defaultDescription
       })
     );
-  }, [title]);
+  }, [title, dispatch]);
 
   return hasMounted ? <LazylyLoadedSpeciesPageContent /> : null;
 };
@@ -90,7 +98,7 @@ export const serverFetch: ServerFetch = async (params) => {
       status: 404
     };
   } else {
-    const title = genomeInfo ? getDisplayName(genomeInfo) : defaultTitle;
+    const title = genomeInfo ? buildPageTitle(genomeInfo) : defaultTitle;
     dispatch(
       updatePageMeta({
         title,
