@@ -1,22 +1,20 @@
 /* 
   To style individual icons, use the following selectors:
-  - [data-part="blog-icon"] for the blog icon
+  - [data-part="bluesky-icon"] for the Bluesky icon
+  - [data-part="linkedin-icon"] for the LinkedIn icon
   - [data-part="facebook-icon"] for Facebook icon
   - [data-part="twitter-icon"] for Twitter/X icon
  */
 
 @layer components {
   .container {
-    display: inline-grid;
-    grid-template-columns: repeat(3, auto);
+    display: flex;
     column-gap: 24px;
-  }
-  
-  .blog {
-    display: inline-flex;
     align-items: center;
-    gap: 16px;
-    white-space: nowrap;
+  }
+
+  .container > * {
+    flex: none;
   }
   
   .mediaIcon {

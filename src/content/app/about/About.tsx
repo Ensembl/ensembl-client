@@ -71,7 +71,7 @@ const About = () => {
         description: article.description || ABOUT_PAGE_FALLBACK_DESCRIPTION
       })
     );
-  }, [article]);
+  }, [article, dispatch]);
 
   if (isMissingResourceError(articleError)) {
     return <NotFoundErrorScreen />;
@@ -90,7 +90,7 @@ const About = () => {
           <Breadcrumbs breadcrumbs={breadcrumbs} />
         </div>
         <div className={helpStyles.articleContainer}>
-          <HelpArticleGrid className={helpStyles.grid}>
+          <HelpArticleGrid className={styles.articleGrid}>
             {article?.type === 'article' ? (
               <TextArticle article={article} />
             ) : (

@@ -1,4 +1,6 @@
 .page {
+  overflow: auto;
+
   footer {
     padding-left: var(--global-padding-left);
     padding-bottom: var(--global-padding-bottom);

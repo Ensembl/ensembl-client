@@ -16,6 +16,7 @@
 
 import privacyConfig from 'src/shared/components/privacy-banner/privacyConfig';
 
+import ContactUsTopBar from './components/contact-us-top-bar/ContactUsTopBar';
 import { DefaultContactUsForm } from './components/contact-us-form';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
@@ -25,6 +26,7 @@ import styles from './ContactUs.module.css';
 const ContactUs = () => {
   return (
     <div className={styles.page}>
+      <ContactUsTopBar />
       <DefaultContactUsForm />
       <footer>
         <div className={styles.personalData}>

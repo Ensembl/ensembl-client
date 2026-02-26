@@ -1,6 +1,6 @@
 .home {
   display: grid;
-  grid-template-rows: minmax(650px, auto) 85px;
+  grid-template-rows: minmax(650px, 1fr) auto;
 }
 
 .main {
@@ -152,17 +152,29 @@
   display: grid;
   grid-template-columns: auto auto;
   column-gap: 1.5rem;
-  padding-left: 60px;
-  padding-right: 60px;
+  padding: 20px 60px;
+}
+
+@media (width < 1300px) {
+  .home footer {
+    padding: 20px 20px;
+  }
+}
+
+@media (width < 1100px) {
+  .home footer {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
 }
 
 .footerLeft {
-  grid-column: 1/2;
   display: flex;
   align-items: center;
 }
 
 .footerLeft .logotype {
+  flex: none;
   width: 92px;
   height: 34px;
   margin-right: 10px;
@@ -183,10 +195,10 @@
 }
 
 .footerRight {
-  grid-column: 2/2;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  margin-left: auto;
+  white-space: nowrap;
 }
 
 .footerRight .gbcLogo {
@@ -202,6 +214,7 @@
 
 .socialMediaLinks {
   margin-right: 12px;
+  justify-content: end;
 }
 
 .toolsList {
