@@ -51,7 +51,7 @@ const Notification = (props: Props) => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-nosnippet={true}>
       <BetaIntroRapidRetirement
         onClose={props.onClose}
         onNotificationDismissed={onNotificationDismissed}
