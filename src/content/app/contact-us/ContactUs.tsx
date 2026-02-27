@@ -27,18 +27,20 @@ const ContactUs = () => {
   return (
     <div className={styles.page}>
       <ContactUsTopBar />
-      <DefaultContactUsForm />
-      <footer>
-        <div className={styles.personalData}>
-          <span className={styles.light}>How we use your personal data </span>
-          <ExternalLink to={privacyConfig.policyUrl}>
-            Privacy policy
-          </ExternalLink>
-        </div>
-        <div className={styles.footerLevel2}>
-          <SocialMediaLinks />
-        </div>
-      </footer>
+      <div className={styles.scrollableContent}>
+        <DefaultContactUsForm />
+        <footer>
+          <div className={styles.personalData}>
+            <span className={styles.light}>How we use your personal data </span>
+            <ExternalLink to={privacyConfig.policyUrl}>
+              Privacy policy
+            </ExternalLink>
+          </div>
+          <div className={styles.footerLevel2}>
+            <SocialMediaLinks />
+          </div>
+        </footer>
+      </div>
     </div>
   );
 };

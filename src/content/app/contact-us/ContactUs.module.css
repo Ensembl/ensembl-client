@@ -1,10 +1,16 @@
 .page {
-  overflow: auto;
+  display: grid;
+  grid-template-rows: auto 1fr;
 
   footer {
     padding-left: var(--global-padding-left);
     padding-bottom: var(--global-padding-bottom);
   }
+}
+
+.scrollableContent {
+  height: 100%;
+  overflow: auto;
 }
 
 .personalData {
