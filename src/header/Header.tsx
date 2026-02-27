@@ -60,7 +60,9 @@ export const Topbar = () => (
     </div>
     <div className={styles.topbarRight}>
       <span>Genome data & annotation</span>
-      <Link to={urlFor.contactUs()}>Contact us</Link>
+      <Link to={urlFor.contactUs()} className={styles.contactUs}>
+        Contact us
+      </Link>
     </div>
   </div>
 );

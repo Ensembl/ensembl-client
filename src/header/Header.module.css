@@ -57,9 +57,13 @@
 
 .topbarRight {
   display: flex;
-  column-gap: 16px;
+  column-gap: 30px;
 }
 
 .light {
   font-weight: var(--font-weight-light);
+}
+
+.contactUs {
+  font-weight: var(--font-weight-bold);
 }
