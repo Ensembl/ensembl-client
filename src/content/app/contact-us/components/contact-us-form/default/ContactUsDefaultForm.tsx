@@ -16,7 +16,6 @@
 
 import {
   useState,
-  useEffect,
   useReducer,
   useCallback,
   useRef,
@@ -25,8 +24,7 @@ import {
 } from 'react';
 import classNames from 'classnames';
 
-// import { submitForm } from '../submitForm';
-import noEarlierThan from 'src/shared/utils/noEarlierThan';
+import { submitForm } from '../submitForm';
 import useSavedForm from '../hooks/useSavedForm';
 
 import SubmissionSuccess from '../submission-success/SubmissionSuccess';
@@ -145,26 +143,20 @@ const ContactUsDefaultForm = () => {
 
   const emailFieldRef = useRef<HTMLInputElement | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null);
-  const stateRef = useRef<typeof state>(state);
 
   const isFormValid = validate(state) && emailFieldValid;
 
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
+  const onFileChange = (files: File[]) => {
+    if (!isFormValid) {
+      return;
+    }
+    for (const file of files) {
+      dispatch({ type: 'add-file', payload: file });
+    }
+  };
 
-  const onFileChange = useCallback(
-    (files: File[]) => {
-      if (!isFormValid) {
-        return;
-      }
-      for (const file of files) {
-        dispatch({ type: 'add-file', payload: file });
-      }
-    },
-    [isFormValid]
-  );
-
+  // wrap this in useCallback to get a stable reference to the function,
+  // which is then passed to the useSavedForm hook
   const onReplaceState = useCallback((savedState: State) => {
     dispatch({ type: 'replace-state', payload: savedState });
   }, []);
@@ -184,11 +176,11 @@ const ContactUsDefaultForm = () => {
     [dropAreaRef]
   );
 
-  const validateEmail = useCallback(() => {
+  const validateEmail = () => {
     if (emailFieldRef.current) {
       setEmailFieldValid(emailFieldRef.current?.checkValidity());
     }
-  }, [emailFieldRef]);
+  };
 
   const { clearSavedForm } = useSavedForm({
     formName: FORM_NAME,
@@ -196,77 +188,56 @@ const ContactUsDefaultForm = () => {
     updateState: onReplaceState
   });
 
-  const onNameChange = useCallback((event: InputEvent<HTMLInputElement>) => {
+  const onNameChange = (event: InputEvent<HTMLInputElement>) => {
     const name = event.currentTarget.value;
     dispatch({ type: 'update-name', payload: name });
-  }, []);
+  };
 
-  const onEmailChange = useCallback(
-    (event: InputEvent<HTMLInputElement>) => {
-      const email = event.currentTarget.value;
-      dispatch({ type: 'update-email', payload: email });
-      validateEmail();
-    },
-    [validateEmail]
-  );
+  const onEmailChange = (event: InputEvent<HTMLInputElement>) => {
+    const email = event.currentTarget.value;
+    dispatch({ type: 'update-email', payload: email });
+    validateEmail();
+  };
 
-  const onEmailFocus = useCallback(() => {
+  const onEmailFocus = () => {
     setEmailFieldFocussed(true);
-  }, []);
+  };
 
-  const onEmailBlur = useCallback(() => {
+  const onEmailBlur = () => {
     setEmailFieldFocussed(false);
-  }, []);
+  };
 
-  const onSubjectChange = useCallback((event: InputEvent<HTMLInputElement>) => {
+  const onSubjectChange = (event: InputEvent<HTMLInputElement>) => {
     const subject = event.currentTarget.value;
     dispatch({ type: 'update-subject', payload: subject });
-  }, []);
+  };
 
-  const onMessageChange = useCallback(
-    (event: InputEvent<HTMLTextAreaElement>) => {
-      const message = event.currentTarget.value;
-      dispatch({ type: 'update-message', payload: message });
-    },
-    []
-  );
+  const onMessageChange = (event: InputEvent<HTMLTextAreaElement>) => {
+    const message = event.currentTarget.value;
+    dispatch({ type: 'update-message', payload: message });
+  };
 
   const deleteFile = (index: number) => {
     dispatch({ type: 'remove-file', payload: index });
   };
 
-  const handleSubmit = useCallback(
-    (e: SubmitEvent) => {
-      e.preventDefault();
-      if (!stateRef.current) {
-        return; // shouldn't happen, but makes Typescript happy
-      }
+  const handleSubmit = async (e: SubmitEvent) => {
+    e.preventDefault();
+    setSubmissionState(LoadingState.LOADING);
 
-      setSubmissionState(LoadingState.LOADING);
-
-      // TODO: RESTORE FORM SUBMISSION!!!
-      // const submitPromise = submitForm({
-      //   ...stateRef.current,
-      //   form_type: FORM_NAME
-      // });
-      const submitPromise = Promise.resolve();
-
-      noEarlierThan(submitPromise, 1000)
-        .then(() => {
-          dispatch({ type: 'clear-form' });
-          clearSavedForm();
-          setSubmissionState(LoadingState.SUCCESS);
-        })
-        .catch(() => {
-          setSubmissionState(LoadingState.ERROR);
-          setTimeout(
-            () => setSubmissionState(LoadingState.NOT_REQUESTED),
-            2000
-          );
-        });
-    },
-    [clearSavedForm]
-  );
+    try {
+      await submitForm({
+        ...state,
+        form_type: FORM_NAME
+      });
+      dispatch({ type: 'clear-form' });
+      clearSavedForm();
+      setSubmissionState(LoadingState.SUCCESS);
+    } catch {
+      setSubmissionState(LoadingState.ERROR);
+      setTimeout(() => setSubmissionState(LoadingState.NOT_REQUESTED), 2000);
+    }
+  };
 
   if (submissionState === LoadingState.SUCCESS) {
     return (
@@ -417,6 +388,3 @@ const exceedsAttachmentsSizeLimit = (formState: State) => {
 };
 
 export default ContactUsDefaultForm;
-
-// TODO:
-// Remember to add window.close(); to the Close (submission successful) button

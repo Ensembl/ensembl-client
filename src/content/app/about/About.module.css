@@ -20,9 +20,9 @@
   align-items: center;
 }
 
+/* Override grid-template-columns rule in HelpArticleGrid css
+   to fit SocialMediaLinks component in the aside column */
 .articleGrid {
-  /* override grid-template-columns rule in HelpArticleGrid css */
-  /* to fit SocialMediaLinks component in the aside column */
   grid-template-columns: [main] minmax(auto, 980px) [aside] 300px;
 }
 
