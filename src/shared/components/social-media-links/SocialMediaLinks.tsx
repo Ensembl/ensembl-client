@@ -18,7 +18,8 @@ import classNames from 'classnames';
 
 import facebookIconUrl from 'static/icons/icon_facebook.svg?url';
 import twitterIconUrl from 'static/icons/icon_twitter.svg?url';
-import blogIconUrl from 'static/icons/icon_blog.svg?url';
+import blueskyIconUrl from 'static/icons/icon_bluesky.svg?url';
+import linkedinIconUrl from 'static/icons/icon_linkedin.svg?url';
 
 import styles from './SocialMediaLinks.module.css';
 
@@ -37,12 +38,30 @@ const SocialMediaLinks = (props: Props) => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span>Ensembl blog</span>
+        Ensembl blog
+      </a>
+      <a
+        href="https://bsky.app/profile/ensembl.org"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <img
-          data-part="blog-icon"
-          src={blogIconUrl}
+          data-part="bluesky-icon"
+          src={blueskyIconUrl}
           className={styles.mediaIcon}
-          alt=""
+          alt="Ensembl profile on Blue Sky"
+        />
+      </a>
+      <a
+        href="https://www.linkedin.com/company/ensemblgenomebrowser/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          data-part="linkedin-icon"
+          src={linkedinIconUrl}
+          className={styles.mediaIcon}
+          alt="Ensembl profile on LinkedIn"
         />
       </a>
       <a

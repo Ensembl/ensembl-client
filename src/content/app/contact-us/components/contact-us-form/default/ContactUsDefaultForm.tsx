@@ -16,16 +16,15 @@
 
 import {
   useState,
-  useEffect,
   useReducer,
   useCallback,
   useRef,
-  type FormEvent
+  type InputEvent,
+  type SubmitEvent
 } from 'react';
 import classNames from 'classnames';
 
 import { submitForm } from '../submitForm';
-import noEarlierThan from 'src/shared/utils/noEarlierThan';
 import useSavedForm from '../hooks/useSavedForm';
 
 import SubmissionSuccess from '../submission-success/SubmissionSuccess';
@@ -133,7 +132,7 @@ const reducer = (state: State, action: Action): State => {
 
 const FORM_NAME = 'contact-us-general';
 
-const ContactUsInitialForm = () => {
+const ContactUsDefaultForm = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [isChallengeCompleted, setIsChallengeCompleted] = useState(false);
   const [emailFieldValid, setEmailFieldValid] = useState(true);
@@ -144,129 +143,108 @@ const ContactUsInitialForm = () => {
 
   const emailFieldRef = useRef<HTMLInputElement | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null);
-  const stateRef = useRef<typeof state>(state);
 
   const isFormValid = validate(state) && emailFieldValid;
 
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
+  const onFileChange = (files: File[]) => {
+    if (!isFormValid) {
+      return;
+    }
+    for (const file of files) {
+      dispatch({ type: 'add-file', payload: file });
+    }
+  };
 
-  const onFileChange = useCallback(
-    (files: File[]) => {
-      if (!isFormValid) {
-        return;
-      }
-      for (const file of files) {
-        dispatch({ type: 'add-file', payload: file });
-      }
-    },
-    [isFormValid]
-  );
+  // wrap this in useCallback to get a stable reference to the function,
+  // which is then passed to the useSavedForm hook
+  const onReplaceState = useCallback((savedState: State) => {
+    dispatch({ type: 'replace-state', payload: savedState });
+  }, []);
 
   const { ref: dropAreaRef, isDraggedOver: isFileOver } = useFileDrop({
     onUpload: onFileChange,
     allowMultiple: true
   });
 
-  const callbackElementRef = useCallback((element: HTMLDivElement) => {
-    // both register the top-level DOM element locally and pass it to the code that sets it up as drop area
-    elementRef.current = element;
-    const dropAreaRefCleanup = dropAreaRef(element) as () => void;
-    return () => dropAreaRefCleanup();
-  }, []);
+  const callbackElementRef = useCallback(
+    (element: HTMLDivElement) => {
+      // both register the top-level DOM element locally and pass it to the code that sets it up as drop area
+      elementRef.current = element;
+      const dropAreaRefCleanup = dropAreaRef(element) as () => void;
+      return () => dropAreaRefCleanup();
+    },
+    [dropAreaRef]
+  );
+
+  const validateEmail = () => {
+    if (emailFieldRef.current) {
+      setEmailFieldValid(emailFieldRef.current?.checkValidity());
+    }
+  };
 
   const { clearSavedForm } = useSavedForm({
     formName: FORM_NAME,
     currentState: state,
-    updateState: (savedState) =>
-      dispatch({ type: 'replace-state', payload: savedState })
+    updateState: onReplaceState
   });
 
-  const onNameChange = useCallback((event: FormEvent<HTMLInputElement>) => {
+  const onNameChange = (event: InputEvent<HTMLInputElement>) => {
     const name = event.currentTarget.value;
     dispatch({ type: 'update-name', payload: name });
-  }, []);
+  };
 
-  const onEmailChange = useCallback((event: FormEvent<HTMLInputElement>) => {
+  const onEmailChange = (event: InputEvent<HTMLInputElement>) => {
     const email = event.currentTarget.value;
     dispatch({ type: 'update-email', payload: email });
     validateEmail();
-  }, []);
+  };
 
-  const onEmailFocus = useCallback(() => {
+  const onEmailFocus = () => {
     setEmailFieldFocussed(true);
-  }, []);
+  };
 
-  const onEmailBlur = useCallback(() => {
+  const onEmailBlur = () => {
     setEmailFieldFocussed(false);
-  }, []);
+  };
 
-  const onSubjectChange = useCallback((event: FormEvent<HTMLInputElement>) => {
+  const onSubjectChange = (event: InputEvent<HTMLInputElement>) => {
     const subject = event.currentTarget.value;
     dispatch({ type: 'update-subject', payload: subject });
-  }, []);
+  };
 
-  const onMessageChange = useCallback(
-    (event: FormEvent<HTMLTextAreaElement>) => {
-      const message = event.currentTarget.value;
-      dispatch({ type: 'update-message', payload: message });
-    },
-    []
-  );
-
-  const validateEmail = useCallback(() => {
-    if (emailFieldRef.current) {
-      setEmailFieldValid(emailFieldRef.current?.checkValidity());
-    }
-  }, [emailFieldRef.current]);
+  const onMessageChange = (event: InputEvent<HTMLTextAreaElement>) => {
+    const message = event.currentTarget.value;
+    dispatch({ type: 'update-message', payload: message });
+  };
 
   const deleteFile = (index: number) => {
     dispatch({ type: 'remove-file', payload: index });
   };
 
-  const handleSubmit = useCallback((e: FormEvent) => {
+  const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
-    if (!stateRef.current) {
-      return; // shouldn't happen, but makes Typescript happy
-    }
-
     setSubmissionState(LoadingState.LOADING);
 
-    const submitPromise = submitForm({
-      ...stateRef.current,
-      form_type: FORM_NAME
-    });
-
-    trackFormSubmission(); // probably best track it here, regardless of whether the submission was successful; it represents intent to submit
-
-    noEarlierThan(submitPromise, 1000)
-      .then(() => {
-        dispatch({ type: 'clear-form' });
-        clearSavedForm();
-        setSubmissionState(LoadingState.SUCCESS);
-      })
-      .catch(() => {
-        setSubmissionState(LoadingState.ERROR);
-        setTimeout(() => setSubmissionState(LoadingState.NOT_REQUESTED), 2000);
+    try {
+      await submitForm({
+        ...state,
+        form_type: FORM_NAME
       });
-  }, []);
-
-  // dispatches an event that the "Contact us" form has been submitted; used for analytics purposes
-  const trackFormSubmission = () => {
-    const trackContactUsSubmission = new CustomEvent('analytics', {
-      detail: {
-        category: 'contact_us',
-        action: 'contact_form_submited'
-      },
-      bubbles: true
-    });
-
-    elementRef.current?.dispatchEvent(trackContactUsSubmission);
+      dispatch({ type: 'clear-form' });
+      clearSavedForm();
+      setSubmissionState(LoadingState.SUCCESS);
+    } catch {
+      setSubmissionState(LoadingState.ERROR);
+      setTimeout(() => setSubmissionState(LoadingState.NOT_REQUESTED), 2000);
+    }
   };
 
   if (submissionState === LoadingState.SUCCESS) {
-    return <SubmissionSuccess />;
+    return (
+      <div className={commonStyles.container}>
+        <SubmissionSuccess />
+      </div>
+    );
   }
 
   const containerClasses = classNames(commonStyles.container, {
@@ -278,9 +256,7 @@ const ContactUsInitialForm = () => {
       <div className={commonStyles.grid}>
         <p className={commonStyles.advisory}>
           <span>All fields are required</span>
-          <span>
-            The size of your combined attachments should be no more than 10 MB
-          </span>
+          <span>Any attachments should add up to no more than 10 MB</span>
         </p>
       </div>
       <form
@@ -291,7 +267,7 @@ const ContactUsInitialForm = () => {
         <label htmlFor="name" className={commonStyles.label}>
           Your name
         </label>
-        <ShadedInput id="name" value={state.name} onChange={onNameChange} />
+        <ShadedInput id="name" value={state.name} onInput={onNameChange} />
 
         <label htmlFor="email" className={commonStyles.label}>
           Your email
@@ -302,7 +278,7 @@ const ContactUsInitialForm = () => {
           ref={emailFieldRef}
           className={commonStyles.emailField}
           value={state.email}
-          onChange={onEmailChange}
+          onInput={onEmailChange}
           onFocus={onEmailFocus}
           onBlur={onEmailBlur}
         />
@@ -313,7 +289,7 @@ const ContactUsInitialForm = () => {
         <ShadedInput
           id="subject"
           value={state.subject}
-          onChange={onSubjectChange}
+          onInput={onSubjectChange}
         />
 
         <label htmlFor="message" className={commonStyles.label}>
@@ -322,7 +298,7 @@ const ContactUsInitialForm = () => {
         <ShadedTextarea
           id="message"
           value={state.message}
-          onChange={onMessageChange}
+          onInput={onMessageChange}
           className={commonStyles.textarea}
         />
 
@@ -411,4 +387,4 @@ const exceedsAttachmentsSizeLimit = (formState: State) => {
   return totalFileSize > attachmentsSizeLimit;
 };
 
-export default ContactUsInitialForm;
+export default ContactUsDefaultForm;

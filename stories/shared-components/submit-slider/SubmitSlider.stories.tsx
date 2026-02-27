@@ -16,7 +16,7 @@
 
 import noop from 'lodash/noop';
 
-import SubmitSlider from 'src/shared/components/communication-framework/contact-us/contact-us-form/submit-slider/SubmitSlider';
+import SubmitSlider from 'src/content/app/contact-us/components/contact-us-form/submit-slider/SubmitSlider';
 
 const DefaultStoryComponent = () => {
   return <SubmitSlider isDisabled={false} onSlideCompleted={noop} />;

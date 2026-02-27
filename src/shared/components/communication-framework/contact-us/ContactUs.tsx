@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { ContactUsInitialForm } from './contact-us-form';
-import { Invitation, Header } from './preform-header/PreformHeader';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { useAppDispatch } from 'src/store';
+
+import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
+
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
@@ -25,43 +30,21 @@ import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMed
 import styles from './ContactUs.module.css';
 
 const ContactUs = () => {
-  const [shouldShowForm, setShouldShowForm] = useState(false);
   const elementRef = useRef<HTMLDivElement | null>(null);
-
-  if (shouldShowForm) {
-    return (
-      <div>
-        <Header
-          title="Send us a message"
-          onClick={() => setShouldShowForm(false)}
-        />
-        <ContactUsInitialForm />
-      </div>
-    );
-  }
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const onContactUsButtonClick = () => {
-    setShouldShowForm(!shouldShowForm);
-    trackContactUsClick();
-  };
-
-  // dispatches an event that the "Contact us" button has been clicked; used for analytics purposes
-  const trackContactUsClick = () => {
-    const event = new CustomEvent('analytics', {
-      detail: {
-        category: 'contact_us',
-        action: 'opened'
-      },
-      bubbles: true
-    });
-
-    elementRef.current?.dispatchEvent(event);
+    dispatch(toggleCommunicationPanel());
+    navigate(urlFor.contactUs());
   };
 
   return (
     <div className={styles.wrapper} ref={elementRef}>
       <section>
-        <Invitation />
+        <p>
+          Please contact us if you have a problem with the website or need help
+        </p>
         <SecondaryButton onClick={onContactUsButtonClick}>
           Contact us
         </SecondaryButton>

@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  align-items: center;
+  height: 80px;
+  padding-left: var(--double-standard-gutter);
+}
+
+.title {
+  display: flex;
+  column-gap: 22px;
+
+  h1 {
+    font-size: 13px;
+  }
+}

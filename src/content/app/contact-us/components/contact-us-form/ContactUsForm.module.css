@@ -3,7 +3,6 @@
   --upload-label-width: var(--upload-button-one-line-label-width);
   --drop-zone-height: var(--upload-button-shorter-height);
   background: var(--color-light-grey);
-  padding: 12px 0 52px 30px;
   min-height: 570px;
 }
 
@@ -12,8 +11,8 @@
 }
 
 .grid {
-  --left-column-width: 135px;
   --column-gap-width: 12px;
+  --left-column-width: calc(var(--global-padding-left) - var(--column-gap-width));
   display: grid;
   grid-template-columns: [left] var(--left-column-width) [right] 1fr;
   column-gap: var(--column-gap-width);

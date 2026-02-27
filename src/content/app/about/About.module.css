@@ -20,6 +20,12 @@
   align-items: center;
 }
 
+/* Override grid-template-columns rule in HelpArticleGrid css
+   to fit SocialMediaLinks component in the aside column */
+.articleGrid {
+  grid-template-columns: [main] minmax(auto, 980px) [aside] 300px;
+}
+
 .aside {
   display: grid;
   grid-template-rows: 1fr [social-media-links] auto;

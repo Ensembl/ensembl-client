@@ -14,34 +14,17 @@
  * limitations under the License.
  */
 
-import { useEffect, useContext } from 'react';
-import { useDispatch } from 'react-redux';
-
-import CommunicationPanelContext from 'src/shared/components/communication-framework/communicationPanelContext';
-
-import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
-
-import { PrimaryButton } from 'src/shared/components/button/Button';
-
 import styles from './SubmissionSuccess.module.css';
 
 const SubmissionSuccess = () => {
-  const dispatch = useDispatch();
-  const communicationPanelContext = useContext(CommunicationPanelContext);
-
-  useEffect(() => {
-    const { panelBody } = communicationPanelContext;
-    if (panelBody?.current) {
-      panelBody.current.scrollTop = 0;
-    }
-  }, []);
-
-  const onButtonClick = () => {
-    dispatch(toggleCommunicationPanel());
+  const refCallback = (element: HTMLDivElement) => {
+    element.scrollIntoView({ block: 'start' });
+    // fake cleanup function
+    return () => undefined;
   };
 
   return (
-    <div className={styles.submissionSuccess}>
+    <div className={styles.submissionSuccess} ref={refCallback}>
       <p>Your message has been sent to our HelpDesk</p>
       <p>
         You should receive an auto-reply with a ticket number within 24 hours
@@ -49,7 +32,6 @@ const SubmissionSuccess = () => {
         If you do not get this, please try again, checking your email address
       </p>
       <p className={styles.thankyou}>Thank you</p>
-      <PrimaryButton onClick={onButtonClick}>Close</PrimaryButton>
     </div>
   );
 };

@@ -16,6 +16,8 @@
 
 import { Link } from 'react-router-dom';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import Launchbar from './launchbar/Launchbar';
@@ -56,7 +58,12 @@ export const Topbar = () => (
         <Copyright />
       </div>
     </div>
-    <div className={styles.topbarRight}>Genome data & annotation</div>
+    <div className={styles.topbarRight}>
+      <span>Genome data & annotation</span>
+      <Link to={urlFor.contactUs()} className={styles.contactUs}>
+        Contact us
+      </Link>
+    </div>
   </div>
 );
 

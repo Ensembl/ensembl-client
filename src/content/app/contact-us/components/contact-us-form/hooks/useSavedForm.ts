@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useContext } from 'react';
+import { useEffect, useRef, useContext, useEffectEvent } from 'react';
 
 import IndexedDBContext from 'src/shared/contexts/IndexedDBContext';
 
@@ -40,27 +40,7 @@ const useSavedForm: UseSavedForm = (params) => {
   const { formName, currentState, updateState } = params;
   const indexedDB = useContext(IndexedDBContext);
 
-  const stateRef = useRef<typeof currentState>(currentState);
-  stateRef.current = currentState; // <-- to be able to save the latest state despite the closures
-
-  useEffect(() => {
-    // recover form state from the storage
-    indexedDB.get(STORE_NAME, formName).then((savedState) => {
-      if (savedState) {
-        updateState(savedState);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    // save the form before user refreshes or closes the tab
-    window.addEventListener('beforeunload', saveFormState);
-
-    return () => {
-      window.removeEventListener('beforeunload', saveFormState);
-      saveFormState(); // <-- also save the form on every unmount
-    };
-  }, []);
+  const stateRef = useRef<typeof currentState>(currentState); // <-- to be able to save the latest state despite the closures
 
   const isEmptyForm = (state: typeof currentState) => {
     let isEmpty = true;
@@ -79,17 +59,6 @@ const useSavedForm: UseSavedForm = (params) => {
   const hasSavedForm = async () => {
     const savedForm = await indexedDB.get(STORE_NAME, formName);
     return Boolean(savedForm);
-  };
-
-  const saveFormState = async () => {
-    // do not save the form if it is currently empty and has not been saved before
-    // (if it has been saved, then saving an empty form to overwrite the previously saved one is fine)
-    const hasPreviouslySavedForm = await hasSavedForm();
-    if (!hasPreviouslySavedForm && isEmptyForm(stateRef.current)) {
-      return;
-    }
-    const formWithoutHugeFiles = withoutHugeFiles(stateRef.current);
-    indexedDB.set(STORE_NAME, formName, formWithoutHugeFiles);
   };
 
   const withoutHugeFiles = (state: Form) => {
@@ -112,6 +81,40 @@ const useSavedForm: UseSavedForm = (params) => {
   const clearSavedForm = () => {
     indexedDB.delete(STORE_NAME, formName);
   };
+
+  const saveFormState = useEffectEvent(async () => {
+    // do not save the form if it is currently empty and has not been saved before
+    // (if it has been saved, then saving an empty form to overwrite the previously saved one is fine)
+    const hasPreviouslySavedForm = await hasSavedForm();
+    if (!hasPreviouslySavedForm && isEmptyForm(stateRef.current)) {
+      return;
+    }
+    const formWithoutHugeFiles = withoutHugeFiles(stateRef.current);
+    indexedDB.set(STORE_NAME, formName, formWithoutHugeFiles);
+  });
+
+  useEffect(() => {
+    stateRef.current = currentState;
+  });
+
+  useEffect(() => {
+    // recover form state from the storage
+    indexedDB.get(STORE_NAME, formName).then((savedState) => {
+      if (savedState) {
+        updateState(savedState);
+      }
+    });
+  }, [indexedDB, formName, updateState]);
+
+  useEffect(() => {
+    // save the form before user refreshes or closes the tab
+    window.addEventListener('beforeunload', saveFormState);
+
+    return () => {
+      window.removeEventListener('beforeunload', saveFormState);
+      saveFormState(); // <-- also save the form on every unmount
+    };
+  }, []);
 
   return {
     clearSavedForm
