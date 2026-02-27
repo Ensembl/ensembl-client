@@ -306,14 +306,20 @@ const useFetchedData = ({
     }
   );
 
-  const exampleLocation = exampleObjects?.find(
-    (obj) => obj.type === 'location'
-  );
+  const exampleObjectMap: Record<string, string> = {};
+  for (const obj of exampleObjects ?? []) {
+    exampleObjectMap[obj.type] = obj.id;
+  }
+
+  // An example alignment location should be preferred over the regular
+  // example location, if it exists
+  const exampleLocation: string | undefined =
+    exampleObjectMap.alignment_location ?? exampleObjectMap.location;
 
   return {
     genomeGroups: genomeGroupsData?.genome_groups,
     genomesInGroup: genomesInGroup?.genomes,
-    exampleLocation: exampleLocation?.id
+    exampleLocation
   };
 };
 
