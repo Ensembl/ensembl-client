@@ -17,8 +17,14 @@
 import styles from './SubmissionSuccess.module.css';
 
 const SubmissionSuccess = () => {
+  const refCallback = (element: HTMLDivElement) => {
+    element.scrollIntoView({ block: 'start' });
+    // fake cleanup function
+    return () => undefined;
+  };
+
   return (
-    <div className={styles.submissionSuccess}>
+    <div className={styles.submissionSuccess} ref={refCallback}>
       <p>Your message has been sent to our HelpDesk</p>
       <p>
         You should receive an auto-reply with a ticket number within 24 hours
