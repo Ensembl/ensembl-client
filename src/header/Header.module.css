@@ -5,7 +5,7 @@
   align-items: center;
   color: var(--color-white);
   height: 32px;
-  padding: 0 22px;
+  padding: 0 30px 0 22px;
   background-color: var(--color-black);
 }
 
