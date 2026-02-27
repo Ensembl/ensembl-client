@@ -261,6 +261,10 @@ type RefgetUrlParams = {
   end?: number;
 };
 
+export const contactUs = () => {
+  return `/contact-us`;
+};
+
 /**
  * Refget is using a zero-based coordinate space,
  * with start coordinate inclusive and end exclusive.
