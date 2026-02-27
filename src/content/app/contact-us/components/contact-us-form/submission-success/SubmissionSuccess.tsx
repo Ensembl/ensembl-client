@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import { PrimaryButton } from 'src/shared/components/button/Button';
-
 import styles from './SubmissionSuccess.module.css';
 
 const SubmissionSuccess = () => {
-  const onCloseButtonClick = () => {
-    window.close();
-  };
-
   return (
     <div className={styles.submissionSuccess}>
       <p>Your message has been sent to our HelpDesk</p>
@@ -32,7 +26,6 @@ const SubmissionSuccess = () => {
         If you do not get this, please try again, checking your email address
       </p>
       <p className={styles.thankyou}>Thank you</p>
-      <PrimaryButton onClick={onCloseButtonClick}>Close</PrimaryButton>
     </div>
   );
 };
