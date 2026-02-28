@@ -23,6 +23,8 @@ import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
 import Home from './Home';
 
+import speciesStripUrl from 'static/img/home/species-strip.svg?url';
+
 import type { ServerFetch } from 'src/routes/routesConfig';
 
 const pageTitle = 'Ensembl';
@@ -40,9 +42,18 @@ const HomePage = () => {
         description: pageDescription
       })
     );
-  }, []);
+  }, [dispatch]);
 
-  return hasMounted ? <Home /> : null;
+  return hasMounted ? (
+    <Home />
+  ) : (
+    <link
+      rel="preload"
+      as="image"
+      href={speciesStripUrl}
+      fetchPriority="high"
+    />
+  );
 };
 
 export default HomePage;
