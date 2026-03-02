@@ -49,7 +49,7 @@ const SocialMediaLinks = (props: Props) => {
           data-part="bluesky-icon"
           src={blueskyIconUrl}
           className={styles.mediaIcon}
-          alt="Ensembl profile on Blue Sky"
+          alt="Ensembl profile on Bluesky"
         />
       </a>
       <a
