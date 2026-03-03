@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FormEvent, KeyboardEvent, useRef, useState } from 'react';
+import { useRef, useState, type InputEvent, type KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -77,19 +77,19 @@ const LocationNavigation = () => {
     setSingleInputActive(true);
   };
 
-  const onLocationStartChange = (event: FormEvent<HTMLInputElement>) => {
+  const onLocationStartChange = (event: InputEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationStartInput(value);
     setShowErrorMessage(false);
   };
 
-  const onLocationEndChange = (event: FormEvent<HTMLInputElement>) => {
+  const onLocationEndChange = (event: InputEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationEndInput(value);
     setShowErrorMessage(false);
   };
 
-  const onLocationInputChange = (event: FormEvent<HTMLInputElement>) => {
+  const onLocationInputChange = (event: InputEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationInput(value);
     setShowErrorMessage(false);
@@ -133,7 +133,7 @@ const LocationNavigation = () => {
       label: name
     }));
 
-  const updateRegionNameInput = (event: FormEvent<HTMLSelectElement>) => {
+  const updateRegionNameInput = (event: InputEvent<HTMLSelectElement>) => {
     const value = event.currentTarget.value;
 
     setsegmentedInputActive(true);
@@ -199,7 +199,7 @@ const LocationNavigation = () => {
             <label>
               <span>Chr</span>
               <SimpleSelect
-                onChange={updateRegionNameInput}
+                onInput={updateRegionNameInput}
                 onKeyUp={handleKeyPress}
                 options={getKaryotypeOptions()}
                 value={regionNameInput}
@@ -216,7 +216,7 @@ const LocationNavigation = () => {
               <FlatInput
                 type="text"
                 onFocus={onSegmentedInputFocus}
-                onChange={onLocationStartChange}
+                onInput={onLocationStartChange}
                 onKeyUp={handleKeyPress}
                 disabled={singleInputActive}
                 value={locationStartInput}
@@ -230,7 +230,7 @@ const LocationNavigation = () => {
               <FlatInput
                 type="text"
                 onFocus={onSegmentedInputFocus}
-                onChange={onLocationEndChange}
+                onInput={onLocationEndChange}
                 onKeyUp={handleKeyPress}
                 disabled={singleInputActive}
                 value={locationEndInput}
@@ -249,7 +249,7 @@ const LocationNavigation = () => {
               <FlatInput
                 type="text"
                 onFocus={onSingleInputFocus}
-                onChange={onLocationInputChange}
+                onInput={onLocationInputChange}
                 onKeyUp={handleKeyPress}
                 disabled={segmentedInputActive}
                 value={locationInput}
