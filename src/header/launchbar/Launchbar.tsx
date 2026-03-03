@@ -32,6 +32,7 @@ import BlastLaunchbarButton from './BlastLaunchbarButton';
 import VepLaunchbarButton from './VepLaunchbarButton';
 
 import Logotype from 'static/img/brand/logotype.svg';
+import EnsemblMark from 'static/img/brand/ensembl_mark.svg';
 
 import styles from './Launchbar.module.css';
 
@@ -89,15 +90,19 @@ const AboutEnsembl = () => {
   const { trackLaunchbarAppChange } = useHeaderAnalytics();
 
   return (
-    <Link
-      to="/about"
-      className={styles.aboutEnsembl}
-      onClick={() => trackLaunchbarAppChange('About')}
-    >
-      About the
-      <Logotype className={styles.logotype} />
-      project
-    </Link>
+    <div className={styles.aboutEnsemblWrapper}>
+      <Link
+        to="/about"
+        className={styles.aboutEnsembl}
+        onClick={() => trackLaunchbarAppChange('About')}
+      >
+        About the
+        <Logotype className={styles.logotype} />
+        project
+      </Link>
+
+      <EnsemblMark className={styles.ensemblMark} />
+    </div>
   );
 };
 
