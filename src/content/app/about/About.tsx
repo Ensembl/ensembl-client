@@ -15,7 +15,9 @@
  */
 
 import { useEffect } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, Link } from 'react-router';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { useAppDispatch } from 'src/store';
 
@@ -117,10 +119,11 @@ const About = () => {
 
 const AppBar = () => {
   return (
-    <div className={styles.appBar}>
+    <div className={helpStyles.appBar}>
       About Ensembl
-      <div className={styles.conversationIcon}>
-        <CommunicationPanelButton withLabel={true} />
+      <div className={helpStyles.rightCorner}>
+        <Link to={urlFor.contactUs()}>Contact us</Link>
+        <CommunicationPanelButton className={helpStyles.communicationButton} />
       </div>
     </div>
   );
