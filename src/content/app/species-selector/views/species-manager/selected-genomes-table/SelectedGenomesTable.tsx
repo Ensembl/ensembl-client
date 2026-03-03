@@ -15,9 +15,9 @@
  */
 
 import { Fragment, useReducer, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { useAppDispatch } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -140,6 +140,8 @@ const SelectedGenomesTable = (props: {
   const { allSelectedGenomes, filteredGenomes } = props;
   const [tableState, tableDispatch] = useReducer(reducer, initialState);
   const reduxDispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const previousApp = useAppSelector((state) => state.global.previousApp);
 
   const isInDeletionMode = Boolean(tableState.deletionModeSettings);
   const genomeIdsForDeletion = new Set<string>(
@@ -224,6 +226,13 @@ const SelectedGenomesTable = (props: {
       reduxDispatch(deleteSpeciesAndSave(genomeId));
     }
     exitDeletionMode();
+    if (filteredGenomes.length === genomeIdsForDeletion.length) {
+      if (previousApp) {
+        navigate(`/${previousApp}`);
+      } else {
+        navigate(urlFor.speciesSelector());
+      }
+    }
   };
 
   const toggleGenomeUse = (genome: CommittedItem) => {
