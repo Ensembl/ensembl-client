@@ -27,6 +27,7 @@
 }
 
 .main {
+  grid-row: article-grid;
   height: 100%;
   display: grid;
   padding-left: var(--double-standard-gutter);
