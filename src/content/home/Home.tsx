@@ -164,28 +164,30 @@ const Home = () => {
 
         <div className={styles.footerRight}>
           <SocialMediaLinks className={styles.socialMediaLinks} />
-          <a
-            href="https://globalbiodata.org/scientific-activities/global-core-biodata-resources"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src={gbcLogoUrl}
-              className={styles.gbcLogo}
-              alt="Global biodata coalition"
-            />
-          </a>
-          <a
-            href="https://elixir-europe.org/platforms/data/core-data-resources"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src={elixirLogoUrl}
-              className={styles.elixirLogo}
-              alt="ELIXIR Core Data Resources"
-            />
-          </a>
+          <div>
+            <a
+              href="https://globalbiodata.org/scientific-activities/global-core-biodata-resources"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={gbcLogoUrl}
+                className={styles.gbcLogo}
+                alt="Global biodata coalition"
+              />
+            </a>
+            <a
+              href="https://elixir-europe.org/platforms/data/core-data-resources"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={elixirLogoUrl}
+                className={styles.elixirLogo}
+                alt="ELIXIR Core Data Resources"
+              />
+            </a>
+          </div>
         </div>
       </footer>
     </div>

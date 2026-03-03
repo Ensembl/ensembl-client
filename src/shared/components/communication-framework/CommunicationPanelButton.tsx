@@ -28,10 +28,8 @@ import CommunicationPanel from 'src/shared/components/communication-framework/Co
 
 import ConversationIcon from './ConversationIcon';
 
-import styles from './CommunicationPanelButton.module.css';
-
 type Props = {
-  withLabel?: boolean;
+  className?: string;
 };
 
 const CommunicationPanelButton = (props: Props) => {
@@ -46,7 +44,7 @@ const CommunicationPanelButton = (props: Props) => {
     if (notifications.some((notification) => notification.important)) {
       dispatch(openCommunicationPanel());
     }
-  }, [notifications]);
+  }, [notifications, dispatch]);
 
   const onClick = () => {
     dispatch(openCommunicationPanel());
@@ -75,12 +73,7 @@ const CommunicationPanelButton = (props: Props) => {
           onNotificationDismissed={dismissNotification}
         />
       )}
-      <button
-        className={styles.communicationPanelButton}
-        onClick={onClick}
-        ref={elementRef}
-      >
-        {props.withLabel && 'Contact us'}
+      <button onClick={onClick} ref={elementRef} className={props.className}>
         <ConversationIcon
           notification={notifications.length ? 'green' : undefined}
         />

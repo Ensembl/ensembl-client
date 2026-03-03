@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-import styles from './PreformHeader.module.css';
+/**
+ * The intention is to eventually have multiple forms
+ * designed to address different problems. This index file
+ * will list the multiple forms.
+ */
 
-export const Invitation = () => (
-  <p>Please contact us if you have a problem with the website or need help</p>
-);
-
-type HeaderProps = {
-  title: string;
-  onClick: () => void;
-};
-
-export const Header = (props: HeaderProps) => {
-  return (
-    <div className={styles.header}>
-      <span className={styles.title}>{props.title}</span>
-      <span className={styles.control} onClick={props.onClick}>
-        Back
-      </span>
-    </div>
-  );
-};
+export { default as DefaultContactUsForm } from './default/ContactUsDefaultForm';

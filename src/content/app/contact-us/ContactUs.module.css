@@ -1,0 +1,29 @@
+.page {
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  footer {
+    padding-left: var(--global-padding-left);
+    padding-bottom: var(--global-padding-bottom);
+  }
+}
+
+.scrollableContent {
+  height: 100%;
+  overflow: auto;
+}
+
+.personalData {
+  display: flex;
+  column-gap: 0.6rem;
+  align-items: baseline;
+  margin-top: 20px;
+}
+
+.light {
+  font-weight: var(--font-weight-light);
+}
+
+.footerLevel2 {
+  margin-top: 40px;
+}

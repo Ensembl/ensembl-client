@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-import { of, from, timer, combineLatest, firstValueFrom } from 'rxjs';
-import { take, catchError } from 'rxjs/operators';
+import styles from './SubmissionSuccess.module.css';
 
-const noEarlierThan = async <P extends Promise<any>>(
-  promise: P,
-  minimumTime: number
-) => {
-  const source$ = combineLatest([
-    timer(minimumTime).pipe(take(1)),
-    from(promise).pipe(catchError((error) => of(error)))
-  ]);
+const SubmissionSuccess = () => {
+  const refCallback = (element: HTMLDivElement) => {
+    element.scrollIntoView({ block: 'start' });
+    // fake cleanup function
+    return () => undefined;
+  };
 
-  const [, result] = await firstValueFrom(source$);
-  if (result instanceof Error) {
-    throw result;
-  } else {
-    return result;
-  }
+  return (
+    <div className={styles.submissionSuccess} ref={refCallback}>
+      <p>Your message has been sent to our HelpDesk</p>
+      <p>
+        You should receive an auto-reply with a ticket number within 24 hours
+        <br />
+        If you do not get this, please try again, checking your email address
+      </p>
+      <p className={styles.thankyou}>Thank you</p>
+    </div>
+  );
 };
 
-export default noEarlierThan;
+export default SubmissionSuccess;
