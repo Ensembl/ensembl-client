@@ -80,9 +80,6 @@
 .ensemblMark {
   height: 37px;
   padding-left: 20px;
-
-  /* there is already a right padding of 30px */
-  /* margin-right: 30px; */
 }
 
 .toolsIconWrapper {

@@ -18,8 +18,7 @@ import { useAppSelector } from 'src/store';
 
 import { getPageMeta } from 'src/shared/state/page-meta/pageMetaSelectors';
 
-import favicon16 from 'static/favicons/favicon-16x16.png';
-import favicon32 from 'static/favicons/favicon-32x32.png';
+import favicon from 'static/favicons/favicon.svg?url';
 
 const Meta = () => {
   const pageMeta = useAppSelector(getPageMeta);
@@ -28,8 +27,7 @@ const Meta = () => {
     <>
       <title>{pageMeta.title}</title>
       <meta name="description" content={pageMeta.description} />
-      <link rel="icon" type="image/png" sizes="32x32" href={favicon32} />
-      <link rel="icon" type="image/png" sizes="16x16" href={favicon16} />
+      <link rel="icon" type="image/svg+xml" href={favicon} />
     </>
   );
 };
