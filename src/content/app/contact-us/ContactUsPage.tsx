@@ -14,49 +14,26 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { lazy } from 'react';
 
-import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 
-import Home from './Home';
-
-import speciesStripUrl from 'static/img/home/species-strip.svg?url';
-
 import type { ServerFetch } from 'src/routes/routesConfig';
 
-const pageTitle = 'Ensembl';
-const pageDescription = 'The new website of the Ensembl project';
+const LazilyLoadedAbout = lazy(() => import('./ContactUs'));
 
-const HomePage = () => {
+const pageTitle = 'Contact Ensembl help desk';
+const pageDescription = 'Get in touch with the Ensembl team';
+
+const ContactUsPage = () => {
   const hasMounted = useHasMounted();
 
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(
-      updatePageMeta({
-        title: pageTitle,
-        description: pageDescription
-      })
-    );
-  }, [dispatch]);
-
-  return hasMounted ? (
-    <Home />
-  ) : (
-    <link
-      rel="preload"
-      as="image"
-      href={speciesStripUrl}
-      fetchPriority="high"
-    />
-  );
+  return hasMounted ? <LazilyLoadedAbout /> : null;
 };
 
-export default HomePage;
+export default ContactUsPage;
 
 // not really fetching anything; just setting page meta
 export const serverFetch: ServerFetch = async (params) => {

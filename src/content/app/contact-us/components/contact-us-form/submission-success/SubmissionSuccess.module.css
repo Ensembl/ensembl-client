@@ -1,0 +1,13 @@
+.submissionSuccess {
+  max-width: var(--max-form-width); /* from ContactUsForm.module.css */
+  padding-left: var(--global-padding-left);
+  padding-top: 20px;
+}
+
+.submissionSuccess p {
+  margin-bottom: 1rem;
+}
+
+.submissionSuccess .thankyou {
+  margin: 36px 0 30px;
+}

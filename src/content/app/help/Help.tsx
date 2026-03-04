@@ -15,7 +15,9 @@
  */
 
 import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { useAppDispatch } from 'src/store';
 
@@ -84,7 +86,7 @@ const Help = () => {
     }
 
     dispatch(updatePageMeta(createHelpPageMeta({ path: pathname, article })));
-  }, [isLoading, pathname, article]);
+  }, [isLoading, pathname, article, dispatch]);
 
   if (menu) {
     breadcrumbs = buildBreadcrumbs(menu, { url: pathname });
@@ -124,9 +126,10 @@ const Help = () => {
 const AppBar = () => {
   return (
     <div className={styles.appBar}>
-      Help
-      <div className={styles.conversationIcon}>
-        <CommunicationPanelButton withLabel={true} />
+      <span>Help</span>
+      <div className={styles.rightCorner}>
+        <Link to={urlFor.contactUs()}>Contact us</Link>
+        <CommunicationPanelButton className={styles.communicationButton} />
       </div>
     </div>
   );

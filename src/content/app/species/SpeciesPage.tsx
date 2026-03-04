@@ -50,6 +50,22 @@ const buildPageTitle = (genomeInfo: BriefGenomeSummary) => {
   return title;
 };
 
+const buildPageDescription = (genomeInfo: BriefGenomeSummary) => {
+  let pageDescription = '';
+  if (genomeInfo.common_name) {
+    pageDescription += `${genomeInfo.common_name} (${genomeInfo.scientific_name})`;
+  } else {
+    pageDescription += genomeInfo.scientific_name;
+  }
+  if (genomeInfo.type) {
+    pageDescription += `, ${genomeInfo.type.kind}: ${genomeInfo.type.value}`;
+  }
+  const assemblyText = `${genomeInfo.assembly.name}, ${genomeInfo.assembly.accession_id}`;
+  pageDescription = `${pageDescription}, ${assemblyText}`;
+
+  return pageDescription;
+};
+
 const SpeciesPage = () => {
   const hasMounted = useHasMounted();
   const params = useUrlParams<'genomeId'>(['/species/:genomeId']);
@@ -60,20 +76,23 @@ const SpeciesPage = () => {
     getGenomeByUrlId(state, genomeIdInUrl as string)
   );
 
-  const title = species ? buildPageTitle(species) : defaultTitle;
+  const pageTitle = species ? buildPageTitle(species) : defaultTitle;
+  const pageDescription = species
+    ? buildPageDescription(species)
+    : defaultDescription;
 
   useEffect(() => {
-    if (!title) {
+    if (!pageTitle) {
       return;
     }
 
     dispatch(
       updatePageMeta({
-        title,
-        description: defaultDescription
+        title: pageTitle,
+        description: pageDescription
       })
     );
-  }, [title, dispatch]);
+  }, [pageTitle, pageDescription, dispatch]);
 
   return hasMounted ? <LazylyLoadedSpeciesPageContent /> : null;
 };
@@ -99,10 +118,13 @@ export const serverFetch: ServerFetch = async (params) => {
     };
   } else {
     const title = genomeInfo ? buildPageTitle(genomeInfo) : defaultTitle;
+    const description = genomeInfo
+      ? buildPageDescription(genomeInfo)
+      : defaultDescription;
     dispatch(
       updatePageMeta({
         title,
-        description: defaultDescription // TODO: eventually, decide what page description should be here
+        description
       })
     );
   }

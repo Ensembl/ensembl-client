@@ -54,6 +54,8 @@ const BrowserInterstitial = () => {
   );
 };
 
+const allowedExampleObjectTypes = ['gene', 'location', 'variant'];
+
 const ExampleLinks = () => {
   const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
   const { currentData, isLoading } = useExampleObjectsForGenomeQuery(
@@ -68,7 +70,9 @@ const ExampleLinks = () => {
     );
   }
 
-  const focusObjects = currentData || [];
+  const focusObjects = (currentData || []).filter((obj) =>
+    allowedExampleObjectTypes.includes(obj.type)
+  );
 
   const exampleLinks = focusObjects.map((exampleObject) => {
     const focusId = buildFocusIdForUrl({

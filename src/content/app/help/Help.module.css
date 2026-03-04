@@ -5,21 +5,29 @@
 }
 
 .appBar {
-  display: grid;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   height: 80px;
-  padding-left: 44px;
-  grid-template-columns: 100px auto;
+  padding-left: var(--double-standard-gutter);
+  padding-right: var(--standard-gutter);
 }
 
-.conversationIcon {
-  justify-self: end;
+.rightCorner {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
   height: 24px;
-  margin-right: var(--standard-gutter);
+  gap: 16px;
   margin-top: 30px;
 }
 
+.communicationButton {
+  margin-top: 8px;
+}
+
 .main {
+  grid-row: article-grid;
   height: 100%;
   display: grid;
   padding-left: var(--double-standard-gutter);
