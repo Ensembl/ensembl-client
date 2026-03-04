@@ -26,3 +26,14 @@
   grid-row: social-media-links;
   margin-bottom: 60px;
 }
+
+.leftCorner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ensemblMark {
+  height: 37px;
+  width: auto;
+}

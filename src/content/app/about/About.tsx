@@ -47,6 +47,8 @@ import CommunicationPanelButton from 'src/shared/components/communication-framew
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
 
+import EnsemblMark from 'static/img/brand/ensembl_mark.svg';
+
 import helpStyles from '../help/Help.module.css';
 import styles from './About.module.css';
 
@@ -120,7 +122,10 @@ const About = () => {
 const AppBar = () => {
   return (
     <div className={helpStyles.appBar}>
-      About Ensembl
+      <div className={styles.leftCorner}>
+        <EnsemblMark className={styles.ensemblMark} />
+        <span>About Ensembl</span>
+      </div>
       <div className={helpStyles.rightCorner}>
         <Link to={urlFor.contactUs()}>Contact us</Link>
         <CommunicationPanelButton className={helpStyles.communicationButton} />
