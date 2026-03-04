@@ -30,9 +30,9 @@ import AlignmentsViewerLaunchbarButton from './AlignmentsViewerLaunchbarButton';
 import RegulatoryActivityViewerLaunchbarButton from './RegulationViewerLaunchbarButton';
 import BlastLaunchbarButton from './BlastLaunchbarButton';
 import VepLaunchbarButton from './VepLaunchbarButton';
+import EnsemblMarkIcon from 'src/shared/components/ensembl-mark-icon/EnsemblMarkIcon';
 
 import Logotype from 'static/img/brand/logotype.svg';
-import EnsemblMark from 'static/img/brand/ensembl_mark.svg';
 
 import styles from './Launchbar.module.css';
 
@@ -101,7 +101,7 @@ const AboutEnsembl = () => {
         project
       </Link>
 
-      <EnsemblMark className={styles.ensemblMark} />
+      <EnsemblMarkIcon className={styles.ensemblMark} />
     </div>
   );
 };

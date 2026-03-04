@@ -46,8 +46,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 import CommunicationPanelButton from 'src/shared/components/communication-framework/CommunicationPanelButton';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
-
-import EnsemblMark from 'static/img/brand/ensembl_mark.svg';
+import EnsemblMarkIcon from 'src/shared/components/ensembl-mark-icon/EnsemblMarkIcon';
 
 import helpStyles from '../help/Help.module.css';
 import styles from './About.module.css';
@@ -123,7 +122,7 @@ const AppBar = () => {
   return (
     <div className={helpStyles.appBar}>
       <div className={styles.leftCorner}>
-        <EnsemblMark className={styles.ensemblMark} />
+        <EnsemblMarkIcon />
         <span>About Ensembl</span>
       </div>
       <div className={helpStyles.rightCorner}>
