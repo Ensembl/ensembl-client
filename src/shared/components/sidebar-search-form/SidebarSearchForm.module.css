@@ -1,0 +1,40 @@
+.sections {
+  border: 1px solid var(--color-medium-light-grey);
+  border-radius: 2px;
+}
+
+/* skip first */
+.section + .section {
+  border-top: 1px solid var(--color-medium-light-grey);
+}
+
+.sectionHead {
+  background-color: white;
+  padding: 17px;
+}
+
+.sectionHead[aria-expanded='true'] {
+  color: var(--color-black);
+}
+
+.sectionBody {
+  background: var(--color-light-grey);
+  padding-top: 8px;
+  padding-bottom: 17px;
+}
+
+.helpSectionBody {
+  background: var(--color-white);
+}
+
+.resultsSection {
+  margin-top: 12px;
+}
+
+.matchesSection {
+  margin-top: 12px;
+}
+
+.warning {
+  color: var(--color-red);
+}

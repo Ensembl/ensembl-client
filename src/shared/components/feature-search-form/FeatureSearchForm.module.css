@@ -37,12 +37,16 @@
   align-items: center;
 }
 
-.resultsInfo {
+.totalSearchHits {
   flex: 0 0 auto;
   margin-left: 20px;
 }
 
-.resultsInfoInterstitial {
+.totalSearchHitsInterstitial {
+  margin: 20px 0 0 20px;
+}
+
+.resultInfoSection {
   margin: 20px 0 0 20px;
 }
 

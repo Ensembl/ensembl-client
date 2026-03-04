@@ -7,7 +7,10 @@
   grid-template-rows: 38px 1fr;
   height: 100%;
   overflow: auto;
-  padding: 21px calc(18px - var(--scrollbar-width)) 90px 20px;
+
+  /* why 90px bottom padding? */
+  /* padding: 21px calc(18px - var(--scrollbar-width)) 90px 20px; */
+  padding: 21px calc(18px - var(--scrollbar-width)) 21px 20px;
   scrollbar-gutter: stable;
 }
 

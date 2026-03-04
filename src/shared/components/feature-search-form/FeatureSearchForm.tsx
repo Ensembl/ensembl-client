@@ -43,7 +43,8 @@ type Props = {
   onSearchSubmit: (query: string) => void;
   onClear: () => void;
   onSearchModeChange: (mode: FeatureSearchMode) => void;
-  resultsInfo?: ReactNode;
+  totalSearchHitsComponent?: ReactNode;
+  resultInfo?: ReactNode;
 };
 
 const FeatureSearchForm = (props: Props) => {
@@ -54,7 +55,8 @@ const FeatureSearchForm = (props: Props) => {
     onSearchModeChange,
     onSearchSubmit,
     onClear,
-    resultsInfo
+    totalSearchHitsComponent,
+    resultInfo
   } = props;
 
   const [searchInput, setSearchInput] = useState(query);
@@ -128,8 +130,10 @@ const FeatureSearchForm = (props: Props) => {
         />
         {searchPosition === 'sidebar' ? (
           <div className={styles.sidebarBottomRow}>
-            {resultsInfo && (
-              <div className={styles.resultsInfo}>{resultsInfo}</div>
+            {totalSearchHitsComponent && (
+              <div className={styles.totalSearchHits}>
+                {totalSearchHitsComponent}
+              </div>
             )}
             <PrimaryButton
               type="submit"
@@ -149,8 +153,13 @@ const FeatureSearchForm = (props: Props) => {
           </PrimaryButton>
         )}
       </form>
-      {searchPosition === 'interstitial' && resultsInfo && (
-        <div className={styles.resultsInfoInterstitial}>{resultsInfo}</div>
+      {searchPosition === 'interstitial' && totalSearchHitsComponent && (
+        <div className={styles.totalSearchHitsInterstitial}>
+          {totalSearchHitsComponent}
+        </div>
+      )}
+      {resultInfo && (
+        <div className={styles.resultInfoSection}>{resultInfo}</div>
       )}
     </>
   );

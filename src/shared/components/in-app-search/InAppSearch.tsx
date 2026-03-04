@@ -15,13 +15,15 @@
  */
 
 import { useEffect, useState } from 'react';
-
 import classNames from 'classnames';
 
 import analyticsTracking from 'src/services/analytics-service';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import { getErrorMessage, isNotFoundError } from 'src/shared/helpers/fetchHelper';
+import {
+  getErrorMessage,
+  isNotFoundError
+} from 'src/shared/helpers/fetchHelper';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
@@ -36,9 +38,10 @@ import {
 } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
 import { CircleLoader } from 'src/shared/components/loader';
-import InAppSearchMatches from './InAppSearchMatches';
 
-import FeatureSearchForm from '../feature-search-form/FeatureSearchForm';
+import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
+import VariantSearchMatch from 'src/shared/components/search-match/GeneSearchMatch';
+import GeneSearchMatch from 'src/shared/components/search-match/GeneSearchMatch';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
@@ -57,11 +60,12 @@ export type Props = {
 };
 
 const InAppSearch = (props: Props) => {
-  const { app, genomeId, genomeIdForUrl, mode } = props;
+  const { app, genomeId, mode } = props;
   const dispatch = useAppDispatch();
 
   const initialMode = 'gene';
-  const [activeSearchMode, setActiveSearchMode] = useState<FeatureSearchMode>(initialMode);
+  const [activeSearchMode, setActiveSearchMode] =
+    useState<FeatureSearchMode>(initialMode);
 
   const inAppFeatureQueries = useAppSelector((state) =>
     getInAppFeatureQueries(state, app, genomeId)
@@ -71,9 +75,13 @@ const InAppSearch = (props: Props) => {
   const { currentData: currentGeneSearchResults } = geneSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
-  const { currentData: currentVariantSearchResults, error: variantSearchError } = variantSearchResults;
+  const {
+    currentData: currentVariantSearchResults,
+    error: variantSearchError
+  } = variantSearchResults;
 
-  const query = inAppFeatureQueries[activeSearchMode as keyof typeof inAppFeatureQueries];
+  const query =
+    inAppFeatureQueries[activeSearchMode as keyof typeof inAppFeatureQueries];
   const isGeneSearchMode = activeSearchMode === 'gene';
   const isVariantSearchMode = activeSearchMode === 'variant';
 
@@ -96,6 +104,7 @@ const InAppSearch = (props: Props) => {
     if (isVariantSearchMode) {
       triggerVariantSearch(searchParams);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   const onFeatureSearchSubmit = (input: string) => {
@@ -124,9 +133,7 @@ const InAppSearch = (props: Props) => {
     }
   };
 
-  const onSearchModeChange = (
-    featureSearchMode: FeatureSearchMode
-  ) => {
+  const onSearchModeChange = (featureSearchMode: FeatureSearchMode) => {
     setActiveSearchMode(featureSearchMode);
   };
 
@@ -150,55 +157,52 @@ const InAppSearch = (props: Props) => {
     />
   ) : undefined;
 
-  const resultsContainerClass = classNames({
-    [styles.resultsContainer]: mode !== 'sidebar',
-    [styles.resultsContainerSidebar]: mode === 'sidebar'
-  });
+  const matchesResultContent = isGeneSearchResultsDefined ? (
+    <GeneSearchMatch
+      results={currentGeneSearchResults}
+      app={app}
+      mode={mode}
+      onMatchNavigation={props.onMatchNavigation}
+    />
+  ) : isVariantSearchMode ? (
+    isNotFoundError(variantSearchError) ? (
+      <span className={styles.warning}>
+        {getErrorMessage(variantSearchError)}
+      </span>
+    ) : isVariantSearchResultsDefined ? (
+      <VariantSearchMatch
+        results={currentVariantSearchResults}
+        app={app}
+        mode={mode}
+        onMatchNavigation={props.onMatchNavigation}
+      />
+    ) : null
+  ) : null;
+
+  const results = isLoading ? (
+    <CircleLoader className={styles.spinner} size="small" />
+  ) : (
+    <div
+      className={classNames({
+        [styles.resultsContainer]: mode === 'interstitial'
+      })}
+    >
+      {matchesResultContent}
+    </div>
+  );
 
   return (
     <div className={styles.inAppSearch}>
-      <div className={styles.inAppSearchFormContainer}>
-        <FeatureSearchForm
-          activeFeatureSearchMode={activeSearchMode}
-          query={query}
-          searchPosition={mode}
-          onSearchSubmit={onFeatureSearchSubmit}
-          onClear={() => onFeatureSearchSubmit('')}
-          onSearchModeChange={onSearchModeChange}
-          resultsInfo={totalSearchHitsComponent}
-        />
-      </div>
-
-      {isLoading && <CircleLoader className={styles.spinner} size="small" />}
-      {!isLoading && isGeneSearchResultsDefined && (
-        <div className={resultsContainerClass}>
-          <InAppSearchMatches
-            results={currentGeneSearchResults}
-            featureSearchMode={activeSearchMode}
-            app={app}
-            mode={mode}
-            genomeIdForUrl={genomeIdForUrl}
-            onMatchNavigation={props.onMatchNavigation}
-          />
-        </div>
-      )}
-      {!isLoading && isVariantSearchMode && (
-        <div className={resultsContainerClass}>
-          {isNotFoundError(variantSearchError) ? (
-            <span className={styles.warning}>{getErrorMessage(variantSearchError)}</span>
-            ) : isVariantSearchResultsDefined ? (
-              <InAppSearchMatches
-                results={currentVariantSearchResults}
-                featureSearchMode={activeSearchMode}
-                app={app}
-                mode={mode}
-                genomeIdForUrl={genomeIdForUrl}
-                onMatchNavigation={props.onMatchNavigation}
-              />
-            ) : null
-          }
-        </div>
-      )}
+      <FeatureSearchForm
+        activeFeatureSearchMode={activeSearchMode}
+        query={query}
+        searchPosition={mode}
+        onSearchSubmit={onFeatureSearchSubmit}
+        onClear={() => onFeatureSearchSubmit('')}
+        onSearchModeChange={onSearchModeChange}
+        totalSearchHitsComponent={totalSearchHitsComponent}
+      />
+      {results}
     </div>
   );
 };
