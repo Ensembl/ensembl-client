@@ -28,7 +28,7 @@ const EnsemblMarkIcon = ({ className }: EnsemblMarkIconProps) => {
   return (
     <img
       src={ensemblMarkUrl}
-      alt="Ensembl mark logo"
+      alt="Ensembl mark"
       className={classNames(className, styles.ensemblMark)}
     />
   );
