@@ -39,7 +39,7 @@ const SearchModal = () => {
     <SidebarSearchForm
       app="genomeBrowser"
       genomeId={activeGenomeId}
-      genomeTag={genomeIdForUrl as string}
+      genomeIdForUrl={genomeIdForUrl as string}
       trackSidebarSearch={trackSidebarSearch}
       onMatchNavigation={onSearchMatchNavigation}
     />

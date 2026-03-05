@@ -51,12 +51,12 @@ type GeneSearchMatchProps = {
   app: FeatureSearchAppName;
   mode: FeatureSearchMatchPosition;
   results?: SearchResults;
-  genomeTag?: string; // TODO: remove this when backend starts including this tag in the response
+  genomeIdForUrl?: string; // TODO: remove this when backend starts including this tag in the response
   onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
 };
 
 const GeneSearchMatch = (props: GeneSearchMatchProps) => {
-  const { results, app, mode, onMatchNavigation } = props;
+  const { results, app, mode, genomeIdForUrl, onMatchNavigation } = props;
   if (!results) {
     return;
   }
@@ -71,6 +71,7 @@ const GeneSearchMatch = (props: GeneSearchMatchProps) => {
           match={match as GeneSearchMatchType}
           app={app}
           mode={mode}
+          genomeIdForUrl={genomeIdForUrl}
           position={index + 1}
           onMatchNavigation={onMatchNavigation}
         />
@@ -84,6 +85,7 @@ type MatchProps = {
   app: FeatureSearchAppName;
   mode: FeatureSearchMatchPosition;
   position: number;
+  genomeIdForUrl?: string;
   onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
 };
 
@@ -169,11 +171,11 @@ const Match = (props: MatchProps) => {
 };
 
 const MatchDetails = (
-  props: Pick<MatchProps, 'match'> & {
+  props: Pick<MatchProps, 'match' | 'genomeIdForUrl'> & {
     onClick: (appName?: AppNameForViewInApp) => void;
   }
 ) => {
-  const { match } = props;
+  const { match, genomeIdForUrl } = props;
   const geneSearchMatch = match as GeneSearchMatchType;
   const { unversioned_stable_id, genome_id } = geneSearchMatch;
 
@@ -184,12 +186,12 @@ const MatchDetails = (
   });
 
   const urlForGenomeBrowser = urlFor.browser({
-    genomeId: genome_id,
+    genomeId: genomeIdForUrl ?? genome_id,
     focus: buildFocusIdForUrl({ type: 'gene', objectId: unversioned_stable_id })
   });
 
   const urlForEntityViewer = urlFor.entityViewer({
-    genomeId: genome_id,
+    genomeId: genomeIdForUrl ?? genome_id,
     entityId: buildFocusIdForUrl({
       type: 'gene',
       objectId: unversioned_stable_id

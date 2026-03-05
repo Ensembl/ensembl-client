@@ -17,11 +17,22 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
+import { type FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { type SerializedError } from '@reduxjs/toolkit';
+
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getErrorMessage, isNotFoundError } from 'src/shared/helpers/fetchHelper';
-import { getFeatureSearchModeByLocation, type FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
+import {
+  getErrorMessage,
+  isNotFoundError
+} from 'src/shared/helpers/fetchHelper';
+import {
+  getFeatureSearchModeByLocation,
+  getFeatureSearchLabelsByMode,
+  type FeatureSearchMode,
+  getFeatureSearchModes
+} from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import {
@@ -38,6 +49,10 @@ import { getFeatureQueries } from '../../state/species-selector-feature-search-s
 import ModalView from 'src/shared/components/modal-view/ModalView';
 import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
 import { FeatureSearchResults } from 'src/shared/components/feature-search-results/FeatureSearchResults';
+import TextButton from 'src/shared/components/text-button/TextButton';
+
+import type { CommittedItem } from '../../types/committedItem';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
 import styles from './SpeciesSelectorSearchView.module.css';
 import radioStyles from 'src/shared/components/radio-group/RadioGroup.module.css';
@@ -51,17 +66,21 @@ const SpeciesSelectorSearchView = () => {
   const committedSpecies = useAppSelector(getCommittedSpecies);
 
   const initialMode = getFeatureSearchModeByLocation(location.pathname);
-  const [activeSearchMode, setActiveSearchMode] = useState<FeatureSearchMode>(initialMode);
+  const [activeSearchMode, setActiveSearchMode] = useState<string>(initialMode);
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
-  const { currentData: currentVariantSearchResults, error: variantSearchError } = variantSearchResults;
+  const {
+    currentData: currentVariantSearchResults,
+    error: variantSearchError
+  } = variantSearchResults;
 
+  const searchModes = [...getFeatureSearchModes()];
   const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
 
-  const query = featureQueries[activeSearchMode];
+  const query = featureQueries[activeSearchMode as FeatureSearchMode];
   const queryFromParams = searchParams.get('query') || '';
   const isGeneSearchMode = activeSearchMode === 'gene';
   const isVariantSearchMode = activeSearchMode === 'variant';
@@ -75,6 +94,7 @@ const SpeciesSelectorSearchView = () => {
         dispatch(setVariantQuery(queryFromParams));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -96,6 +116,7 @@ const SpeciesSelectorSearchView = () => {
     if (isVariantSearchMode) {
       triggerVariantSearch(searchParams);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   const onClose = () => {
@@ -125,51 +146,140 @@ const SpeciesSelectorSearchView = () => {
     setSearchParams(searchParams, { replace: true });
   };
 
-  const onSearchModeChange = (
-    featureSearchMode: FeatureSearchMode
-  ) => {
-    setActiveSearchMode(featureSearchMode);
-    const currentQuery = featureQueries[featureSearchMode];
-    navigate(urlFor.speciesSelectorFeatureSearch(featureSearchMode, currentQuery), { replace: true });
+  const onSearchModeChange = (searchMode: string) => {
+    if (isFeatureSearchMode(searchMode)) {
+      setActiveSearchMode(searchMode as FeatureSearchMode);
+      const currentQuery = featureQueries[searchMode as FeatureSearchMode];
+      navigate(
+        urlFor.speciesSelectorFeatureSearch(
+          searchMode as FeatureSearchMode,
+          currentQuery
+        ),
+        { replace: true }
+      );
+    }
   };
 
   return (
     <ModalView onClose={onClose}>
       <div className={styles.main}>
-        <FeatureSearchForm
+        <SearchTabs
           activeFeatureSearchMode={activeSearchMode}
-          query={query}
-          onSearchSubmit={onFeatureSearchSubmit}
-          onClear={() => onFeatureSearchSubmit('')}
           onSearchModeChange={onSearchModeChange}
+          searchModes={searchModes}
         />
+        {isFeatureSearchMode(activeSearchMode) && (
+          <FeatureSearchForm
+            activeFeatureSearchMode={activeSearchMode as FeatureSearchMode}
+            query={query}
+            onSearchSubmit={onFeatureSearchSubmit}
+            onClear={() => onFeatureSearchSubmit('')}
+          />
+        )}
         <SearchScope />
-        {isGeneSearchMode && (
-          <div className={styles.resultsWrapper}>
-            <FeatureSearchResults
-              featureSearchMode={activeSearchMode}
-              speciesList={committedSpecies}
-              searchResults={currentGeneSearchResults}
-            />
-          </div>
-        )}
-        {isVariantSearchMode && (
-          <div className={styles.resultsWrapper}>
-            {
-              isNotFoundError(variantSearchError) ? (
-                <span className={styles.warning}>{getErrorMessage(variantSearchError)}</span>
-              ) : currentVariantSearchResults ? (
-                <FeatureSearchResults
-                  featureSearchMode={activeSearchMode}
-                  speciesList={committedSpecies}
-                  searchResults={currentVariantSearchResults}
-                />
-              ) : null
-            }
-          </div>
-        )}
+
+        {isGeneSearchMode ? (
+          <GeneFeatureSearchResults
+            featureSearchMode={activeSearchMode}
+            searchResults={currentGeneSearchResults}
+            speciesList={committedSpecies}
+          />
+        ) : isVariantSearchMode ? (
+          <VariantFeatureSearchResults
+            variantSearchError={variantSearchError}
+            currentVariantSearchResults={currentVariantSearchResults}
+            activeSearchMode={activeSearchMode}
+            committedSpecies={committedSpecies}
+          />
+        ) : null}
       </div>
     </ModalView>
+  );
+};
+
+const isFeatureSearchMode = (mode: string) => {
+  return getFeatureSearchModes().includes(mode as FeatureSearchMode);
+};
+
+const SearchTabs = (props: {
+  activeFeatureSearchMode: string;
+  onSearchModeChange: (mode: string) => void;
+  searchModes: string[];
+}) => {
+  const { activeFeatureSearchMode, onSearchModeChange, searchModes } = props;
+
+  return (
+    <div className={styles.tab}>
+      {searchModes.map((searchMode) => {
+        if (isFeatureSearchMode(searchMode)) {
+          const searchModeLabels = getFeatureSearchLabelsByMode(
+            searchMode as FeatureSearchMode
+          );
+          return searchMode === activeFeatureSearchMode ? (
+            <TextButton key={searchMode} className={styles.activeTab} disabled>
+              {searchModeLabels.label}
+            </TextButton>
+          ) : (
+            <TextButton
+              key={searchMode}
+              onClick={() =>
+                onSearchModeChange(searchMode as FeatureSearchMode)
+              }
+            >
+              {searchModeLabels.label}
+            </TextButton>
+          );
+        }
+      })}
+    </div>
+  );
+};
+
+const GeneFeatureSearchResults = (props: {
+  featureSearchMode: FeatureSearchMode;
+  searchResults: SearchResults | undefined;
+  speciesList: CommittedItem[];
+}) => {
+  const { featureSearchMode, searchResults, speciesList } = props;
+
+  return (
+    <div className={styles.resultsWrapper}>
+      <FeatureSearchResults
+        featureSearchMode={featureSearchMode}
+        speciesList={speciesList}
+        searchResults={searchResults}
+      />
+    </div>
+  );
+};
+
+const VariantFeatureSearchResults = (props: {
+  variantSearchError: FetchBaseQueryError | SerializedError | undefined;
+  currentVariantSearchResults: SearchResults | undefined;
+  activeSearchMode: FeatureSearchMode;
+  committedSpecies: CommittedItem[];
+}) => {
+  const {
+    variantSearchError,
+    currentVariantSearchResults,
+    activeSearchMode,
+    committedSpecies
+  } = props;
+
+  return (
+    <div className={styles.resultsWrapper}>
+      {isNotFoundError(variantSearchError) ? (
+        <span className={styles.warning}>
+          {getErrorMessage(variantSearchError)}
+        </span>
+      ) : currentVariantSearchResults ? (
+        <FeatureSearchResults
+          featureSearchMode={activeSearchMode}
+          speciesList={committedSpecies}
+          searchResults={currentVariantSearchResults}
+        />
+      ) : null}
+    </div>
   );
 };
 

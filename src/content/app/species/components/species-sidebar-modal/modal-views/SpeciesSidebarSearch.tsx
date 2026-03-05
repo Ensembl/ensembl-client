@@ -47,7 +47,7 @@ const SpeciesSidebarSearch = () => {
     <SidebarSearchForm
       app="speciesHome"
       genomeId={activeGenomeId}
-      genomeTag={genomeIdForUrl as string}
+      genomeIdForUrl={genomeIdForUrl as string}
       onMatchNavigation={onSearchMatchNavigation}
     />
   ) : null;

@@ -38,7 +38,7 @@ const getStore = (initialState = {}) => {
 const defaultProps: InAppSearchProps = {
   app: 'genomeBrowser',
   genomeId: faker.string.uuid(),
-  genomeTag: 'human'
+  genomeIdForUrl: 'human'
 };
 
 describe('<InAppSearch />', () => {

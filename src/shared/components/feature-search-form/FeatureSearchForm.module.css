@@ -1,13 +1,3 @@
-.tab {
-  display: flex;
-  gap: 25px;
-  margin-left: 20px;
-}
-
-.activeTab {
-  color: black;
-}
-
 .searchForm {
   display: flex;
   gap: 46px;
@@ -21,17 +11,4 @@
 
 .submit {
   flex: 0 0 auto;
-}
-
-.totalSearchHits {
-  flex: 0 0 auto;
-  margin-left: 20px;
-}
-
-.totalSearchHitsInterstitial {
-  margin: 20px 0 0 20px;
-}
-
-.resultInfoSection {
-  margin: 20px 0 0 20px;
 }

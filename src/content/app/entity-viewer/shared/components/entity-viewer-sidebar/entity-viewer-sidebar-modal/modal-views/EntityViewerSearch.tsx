@@ -34,7 +34,7 @@ const EntityViewerSidebarSearch = () => {
     <SidebarSearchForm
       app="entityViewer"
       genomeId={activeGenomeId}
-      genomeTag={genomeIdForUrl as string}
+      genomeIdForUrl={genomeIdForUrl as string}
       onMatchNavigation={onSearchMatchNavigation}
     />
   ) : null;

@@ -16,6 +16,8 @@
 
 const featureSearchModes = ['gene', 'variant'] as const;
 
+export type FeatureSearchModesType = typeof featureSearchModes;
+
 export type FeatureSearchMode = (typeof featureSearchModes)[number];
 
 export type FeatureSearchLabels = {

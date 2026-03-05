@@ -22,6 +22,13 @@ import {
   getErrorMessage,
   isNotFoundError
 } from 'src/shared/helpers/fetchHelper';
+import {
+  getFeatureSearchLabelsByMode,
+  getFeatureSearchModes,
+  type FeatureSearchAppName,
+  type FeatureSearchMode,
+  type FeatureSearchModesType
+} from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { getInAppFeatureQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
@@ -39,28 +46,22 @@ import { CircleLoader } from 'src/shared/components/loader';
 import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
 import GeneSearchMatch from 'src/shared/components/search-match/GeneSearchMatch';
 import VariantSearchMatch from 'src/shared/components/search-match/VariantSearchMatch';
+import TextButton from '../text-button/TextButton';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
-import type {
-  FeatureSearchAppName,
-  FeatureSearchMode
-} from 'src/shared/helpers/featureSearchHelpers';
 
 import styles from './InAppSearch.module.css';
-
-export type InAppSearchMode = 'interstitial' | 'sidebar';
 
 export type Props = {
   app: FeatureSearchAppName;
   genomeId: string;
-  genomeTag: string; // this should be a temporary measure; it should be returned by search api
+  genomeIdForUrl: string; // this should be a temporary measure; it should be returned by search api
   trackInterstitialPageSearch?: (query: string) => void;
   onMatchNavigation?: () => void; // currently, there are no requirements for this callback to receive any data
 };
 
-// This search component to be used for interstitial page
 const InAppSearch = (props: Props) => {
-  const { app, genomeId, genomeTag, trackInterstitialPageSearch } = props;
+  const { app, genomeId, genomeIdForUrl, trackInterstitialPageSearch } = props;
   const dispatch = useAppDispatch();
 
   const initialMode = 'gene';
@@ -79,6 +80,7 @@ const InAppSearch = (props: Props) => {
     currentData: currentVariantSearchResults,
     error: variantSearchError
   } = variantSearchResults;
+  const searchModes = getFeatureSearchModes();
 
   const query =
     inAppFeatureQueries[activeSearchMode as keyof typeof inAppFeatureQueries];
@@ -158,7 +160,7 @@ const InAppSearch = (props: Props) => {
       results={currentGeneSearchResults}
       app={app}
       mode="interstitial"
-      genomeTag={genomeTag}
+      genomeIdForUrl={genomeIdForUrl}
       onMatchNavigation={props.onMatchNavigation}
     />
   ) : isVariantSearchMode ? (
@@ -171,30 +173,64 @@ const InAppSearch = (props: Props) => {
         results={currentVariantSearchResults}
         app={app}
         mode="interstitial"
-        genomeTag={genomeTag}
+        genomeIdForUrl={genomeIdForUrl}
         onMatchNavigation={props.onMatchNavigation}
       />
     ) : null
   ) : null;
 
-  const results = isLoading ? (
-    <CircleLoader className={styles.spinner} size="small" />
-  ) : (
-    <div className={styles.resultsContainer}>{matchesResultContent}</div>
-  );
-
   return (
     <div className={styles.inAppSearch}>
-      <FeatureSearchForm
+      <SearchTabs
         activeFeatureSearchMode={activeSearchMode}
-        query={query}
-        searchPosition="interstitial"
-        onSearchSubmit={onFeatureSearchSubmit}
-        onClear={() => onFeatureSearchSubmit('')}
         onSearchModeChange={onSearchModeChange}
-        totalSearchHitsComponent={totalSearchHitsComponent}
+        featureSearchModes={searchModes}
       />
-      {results}
+      {searchModes.includes(activeSearchMode) && (
+        <FeatureSearchForm
+          activeFeatureSearchMode={activeSearchMode}
+          query={query}
+          onSearchSubmit={onFeatureSearchSubmit}
+          onClear={() => onFeatureSearchSubmit('')}
+        />
+      )}
+      {totalSearchHitsComponent && (
+        <div className={styles.totalSearchHits}>{totalSearchHitsComponent}</div>
+      )}
+      {isLoading ? (
+        <CircleLoader className={styles.spinner} size="small" />
+      ) : (
+        <div className={styles.resultsContainer}>{matchesResultContent}</div>
+      )}
+    </div>
+  );
+};
+
+const SearchTabs = (props: {
+  activeFeatureSearchMode: FeatureSearchMode;
+  onSearchModeChange: (mode: FeatureSearchMode) => void;
+  featureSearchModes: FeatureSearchModesType;
+}) => {
+  const { activeFeatureSearchMode, onSearchModeChange, featureSearchModes } =
+    props;
+
+  return (
+    <div className={styles.tab}>
+      {featureSearchModes.map((searchMode) => {
+        const searchModeLabels = getFeatureSearchLabelsByMode(searchMode);
+        return searchMode === activeFeatureSearchMode ? (
+          <TextButton key={searchMode} className={styles.activeTab} disabled>
+            {searchModeLabels.label}
+          </TextButton>
+        ) : (
+          <TextButton
+            key={searchMode}
+            onClick={() => onSearchModeChange(searchMode)}
+          >
+            {searchModeLabels.label}
+          </TextButton>
+        );
+      })}
     </div>
   );
 };

@@ -57,14 +57,19 @@ import styles from './SidebarSearchForm.module.css';
 type Props = {
   app: FeatureSearchAppName;
   genomeId: string;
-  genomeTag: string;
+  genomeIdForUrl: string;
   trackSidebarSearch?: (query: string) => void;
   onMatchNavigation?: () => void;
 };
 
 const SidebarSearchForm = (props: Props) => {
-  const { app, genomeId, genomeTag, trackSidebarSearch, onMatchNavigation } =
-    props;
+  const {
+    app,
+    genomeId,
+    genomeIdForUrl,
+    trackSidebarSearch,
+    onMatchNavigation
+  } = props;
   const dispatch = useAppDispatch();
   const searchModes = getFeatureSearchModes();
   const initialQueries = useAppSelector((state) =>
@@ -203,7 +208,7 @@ const SidebarSearchForm = (props: Props) => {
           results={geneSearchResults.currentData}
           app={app}
           mode="sidebar"
-          genomeTag={genomeTag}
+          genomeIdForUrl={genomeIdForUrl}
           onMatchNavigation={onMatchNavigation}
         />
       );
@@ -224,7 +229,7 @@ const SidebarSearchForm = (props: Props) => {
             results={variantSearchResults.currentData}
             app={app}
             mode="sidebar"
-            genomeTag={genomeTag}
+            genomeIdForUrl={genomeIdForUrl}
             onMatchNavigation={onMatchNavigation}
           />
         );

@@ -14,48 +14,27 @@
  * limitations under the License.
  */
 
-import {
-  useState,
-  type InputEvent,
-  type SubmitEvent,
-  type ReactNode
-} from 'react';
-import classNames from 'classnames';
+import { useState, type InputEvent, type SubmitEvent } from 'react';
 
 import {
   getFeatureSearchLabelsByMode,
-  getFeatureSearchModes,
-  type FeatureSearchMatchPosition,
   type FeatureSearchMode
 } from 'src/shared/helpers/featureSearchHelpers';
 
 import { PrimaryButton } from '../button/Button';
 import ShadedInput from '../input/ShadedInput';
-import TextButton from '../text-button/TextButton';
 
 import styles from './FeatureSearchForm.module.css';
 
 type Props = {
   query: string;
   activeFeatureSearchMode: FeatureSearchMode;
-  searchPosition?: FeatureSearchMatchPosition; // Ex: 'sidebar', 'interstitial'
   onSearchSubmit: (query: string) => void;
   onClear: () => void;
-  onSearchModeChange: (mode: FeatureSearchMode) => void;
-  totalSearchHitsComponent?: ReactNode;
 };
 
 const FeatureSearchForm = (props: Props) => {
-  const {
-    query,
-    activeFeatureSearchMode,
-    searchPosition,
-    onSearchModeChange,
-    onSearchSubmit,
-    onClear,
-    totalSearchHitsComponent
-  } = props;
-
+  const { query, activeFeatureSearchMode, onSearchSubmit, onClear } = props;
   const [searchInput, setSearchInput] = useState(query);
   const [prevQuery, setPrevQuery] = useState(query);
   const [disableSubmit, setDisableSubmit] = useState(true);
@@ -88,74 +67,25 @@ const FeatureSearchForm = (props: Props) => {
   );
 
   return (
-    <>
-      <div className={styles.tab}>
-        {getFeatureSearchModes().map((searchMode) => {
-          const searchModeLabels = getFeatureSearchLabelsByMode(searchMode);
-          return searchMode === activeFeatureSearchMode ? (
-            <TextButton key={searchMode} className={styles.activeTab} disabled>
-              {searchModeLabels.label}
-            </TextButton>
-          ) : (
-            <TextButton
-              key={searchMode}
-              onClick={() => onSearchModeChange(searchMode)}
-            >
-              {searchModeLabels.label}
-            </TextButton>
-          );
-        })}
-      </div>
-      <form
-        className={classNames({
-          [styles.searchForm]: searchPosition !== 'sidebar',
-          [styles.searchFormSidebar]: searchPosition === 'sidebar'
-        })}
-        onSubmit={onFormSubmit}
+    <form className={styles.searchForm} onSubmit={onFormSubmit}>
+      <ShadedInput
+        className={styles.searchField}
+        onInput={onQueryChange}
+        value={searchInput || ''}
+        help={activeFeatureSearchModeLabels.help}
+        placeholder={activeFeatureSearchModeLabels.placeholder}
+        type="search"
+        autoFocus={true}
+        size={'large'}
+      />
+      <PrimaryButton
+        type="submit"
+        className={styles.submit}
+        disabled={disableSubmit}
       >
-        <ShadedInput
-          className={classNames({
-            [styles.searchField]: searchPosition !== 'sidebar'
-          })}
-          onInput={onQueryChange}
-          value={searchInput || ''}
-          help={activeFeatureSearchModeLabels.help}
-          placeholder={activeFeatureSearchModeLabels.placeholder}
-          type="search"
-          autoFocus={true}
-          size={searchPosition === 'sidebar' ? 'small' : 'large'}
-        />
-        {searchPosition === 'sidebar' ? (
-          <div className={styles.sidebarBottomRow}>
-            {totalSearchHitsComponent && (
-              <div className={styles.totalSearchHits}>
-                {totalSearchHitsComponent}
-              </div>
-            )}
-            <PrimaryButton
-              type="submit"
-              className={styles.submitSidebar}
-              disabled={disableSubmit}
-            >
-              Go
-            </PrimaryButton>
-          </div>
-        ) : (
-          <PrimaryButton
-            type="submit"
-            className={styles.submit}
-            disabled={disableSubmit}
-          >
-            Go
-          </PrimaryButton>
-        )}
-      </form>
-      {searchPosition === 'interstitial' && totalSearchHitsComponent && (
-        <div className={styles.totalSearchHitsInterstitial}>
-          {totalSearchHitsComponent}
-        </div>
-      )}
-    </>
+        Go
+      </PrimaryButton>
+    </form>
   );
 };
 
