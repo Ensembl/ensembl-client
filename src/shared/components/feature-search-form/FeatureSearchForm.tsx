@@ -25,6 +25,7 @@ import classNames from 'classnames';
 import {
   getFeatureSearchLabelsByMode,
   getFeatureSearchModes,
+  type FeatureSearchMatchPosition,
   type FeatureSearchMode
 } from 'src/shared/helpers/featureSearchHelpers';
 
@@ -32,19 +33,16 @@ import { PrimaryButton } from '../button/Button';
 import ShadedInput from '../input/ShadedInput';
 import TextButton from '../text-button/TextButton';
 
-import type { InAppSearchMode } from '../in-app-search/InAppSearch';
-
 import styles from './FeatureSearchForm.module.css';
 
 type Props = {
   query: string;
   activeFeatureSearchMode: FeatureSearchMode;
-  searchPosition?: InAppSearchMode; // Ex: 'sidebar', 'interstitial'
+  searchPosition?: FeatureSearchMatchPosition; // Ex: 'sidebar', 'interstitial'
   onSearchSubmit: (query: string) => void;
   onClear: () => void;
   onSearchModeChange: (mode: FeatureSearchMode) => void;
   totalSearchHitsComponent?: ReactNode;
-  resultInfo?: ReactNode;
 };
 
 const FeatureSearchForm = (props: Props) => {
@@ -55,8 +53,7 @@ const FeatureSearchForm = (props: Props) => {
     onSearchModeChange,
     onSearchSubmit,
     onClear,
-    totalSearchHitsComponent,
-    resultInfo
+    totalSearchHitsComponent
   } = props;
 
   const [searchInput, setSearchInput] = useState(query);
@@ -157,9 +154,6 @@ const FeatureSearchForm = (props: Props) => {
         <div className={styles.totalSearchHitsInterstitial}>
           {totalSearchHitsComponent}
         </div>
-      )}
-      {resultInfo && (
-        <div className={styles.resultInfoSection}>{resultInfo}</div>
       )}
     </>
   );

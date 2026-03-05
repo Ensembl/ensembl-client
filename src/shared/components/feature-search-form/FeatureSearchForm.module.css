@@ -23,20 +23,6 @@
   flex: 0 0 auto;
 }
 
-.searchFormSidebar {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  margin-top: 15px;
-  gap: 15px;
-}
-
-.sidebarBottomRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .totalSearchHits {
   flex: 0 0 auto;
   margin-left: 20px;
@@ -48,9 +34,4 @@
 
 .resultInfoSection {
   margin: 20px 0 0 20px;
-}
-
-.submitSidebar {
-  flex: 0 0 auto;
-  margin-left: auto;
 }

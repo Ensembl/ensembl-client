@@ -38,3 +38,23 @@
 .warning {
   color: var(--color-red);
 }
+
+.searchFormSidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.sidebarBottomRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submitSidebar {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+

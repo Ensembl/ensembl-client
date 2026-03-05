@@ -18,6 +18,16 @@ import { useState, type InputEvent, type SubmitEvent } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
+import { getInAppFeatureQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
+import {
+  updateGeneQuery,
+  updateVariantQuery
+} from 'src/shared/state/feature-search/featureSearchSlice';
+import {
+  useLazySearchGenesQuery,
+  useLazySearchVariantsQuery
+} from 'src/shared/state/api-slices/searchApiSlice';
+
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import {
@@ -30,28 +40,19 @@ import {
   type FeatureSearchMode,
   type FeatureSearchAppName
 } from 'src/shared/helpers/featureSearchHelpers';
-import { getInAppFeatureQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
-import {
-  updateGeneQuery,
-  updateVariantQuery
-} from 'src/shared/state/feature-search/featureSearchSlice';
-import {
-  useLazySearchGenesQuery,
-  useLazySearchVariantsQuery
-} from 'src/shared/state/api-slices/searchApiSlice';
-import { PrimaryButton } from '../button/Button';
+
+import { PrimaryButton } from 'src/shared/components/button/Button';
 import {
   CollapsibleSection,
   CollapsibleSectionBody,
   CollapsibleSectionHead
-} from '../collapsible-section/CollapsibleSection';
-import ShadedInput from '../input/ShadedInput';
+} from 'src/shared/components/collapsible-section/CollapsibleSection';
+import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { CircleLoader } from '../loader';
+import GeneSearchMatch from 'src/shared/components/search-match/GeneSearchMatch';
+import VariantSearchMatch from 'src/shared/components/search-match/VariantSearchMatch';
 
-import sharedStyles from '../feature-search-form/FeatureSearchForm.module.css';
 import styles from './SidebarSearchForm.module.css';
-import GeneSearchMatch from '../search-match/GeneSearchMatch';
-import VariantSearchMatch from '../search-match/VariantSearchMatch';
 
 type Props = {
   app: FeatureSearchAppName;
@@ -248,7 +249,7 @@ const SidebarSearchForm = (props: Props) => {
               </CollapsibleSectionHead>
               <CollapsibleSectionBody className={styles.sectionBody}>
                 <form
-                  className={sharedStyles.searchFormSidebar}
+                  className={styles.searchFormSidebar}
                   onSubmit={(event) => onFormSubmit(event, searchMode)}
                 >
                   <ShadedInput
@@ -260,15 +261,11 @@ const SidebarSearchForm = (props: Props) => {
                     autoFocus={true}
                     size="small"
                   />
-                  <div className={sharedStyles.sidebarBottomRow}>
-                    {totalHits && (
-                      <div className={sharedStyles.resultsInfo}>
-                        {totalHits}
-                      </div>
-                    )}
+                  <div className={styles.sidebarBottomRow}>
+                    {totalHits}
                     <PrimaryButton
                       type="submit"
-                      className={sharedStyles.submitSidebar}
+                      className={styles.submitSidebar}
                       disabled={disableSubmitByMode[searchMode]}
                     >
                       Go
