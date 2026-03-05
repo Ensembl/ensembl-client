@@ -23,7 +23,7 @@ import type { FeatureSearchAppName } from 'src/shared/helpers/featureSearchHelpe
 export const getInAppFeatureQueries = createSelector(
   [
     (state: RootState, appName: FeatureSearchAppName, genomeId: string) => {
-      return state.featureSearchSlice[appName][genomeId]?.queries;
+      return state.featureSearch[appName][genomeId]?.queries;
     }
   ],
   (queries) => {

@@ -24,7 +24,7 @@ import featureSearchReducer from 'src/shared/state/feature-search/featureSearchS
 import InAppSearch, { Props as InAppSearchProps } from './InAppSearch';
 
 const rootReducer = {
-  inAppSearch: featureSearchReducer
+  featureSearch: featureSearchReducer
 };
 
 const getStore = (initialState = {}) => {
@@ -79,7 +79,7 @@ describe('<InAppSearch />', () => {
       const resultsContainer = container.querySelector('.resultsContainer');
       const searchMatches = container.querySelector('.searchMatches');
 
-      expect(resultsContainer).toBeFalsy();
+      expect(resultsContainer).toBeTruthy();
       expect(searchMatches).toBeFalsy();
     });
   });

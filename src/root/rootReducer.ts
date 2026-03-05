@@ -20,7 +20,7 @@ import browser from 'src/content/app/genome-browser/state/genomeBrowserReducer';
 import genome from 'src/shared/state/genome/genomeSlice';
 import global from 'src/global/globalSlice';
 import pageMeta from 'src/shared/state/page-meta/pageMetaSlice';
-import featureSearchSlice from 'src/shared/state/feature-search/featureSearchSlice';
+import featureSearch from 'src/shared/state/feature-search/featureSearchSlice';
 import communication from 'src/shared/state/communication/communicationSlice';
 import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorReducer';
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
@@ -38,7 +38,7 @@ const createRootReducer = () =>
     browser,
     communication,
     pageMeta,
-    featureSearchSlice,
+    featureSearch,
     genome,
     global,
     speciesSelector,
