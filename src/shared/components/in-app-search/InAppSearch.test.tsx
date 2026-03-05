@@ -19,12 +19,12 @@ import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
 
-import inAppSearchReducer from 'src/shared/state/in-app-search/inAppSearchSlice';
+import featureSearchReducer from 'src/shared/state/feature-search/featureSearchSlice';
 
 import InAppSearch, { Props as InAppSearchProps } from './InAppSearch';
 
 const rootReducer = {
-  inAppSearch: inAppSearchReducer
+  inAppSearch: featureSearchReducer
 };
 
 const getStore = (initialState = {}) => {
@@ -38,8 +38,7 @@ const getStore = (initialState = {}) => {
 const defaultProps: InAppSearchProps = {
   app: 'genomeBrowser',
   genomeId: faker.string.uuid(),
-  genomeIdForUrl: 'human',
-  mode: 'interstitial'
+  genomeTag: 'human'
 };
 
 describe('<InAppSearch />', () => {
@@ -59,21 +58,10 @@ describe('<InAppSearch />', () => {
       expect(inAppSearch).toBeTruthy();
     });
 
-    it('renders with sidebar mode', () => {
-      const { container } = render(
-        <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} mode="sidebar" />
-        </Provider>
-      );
-
-      const inAppSearch = container.querySelector('.inAppSearch');
-      expect(inAppSearch).toBeTruthy();
-    });
-
     it('renders with interstitial mode', () => {
       const { container } = render(
         <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} mode="interstitial" />
+          <InAppSearch {...defaultProps} />
         </Provider>
       );
 
@@ -89,11 +77,9 @@ describe('<InAppSearch />', () => {
       );
 
       const resultsContainer = container.querySelector('.resultsContainer');
-      const resultsContainerSidebar = container.querySelector('.resultsContainerSidebar');
       const searchMatches = container.querySelector('.searchMatches');
-      
+
       expect(resultsContainer).toBeFalsy();
-      expect(resultsContainerSidebar).toBeFalsy();
       expect(searchMatches).toBeFalsy();
     });
   });

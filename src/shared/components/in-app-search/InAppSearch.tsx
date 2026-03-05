@@ -15,9 +15,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import classNames from 'classnames';
 
-import analyticsTracking from 'src/services/analytics-service';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import {
@@ -26,41 +24,43 @@ import {
 } from 'src/shared/helpers/fetchHelper';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
-import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
+import { getInAppFeatureQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
 import {
   useLazySearchGenesQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
 import {
   updateGeneQuery,
-  updateVariantQuery,
-  type AppName
-} from 'src/shared/state/in-app-search/inAppSearchSlice';
+  updateVariantQuery
+} from 'src/shared/state/feature-search/featureSearchSlice';
 
 import { CircleLoader } from 'src/shared/components/loader';
 
 import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
-import VariantSearchMatch from 'src/shared/components/search-match/GeneSearchMatch';
 import GeneSearchMatch from 'src/shared/components/search-match/GeneSearchMatch';
+import VariantSearchMatch from 'src/shared/components/search-match/VariantSearchMatch';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
-import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
+import type {
+  FeatureSearchAppName,
+  FeatureSearchMode
+} from 'src/shared/helpers/featureSearchHelpers';
 
 import styles from './InAppSearch.module.css';
 
 export type InAppSearchMode = 'interstitial' | 'sidebar';
 
 export type Props = {
-  app: AppName;
+  app: FeatureSearchAppName;
   genomeId: string;
-  genomeIdForUrl: string; // this should be a temporary measure; it should be returned by search api
-  mode: InAppSearchMode;
-  onSearchSubmit?: (query: string) => void;
+  genomeTag: string; // this should be a temporary measure; it should be returned by search api
+  trackInterstitialPageSearch?: (query: string) => void;
   onMatchNavigation?: () => void; // currently, there are no requirements for this callback to receive any data
 };
 
+// This search component to be used for interstitial page
 const InAppSearch = (props: Props) => {
-  const { app, genomeId, mode } = props;
+  const { app, genomeId, genomeTag, trackInterstitialPageSearch } = props;
   const dispatch = useAppDispatch();
 
   const initialMode = 'gene';
@@ -124,12 +124,8 @@ const InAppSearch = (props: Props) => {
       }
     }
 
-    if (app === 'entityViewer') {
-      analyticsTracking.trackEvent({
-        category: `${app}_${mode}_search`,
-        action: 'submit_search',
-        label: query
-      });
+    if (trackInterstitialPageSearch) {
+      trackInterstitialPageSearch(input);
     }
   };
 
@@ -161,7 +157,8 @@ const InAppSearch = (props: Props) => {
     <GeneSearchMatch
       results={currentGeneSearchResults}
       app={app}
-      mode={mode}
+      mode="interstitial"
+      genomeTag={genomeTag}
       onMatchNavigation={props.onMatchNavigation}
     />
   ) : isVariantSearchMode ? (
@@ -173,7 +170,8 @@ const InAppSearch = (props: Props) => {
       <VariantSearchMatch
         results={currentVariantSearchResults}
         app={app}
-        mode={mode}
+        mode="interstitial"
+        genomeTag={genomeTag}
         onMatchNavigation={props.onMatchNavigation}
       />
     ) : null
@@ -182,13 +180,7 @@ const InAppSearch = (props: Props) => {
   const results = isLoading ? (
     <CircleLoader className={styles.spinner} size="small" />
   ) : (
-    <div
-      className={classNames({
-        [styles.resultsContainer]: mode === 'interstitial'
-      })}
-    >
-      {matchesResultContent}
-    </div>
+    <div className={styles.resultsContainer}>{matchesResultContent}</div>
   );
 
   return (
@@ -196,7 +188,7 @@ const InAppSearch = (props: Props) => {
       <FeatureSearchForm
         activeFeatureSearchMode={activeSearchMode}
         query={query}
-        searchPosition={mode}
+        searchPosition="interstitial"
         onSearchSubmit={onFeatureSearchSubmit}
         onClear={() => onFeatureSearchSubmit('')}
         onSearchModeChange={onSearchModeChange}

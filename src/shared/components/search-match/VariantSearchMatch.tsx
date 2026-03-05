@@ -35,26 +35,24 @@ import { SearchResults } from 'src/shared/types/search-api/search-results';
 
 import type { VariantSearchMatch as VariantSearchMatchType } from 'src/shared/types/search-api/search-match';
 import type { AppName as AppNameForViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
+import type {
+  FeatureSearchAppName,
+  FeatureSearchMatchPosition
+} from 'src/shared/helpers/featureSearchHelpers';
 
 import styles from './SearchMatch.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
-export type VariantSearchAppName =
-  | 'speciesHome'
-  | 'genomeBrowser'
-  | 'entityViewer';
-
-export type VariantSearchMatchMode = 'sidebar' | 'interstitial';
-
 type VariantSearchMatchProps = {
+  app: FeatureSearchAppName;
+  mode: FeatureSearchMatchPosition;
   results?: SearchResults;
-  app: VariantSearchAppName;
-  mode: VariantSearchMatchMode;
+  genomeTag?: string;
   onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
 };
 
 const VariantSearchMatch = (props: VariantSearchMatchProps) => {
-  const { results, app, mode, onMatchNavigation } = props;
+  const { results, app, mode, genomeTag, onMatchNavigation } = props;
   if (!results) {
     return;
   }
@@ -73,6 +71,7 @@ const VariantSearchMatch = (props: VariantSearchMatchProps) => {
             match={variantMatch}
             app={app}
             mode={mode}
+            genomeTag={genomeTag}
             position={index + 1}
             onMatchNavigation={onMatchNavigation}
           />
@@ -84,14 +83,15 @@ const VariantSearchMatch = (props: VariantSearchMatchProps) => {
 
 type MatchProps = {
   match: VariantSearchMatchType;
-  app: VariantSearchAppName;
-  mode: VariantSearchMatchMode;
+  app: FeatureSearchAppName;
+  mode: FeatureSearchMatchPosition;
   position: number;
-  onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
+  genomeTag?: string;
+  onMatchNavigation?: () => void;
 };
 
 const Match = (props: MatchProps) => {
-  const { app, mode, position, match } = props;
+  const { app, mode, position, match, genomeTag } = props;
   const { region_name, start, variant_name, genome_id } =
     match as VariantSearchMatchType;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
@@ -134,12 +134,12 @@ const Match = (props: MatchProps) => {
   const hideTooltip = () => setShouldShowTooltip(false);
 
   const urlForGenomeBrowser = urlFor.browser({
-    genomeId: genome_id,
+    genomeId: genomeTag ?? genome_id,
     focus: buildFocusIdForUrl({ type: 'variant', objectId: variantIdForUrl })
   });
 
   const urlForEntityViewer = urlFor.entityViewer({
-    genomeId: genome_id,
+    genomeId: genomeTag ?? genome_id,
     entityId: buildFocusIdForUrl({
       type: 'variant',
       objectId: variantIdForUrl

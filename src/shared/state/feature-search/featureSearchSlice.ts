@@ -15,8 +15,7 @@
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export type AppName = 'speciesHome' | 'genomeBrowser' | 'entityViewer';
+import type { FeatureSearchAppName } from 'src/shared/helpers/featureSearchHelpers';
 
 type StateForGenome = {
   queries: {
@@ -28,7 +27,7 @@ type StateForGenome = {
 // object with keys being genome ids and values being SearchResults
 type StateForApp = Record<string, StateForGenome>;
 
-type State = Record<AppName, StateForApp>;
+type State = Record<FeatureSearchAppName, StateForApp>;
 
 const initialState: State = {
   speciesHome: {},
@@ -44,18 +43,18 @@ const getDefaultStateForGenome = () => ({
 });
 
 type UpdateQueryPayload = {
-  app: AppName;
+  app: FeatureSearchAppName;
   genomeId: string;
   query: string;
 };
 
 type ClearSearchPayload = {
-  app: AppName;
+  app: FeatureSearchAppName;
   genomeId: string;
 };
 
-const inAppSearchSlice = createSlice({
-  name: 'in-app-search',
+const featureSearchSlice = createSlice({
+  name: 'feature-search',
   initialState,
   reducers: {
     updateGeneQuery(state, action: PayloadAction<UpdateQueryPayload>) {
@@ -84,6 +83,6 @@ const inAppSearchSlice = createSlice({
 });
 
 export const { updateGeneQuery, updateVariantQuery, clearSearch } =
-  inAppSearchSlice.actions;
+  featureSearchSlice.actions;
 
-export default inAppSearchSlice.reducer;
+export default featureSearchSlice.reducer;

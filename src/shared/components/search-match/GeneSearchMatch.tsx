@@ -32,27 +32,24 @@ import PointerBox, {
   Position as PointerBoxPosition
 } from 'src/shared/components/pointer-box/PointerBox';
 import TextButton from '../text-button/TextButton';
-
-import type { SearchResults } from 'src/shared/types/search-api/search-results';
-import type { GeneSearchMatch as GeneSearchMatchType } from 'src/shared/types/search-api/search-match';
 import {
   ViewInApp,
   type AppName as AppNameForViewInApp
 } from 'src/shared/components/view-in-app/ViewInApp';
 
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import type { GeneSearchMatch as GeneSearchMatchType } from 'src/shared/types/search-api/search-match';
+import type {
+  FeatureSearchAppName,
+  FeatureSearchMatchPosition
+} from 'src/shared/helpers/featureSearchHelpers';
+
 import styles from './SearchMatch.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
-export type GeneSearchAppName =
-  | 'speciesHome'
-  | 'genomeBrowser'
-  | 'entityViewer';
-
-export type GeneSearchMatchMode = 'sidebar' | 'interstitial';
-
 type GeneSearchMatchProps = {
-  app: GeneSearchAppName;
-  mode: GeneSearchMatchMode;
+  app: FeatureSearchAppName;
+  mode: FeatureSearchMatchPosition;
   results?: SearchResults;
   genomeTag?: string; // TODO: remove this when backend starts including this tag in the response
   onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
@@ -70,7 +67,7 @@ const GeneSearchMatch = (props: GeneSearchMatchProps) => {
     <div className={styles.searchMatches}>
       {matches.map((match, index) => (
         <Match
-          key={(match as GeneSearchMatchType).stable_id}
+          key={`${(match as GeneSearchMatchType).stable_id}_${index}`}
           match={match as GeneSearchMatchType}
           app={app}
           mode={mode}
@@ -84,8 +81,8 @@ const GeneSearchMatch = (props: GeneSearchMatchProps) => {
 
 type MatchProps = {
   match: GeneSearchMatchType;
-  app: GeneSearchAppName;
-  mode: GeneSearchMatchMode;
+  app: FeatureSearchAppName;
+  mode: FeatureSearchMatchPosition;
   position: number;
   onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
 };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 
@@ -42,10 +42,12 @@ import type {
   SearchMatch,
   VariantSearchMatch
 } from 'src/shared/types/search-api/search-match';
-import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import type { AppName as AppNameForViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
 import type { InAppSearchMode } from './InAppSearch';
-import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
+import type {
+  FeatureSearchAppName,
+  FeatureSearchMode
+} from 'src/shared/helpers/featureSearchHelpers';
 
 import styles from './InAppSearch.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
@@ -53,7 +55,7 @@ import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.modul
 type InAppSearchMatchesProps = {
   results?: SearchResults;
   featureSearchMode: FeatureSearchMode;
-  app: AppName;
+  app: FeatureSearchAppName;
   mode: InAppSearchMode;
   genomeIdForUrl: string; // TODO: remove this when backend starts including this id in the response
   onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
@@ -112,7 +114,7 @@ const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
 
 type InAppSearchMatchProps = {
   match: SearchMatch;
-  app: AppName;
+  app: FeatureSearchAppName;
   mode: InAppSearchMode;
   genomeIdForUrl: string;
   position: number;
@@ -124,7 +126,9 @@ const InAppVariantSearchMatch = (props: InAppSearchMatchProps) => {
   const { region_name, start, variant_name } = match as VariantSearchMatch;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
   const dispatch = useAppDispatch();
-  const anchorRef = useRef<HTMLSpanElement>(null);
+  const [anchorElement, setAnchorElement] = useState<HTMLSpanElement | null>(
+    null
+  );
   const variantIdForUrl = `${region_name}:${start}:${variant_name}`;
 
   const onMatchClick = () => {
@@ -191,12 +195,12 @@ const InAppVariantSearchMatch = (props: InAppSearchMatchProps) => {
         </TextButton>
         <span
           className={getSearchMatchAnchorClasses(props.mode)}
-          ref={anchorRef}
+          ref={setAnchorElement}
         />
       </div>
-      {shouldShowTooltip && anchorRef.current && (
+      {shouldShowTooltip && anchorElement && (
         <PointerBox
-          anchor={anchorRef.current}
+          anchor={anchorElement}
           position={
             props.mode === 'interstitial'
               ? PointerBoxPosition.RIGHT_BOTTOM
@@ -222,7 +226,9 @@ const InAppGeneSearchMatch = (props: InAppSearchMatchProps) => {
   const { symbol, stable_id } = match as GeneSearchMatch;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
   const dispatch = useAppDispatch();
-  const anchorRef = useRef<HTMLSpanElement>(null);
+  const [anchorElement, setAnchorElement] = useState<HTMLSpanElement | null>(
+    null
+  );
 
   const onMatchClick = () => {
     setShouldShowTooltip(!shouldShowTooltip);
@@ -268,12 +274,12 @@ const InAppGeneSearchMatch = (props: InAppSearchMatchProps) => {
         </TextButton>
         <span
           className={getSearchMatchAnchorClasses(props.mode)}
-          ref={anchorRef}
+          ref={setAnchorElement}
         />
       </div>
-      {shouldShowTooltip && anchorRef.current && (
+      {shouldShowTooltip && anchorElement && (
         <PointerBox
-          anchor={anchorRef.current}
+          anchor={anchorElement}
           position={
             props.mode === 'interstitial'
               ? PointerBoxPosition.RIGHT_BOTTOM

@@ -39,9 +39,8 @@ const EntityViewerInterstitial = () => {
       <div className={styles.topPanel}>
         <InAppSearch
           app="entityViewer"
-          mode="interstitial"
           genomeId={activeGenomeId}
-          genomeIdForUrl={genomeIdForUrl as string}
+          genomeTag={genomeIdForUrl as string}
         />
       </div>
       <ExampleLinks />

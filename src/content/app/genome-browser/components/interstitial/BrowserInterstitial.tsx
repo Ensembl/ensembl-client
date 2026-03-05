@@ -44,9 +44,8 @@ const BrowserInterstitial = () => {
         <InAppSearch
           app="genomeBrowser"
           genomeId={activeGenomeId}
-          genomeIdForUrl={genomeIdForUrl as string}
-          mode="interstitial"
-          onSearchSubmit={trackInterstitialPageSearch}
+          genomeTag={genomeIdForUrl as string}
+          trackInterstitialPageSearch={trackInterstitialPageSearch}
         />
       </div>
       <ExampleLinks />

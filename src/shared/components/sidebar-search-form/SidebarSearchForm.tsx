@@ -27,14 +27,14 @@ import {
 import {
   getFeatureSearchLabelsByMode,
   getFeatureSearchModes,
-  type FeatureSearchMode
+  type FeatureSearchMode,
+  type FeatureSearchAppName
 } from 'src/shared/helpers/featureSearchHelpers';
-import { getInAppFeatureQueries } from 'src/shared/state/in-app-search/inAppSearchSelectors';
+import { getInAppFeatureQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
 import {
   updateGeneQuery,
-  updateVariantQuery,
-  type AppName
-} from 'src/shared/state/in-app-search/inAppSearchSlice';
+  updateVariantQuery
+} from 'src/shared/state/feature-search/featureSearchSlice';
 import {
   useLazySearchGenesQuery,
   useLazySearchVariantsQuery
@@ -54,14 +54,16 @@ import GeneSearchMatch from '../search-match/GeneSearchMatch';
 import VariantSearchMatch from '../search-match/VariantSearchMatch';
 
 type Props = {
-  app: AppName;
+  app: FeatureSearchAppName;
   genomeId: string;
   genomeTag: string;
+  trackSidebarSearch?: (query: string) => void;
   onMatchNavigation?: () => void;
 };
 
 const SidebarSearchForm = (props: Props) => {
-  const { app, genomeId, onMatchNavigation } = props;
+  const { app, genomeId, genomeTag, trackSidebarSearch, onMatchNavigation } =
+    props;
   const dispatch = useAppDispatch();
   const searchModes = getFeatureSearchModes();
   const initialQueries = useAppSelector((state) =>
@@ -105,14 +107,16 @@ const SidebarSearchForm = (props: Props) => {
       return;
     }
 
-    dispatch(updateVariantQuery({ app, genomeId, query }));
+    if (searchMode === 'variant') {
+      dispatch(updateVariantQuery({ app, genomeId, query }));
 
-    if (!query.trim()) {
-      variantSearchResults.reset();
-      return;
+      if (!query.trim()) {
+        variantSearchResults.reset();
+        return;
+      }
+
+      triggerVariantSearch(searchParams);
     }
-
-    triggerVariantSearch(searchParams);
   };
 
   const onFormSubmit = (
@@ -128,6 +132,10 @@ const SidebarSearchForm = (props: Props) => {
     }));
 
     submitSearch(searchMode, query);
+
+    if (trackSidebarSearch) {
+      trackSidebarSearch(query);
+    }
   };
 
   const onQueryChange = (
@@ -194,6 +202,7 @@ const SidebarSearchForm = (props: Props) => {
           results={geneSearchResults.currentData}
           app={app}
           mode="sidebar"
+          genomeTag={genomeTag}
           onMatchNavigation={onMatchNavigation}
         />
       );
@@ -214,6 +223,7 @@ const SidebarSearchForm = (props: Props) => {
             results={variantSearchResults.currentData}
             app={app}
             mode="sidebar"
+            genomeTag={genomeTag}
             onMatchNavigation={onMatchNavigation}
           />
         );
