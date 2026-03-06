@@ -31,7 +31,7 @@ import {
 } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
-import { getInAppFeatureQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
+import { getFeatureSearchQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
 import {
   useLazySearchGenesQuery,
   useLazySearchVariantsQuery
@@ -50,7 +50,7 @@ import TextButton from '../text-button/TextButton';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
-import styles from './InAppSearch.module.css';
+import styles from './InterstitialSearch.module.css';
 
 export type Props = {
   app: FeatureSearchAppName;
@@ -60,7 +60,7 @@ export type Props = {
   onMatchNavigation?: () => void; // currently, there are no requirements for this callback to receive any data
 };
 
-const InAppSearch = (props: Props) => {
+const InterstitialSearch = (props: Props) => {
   const { app, genomeId, genomeIdForUrl, trackInterstitialPageSearch } = props;
   const dispatch = useAppDispatch();
 
@@ -68,8 +68,8 @@ const InAppSearch = (props: Props) => {
   const [activeSearchMode, setActiveSearchMode] =
     useState<FeatureSearchMode>(initialMode);
 
-  const inAppFeatureQueries = useAppSelector((state) =>
-    getInAppFeatureQueries(state, app, genomeId)
+  const featureSearchQueries = useAppSelector((state) =>
+    getFeatureSearchQueries(state, app, genomeId)
   );
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
@@ -83,7 +83,7 @@ const InAppSearch = (props: Props) => {
   const searchModes = getFeatureSearchModes();
 
   const query =
-    inAppFeatureQueries[activeSearchMode as keyof typeof inAppFeatureQueries];
+    featureSearchQueries[activeSearchMode as keyof typeof featureSearchQueries];
   const isGeneSearchMode = activeSearchMode === 'gene';
   const isVariantSearchMode = activeSearchMode === 'variant';
 
@@ -180,7 +180,7 @@ const InAppSearch = (props: Props) => {
   ) : null;
 
   return (
-    <div className={styles.inAppSearch}>
+    <div className={styles.interstitialSearch}>
       <SearchTabs
         activeFeatureSearchMode={activeSearchMode}
         onSearchModeChange={onSearchModeChange}
@@ -250,4 +250,4 @@ const TotalSearchHits = (props: {
   );
 };
 
-export default InAppSearch;
+export default InterstitialSearch;

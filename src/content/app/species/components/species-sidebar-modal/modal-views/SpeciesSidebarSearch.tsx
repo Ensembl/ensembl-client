@@ -22,7 +22,7 @@ import { getActiveGenomeId } from 'src/content/app/species/state/general/species
 
 import { updateSpeciesSidebarModalForGenome } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
-import SidebarSearchForm from 'src/shared/components/sidebar-search-form/SidebarSearchForm';
+import SidebarSearch from 'src/shared/components/sidebar-search/SidebarSearch';
 
 const SpeciesSidebarSearch = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
@@ -44,7 +44,7 @@ const SpeciesSidebarSearch = () => {
   };
 
   return activeGenomeId ? (
-    <SidebarSearchForm
+    <SidebarSearch
       app="speciesHome"
       genomeId={activeGenomeId}
       genomeIdForUrl={genomeIdForUrl as string}

@@ -26,11 +26,11 @@ import TextButton from 'src/shared/components/text-button/TextButton';
 import type { GeneSearchMatch } from 'src/shared/types/search-api/search-match';
 import type { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 
-import sharedStyles from 'src/shared/components/in-app-search/InAppSearch.module.css';
 import styles from './FeatureSearchModal.module.css';
+import sharedStyles from 'src/shared/components/interstitial-search/InterstitialSearch.module.css';
 
 /**
- * This component is, to a large extent, a copy of the search matches in InAppSearch.
+ * This component is, to a large extent, a copy of the search matches in InterstitialSearch.
  *
  * What makes it different though is that:
  * - Upon clicking on a search match, it does not show the tooltip ("jump menu")

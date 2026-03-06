@@ -40,6 +40,10 @@ const featureSearchModeLabels: Record<FeatureSearchMode, FeatureSearchLabels> =
     }
   };
 
+export const isFeatureSearchMode = (mode: string) => {
+  return featureSearchModes.includes(mode as FeatureSearchMode);
+};
+
 export const getFeatureSearchModes = () => {
   return featureSearchModes;
 };

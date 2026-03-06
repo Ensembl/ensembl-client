@@ -20,7 +20,7 @@ import type { RootState } from 'src/store';
 
 import type { FeatureSearchAppName } from 'src/shared/helpers/featureSearchHelpers';
 
-export const getInAppFeatureQueries = createSelector(
+export const getFeatureSearchQueries = createSelector(
   [
     (state: RootState, appName: FeatureSearchAppName, genomeId: string) => {
       return state.featureSearch[appName][genomeId]?.queries;

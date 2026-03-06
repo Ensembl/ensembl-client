@@ -30,8 +30,9 @@ import {
 import {
   getFeatureSearchModeByLocation,
   getFeatureSearchLabelsByMode,
-  type FeatureSearchMode,
-  getFeatureSearchModes
+  getFeatureSearchModes,
+  isFeatureSearchMode,
+  type FeatureSearchMode
 } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -169,14 +170,16 @@ const SpeciesSelectorSearchView = () => {
           searchModes={searchModes}
         />
         {isFeatureSearchMode(activeSearchMode) && (
-          <FeatureSearchForm
-            activeFeatureSearchMode={activeSearchMode as FeatureSearchMode}
-            query={query}
-            onSearchSubmit={onFeatureSearchSubmit}
-            onClear={() => onFeatureSearchSubmit('')}
-          />
+          <>
+            <FeatureSearchForm
+              activeFeatureSearchMode={activeSearchMode as FeatureSearchMode}
+              query={query}
+              onSearchSubmit={onFeatureSearchSubmit}
+              onClear={() => onFeatureSearchSubmit('')}
+            />
+            <SearchScope />
+          </>
         )}
-        <SearchScope />
 
         {isGeneSearchMode ? (
           <GeneFeatureSearchResults
@@ -195,10 +198,6 @@ const SpeciesSelectorSearchView = () => {
       </div>
     </ModalView>
   );
-};
-
-const isFeatureSearchMode = (mode: string) => {
-  return getFeatureSearchModes().includes(mode as FeatureSearchMode);
 };
 
 const SearchTabs = (props: {

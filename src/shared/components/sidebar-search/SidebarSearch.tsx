@@ -18,7 +18,7 @@ import { useState, type InputEvent, type SubmitEvent } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
-import { getInAppFeatureQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
+import { getFeatureSearchQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
 import {
   updateGeneQuery,
   updateVariantQuery
@@ -29,7 +29,6 @@ import {
 } from 'src/shared/state/api-slices/searchApiSlice';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import {
   getErrorMessage,
   isNotFoundError
@@ -47,12 +46,18 @@ import {
   CollapsibleSectionBody,
   CollapsibleSectionHead
 } from 'src/shared/components/collapsible-section/CollapsibleSection';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { CircleLoader } from '../loader';
 import GeneSearchMatch from 'src/shared/components/search-match/GeneSearchMatch';
 import VariantSearchMatch from 'src/shared/components/search-match/VariantSearchMatch';
+import NavigateLeftIcon from 'static/icons/navigate-left.svg';
+import NavigateRightIcon from 'static/icons/navigate-right.svg';
 
-import styles from './SidebarSearchForm.module.css';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import { Status } from 'src/shared/types/status';
+
+import styles from './SidebarSearch.module.css';
 
 type Props = {
   app: FeatureSearchAppName;
@@ -62,7 +67,7 @@ type Props = {
   onMatchNavigation?: () => void;
 };
 
-const SidebarSearchForm = (props: Props) => {
+const SidebarSearch = (props: Props) => {
   const {
     app,
     genomeId,
@@ -73,7 +78,7 @@ const SidebarSearchForm = (props: Props) => {
   const dispatch = useAppDispatch();
   const searchModes = getFeatureSearchModes();
   const initialQueries = useAppSelector((state) =>
-    getInAppFeatureQueries(state, app, genomeId)
+    getFeatureSearchQueries(state, app, genomeId)
   );
 
   const [searchInputs, setSearchInputs] = useState<
@@ -93,12 +98,17 @@ const SidebarSearchForm = (props: Props) => {
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
 
-  const submitSearch = (searchMode: FeatureSearchMode, query: string) => {
+  const submitSearch = (
+    searchMode: FeatureSearchMode,
+    query: string,
+    page: number,
+    per_page: number
+  ) => {
     const searchParams = {
       genome_ids: [genomeId],
       query,
-      page: 1,
-      per_page: 50
+      page: page,
+      per_page: per_page
     };
 
     if (searchMode === 'gene') {
@@ -137,7 +147,7 @@ const SidebarSearchForm = (props: Props) => {
       [searchMode]: true
     }));
 
-    submitSearch(searchMode, query);
+    submitSearch(searchMode, query, 1, 20);
 
     if (trackSidebarSearch) {
       trackSidebarSearch(query);
@@ -159,33 +169,51 @@ const SidebarSearchForm = (props: Props) => {
     }));
 
     if (!newQuery.trim()) {
-      submitSearch(searchMode, '');
+      submitSearch(searchMode, '', 1, 20);
     }
   };
 
-  const getTotalHits = (searchMode: FeatureSearchMode) => {
+  const getPageDetails = (searchMode: FeatureSearchMode) => {
     if (searchMode === 'gene' && geneSearchResults.currentData) {
+      const { page, per_page, total_hits } = geneSearchResults.currentData.meta;
+      const hasPreviousPage = page > 1;
+      const hasNextPage = total_hits > page * per_page;
+      const query = initialQueries.gene ?? '';
+
       return (
-        <div>
-          <span>
-            {formatNumber(geneSearchResults.currentData.meta.total_hits)}
-          </span>{' '}
-          {pluralise('gene', geneSearchResults.currentData.meta.total_hits)}
-        </div>
+        <PageDetails
+          results={geneSearchResults.currentData}
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+          onPreviousClick={() =>
+            submitSearch(searchMode, query, page - 1, per_page)
+          }
+          onNextClick={() =>
+            submitSearch(searchMode, query, page + 1, per_page)
+          }
+        />
       );
     }
 
     if (searchMode === 'variant' && variantSearchResults.currentData) {
+      const { page, per_page, total_hits } =
+        variantSearchResults.currentData.meta;
+      const hasPreviousPage = page > 1;
+      const hasNextPage = total_hits > page * per_page;
+      const query = initialQueries.variant ?? '';
+
       return (
-        <div>
-          <span>
-            {formatNumber(variantSearchResults.currentData.meta.total_hits)}
-          </span>{' '}
-          {pluralise(
-            'variant',
-            variantSearchResults.currentData.meta.total_hits
-          )}
-        </div>
+        <PageDetails
+          results={variantSearchResults.currentData}
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+          onPreviousClick={() =>
+            submitSearch(searchMode, query, page - 1, per_page)
+          }
+          onNextClick={() =>
+            submitSearch(searchMode, query, page + 1, per_page)
+          }
+        />
       );
     }
 
@@ -243,7 +271,6 @@ const SidebarSearchForm = (props: Props) => {
     <div className={styles.sections}>
       {searchModes.map((searchMode) => {
         const searchModeLabels = getFeatureSearchLabelsByMode(searchMode);
-        const totalHits = getTotalHits(searchMode);
         const resultsContent = getResultsContent(searchMode);
 
         return (
@@ -267,7 +294,7 @@ const SidebarSearchForm = (props: Props) => {
                     size="small"
                   />
                   <div className={styles.sidebarBottomRow}>
-                    {totalHits}
+                    {getPageDetails(searchMode)}
                     <PrimaryButton
                       type="submit"
                       className={styles.submitSidebar}
@@ -289,32 +316,97 @@ const SidebarSearchForm = (props: Props) => {
           </div>
         );
       })}
-      <div className={styles.section}>
-        <CollapsibleSection isOpen={false}>
-          <CollapsibleSectionHead className={styles.sectionHead}>
-            Help
-          </CollapsibleSectionHead>
-          <CollapsibleSectionBody
-            className={classNames(styles.sectionBody, styles.helpSectionBody)}
-          >
-            <p>
-              You can search for genes or variants by selecting from the options
-              above.
-            </p>
-            <p>
-              You can search for a gene by symbol (eg MAPK10) or ID
-              (ENSG00000109339.24).
-            </p>
-            <p>Or you can search for a variant by Ensembl ID.</p>
-            <p>
-              Please note, you will need to enter at least 3 characters, and
-              only exact matches will be shown.
-            </p>
-          </CollapsibleSectionBody>
-        </CollapsibleSection>
+      <SidebarHelpSection />
+    </div>
+  );
+};
+
+const SidebarHelpSection = () => {
+  return (
+    <div className={styles.section}>
+      <CollapsibleSection isOpen={false}>
+        <CollapsibleSectionHead className={styles.sectionHead}>
+          Help
+        </CollapsibleSectionHead>
+        <CollapsibleSectionBody
+          className={classNames(styles.sectionBody, styles.helpSectionBody)}
+        >
+          <p>
+            You can search for genes or variants by selecting from the options
+            above.
+          </p>
+          <p>
+            You can search for a gene by symbol (eg MAPK10) or ID
+            (ENSG00000109339.24).
+          </p>
+          <p>Or you can search for a variant by Ensembl ID.</p>
+          <p>
+            Please note, you will need to enter at least 3 characters, and only
+            exact matches will be shown.
+          </p>
+        </CollapsibleSectionBody>
+      </CollapsibleSection>
+    </div>
+  );
+};
+
+const PageDetails = (props: {
+  results: SearchResults;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+  onPreviousClick: () => void;
+  onNextClick: () => void;
+}) => {
+  const {
+    results,
+    hasPreviousPage,
+    hasNextPage,
+    onPreviousClick,
+    onNextClick
+  } = props;
+  const { meta } = results;
+  const { total_hits, page, per_page } = meta;
+
+  const from = formatNumber((page - 1) * per_page + 1);
+  const to = formatNumber(Math.min(page * per_page, total_hits));
+  const totalHitsFormatted = formatNumber(total_hits);
+
+  if (total_hits === 0) {
+    return (
+      <div>
+        <span className={styles.totalHits}>{totalHitsFormatted}</span>
+        <span className={styles.resultsText}> results</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.pageDetails}>
+      <div>
+        <span className={styles.pageRange}>
+          {from}-{to}
+        </span>
+        <span className={styles.totalHits}> /{totalHitsFormatted}</span>
+        <span className={styles.resultsText}> results</span>
+      </div>
+      <div>
+        <ImageButton
+          status={hasPreviousPage ? Status.DEFAULT : Status.DISABLED}
+          description="Previous page"
+          className={styles.pageNavButton}
+          onClick={onPreviousClick}
+          image={NavigateLeftIcon}
+        />
+        <ImageButton
+          status={hasNextPage ? Status.DEFAULT : Status.DISABLED}
+          description="Next page"
+          className={classNames(styles.pageNavButton, styles.pageNavNextButton)}
+          onClick={onNextClick}
+          image={NavigateRightIcon}
+        />
       </div>
     </div>
   );
 };
 
-export default SidebarSearchForm;
+export default SidebarSearch;

@@ -21,7 +21,9 @@ import { faker } from '@faker-js/faker';
 
 import featureSearchReducer from 'src/shared/state/feature-search/featureSearchSlice';
 
-import InAppSearch, { Props as InAppSearchProps } from './InAppSearch';
+import InterstitialSearch, {
+  Props as InterstitialSearchProps
+} from './InterstitialSearch';
 
 const rootReducer = {
   featureSearch: featureSearchReducer
@@ -35,13 +37,13 @@ const getStore = (initialState = {}) => {
   });
 };
 
-const defaultProps: InAppSearchProps = {
+const defaultProps: InterstitialSearchProps = {
   app: 'genomeBrowser',
   genomeId: faker.string.uuid(),
   genomeIdForUrl: 'human'
 };
 
-describe('<InAppSearch />', () => {
+describe('<InterstitialSearch />', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -50,29 +52,29 @@ describe('<InAppSearch />', () => {
     it('renders correctly before the request', () => {
       const { container } = render(
         <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} />
+          <InterstitialSearch {...defaultProps} />
         </Provider>
       );
 
-      const inAppSearch = container.querySelector('.inAppSearch');
-      expect(inAppSearch).toBeTruthy();
+      const interstitialSearch = container.querySelector('.interstitialSearch');
+      expect(interstitialSearch).toBeTruthy();
     });
 
     it('renders with interstitial mode', () => {
       const { container } = render(
         <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} />
+          <InterstitialSearch {...defaultProps} />
         </Provider>
       );
 
-      const inAppSearch = container.querySelector('.inAppSearch');
-      expect(inAppSearch).toBeTruthy();
+      const interstitialSearch = container.querySelector('.interstitialSearch');
+      expect(interstitialSearch).toBeTruthy();
     });
 
     it('does not show results initially', () => {
       const { container } = render(
         <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} />
+          <InterstitialSearch {...defaultProps} />
         </Provider>
       );
 

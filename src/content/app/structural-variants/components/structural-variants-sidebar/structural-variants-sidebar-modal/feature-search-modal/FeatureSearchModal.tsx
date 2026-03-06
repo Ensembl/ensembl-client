@@ -31,8 +31,8 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import type { GeneSearchMatch } from 'src/shared/types/search-api/search-match';
 
-import sharedStyles from 'src/shared/components/in-app-search/InAppSearch.module.css';
 import styles from './FeatureSearchModal.module.css';
+import sharedStyles from 'src/shared/components/interstitial-search/InterstitialSearch.module.css';
 
 const FeatureSearchModal = () => {
   const [trigger, { isFetching, currentData, reset }] =

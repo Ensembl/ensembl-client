@@ -58,3 +58,35 @@
   margin-left: auto;
 }
 
+.pageRange {
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+.pageDetails {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 4px;
+  min-width: 0;
+}
+
+.totalHits {
+  font-size: 12px;
+}
+
+.resultsText {
+  font-weight: var(--font-weight-light);
+}
+
+.pageNavButton {
+  --image-button-default-svg-color: var(--color-blue);
+  --image-button-disabled-svg-color: var(--color-grey);
+  width: var(--browser-nav-button-size, 22px);
+  height: var(--browser-nav-button-size, 22px);
+}
+
+.pageNavNextButton {
+  margin-left: 5px;
+}
