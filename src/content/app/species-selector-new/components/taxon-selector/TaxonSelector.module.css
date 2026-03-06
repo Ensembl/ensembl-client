@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  flex-wrap: nowrap;
+  column-gap: 10px;
+  height: 100%;
+}
+
+.column {
+  height: 100%;
+  padding: 0 10px;
+}
+
+.taxons {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  row-gap: 0.5rem;
+}
+
+.taxon {
+  background-color: var(--color-blue);
+  color: var(--color-white);
+  padding: 0.2rem 0.4rem;
+}
