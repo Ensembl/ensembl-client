@@ -77,26 +77,32 @@ const SidebarSearch = (props: Props) => {
   } = props;
   const dispatch = useAppDispatch();
   const searchModes = getFeatureSearchModes();
-  const initialQueries = useAppSelector((state) =>
+  const submittedQueries = useAppSelector((state) =>
     getFeatureSearchQueries(state, app, genomeId)
   );
 
   const [searchInputs, setSearchInputs] = useState<
     Record<FeatureSearchMode, string>
   >({
-    gene: initialQueries.gene ?? '',
-    variant: initialQueries.variant ?? ''
+    gene: submittedQueries.gene ?? '',
+    variant: submittedQueries.variant ?? ''
   });
   const [disableSubmitByMode, setDisableSubmitByMode] = useState<
     Record<FeatureSearchMode, boolean>
   >({
-    gene: !(initialQueries.gene ?? '').trim(),
-    variant: !(initialQueries.variant ?? '').trim()
+    gene: !(submittedQueries.gene ?? '').trim(),
+    variant: !(submittedQueries.variant ?? '').trim()
   });
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
+
+  const { currentData: currentGeneSearchResults } = geneSearchResults;
+  const {
+    currentData: currentVariantSearchResults,
+    error: variantSearchError
+  } = variantSearchResults;
 
   const submitSearch = (
     searchMode: FeatureSearchMode,
@@ -174,15 +180,15 @@ const SidebarSearch = (props: Props) => {
   };
 
   const getPageDetails = (searchMode: FeatureSearchMode) => {
-    if (searchMode === 'gene' && geneSearchResults.currentData) {
-      const { page, per_page, total_hits } = geneSearchResults.currentData.meta;
+    if (searchMode === 'gene' && currentGeneSearchResults) {
+      const { page, per_page, total_hits } = currentGeneSearchResults.meta;
       const hasPreviousPage = page > 1;
       const hasNextPage = total_hits > page * per_page;
-      const query = initialQueries.gene ?? '';
+      const query = submittedQueries.gene ?? '';
 
       return (
         <PageDetails
-          results={geneSearchResults.currentData}
+          results={currentGeneSearchResults}
           hasPreviousPage={hasPreviousPage}
           hasNextPage={hasNextPage}
           onPreviousClick={() =>
@@ -195,16 +201,15 @@ const SidebarSearch = (props: Props) => {
       );
     }
 
-    if (searchMode === 'variant' && variantSearchResults.currentData) {
-      const { page, per_page, total_hits } =
-        variantSearchResults.currentData.meta;
+    if (searchMode === 'variant' && currentVariantSearchResults) {
+      const { page, per_page, total_hits } = currentVariantSearchResults.meta;
       const hasPreviousPage = page > 1;
       const hasNextPage = total_hits > page * per_page;
-      const query = initialQueries.variant ?? '';
+      const query = submittedQueries.variant ?? '';
 
       return (
         <PageDetails
-          results={variantSearchResults.currentData}
+          results={currentVariantSearchResults}
           hasPreviousPage={hasPreviousPage}
           hasNextPage={hasNextPage}
           onPreviousClick={() =>
@@ -230,10 +235,10 @@ const SidebarSearch = (props: Props) => {
       return <CircleLoader size="small" />;
     }
 
-    if (searchMode === 'gene' && geneSearchResults.currentData) {
+    if (searchMode === 'gene' && currentGeneSearchResults) {
       return (
         <GeneSearchMatch
-          results={geneSearchResults.currentData}
+          results={currentGeneSearchResults}
           app={app}
           mode="sidebar"
           genomeIdForUrl={genomeIdForUrl}
@@ -243,18 +248,18 @@ const SidebarSearch = (props: Props) => {
     }
 
     if (searchMode === 'variant') {
-      if (isNotFoundError(variantSearchResults.error)) {
+      if (isNotFoundError(variantSearchError)) {
         return (
           <span className={styles.warning}>
-            {getErrorMessage(variantSearchResults.error)}
+            {getErrorMessage(variantSearchError)}
           </span>
         );
       }
 
-      if (variantSearchResults.currentData) {
+      if (currentVariantSearchResults) {
         return (
           <VariantSearchMatch
-            results={variantSearchResults.currentData}
+            results={currentVariantSearchResults}
             app={app}
             mode="sidebar"
             genomeIdForUrl={genomeIdForUrl}
@@ -332,17 +337,15 @@ const SidebarHelpSection = () => {
           className={classNames(styles.sectionBody, styles.helpSectionBody)}
         >
           <p>
-            You can search for genes or variants by selecting from the options
-            above.
+            You can search for genes or variants by selecting the options above.
           </p>
           <p>
-            You can search for a gene by symbol (eg MAPK10) or ID
-            (ENSG00000109339.24).
+            Genes can be searched for by symbol (e.g. MAPK10) or stable ID (e.g.
+            ENSG00000109339.24).
           </p>
-          <p>Or you can search for a variant by Ensembl ID.</p>
           <p>
-            Please note, you will need to enter at least 3 characters, and only
-            exact matches will be shown.
+            You can search for a variant by rsID (only exact matches will be
+            shown).
           </p>
         </CollapsibleSectionBody>
       </CollapsibleSection>
