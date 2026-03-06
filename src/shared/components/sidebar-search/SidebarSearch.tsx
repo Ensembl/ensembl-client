@@ -265,19 +265,16 @@ const SidebarSearch = (props: Props) => {
         );
       }
 
-      if (
-        currentVariantSearchResults &&
-        currentVariantSearchResults.matches.length === 0
-      ) {
-        return (
-          <span>
-            <span className={styles.bold}>Tip:</span> This may not be a valid
-            variant ID for the species.
-          </span>
-        );
-      }
-
       if (currentVariantSearchResults) {
+        if (currentVariantSearchResults.matches.length === 0) {
+          return (
+            <span>
+              <span className={styles.bold}>Tip:</span> This may not be a valid
+              variant ID for the species.
+            </span>
+          );
+        }
+
         return (
           <VariantSearchMatch
             results={currentVariantSearchResults}
