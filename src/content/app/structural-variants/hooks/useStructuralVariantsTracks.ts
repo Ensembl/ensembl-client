@@ -24,7 +24,8 @@ import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/g
 
 const labelFragmentsForFindingTracks = [
   'short variants',
-  'segmental duplication'
+  'segmental duplication',
+  'HGSVC3'
 ].map((string) => RegExp(string, 'i'));
 
 /**
