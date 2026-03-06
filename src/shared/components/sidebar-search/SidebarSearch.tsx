@@ -236,6 +236,15 @@ const SidebarSearch = (props: Props) => {
     }
 
     if (searchMode === 'gene' && currentGeneSearchResults) {
+      if (currentGeneSearchResults.matches.length === 0) {
+        return (
+          <span>
+            <span className={styles.bold}>Tip:</span> Enter a valid gene symbol
+            or ID to find a gene in the species.
+          </span>
+        );
+      }
+
       return (
         <GeneSearchMatch
           results={currentGeneSearchResults}
@@ -252,6 +261,18 @@ const SidebarSearch = (props: Props) => {
         return (
           <span className={styles.warning}>
             {getErrorMessage(variantSearchError)}
+          </span>
+        );
+      }
+
+      if (
+        currentVariantSearchResults &&
+        currentVariantSearchResults.matches.length === 0
+      ) {
+        return (
+          <span>
+            <span className={styles.bold}>Tip:</span> This may not be a valid
+            variant ID for the species.
           </span>
         );
       }

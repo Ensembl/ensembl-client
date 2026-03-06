@@ -90,3 +90,7 @@
 .pageNavNextButton {
   margin-left: 10px;
 }
+
+.bold {
+  font-weight: var(--font-weight-bold);
+}
