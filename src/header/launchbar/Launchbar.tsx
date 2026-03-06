@@ -30,6 +30,7 @@ import AlignmentsViewerLaunchbarButton from './AlignmentsViewerLaunchbarButton';
 import RegulatoryActivityViewerLaunchbarButton from './RegulationViewerLaunchbarButton';
 import BlastLaunchbarButton from './BlastLaunchbarButton';
 import VepLaunchbarButton from './VepLaunchbarButton';
+import EnsemblMarkIcon from 'src/shared/components/ensembl-mark-icon/EnsemblMarkIcon';
 
 import Logotype from 'static/img/brand/logotype.svg';
 
@@ -89,15 +90,19 @@ const AboutEnsembl = () => {
   const { trackLaunchbarAppChange } = useHeaderAnalytics();
 
   return (
-    <Link
-      to="/about"
-      className={styles.aboutEnsembl}
-      onClick={() => trackLaunchbarAppChange('About')}
-    >
-      About the
-      <Logotype className={styles.logotype} />
-      project
-    </Link>
+    <div className={styles.aboutEnsemblWrapper}>
+      <Link
+        to="/about"
+        className={styles.aboutEnsembl}
+        onClick={() => trackLaunchbarAppChange('About')}
+      >
+        About the
+        <Logotype className={styles.logotype} />
+        project
+      </Link>
+
+      <EnsemblMarkIcon className={styles.ensemblMark} />
+    </div>
   );
 };
 

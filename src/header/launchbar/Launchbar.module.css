@@ -58,6 +58,12 @@
   }
 }
 
+.aboutEnsemblWrapper {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
 .aboutEnsembl {
   display: flex;
   align-items: center;
@@ -69,6 +75,10 @@
   fill: var(--color-blue);
   margin-left: 0.35rem;
   margin-right: 0.25rem;
+}
+
+.ensemblMark {
+  margin-left: 20px;
 }
 
 .toolsIconWrapper {

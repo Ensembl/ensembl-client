@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
+import classNames from 'classnames';
 
-import { getPageMeta } from 'src/shared/state/page-meta/pageMetaSelectors';
+import ensemblMarkUrl from 'static/img/brand/ensembl_mark.svg?url';
 
-import favicon from 'static/favicons/favicon.svg?url';
+import styles from './EnsemblMarkIcon.module.css';
 
-const Meta = () => {
-  const pageMeta = useAppSelector(getPageMeta);
+type EnsemblMarkIconProps = {
+  className?: string;
+};
 
+const EnsemblMarkIcon = ({ className }: EnsemblMarkIconProps) => {
   return (
-    <>
-      <title>{pageMeta.title}</title>
-      <meta name="description" content={pageMeta.description} />
-      <link rel="icon" type="image/svg+xml" href={favicon} />
-    </>
+    <img
+      src={ensemblMarkUrl}
+      alt="Ensembl mark"
+      className={classNames(className, styles.ensemblMark)}
+    />
   );
 };
 
-export default Meta;
+export default EnsemblMarkIcon;
