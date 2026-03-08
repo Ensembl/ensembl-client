@@ -30,15 +30,13 @@ import styles from './Launchbar.module.css';
 export type LaunchbarButtonProps = {
   path: string;
   description: string;
-  icon: FunctionComponent<unknown>;
+  icon: FunctionComponent<any>;
   enabled?: boolean;
   isActive?: boolean;
   isClickableWhenActive?: boolean;
 };
 
-const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
-  props: LaunchbarButtonProps
-) => {
+const LaunchbarButton = (props: LaunchbarButtonProps) => {
   const pathnameFromProp = props.path.split('?')[0]; // remove query parameters
   const routeMatch = useMatch({ path: pathnameFromProp, end: false });
   const isRouteMatched = Boolean(routeMatch);

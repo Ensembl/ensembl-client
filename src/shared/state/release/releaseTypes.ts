@@ -21,3 +21,14 @@ export type Release = {
   type: ReleaseType;
   is_current: boolean;
 };
+
+// How many genomes there are in a particular group
+type GenomesCount = {
+  label: string; // name of the group, e.g. Animals
+  count: number;
+};
+
+export type GenomeCounts = {
+  total: number;
+  counts: GenomesCount[];
+};

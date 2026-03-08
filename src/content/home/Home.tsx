@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 
 import useHomeAnalytics from 'src/content/home/hooks/useHomeAnalytics';
 
+import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 import CommunicationPanelButton from 'src/shared/components/communication-framework/CommunicationPanelButton';
 import {
@@ -52,98 +53,103 @@ const Home = () => {
           <div className={styles.mainTopMiddle}>
             <Logotype className={styles.logotype} />
             <div className={styles.text}>Genome data & annotation</div>
-            <div className={styles.appList}>
-              <div className={styles.appListItem}>
-                <div className={styles.buttonsContainer}>
-                  <Link
-                    to="/species-selector"
-                    className={styles.button}
-                    onClick={() => handleButtonClick('species-selector')}
-                  >
-                    <span>Species selector</span>
-                    <div className={styles.appIconWrapper}>
-                      <SpeciesSelectorIcon />
-                    </div>
-                  </Link>
-                </div>
-                <div className={styles.bottomTextContainer}>
-                  <div className={styles.bottomText}>
-                    Create & manage your own species list
-                  </div>
-                </div>
-              </div>
+          </div>
 
-              <div className={styles.appListItem}>
-                <div className={styles.buttonsContainer}>
-                  <Link
-                    to="/genome-browser"
-                    className={styles.button}
-                    onClick={() => handleButtonClick('genome-browser')}
-                  >
-                    <span>Genome browser</span>
-                    <div className={styles.appIconWrapper}>
-                      <GenomeBrowserIcon />
-                    </div>
-                  </Link>
-                </div>
-                <div className={styles.bottomTextContainer}>
-                  <div className={styles.bottomText}>
-                    Look at genes & transcripts in their genomic context
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.appListItem}>
-                <div className={styles.buttonsContainer}>
-                  <Link
-                    to="/entity-viewer"
-                    className={styles.button}
-                    onClick={() => handleButtonClick('entity-viewer')}
-                  >
-                    <span>Entity viewer</span>
-                    <div className={styles.appIconWrapper}>
-                      <EntityViewerIcon />
-                    </div>
-                  </Link>
-                </div>
-                <div className={styles.bottomTextContainer}>
-                  <div className={styles.bottomText}>
-                    Get gene & transcript information
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className={styles.toolsList}>
-              <div className={styles.toolsListItem}>
-                <span className={styles.toolsListItemLabel}>Blast</span>
-                <Link
-                  to="/blast"
-                  onClick={() => handleButtonClick('blast')}
-                  className={styles.toolsButton}
-                >
-                  <BlastIcon />
-                </Link>
-              </div>
-              <div className={styles.toolsListItem}>
-                <Link
-                  to="/vep"
-                  onClick={() => handleButtonClick('vep')}
-                  className={styles.toolsButton}
-                >
-                  <VepIcon />
-                </Link>
+          <div className={styles.topRight}>
+            <GenomeCounts className={styles.genomeCounts} variety="compact" />
+            <div className={styles.topRightButtons}>
+              <HelpPopupButton
+                label="Getting started"
+                slug="ensembl-website-basics"
+                labelClass={styles.helpLabel}
+              />
+              <div className={styles.conversationIcon}>
+                <CommunicationPanelButton />
               </div>
             </div>
           </div>
+        </div>
+        <div className={styles.mainMiddle}>
+          <div className={styles.appList}>
+            <div className={styles.appListItem}>
+              <div className={styles.buttonsContainer}>
+                <Link
+                  to="/species-selector"
+                  className={styles.button}
+                  onClick={() => handleButtonClick('species-selector')}
+                >
+                  <span>Species selector</span>
+                  <div className={styles.appIconWrapper}>
+                    <SpeciesSelectorIcon />
+                  </div>
+                </Link>
+              </div>
+              <div className={styles.bottomTextContainer}>
+                <div className={styles.bottomText}>
+                  Create & manage your own species list
+                </div>
+              </div>
+            </div>
 
-          <div className={styles.homeTopRight}>
-            <HelpPopupButton
-              label="Getting started"
-              slug="ensembl-website-basics"
-              labelClass={styles.helpLabel}
-            />
-            <div className={styles.conversationIcon}>
-              <CommunicationPanelButton />
+            <div className={styles.appListItem}>
+              <div className={styles.buttonsContainer}>
+                <Link
+                  to="/genome-browser"
+                  className={styles.button}
+                  onClick={() => handleButtonClick('genome-browser')}
+                >
+                  <span>Genome browser</span>
+                  <div className={styles.appIconWrapper}>
+                    <GenomeBrowserIcon />
+                  </div>
+                </Link>
+              </div>
+              <div className={styles.bottomTextContainer}>
+                <div className={styles.bottomText}>
+                  Look at genes & transcripts in their genomic context
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.appListItem}>
+              <div className={styles.buttonsContainer}>
+                <Link
+                  to="/entity-viewer"
+                  className={styles.button}
+                  onClick={() => handleButtonClick('entity-viewer')}
+                >
+                  <span>Entity viewer</span>
+                  <div className={styles.appIconWrapper}>
+                    <EntityViewerIcon />
+                  </div>
+                </Link>
+              </div>
+              <div className={styles.bottomTextContainer}>
+                <div className={styles.bottomText}>
+                  Get gene & transcript information
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.toolsList}>
+            <div className={styles.toolsListItem}>
+              <span className={styles.toolsListItemLabel}>Blast</span>
+              <Link
+                to="/blast"
+                onClick={() => handleButtonClick('blast')}
+                className={styles.toolsButton}
+              >
+                <BlastIcon />
+              </Link>
+            </div>
+            <div className={styles.toolsListItem}>
+              <Link
+                to="/vep"
+                onClick={() => handleButtonClick('vep')}
+                className={styles.toolsButton}
+              >
+                <VepIcon />
+              </Link>
             </div>
           </div>
         </div>

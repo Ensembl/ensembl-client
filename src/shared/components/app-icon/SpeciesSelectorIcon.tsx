@@ -20,8 +20,16 @@ import SVGIcon from 'static/icons/icon_launchbar_species_selector.svg';
 
 import styles from './AppIcon.module.css';
 
-const SpeciesSelectorIcon = () => {
-  const elementClasses = classNames(styles.appIcon, styles.speciesSelector);
+type Props = {
+  className?: string;
+};
+
+const SpeciesSelectorIcon = (props: Props) => {
+  const elementClasses = classNames(
+    styles.appIcon,
+    styles.speciesSelector,
+    props.className
+  );
 
   return (
     <div className={elementClasses}>

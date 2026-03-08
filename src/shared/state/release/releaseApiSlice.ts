@@ -17,7 +17,7 @@
 import config from 'config';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
-import type { Release } from './releaseTypes';
+import type { Release, GenomeCounts } from './releaseTypes';
 
 const releaseApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -26,8 +26,14 @@ const releaseApiSlice = restApiSlice.injectEndpoints({
       query: () => ({
         url: `${config.metadataApiBaseUrl}/releases`
       })
+    }),
+    genomeCounts: builder.query<GenomeCounts, void>({
+      query: () => ({
+        url: `${config.metadataApiBaseUrl}/genome_counts`
+      }),
+      keepUnusedDataFor: 60 * 60 // 1 hour
     })
   })
 });
 
-export const { useReleasesQuery } = releaseApiSlice;
+export const { useReleasesQuery, useGenomeCountsQuery } = releaseApiSlice;
