@@ -7,22 +7,31 @@
 
 .searchPanel {
   display: grid;
-  grid-template-columns: max-content 1fr;
+  grid-template-columns: minmax(590px, 2fr) 1fr;
   align-items: start;
   height: 270px;
   padding-left: var(--global-padding-left);
   padding-right: var(--standard-gutter);
   background-color: var(--color-light-grey);
+  padding-right: clamp(var(--standard-gutter), 5vw, 260px);
 }
 
+/* to push the  */
 @media (width >= 1400px) {
   .searchPanel {
     padding-right: 260px;
   }
 }
 
+@media (width <= 1060px) {
+  .searchPanel {
+    grid-template-columns: 500px 1fr;
+  }
+}
+
 .speciesSearchFieldWrapper {
   padding-top: 38px;
+  container-type: inline-size;
 }
 
 .genomeCounts {

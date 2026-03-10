@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { useGenomeCountsQuery } from 'src/shared/state/release/releaseApiSlice';
 
@@ -82,12 +83,12 @@ const GenomeCountsFull = (props: PropsWithData) => {
   return (
     <div className={containerClasses}>
       <SpeciesSelectorIcon className={styles.icon} />
-      <div className={styles.countTotal}>{props.data.total}</div>
+      <div className={styles.countTotal}>{formatNumber(props.data.total)}</div>
       <div className={styles.label}>genomes now available</div>
 
       {props.data.counts.map(({ label, count }) => (
         <Fragment key={label}>
-          <div className={styles.count}>{count}</div>
+          <div className={styles.count}>{formatNumber(count)}</div>
           <div className={styles.label}>{label}</div>
         </Fragment>
       ))}
