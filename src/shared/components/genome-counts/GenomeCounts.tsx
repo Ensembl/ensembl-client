@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -54,10 +55,15 @@ const GenomeCounts = (props: Props) => {
 };
 
 const GenomeCountsCompact = (props: PropsWithData) => {
+  const containerClasses = classNames(
+    styles.container,
+    styles.containerCompact,
+    props.className
+  );
   return (
-    <div className={classNames(styles.container, props.className)}>
+    <div className={containerClasses}>
       <SpeciesSelectorIcon className={styles.icon} />
-      <div className={styles.count}>{props.data.total}</div>
+      <div className={styles.countTotal}>{props.data.total}</div>
       <div className={styles.label}>genomes now available</div>
       <Link to={urlFor.speciesSelector()} className={styles.link}>
         Find a genome
@@ -67,7 +73,26 @@ const GenomeCountsCompact = (props: PropsWithData) => {
 };
 
 const GenomeCountsFull = (props: PropsWithData) => {
-  return 'Full' + props.className;
+  const containerClasses = classNames(
+    styles.container,
+    styles.containerFull,
+    props.className
+  );
+
+  return (
+    <div className={containerClasses}>
+      <SpeciesSelectorIcon className={styles.icon} />
+      <div className={styles.countTotal}>{props.data.total}</div>
+      <div className={styles.label}>genomes now available</div>
+
+      {props.data.counts.map(({ label, count }) => (
+        <Fragment key={label}>
+          <div className={styles.count}>{count}</div>
+          <div className={styles.label}>{label}</div>
+        </Fragment>
+      ))}
+    </div>
+  );
 };
 
 export default GenomeCounts;

@@ -1,31 +1,68 @@
 .container {
   --app-icon-bg-color: var(--color-black);
   display: grid;
-  grid-template-areas:
-    "icon count label"
-    ".    .     link";
   column-gap: 12px;
   align-items: center;
   background-color: var(--color-white);
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
-  padding: 0 20px 20px 20px;
+  padding: 0 20px 20px;
+  white-space: nowrap;
 }
 
 .icon {
-  grid-area: icon;
   margin-right: 8px;
 }
 
-.count {
-  grid-area: count;
+.countTotal {
   font-size: 24px;
 }
 
-.label {
-  grid-area: label;
+.countTotal, .count {
+  font-weight: var(--font-weight-bold);
+  text-align: right;
 }
 
-.link {
-  grid-area: link;
+
+.containerCompact {
+  grid-template-areas:
+    "icon count label"
+    ".    .     link";
+
+  .icon {
+    grid-area: icon;
+  }
+  
+  .countTotal {
+    grid-area: count;
+  }
+
+  .label {
+    grid-area: label;
+  }
+
+  .link {
+    grid-area: link;
+  }
 }
+
+.containerFull {
+  grid-template-columns: [icon] auto [count] auto [label] auto;
+  row-gap: 6px;
+
+  .count {
+    grid-column: count;
+  }
+
+  .label {
+    grid-column: label;
+  }
+  
+  /* elements of the count and label columns starting from 2nd row */
+  .count:nth-child(n+4), .label:nth-child(n+4) {
+    color: var(--color-dark-grey);
+  }
+}
+
+
+

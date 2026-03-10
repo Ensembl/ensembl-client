@@ -6,10 +6,27 @@
 }
 
 .searchPanel {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  align-items: start;
   height: 270px;
   padding-left: var(--global-padding-left);
-  padding-top: 38px;
+  padding-right: var(--standard-gutter);
   background-color: var(--color-light-grey);
+}
+
+@media (width >= 1400px) {
+  .searchPanel {
+    padding-right: 260px;
+  }
+}
+
+.speciesSearchFieldWrapper {
+  padding-top: 38px;
+}
+
+.genomeCounts {
+  justify-self: end;
 }
 
 .popularSpecies {

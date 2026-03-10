@@ -26,7 +26,7 @@
 
 @media (width >= 1800px) {
   .mainTopMiddle {
-    width: 810px; /* three times 270px; see the appList class */
+    width: 810px; /* three times 270px (a width of a column in the appList class) */
   }
 }
 
@@ -50,13 +50,6 @@
   justify-content: space-between;
   column-gap: var(--standard-gutter);
   padding-right: var(--standard-gutter);
-  /* grid-area: top-right; */
-  /* position: absolute; */
-  /* top: 2px; */
-  /* right: var(--standard-gutter); */
-  /* display: grid; */
-  /* grid-template-columns: repeat(2, auto); */
-  /* align-items: start; */
 }
 
 @media (width < 1800px) {
