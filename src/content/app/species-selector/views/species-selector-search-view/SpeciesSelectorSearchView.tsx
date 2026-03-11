@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { type FetchBaseQueryError } from '@reduxjs/toolkit/query';
@@ -67,8 +67,7 @@ const SpeciesSelectorSearchView = () => {
   const featureQueries = useAppSelector(getFeatureQueries);
   const committedSpecies = useAppSelector(getCommittedSpecies);
 
-  const initialMode = getFeatureSearchModeByLocation(location.pathname);
-  const [activeSearchMode, setActiveSearchMode] = useState<string>(initialMode);
+  const activeSearchMode = getFeatureSearchModeByLocation(location.pathname);
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
@@ -80,33 +79,29 @@ const SpeciesSelectorSearchView = () => {
   } = variantSearchResults;
 
   const searchModes = [...getFeatureSearchModes()];
-  const genomeIds = committedSpecies.map(({ genome_id }) => genome_id);
+  const genomeIds = useMemo(
+    () => committedSpecies.map(({ genome_id }) => genome_id),
+    [committedSpecies]
+  );
 
-  const query = featureQueries[activeSearchMode as FeatureSearchMode];
   const queryFromParams = searchParams.get('query') || '';
   const isGeneSearchMode = activeSearchMode === 'gene';
   const isVariantSearchMode = activeSearchMode === 'variant';
 
   useEffect(() => {
-    // load from url only on first render or refresh
-    if (queryFromParams) {
-      if (isGeneSearchMode) {
-        dispatch(setGeneQuery(queryFromParams));
-      } else if (isVariantSearchMode) {
-        dispatch(setVariantQuery(queryFromParams));
-      }
+    if (isGeneSearchMode) {
+      dispatch(setGeneQuery(queryFromParams));
+    } else if (isVariantSearchMode) {
+      dispatch(setVariantQuery(queryFromParams));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
-  useEffect(() => {
-    if (!query) {
+    if (!queryFromParams) {
       return;
     }
 
     const searchParams = {
       genome_ids: genomeIds,
-      query: query,
+      query: queryFromParams,
       page: 1,
       per_page: 50
     };
@@ -118,39 +113,37 @@ const SpeciesSelectorSearchView = () => {
     if (isVariantSearchMode) {
       triggerVariantSearch(searchParams);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  }, [
+    queryFromParams,
+    dispatch,
+    isGeneSearchMode,
+    isVariantSearchMode,
+    genomeIds,
+    triggerGeneSearch,
+    triggerVariantSearch
+  ]);
 
   const onClose = () => {
     navigate(-1);
   };
 
   const onFeatureSearchSubmit = (input: string) => {
-    const isEmpty = input.trim() === '';
+    searchParams.set('query', input);
+    setSearchParams(searchParams, { replace: true });
+  };
 
+  const onSearchClear = () => {
     if (isGeneSearchMode) {
-      dispatch(setGeneQuery(input));
-      if (isEmpty) {
-        geneSearchResults.reset();
-      }
+      geneSearchResults.reset();
     } else if (isVariantSearchMode) {
-      dispatch(setVariantQuery(input));
-      if (isEmpty) {
-        variantSearchResults.reset();
-      }
+      variantSearchResults.reset();
     }
-
-    if (input) {
-      searchParams.set('query', input);
-    } else {
-      searchParams.delete('query');
-    }
+    searchParams.delete('query');
     setSearchParams(searchParams, { replace: true });
   };
 
   const onSearchModeChange = (searchMode: string) => {
     if (isFeatureSearchMode(searchMode)) {
-      setActiveSearchMode(searchMode as FeatureSearchMode);
       const currentQuery = featureQueries[searchMode as FeatureSearchMode];
       navigate(
         urlFor.speciesSelectorFeatureSearch(
@@ -174,9 +167,9 @@ const SpeciesSelectorSearchView = () => {
           <>
             <FeatureSearchForm
               activeFeatureSearchMode={activeSearchMode as FeatureSearchMode}
-              query={query}
+              query={queryFromParams}
               onSearchSubmit={onFeatureSearchSubmit}
-              onClear={() => onFeatureSearchSubmit('')}
+              onClear={onSearchClear}
             />
             <SearchScope />
           </>
