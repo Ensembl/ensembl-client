@@ -54,6 +54,18 @@ export const isMissingResourceError = (
   return errorStatus === 404;
 };
 
+export const getErrorMessage = (
+  error: FetchBaseQueryError | SerializedError | undefined
+) => {
+  if (error && 'data' in error && typeof error.data === 'object') {
+    const { detail } = error.data as { detail?: string };
+    if (detail) {
+      return detail;
+    }
+  }
+  return 'An unexpected error occurred..';
+};
+
 export default createApi({
   reducerPath: 'restApi',
   baseQuery: staggeredBaseQueryWithBailout,

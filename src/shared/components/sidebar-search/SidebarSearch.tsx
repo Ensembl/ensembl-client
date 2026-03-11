@@ -27,12 +27,12 @@ import {
   useLazySearchGenesQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
+import {
+  isMissingResourceError,
+  getErrorMessage
+} from 'src/shared/state/api-slices/restSlice';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import {
-  getErrorMessage,
-  isNotFoundError
-} from 'src/shared/helpers/fetchHelper';
 import {
   getFeatureSearchLabelsByMode,
   getFeatureSearchModes,
@@ -257,7 +257,7 @@ const SidebarSearch = (props: Props) => {
     }
 
     if (searchMode === 'variant') {
-      if (isNotFoundError(variantSearchError)) {
+      if (isMissingResourceError(variantSearchError)) {
         return (
           <span className={styles.warning}>
             {getErrorMessage(variantSearchError)}

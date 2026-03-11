@@ -18,10 +18,7 @@ import { useEffect, useState } from 'react';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-import {
-  getErrorMessage,
-  isNotFoundError
-} from 'src/shared/helpers/fetchHelper';
+
 import {
   getFeatureSearchLabelsByMode,
   getFeatureSearchModes,
@@ -40,6 +37,10 @@ import {
   updateGeneQuery,
   updateVariantQuery
 } from 'src/shared/state/feature-search/featureSearchSlice';
+import {
+  isMissingResourceError,
+  getErrorMessage
+} from 'src/shared/state/api-slices/restSlice';
 
 import { CircleLoader } from 'src/shared/components/loader';
 
@@ -56,12 +57,12 @@ export type Props = {
   app: FeatureSearchAppName;
   genomeId: string;
   genomeIdForUrl: string; // this should be a temporary measure; it should be returned by search api
-  trackInterstitialPageSearch?: (query: string) => void;
+  onSearchSubmit?: (query: string) => void;
   onMatchNavigation?: () => void; // currently, there are no requirements for this callback to receive any data
 };
 
 const InterstitialSearch = (props: Props) => {
-  const { app, genomeId, genomeIdForUrl, trackInterstitialPageSearch } = props;
+  const { app, genomeId, genomeIdForUrl, onSearchSubmit } = props;
   const dispatch = useAppDispatch();
 
   const initialMode = 'gene';
@@ -126,8 +127,8 @@ const InterstitialSearch = (props: Props) => {
       }
     }
 
-    if (trackInterstitialPageSearch) {
-      trackInterstitialPageSearch(input);
+    if (onSearchSubmit) {
+      onSearchSubmit(input);
     }
   };
 
@@ -164,7 +165,7 @@ const InterstitialSearch = (props: Props) => {
       onMatchNavigation={props.onMatchNavigation}
     />
   ) : isVariantSearchMode ? (
-    isNotFoundError(variantSearchError) ? (
+    isMissingResourceError(variantSearchError) ? (
       <span className={styles.warning}>
         {getErrorMessage(variantSearchError)}
       </span>
@@ -215,7 +216,7 @@ const SearchTabs = (props: {
     props;
 
   return (
-    <div className={styles.tab}>
+    <div className={styles.tabs}>
       {featureSearchModes.map((searchMode) => {
         const searchModeLabels = getFeatureSearchLabelsByMode(searchMode);
         return searchMode === activeFeatureSearchMode ? (

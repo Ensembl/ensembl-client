@@ -49,17 +49,6 @@ describe('<InterstitialSearch />', () => {
   });
 
   describe('initial rendering', () => {
-    it('renders correctly before the request', () => {
-      const { container } = render(
-        <Provider store={getStore()}>
-          <InterstitialSearch {...defaultProps} />
-        </Provider>
-      );
-
-      const interstitialSearch = container.querySelector('.interstitialSearch');
-      expect(interstitialSearch).toBeTruthy();
-    });
-
     it('renders with interstitial mode', () => {
       const { container } = render(
         <Provider store={getStore()}>
@@ -71,7 +60,7 @@ describe('<InterstitialSearch />', () => {
       expect(interstitialSearch).toBeTruthy();
     });
 
-    it('does not show results initially', () => {
+    it('does not show search matches initially', () => {
       const { container } = render(
         <Provider store={getStore()}>
           <InterstitialSearch {...defaultProps} />

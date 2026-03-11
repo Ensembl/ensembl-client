@@ -23,10 +23,7 @@ import { type SerializedError } from '@reduxjs/toolkit';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import {
-  getErrorMessage,
-  isNotFoundError
-} from 'src/shared/helpers/fetchHelper';
+
 import {
   getFeatureSearchModeByLocation,
   getFeatureSearchLabelsByMode,
@@ -46,6 +43,10 @@ import {
   setVariantQuery
 } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSlice';
 import { getFeatureQueries } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSelectors';
+import {
+  isMissingResourceError,
+  getErrorMessage
+} from 'src/shared/state/api-slices/restSlice';
 
 import ModalView from 'src/shared/components/modal-view/ModalView';
 import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
@@ -208,7 +209,7 @@ const SearchTabs = (props: {
   const { activeFeatureSearchMode, onSearchModeChange, searchModes } = props;
 
   return (
-    <div className={styles.tab}>
+    <div className={styles.tabs}>
       {searchModes.map((searchMode) => {
         if (isFeatureSearchMode(searchMode)) {
           const searchModeLabels = getFeatureSearchLabelsByMode(
@@ -267,7 +268,7 @@ const VariantFeatureSearchResults = (props: {
 
   return (
     <div className={styles.resultsWrapper}>
-      {isNotFoundError(variantSearchError) ? (
+      {isMissingResourceError(variantSearchError) ? (
         <span className={styles.warning}>
           {getErrorMessage(variantSearchError)}
         </span>
