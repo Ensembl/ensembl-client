@@ -64,7 +64,7 @@ const GenomeCountsCompact = (props: PropsWithData) => {
   return (
     <div className={containerClasses}>
       <SpeciesSelectorIcon className={styles.icon} />
-      <div className={styles.countTotal}>{props.data.total}</div>
+      <div className={styles.countTotal}>{formatNumber(props.data.total)}</div>
       <div className={styles.label}>genomes now available</div>
       <Link to={urlFor.speciesSelector()} className={styles.link}>
         Find a genome
