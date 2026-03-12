@@ -45,8 +45,8 @@ import {
 import { CircleLoader } from 'src/shared/components/loader';
 
 import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
-import GeneSearchMatch from 'src/shared/components/search-match/GeneSearchMatch';
-import VariantSearchMatch from 'src/shared/components/search-match/VariantSearchMatch';
+import GeneSearchMatches from 'src/shared/components/search-match/GeneSearchMatches';
+import VariantSearchMatches from 'src/shared/components/search-match/VariantSearchMatches';
 import TextButton from '../text-button/TextButton';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
@@ -157,7 +157,7 @@ const InterstitialSearch = (props: Props) => {
   ) : undefined;
 
   const matchesResultContent = isGeneSearchResultsDefined ? (
-    <GeneSearchMatch
+    <GeneSearchMatches
       results={currentGeneSearchResults}
       app={app}
       mode="interstitial"
@@ -170,7 +170,7 @@ const InterstitialSearch = (props: Props) => {
         {getErrorMessage(variantSearchError)}
       </span>
     ) : isVariantSearchResultsDefined ? (
-      <VariantSearchMatch
+      <VariantSearchMatches
         results={currentVariantSearchResults}
         app={app}
         mode="interstitial"

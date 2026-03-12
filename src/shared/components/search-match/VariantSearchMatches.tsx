@@ -43,18 +43,18 @@ import type {
 import styles from './SearchMatch.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
-type VariantSearchMatchProps = {
+type VariantSearchMatchesProps = {
   app: FeatureSearchAppName;
   mode: FeatureSearchMatchPosition;
-  results?: SearchResults;
+  results: SearchResults | undefined;
   genomeIdForUrl?: string;
   onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
 };
 
-const VariantSearchMatch = (props: VariantSearchMatchProps) => {
+const VariantSearchMatches = (props: VariantSearchMatchesProps) => {
   const { results, app, mode, genomeIdForUrl, onMatchNavigation } = props;
   if (!results) {
-    return;
+    return null;
   }
 
   const { matches } = results;
@@ -193,4 +193,4 @@ const Match = (props: MatchProps) => {
   );
 };
 
-export default VariantSearchMatch;
+export default VariantSearchMatches;

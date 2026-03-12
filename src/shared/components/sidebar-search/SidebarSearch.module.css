@@ -1,6 +1,9 @@
 .sections {
   border: 1px solid var(--color-medium-light-grey);
-  border-radius: 2px;
+}
+
+.section {
+  margin: 0;
 }
 
 /* skip first */

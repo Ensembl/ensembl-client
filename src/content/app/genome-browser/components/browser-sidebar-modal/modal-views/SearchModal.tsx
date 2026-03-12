@@ -40,7 +40,7 @@ const SearchModal = () => {
       app="genomeBrowser"
       genomeId={activeGenomeId}
       genomeIdForUrl={genomeIdForUrl as string}
-      trackSidebarSearch={trackSidebarSearch}
+      onSearchSubmit={trackSidebarSearch}
       onMatchNavigation={onSearchMatchNavigation}
     />
   ) : null;

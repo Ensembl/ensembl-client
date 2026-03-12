@@ -52,7 +52,9 @@
   }
 
   .activeTab {
-    color: black;
+    color: var(--color-black);
+    
+    --text-button-disabled-color: var(--color-black);
   }
 
 }
