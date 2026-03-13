@@ -50,17 +50,13 @@ import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.modul
 type GeneSearchMatchesProps = {
   app: FeatureSearchAppName;
   mode: FeatureSearchMatchPosition;
-  results: SearchResults | undefined;
+  results: SearchResults;
   genomeIdForUrl?: string; // TODO: remove this when backend starts including this tag in the response
   onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
 };
 
 const GeneSearchMatches = (props: GeneSearchMatchesProps) => {
   const { results, app, mode, genomeIdForUrl, onMatchNavigation } = props;
-  if (!results) {
-    return null;
-  }
-
   const { matches } = results;
 
   return (

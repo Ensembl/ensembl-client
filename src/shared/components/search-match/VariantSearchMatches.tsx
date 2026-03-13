@@ -46,17 +46,13 @@ import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.modul
 type VariantSearchMatchesProps = {
   app: FeatureSearchAppName;
   mode: FeatureSearchMatchPosition;
-  results: SearchResults | undefined;
+  results: SearchResults;
   genomeIdForUrl?: string;
   onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
 };
 
 const VariantSearchMatches = (props: VariantSearchMatchesProps) => {
   const { results, app, mode, genomeIdForUrl, onMatchNavigation } = props;
-  if (!results) {
-    return null;
-  }
-
   const { matches } = results;
 
   return (
