@@ -63,7 +63,7 @@ export const getErrorMessage = (
       return detail;
     }
   }
-  return 'An unexpected error occurred..';
+  return 'An unexpected error occurred.';
 };
 
 export default createApi({
