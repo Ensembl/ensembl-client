@@ -44,7 +44,7 @@
   margin-top: 15px;
 }
 
-.topRight {
+.mainTopRight {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -53,7 +53,7 @@
 }
 
 @media (width < 1800px) {
-  .topRight {
+  .mainTopRight {
     justify-content: flex-end;
   }
 }
@@ -63,7 +63,7 @@
 }
 
 @media (width < 1400px) {
-  .topRight {
+  .mainTopRight {
     display: grid;
     grid-template-rows: repeat(2, auto);
   }
@@ -82,11 +82,6 @@
   color: var(--color-ice-blue);
   font-weight: var(--font-weight-bold);
   white-space: nowrap;
-}
-
-.topRight .text {
-  font-weight: var(--font-weight-bold);
-  align-self: center;
 }
 
 .helpIcon {

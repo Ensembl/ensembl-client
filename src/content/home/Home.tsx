@@ -55,7 +55,7 @@ const Home = () => {
             <div className={styles.text}>Genome data & annotation</div>
           </div>
 
-          <div className={styles.topRight}>
+          <div className={styles.mainTopRight}>
             <GenomeCounts className={styles.genomeCounts} variety="compact" />
             <div className={styles.topRightButtons}>
               <HelpPopupButton
