@@ -20,7 +20,7 @@ import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityVie
 
 import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
-import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
+import SidebarSearch from 'src/shared/components/sidebar-search/SidebarSearch';
 
 const EntityViewerSidebarSearch = () => {
   const { activeGenomeId, genomeIdForUrl } = useEntityViewerIds();
@@ -31,11 +31,10 @@ const EntityViewerSidebarSearch = () => {
   };
 
   return activeGenomeId ? (
-    <InAppSearch
+    <SidebarSearch
       app="entityViewer"
       genomeId={activeGenomeId}
       genomeIdForUrl={genomeIdForUrl as string}
-      mode="sidebar"
       onMatchNavigation={onSearchMatchNavigation}
     />
   ) : null;

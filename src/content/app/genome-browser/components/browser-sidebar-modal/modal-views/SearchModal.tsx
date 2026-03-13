@@ -23,7 +23,7 @@ import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/b
 
 import { closeBrowserSidebarModal } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
-import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
+import SidebarSearch from 'src/shared/components/sidebar-search/SidebarSearch';
 
 const SearchModal = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
@@ -36,11 +36,10 @@ const SearchModal = () => {
   };
 
   return activeGenomeId ? (
-    <InAppSearch
+    <SidebarSearch
       app="genomeBrowser"
       genomeId={activeGenomeId}
       genomeIdForUrl={genomeIdForUrl as string}
-      mode="sidebar"
       onSearchSubmit={trackSidebarSearch}
       onMatchNavigation={onSearchMatchNavigation}
     />

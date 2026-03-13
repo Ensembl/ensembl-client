@@ -1,0 +1,99 @@
+.sections {
+  border: 1px solid var(--color-medium-light-grey);
+}
+
+.section {
+  margin: 0;
+}
+
+/* skip first */
+.section + .section {
+  border-top: 1px solid var(--color-medium-light-grey);
+}
+
+.sectionHead {
+  background-color: white;
+  padding: 17px;
+}
+
+.sectionHead[aria-expanded='true'] {
+  color: var(--color-black);
+}
+
+.sectionBody {
+  background: var(--color-light-grey);
+  padding-top: 8px;
+  padding-bottom: 17px;
+}
+
+.helpSectionBody {
+  background: var(--color-white);
+}
+
+.resultsSection {
+  margin-top: 12px;
+}
+
+.matchesSection {
+  margin-top: 12px;
+}
+
+.warning {
+  color: var(--color-red);
+}
+
+.searchFormSidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.sidebarBottomRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submitSidebar {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.pageRange {
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+}
+
+.pageDetails {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 4px;
+  min-width: 0;
+}
+
+.totalHits {
+  font-size: 12px;
+}
+
+.resultsText {
+  font-weight: var(--font-weight-light);
+}
+
+.pageNavButton {
+  --image-button-default-svg-color: var(--color-blue);
+  --image-button-disabled-svg-color: var(--color-grey);
+  width: var(--browser-nav-button-size, 22px);
+  height: var(--browser-nav-button-size, 22px);
+}
+
+.pageNavNextButton {
+  margin-left: 10px;
+}
+
+.bold {
+  font-weight: var(--font-weight-bold);
+}
