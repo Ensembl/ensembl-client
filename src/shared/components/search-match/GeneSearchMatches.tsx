@@ -131,7 +131,7 @@ const Match = (props: MatchProps) => {
 
   const searchMatchAnchorClass = classNames(
     styles.searchMatchAnchor,
-    styles[`searchMatchAnchor${mode}`]
+    styles[`${mode}SearchMatchAnchor`]
   );
 
   return (

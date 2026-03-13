@@ -19,11 +19,11 @@
   height: 100%;
 }
 
-.searchMatchAnchorInterstitial {
-  right: -1.5ch;
+.interstitialSearchMatchAnchor {
+  right: 0ch;
 }
 
-.searchMatchAnchorSidebar {
+.sidebarSearchMatchAnchor {
   left: 3ch;
 }
 
