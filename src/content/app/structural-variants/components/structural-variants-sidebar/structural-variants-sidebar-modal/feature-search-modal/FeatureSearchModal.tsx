@@ -32,7 +32,6 @@ import { CircleLoader } from 'src/shared/components/loader';
 import type { GeneSearchMatch } from 'src/shared/types/search-api/search-match';
 
 import styles from './FeatureSearchModal.module.css';
-import sharedStyles from 'src/shared/components/interstitial-search/InterstitialSearch.module.css';
 
 const FeatureSearchModal = () => {
   const [trigger, { isFetching, currentData, reset }] =
@@ -70,10 +69,8 @@ const FeatureSearchModal = () => {
         onClear={reset}
         resultsInfo={resultsCount}
       />
-      <div className={sharedStyles.resultsContainerSidebar}>
-        {isFetching && (
-          <CircleLoader className={sharedStyles.spinner} size="small" />
-        )}
+      <div className={styles.results}>
+        {isFetching && <CircleLoader size="small" />}
         {currentData && (
           <SearchMatches
             referenceGenomeId={referenceGenome!.genome_id}

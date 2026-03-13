@@ -9,6 +9,37 @@
   margin-left: 20px;
 }
 
+.searchForm {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 15px;
+  gap: 15px;
+}
+
+.searchFormBottomRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.searchFormSubmit {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.resultsInfo {
+  flex: 0 0 auto;
+  margin-left: 20px;
+}
+
+.results {
+  min-height: 0;
+  overflow-y: auto;
+  padding-left: 20px;
+  margin-top: 20px;
+}
+
 .resultsCount {
   font-weight: var(--font-weight-bold);
 }

@@ -19,14 +19,6 @@
     align-items: flex-start;
   }
 
-  .resultsContainerSidebar {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding-left: 20px;
-    margin-top: 20px;
-  }
-
   .resultsContainer {
     flex: 1;
     padding-left: 20px;
