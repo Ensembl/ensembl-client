@@ -101,7 +101,7 @@ const SidebarSearch = (props: Props) => {
   ) => {
     const searchParams = {
       genome_ids: [genomeId],
-      query,
+      query: query.trim(),
       page: page,
       per_page: per_page
     };

@@ -107,8 +107,14 @@ const InterstitialSearch = (props: Props) => {
     if (isVariantSearchMode) {
       triggerVariantSearch(searchParams);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  }, [
+    query,
+    isGeneSearchMode,
+    isVariantSearchMode,
+    genomeId,
+    triggerGeneSearch,
+    triggerVariantSearch
+  ]);
 
   const onFeatureSearchSubmit = (input: string) => {
     const isEmpty = input.trim() === '';

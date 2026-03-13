@@ -128,7 +128,7 @@ const SpeciesSelectorSearchView = () => {
   };
 
   const onFeatureSearchSubmit = (input: string) => {
-    searchParams.set('query', input);
+    searchParams.set('query', input.trim());
     setSearchParams(searchParams, { replace: true });
   };
 
