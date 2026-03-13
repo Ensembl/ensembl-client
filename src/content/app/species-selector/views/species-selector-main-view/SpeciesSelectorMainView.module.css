@@ -7,20 +7,12 @@
 
 .searchPanel {
   display: grid;
-  grid-template-columns: minmax(590px, 2fr) 1fr;
+  grid-template-columns: 600px 1fr;
   align-items: start;
   height: 270px;
   padding-left: var(--global-padding-left);
   padding-right: var(--standard-gutter);
   background-color: var(--color-light-grey);
-  padding-right: clamp(var(--standard-gutter), 5vw, 260px);
-}
-
-/* to push the  */
-@media (width >= 1400px) {
-  .searchPanel {
-    padding-right: 260px;
-  }
 }
 
 @media (width <= 1060px) {
@@ -37,6 +29,14 @@
 .genomeCounts {
   justify-self: end;
 }
+
+@media (width > 1300px) {
+  .genomeCounts {
+    justify-self: start;
+    margin-left: 268px;
+  }
+}
+
 
 .popularSpecies {
   height: 100%;
