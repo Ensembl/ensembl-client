@@ -21,6 +21,7 @@ import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
+import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
 import PopularSpeciesList from 'src/content/app/species-selector/components/popular-species-list/PopularSpeciesList';
 
 import styles from './SpeciesSelectorMainView.module.css';
@@ -41,7 +42,10 @@ const SpeciesSelectorMainView = () => {
   return (
     <div className={styles.main}>
       <div className={styles.searchPanel}>
-        <SpeciesSearchField onSearchSubmit={onSearchSubmit} />
+        <div className={styles.speciesSearchFieldWrapper}>
+          <SpeciesSearchField onSearchSubmit={onSearchSubmit} />
+        </div>
+        <GenomeCounts variety="full" className={styles.genomeCounts} />
       </div>
       <div className={styles.popularSpecies}>
         <PopularSpeciesList />

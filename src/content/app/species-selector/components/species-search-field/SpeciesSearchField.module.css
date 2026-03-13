@@ -1,9 +1,10 @@
 .grid {
+  --max-input-width: 486px;
   display: grid;
   grid-template-areas:
     'label .'
     'input controls';
-  grid-template-columns: 486px max-content;
+  grid-template-columns: minmax(0, var(--max-input-width)) max-content;
   row-gap: 10px;
   column-gap: 30px;
 }
@@ -14,6 +15,16 @@
     'input controls close';
 }
 
+@container (width < 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'label'
+      'input'
+      'controls';
+  }
+}
+
 .label {
   grid-area: label;
   margin-left: 20px;
@@ -21,11 +32,13 @@
 
 .input {
   grid-area: input;
+  max-width: var(--max-input-width);
 }
 
 .controls {
   grid-area: controls;
   align-self: center;
+  justify-self: start;
   margin-left: 15px;
 }
 

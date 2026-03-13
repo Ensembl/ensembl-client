@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import classNames from 'classnames';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import useHeaderAnalytics from '../hooks/useHeaderAnalytics';
 
 import {
@@ -36,13 +38,18 @@ import Logotype from 'static/img/brand/logotype.svg';
 
 import styles from './Launchbar.module.css';
 
-export const getCategoryClass = (separator: boolean): string => {
-  return separator ? 'border' : '';
-};
-
 const Launchbar = () => {
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  const withBottomBorder = pathname !== urlFor.home();
+
+  const componentClasses = classNames(styles.launchbar, {
+    [styles.launchbarWithBottomBorder]: withBottomBorder
+  });
+
   return (
-    <div className={styles.launchbar}>
+    <div className={componentClasses}>
       <div className={styles.categoriesWrapper}>
         <div className={styles.categories}>
           <div className={styles.category}>
