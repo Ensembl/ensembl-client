@@ -24,7 +24,8 @@ import {
   getFeatureSearchModes,
   type FeatureSearchAppName,
   type FeatureSearchMode,
-  type FeatureSearchModesType
+  type FeatureSearchModesType,
+  type FeatureSearchMatchPosition
 } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -62,6 +63,7 @@ export type Props = {
 };
 
 const InterstitialSearch = (props: Props) => {
+  const searchPosition: FeatureSearchMatchPosition = 'interstitial';
   const { app, genomeId, genomeIdForUrl, onSearchSubmit } = props;
   const dispatch = useAppDispatch();
 
@@ -70,7 +72,7 @@ const InterstitialSearch = (props: Props) => {
     useState<FeatureSearchMode>(initialMode);
 
   const featureSearchQueries = useAppSelector((state) =>
-    getFeatureSearchQueries(state, app, genomeId)
+    getFeatureSearchQueries(state, app, genomeId, searchPosition)
   );
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
@@ -120,13 +122,27 @@ const InterstitialSearch = (props: Props) => {
     const isEmpty = input.trim() === '';
 
     if (isGeneSearchMode) {
-      dispatch(updateGeneQuery({ app, genomeId, query: input }));
+      dispatch(
+        updateGeneQuery({
+          app,
+          genomeId,
+          position: searchPosition,
+          query: input
+        })
+      );
 
       if (isEmpty) {
         geneSearchResults.reset();
       }
     } else if (isVariantSearchMode) {
-      dispatch(updateVariantQuery({ app, genomeId, query: input }));
+      dispatch(
+        updateVariantQuery({
+          app,
+          genomeId,
+          position: searchPosition,
+          query: input
+        })
+      );
 
       if (isEmpty) {
         variantSearchResults.reset();

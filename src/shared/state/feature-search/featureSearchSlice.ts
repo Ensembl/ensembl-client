@@ -15,27 +15,37 @@
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { FeatureSearchAppName } from 'src/shared/helpers/featureSearchHelpers';
+import {
+  featureSearchMatchPositions,
+  type FeatureSearchAppName,
+  type FeatureSearchMatchPosition
+} from 'src/shared/helpers/featureSearchHelpers';
 
-type StateForGenome = {
-  queries: {
-    gene: string;
-    variant: string;
-  };
+type Queries = {
+  gene: string;
+  variant: string;
 };
 
-// object with keys being genome ids and values being SearchResults
-type StateForApp = Record<string, StateForGenome>;
+// genomeId -> queries mapping
+type StateForPosition = Record<string, { queries: Queries }>;
 
+type StateForApp = Record<FeatureSearchMatchPosition, StateForPosition>;
+
+// app -> position -> genomeId -> queries mapping
 type State = Record<FeatureSearchAppName, StateForApp>;
 
+const getDefaultStateForApp = (): StateForApp => ({
+  sidebar: {},
+  interstitial: {}
+});
+
 const initialState: State = {
-  speciesHome: {},
-  genomeBrowser: {},
-  entityViewer: {}
+  speciesHome: getDefaultStateForApp(),
+  genomeBrowser: getDefaultStateForApp(),
+  entityViewer: getDefaultStateForApp()
 };
 
-const getDefaultStateForGenome = () => ({
+const getDefaultStateForPosition = () => ({
   queries: {
     gene: '',
     variant: ''
@@ -45,6 +55,7 @@ const getDefaultStateForGenome = () => ({
 type UpdateQueryPayload = {
   app: FeatureSearchAppName;
   genomeId: string;
+  position: FeatureSearchMatchPosition;
   query: string;
 };
 
@@ -59,25 +70,27 @@ const featureSearchSlice = createSlice({
   reducers: {
     updateGeneQuery(state, action: PayloadAction<UpdateQueryPayload>) {
       const {
-        payload: { app, genomeId, query }
+        payload: { app, genomeId, position, query }
       } = action;
-      if (!state[app][genomeId]) {
-        state[app][genomeId] = getDefaultStateForGenome();
+      if (!state[app][position][genomeId]) {
+        state[app][position][genomeId] = getDefaultStateForPosition();
       }
-      state[app][genomeId].queries.gene = query;
+      state[app][position][genomeId].queries.gene = query;
     },
     updateVariantQuery(state, action: PayloadAction<UpdateQueryPayload>) {
       const {
-        payload: { app, genomeId, query }
+        payload: { app, genomeId, position, query }
       } = action;
-      if (!state[app][genomeId]) {
-        state[app][genomeId] = getDefaultStateForGenome();
+      if (!state[app][position][genomeId]) {
+        state[app][position][genomeId] = getDefaultStateForPosition();
       }
-      state[app][genomeId].queries.variant = query;
+      state[app][position][genomeId].queries.variant = query;
     },
     clearSearch(state, action: PayloadAction<ClearSearchPayload>) {
       const { payload } = action;
-      delete state[payload.app][payload.genomeId];
+      for (const position of featureSearchMatchPositions) {
+        delete state[payload.app][position][payload.genomeId];
+      }
     }
   }
 });

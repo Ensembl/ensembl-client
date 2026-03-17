@@ -18,12 +18,20 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import type { RootState } from 'src/store';
 
-import type { FeatureSearchAppName } from 'src/shared/helpers/featureSearchHelpers';
+import type {
+  FeatureSearchAppName,
+  FeatureSearchMatchPosition
+} from 'src/shared/helpers/featureSearchHelpers';
 
 export const getFeatureSearchQueries = createSelector(
   [
-    (state: RootState, appName: FeatureSearchAppName, genomeId: string) => {
-      return state.featureSearch[appName][genomeId]?.queries;
+    (
+      state: RootState,
+      appName: FeatureSearchAppName,
+      genomeId: string,
+      position: FeatureSearchMatchPosition
+    ) => {
+      return state.featureSearch[appName][position][genomeId]?.queries;
     }
   ],
   (queries) => {

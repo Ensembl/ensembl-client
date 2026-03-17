@@ -37,7 +37,8 @@ import {
   getFeatureSearchLabelsByMode,
   getFeatureSearchModes,
   type FeatureSearchMode,
-  type FeatureSearchAppName
+  type FeatureSearchAppName,
+  type FeatureSearchMatchPosition
 } from 'src/shared/helpers/featureSearchHelpers';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -68,12 +69,13 @@ type Props = {
 };
 
 const SidebarSearch = (props: Props) => {
+  const searchPosition: FeatureSearchMatchPosition = 'sidebar';
   const { app, genomeId, genomeIdForUrl, onSearchSubmit, onMatchNavigation } =
     props;
   const dispatch = useAppDispatch();
   const searchModes = getFeatureSearchModes();
   const submittedQueries = useAppSelector((state) =>
-    getFeatureSearchQueries(state, app, genomeId)
+    getFeatureSearchQueries(state, app, genomeId, searchPosition)
   );
 
   const [searchInputs, setSearchInputs] = useState<
@@ -107,7 +109,9 @@ const SidebarSearch = (props: Props) => {
     };
 
     if (searchMode === 'gene') {
-      dispatch(updateGeneQuery({ app, genomeId, query }));
+      dispatch(
+        updateGeneQuery({ app, genomeId, position: searchPosition, query })
+      );
 
       if (!query.trim()) {
         geneSearchResults.reset();
@@ -119,7 +123,9 @@ const SidebarSearch = (props: Props) => {
     }
 
     if (searchMode === 'variant') {
-      dispatch(updateVariantQuery({ app, genomeId, query }));
+      dispatch(
+        updateVariantQuery({ app, genomeId, position: searchPosition, query })
+      );
 
       if (!query.trim()) {
         variantSearchResults.reset();

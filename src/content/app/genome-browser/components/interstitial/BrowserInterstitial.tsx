@@ -42,6 +42,7 @@ const BrowserInterstitial = () => {
     <div>
       <div className={styles.topPanel}>
         <InterstitialSearch
+          key={activeGenomeId}
           app="genomeBrowser"
           genomeId={activeGenomeId}
           genomeIdForUrl={genomeIdForUrl as string}

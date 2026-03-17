@@ -65,4 +65,7 @@ export type FeatureSearchAppName =
   | 'genomeBrowser'
   | 'entityViewer';
 
-export type FeatureSearchMatchPosition = 'sidebar' | 'interstitial';
+export const featureSearchMatchPositions = ['sidebar', 'interstitial'] as const;
+
+export type FeatureSearchMatchPosition =
+  (typeof featureSearchMatchPositions)[number];
