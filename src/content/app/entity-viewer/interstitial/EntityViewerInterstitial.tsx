@@ -38,7 +38,6 @@ const EntityViewerInterstitial = () => {
     <div>
       <div className={styles.topPanel}>
         <InterstitialSearch
-          key={activeGenomeId}
           app="entityViewer"
           genomeId={activeGenomeId}
           genomeIdForUrl={genomeIdForUrl as string}

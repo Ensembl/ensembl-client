@@ -37,7 +37,6 @@ const SearchModal = () => {
 
   return activeGenomeId ? (
     <SidebarSearch
-      key={activeGenomeId}
       app="genomeBrowser"
       genomeId={activeGenomeId}
       genomeIdForUrl={genomeIdForUrl as string}

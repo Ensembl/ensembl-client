@@ -32,7 +32,6 @@ const EntityViewerSidebarSearch = () => {
 
   return activeGenomeId ? (
     <SidebarSearch
-      key={activeGenomeId}
       app="entityViewer"
       genomeId={activeGenomeId}
       genomeIdForUrl={genomeIdForUrl as string}
