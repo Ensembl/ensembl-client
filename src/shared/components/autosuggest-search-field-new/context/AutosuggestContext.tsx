@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-import { createContext, useState, type ReactNode } from 'react';
+import { createContext, type ReactNode } from 'react';
 
 import useAutosuggestState from './autosuggestState';
-import { EventBus } from './eventBus';
 
 type Props = {
   children: ReactNode;
 };
 
-type UseAutosuggestStateReturnValue = ReturnType<typeof useAutosuggestState> & {
-  eventBus: EventBus;
-};
+type UseAutosuggestStateReturnValue = ReturnType<typeof useAutosuggestState>;
 
 type AutosuggestContextType = UseAutosuggestStateReturnValue;
 
@@ -35,15 +32,9 @@ export const AutosuggestContext = createContext<AutosuggestContextType | null>(
 
 const AutosuggestContextProvider = (props: Props) => {
   const stateAndMethods = useAutosuggestState();
-  const [eventBus] = useState(new EventBus());
-
-  const contextValue = {
-    ...stateAndMethods,
-    eventBus
-  };
 
   return (
-    <AutosuggestContext.Provider value={contextValue}>
+    <AutosuggestContext.Provider value={stateAndMethods}>
       {props.children}
     </AutosuggestContext.Provider>
   );
