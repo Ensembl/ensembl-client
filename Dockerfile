@@ -9,6 +9,7 @@ COPY ${SOURCE_DIR} /srv/ensembl-client/
 WORKDIR /srv/ensembl-client/
 
 RUN npm ci --loglevel warn && \
+    npx playwright install chromium --with-deps &&
     npm run test && \
     npm run build
 
