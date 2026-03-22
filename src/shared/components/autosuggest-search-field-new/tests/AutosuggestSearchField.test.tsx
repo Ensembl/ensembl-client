@@ -83,7 +83,7 @@ describe('<AutosuggestSearchField />', () => {
     it('renders the search field without suggestions', async () => {
       const screen = await render(<AutosuggestSearchField {...minimalProps} />);
 
-      const inputField = screen.getByRole('textbox');
+      const inputField = screen.getByRole('combobox');
       await expect.element(inputField).toBeVisible();
       expect((inputField.element() as HTMLInputElement).value).toBe(query);
     });
@@ -99,7 +99,7 @@ describe('<AutosuggestSearchField />', () => {
       const expectedNumberOfMatches =
         genomeGroupMatches.length + singleGenomeMatches.length;
 
-      const inputField = screen.getByRole('textbox');
+      const inputField = screen.getByRole('combobox');
       await expect.element(inputField).toBeVisible();
       expect((inputField.element() as HTMLInputElement).value).toBe(query);
       await expect
@@ -160,7 +160,7 @@ describe('<AutosuggestSearchField />', () => {
       )[suggestionIndex];
       const suggestedSearchData = allSuggestions[suggestionIndex];
 
-      const inputField = screen.getByRole('textbox');
+      const inputField = screen.getByRole('combobox');
       await inputField.click();
 
       for (let i = 0; i <= suggestionIndex; i++) {
@@ -180,7 +180,7 @@ describe('<AutosuggestSearchField />', () => {
     test('submitting search query via keyboard without selecting suggestion', async () => {
       const screen = await render(<AutosuggestSearchField {...props} />);
 
-      const inputField = screen.getByRole('textbox');
+      const inputField = screen.getByRole('combobox');
       await inputField.click();
       await userEvent.keyboard('{Enter}');
 
@@ -200,7 +200,7 @@ describe('<AutosuggestSearchField />', () => {
           </form>
         );
 
-        const inputField = screen.getByRole('textbox');
+        const inputField = screen.getByRole('combobox');
         await inputField.click();
         await userEvent.keyboard('{Enter}');
 
@@ -215,7 +215,7 @@ describe('<AutosuggestSearchField />', () => {
           </form>
         );
 
-        const inputField = screen.getByRole('textbox');
+        const inputField = screen.getByRole('combobox');
         await inputField.click();
         await userEvent.keyboard('{Enter}');
 
