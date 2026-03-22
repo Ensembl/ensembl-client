@@ -44,7 +44,8 @@ const Suggestion = (props: Props) => {
   }
 
   const {
-    state: { activeSuggestionElement }
+    state: { activeSuggestionElement },
+    activeSuggestionId
   } = context;
 
   useEffect(() => {
@@ -77,11 +78,15 @@ const Suggestion = (props: Props) => {
   );
 
   const dataString = JSON.stringify(props.data);
+  const id = isActive ? activeSuggestionId : undefined;
 
   return (
     <div
+      id={id}
       data-type="suggestion"
       data-search={dataString}
+      role="option"
+      aria-selected={isActive}
       className={componentClasses}
       ref={componentRef}
       onClick={handleClick}

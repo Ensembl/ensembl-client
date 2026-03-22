@@ -19,6 +19,7 @@ import {
   useState,
   useEffect,
   useRef,
+  useId,
   type ComponentPropsWithRef,
   type ReactNode,
   type KeyboardEvent,
@@ -58,6 +59,7 @@ const useValuesFromContext = () => {
 
   const {
     state,
+    activeSuggestionId,
     setActiveSuggestion,
     unsetActiveSuggestion,
     resetSuggestions
@@ -68,6 +70,7 @@ const useValuesFromContext = () => {
   return {
     activeSuggestionIndex,
     activeSuggestionElement,
+    activeSuggestionId,
     setActiveSuggestion,
     unsetActiveSuggestion,
     resetSuggestions
@@ -78,6 +81,7 @@ const AutosuggestSearchField = (props: Props) => {
   const { query, suggestions, onSubmit, onSuggestionSelected, ...otherProps } =
     props;
   const [areSuggestionsDisabled, setAreSuggestionsDisabled] = useState(false);
+  const dropdownPanelId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const isPointerDownOnPanel = useRef(false);
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -85,6 +89,7 @@ const AutosuggestSearchField = (props: Props) => {
   const {
     activeSuggestionIndex,
     activeSuggestionElement,
+    activeSuggestionId,
     setActiveSuggestion,
     unsetActiveSuggestion,
     resetSuggestions
@@ -260,7 +265,12 @@ const AutosuggestSearchField = (props: Props) => {
   };
 
   const shouldShowSuggestions = hasSuggestions && !areSuggestionsDisabled;
+  const ariaActivedescendant = activeSuggestionElement
+    ? activeSuggestionId
+    : undefined;
 
+  // The 'role' attribute and aria attributes in the components below help screen readers
+  // focus on and announce the suggestions
   return (
     <div className={styles.wrapper}>
       <ShadedInput
@@ -270,11 +280,18 @@ const AutosuggestSearchField = (props: Props) => {
         onFocus={onSearchFieldFocus}
         onBlur={onSearchFieldBlur}
         onInput={onInput}
+        autoComplete="off"
+        role="combobox"
+        aria-expanded={shouldShowSuggestions}
+        aria-controls={dropdownPanelId}
+        aria-activedescendant={ariaActivedescendant}
         ref={inputRef}
       />
       {shouldShowSuggestions && (
         <div
+          id={dropdownPanelId}
           popover="manual"
+          role="listbox"
           className={styles.suggestionsPanel}
           ref={onPopoverMount}
           onPointerDown={onPointerDownOnPanel}

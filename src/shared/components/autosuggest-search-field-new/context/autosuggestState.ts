@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useReducer, useCallback } from 'react';
+import { useReducer, useCallback, useId } from 'react';
 
 export type State = {
   activeSuggestionIndex: number | null;
@@ -90,6 +90,7 @@ const reducer = (state: State, action: Action): State => {
 
 const useAutosuggestState = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const activeSuggestionId = useId();
 
   const setActiveSuggestion = (params: {
     index: number;
@@ -121,6 +122,7 @@ const useAutosuggestState = () => {
 
   return {
     state,
+    activeSuggestionId,
     setActiveSuggestion,
     unsetActiveSuggestion,
     disableSuggestions,
