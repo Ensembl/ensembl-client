@@ -78,3 +78,6 @@ If you are working on a package that is a dependency of `ensembl-client`'s and w
 `npm install <path to build directory> --install-links`
 
 Without the `--install-links` flag, `npm install <path to build directory>` creates a symlink to the directory, which, for packages with peer dependencies, may result in problems during module resolution.
+
+### UI testing
+See [doc/testing.md](doc/testing.md)

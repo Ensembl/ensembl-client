@@ -30,6 +30,7 @@ variables:
   image: node:24
   before_script:
   - npm ci --loglevel warn
+  - npx playwright install chromium --with-deps
   script:
   - npm run test
   - npm run build

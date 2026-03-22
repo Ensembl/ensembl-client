@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-import { defineConfig } from 'vitest/config';
 import path from 'node:path';
+import { defineConfig } from 'vitest/config';
+import viteReactPlugin from '@vitejs/plugin-react';
+import { playwright } from '@vitest/browser-playwright'
 
 export default defineConfig({
+  plugins: [viteReactPlugin()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    css: {
-      modules: {
-        classNameStrategy: 'non-scoped' // keep original class names
-      }
+    name: 'browser',
+    browser: {
+      provider: playwright(),
+      enabled: true,
+      // at least one instance is required
+      instances: [
+        { browser: 'chromium' },
+      ],
     },
-    include: ['./src/**/*.test.ts(x)?'],
-    exclude: ['./src/**/*.browser.test.ts(x)?'],
-    setupFiles: ['./tests/setup.ts', './tests/setup-rtl.ts'],
-    pool: 'threads',
-    alias: [
-      // Mock SVGs
-      {
-        find: /^.+\.svg$/,
-        replacement: path.resolve(__dirname, './tests/svgrMock.tsx')
-      }
-    ]
+    include: ['src/**/*.browser.test.ts(x)?'],
+    setupFiles: ['./tests/setup.ts', './tests/setup-browser.ts'],
   },
   resolve: {
     alias: [
