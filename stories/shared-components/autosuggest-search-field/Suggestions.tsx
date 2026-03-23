@@ -16,7 +16,7 @@
 
 import { memo } from 'react';
 
-import Suggestion from 'src/shared/components/autosuggest-search-field-new/Suggestion';
+import Suggestion from 'src/shared/components/autosuggest-search-field/Suggestion';
 
 import styles from './AutosuggestSearchField.stories.module.css';
 

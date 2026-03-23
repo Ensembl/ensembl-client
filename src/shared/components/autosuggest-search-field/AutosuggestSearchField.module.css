@@ -1,34 +1,32 @@
-.autosuggestionSearchFieldWrapper {
-  width: 100%;
-}
+@layer components {
 
-.autosuggestionSearchField {
-  position: relative;
-}
+  .wrapper {
+    display: inline-block;
+    anchor-name: --search-field;
+  }
 
-.autosuggestionPlate {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  transform: translateY(100%) translateY(1px);
-  width: 100%;
-  z-index: 1;
-  padding: 18px 24px;
-  background: white;
-  border: 1px solid var(--color-grey);
-  box-shadow: 2px 2px 6px 0 var(--color-grey);
-}
+  .suggestionsPanel {
+    position-anchor: --search-field;
+    position-area: block-end;
+    inline-size: anchor-size();
+    border: 1px solid var(--color-grey);
+    border: none;
+    box-shadow: 2px 2px 6px 0 var(--color-grey);
+    padding: 18px 12px;
+    top: 2px;
+  }
 
-.autosuggestionPlateMatchGroup:not(:first-child) {
-  margin-top: 1em;
-}
+  .suggestion {
+    padding: 2px 12px;
+  }
 
-.autosuggestionPlateItem {
-  padding: 2px 24px;
-  margin: 0 -23px;
-  cursor: pointer;
-}
+  .suggestion:hover {
+    background-color: var(--color-ice-blue);
+    cursor: pointer;
+  }
 
-.autosuggestionPlateHighlightedItem {
-  background-color: var(--color-ice-blue);
+  .suggestionActive {
+    background-color: var(--color-ice-blue);
+  }
+
 }
