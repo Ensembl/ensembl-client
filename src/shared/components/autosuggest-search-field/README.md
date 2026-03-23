@@ -51,7 +51,9 @@ Mouse hover should highlight an option about to be selected.
 If an option has been highlighted with the keyboard, would mouse hover over another element move the focus to that element, or somehow highlight it in a different way, so that two elements of the list are highlighted?
 
 ### How to position the autosuggestion list?
-Should we use the `popover` element?
+Should we use a `popover` element? Should we use CSS anchor positioning?
+- The advantage of a `popover` element (i.e. an element with the `popover` attribute) is that it is promoted in its own "top layer", and will win z-index battle over any regular DOM element
+- The disadvantage is that both it and, especially, CSS anchor positioning are new additions to the browsers. The `popover` api became available across all major browsers since mid-2024; whereas CSS anchor positioning became available across all major browsers since January 2026 (Firefox was the latest to add this functionality in version 147) 
 
 ## Implementation
 The intent behind the architecture of the component is to achieve maximum flexibility in the data associated with automatic suggestions, and the formatting of the suggestions. The proposed component interface will be as follows:
