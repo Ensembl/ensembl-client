@@ -32,7 +32,7 @@ export default defineConfig({
         { browser: 'chromium' },
       ],
     },
-    include: ['**/AutosuggestSearchField.test.tsx'],
+    include: ['src/**/*.browser.test.ts(x)?'],
     setupFiles: ['./tests/setup.ts', './tests/setup-browser.ts'],
   },
   resolve: {

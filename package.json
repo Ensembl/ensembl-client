@@ -25,9 +25,9 @@
     "storybook": "storybook dev -p 9001 -c .storybook",
     "deploy-docs": "./deploy-docs.sh",
     "check-types": "tsc",
-    "test": "vitest run --config ./vitest.config.browser.mts",
-    "xtest": "vitest run",
-    "test:watch": "vitest",
+    "test": "npm run test-node && npm run test-browser",
+    "test-node": "vitest run",
+    "test-node:watch": "vitest",
     "test-browser": "vitest run --config ./vitest.config.browser.mts",
     "test-browser:watch": "vitest --config ./vitest.config.browser.mts",
     "coverage": "vitest run --coverage"

@@ -26,6 +26,8 @@ export default defineConfig({
         classNameStrategy: 'non-scoped' // keep original class names
       }
     },
+    include: ['./src/**/*.test.ts(x)?'],
+    exclude: ['./src/**/*.browser.test.ts(x)?'],
     setupFiles: ['./tests/setup.ts', './tests/setup-rtl.ts'],
     pool: 'threads',
     alias: [
