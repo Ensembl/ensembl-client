@@ -242,7 +242,7 @@ const AutosuggestSearchField = (props: Props) => {
       element: activeSuggestionElement as HTMLElement,
       data: suggestionData
     };
-    // reset suggestions
+    resetSuggestions();
 
     onSuggestionSelected(payload);
   };
