@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import {
   getReferenceGenome,
@@ -24,12 +24,14 @@ import {
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
+import { setSidebarView } from 'src/content/app/structural-variants/state/sidebar/sidebarSlice';
 
 import { StructuralVariantsImageContextProvider } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
 import StructuralVariantsImage from 'src/content/app/structural-variants/components/structural-variants-image/StructuralVariantsImage';
 import StructuralVariantsNavButtons from 'src/content/app/structural-variants/components/structural-variants-nav-buttons/StructuralVariantsNavButtons';
 import LeftColumn from './LeftColumn';
 import RightColumn from './RightColumn';
+import TextButton from 'src/shared/components/text-button/TextButton';
 
 import styles from './StructuralVariantsMain.module.css';
 
@@ -38,6 +40,7 @@ const StructuralVariantsMain = () => {
   const alternativeGenome = useAppSelector(getAlternativeGenome);
   const referenceGenomeLocation = useAppSelector(getReferenceGenomeLocation);
   const altGenomeLocation = useAppSelector(getAlternativeGenomeLocation);
+  const dispatch = useAppDispatch();
 
   const { currentData: referenceGenomeKaryotype } = useGenomeKaryotypeQuery(
     referenceGenome?.genome_id ?? '',
@@ -70,6 +73,10 @@ const StructuralVariantsMain = () => {
     return null;
   }
 
+  const openTracksConfigurationView = () => {
+    dispatch(setSidebarView({ view: 'configuration' }));
+  };
+
   return (
     <StructuralVariantsImageContextProvider
       referenceGenomeId={referenceGenome.genome_id}
@@ -77,14 +84,19 @@ const StructuralVariantsMain = () => {
     >
       <div className={styles.grid}>
         <div className={styles.imageControlsContainer}>
-          <StructuralVariantsNavButtons
-            referenceGenomeId={referenceGenome.genome_id}
-            altGenomeId={alternativeGenome.genome_id}
-            referenceGenomeLocation={referenceGenomeLocation}
-            altGenomeLocation={altGenomeLocation}
-            regionLength={referenceRegionLength}
-            altRegionLength={altRegionLength}
-          />
+          <div className={styles.imageControlsRight}>
+            <TextButton onClick={openTracksConfigurationView}>
+              Add tracks
+            </TextButton>
+            <StructuralVariantsNavButtons
+              referenceGenomeId={referenceGenome.genome_id}
+              altGenomeId={alternativeGenome.genome_id}
+              referenceGenomeLocation={referenceGenomeLocation}
+              altGenomeLocation={altGenomeLocation}
+              regionLength={referenceRegionLength}
+              altRegionLength={altRegionLength}
+            />
+          </div>
         </div>
         <LeftColumn />
         <div className={styles.imageContainer}>
