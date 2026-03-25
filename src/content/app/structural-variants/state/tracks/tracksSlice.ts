@@ -23,8 +23,6 @@ export type TrackIds = {
   altGenomeTrackIds: string[];
 };
 
-// type OutputTrackSummaries = // ??? does this need to be part of redux?
-
 export type StatePerGenomePair = {
   trackIds: TrackIds;
 };

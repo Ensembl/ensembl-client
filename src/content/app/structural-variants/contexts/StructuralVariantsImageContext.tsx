@@ -20,6 +20,7 @@ import useStructuralVariantsTracks from '../hooks/useStructuralVariantsTracks';
 import useStoredTrackIds from '../hooks/useStoredTrackIds';
 
 import type { TrackSummary } from '@ensembl/ensembl-structural-variants';
+import type { GenomicTrack } from 'src/content/app/genome-browser/state/types/tracks';
 
 export type TrackSummaryWithLabel = TrackSummary & {
   label: string;
@@ -55,10 +56,8 @@ export const StructuralVariantsImageContextProvider = (props: {
     referenceGenomeId,
     altGenomeId,
     areTracksLoading,
-    referenceGenomeTrackIds: referenceGenomeTracks.map(
-      (track) => track.track_id
-    ),
-    altGenomeTrackIds: altGenomeTracks.map((track) => track.track_id)
+    referenceGenomeTrackIds: getInitialTrackIds(referenceGenomeTracks),
+    altGenomeTrackIds: getInitialTrackIds(altGenomeTracks)
   });
 
   if (!referenceGenomeTracks.length) {
@@ -95,4 +94,10 @@ export const StructuralVariantsImageContextProvider = (props: {
       {props.children}
     </StructuralVariantsImageContext>
   );
+};
+
+const getInitialTrackIds = (tracks: GenomicTrack[]) => {
+  return tracks
+    .filter((track) => track.on_by_default)
+    .map((track) => track.track_id);
 };

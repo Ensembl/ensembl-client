@@ -16,12 +16,13 @@
 
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
+import type { GenomicTrack } from 'src/content/app/genome-browser/state/types/tracks';
+
 /**
  * NOTE:
  * This is a hack for getting relevant track ids from the full list of tracks
  * registered for a genome.
  */
-
 const labelFragmentsForFindingTracks = [
   'short variants',
   'segmental duplication',
@@ -60,14 +61,28 @@ const useStructuralVariantsTracks = (params: {
     : [];
 
   const relevantReferenceGenomeTracks = labelFragmentsForFindingTracks
-    .map((regex) =>
-      flattenedReferenceGenomeTracks.find((track) => regex.test(track.label))
-    )
+    .map((regex) => {
+      const track = flattenedReferenceGenomeTracks.find((track) =>
+        regex.test(track.label)
+      );
+      if (track) {
+        return updateTrackDefaults(track);
+      } else {
+        return track;
+      }
+    })
     .filter((track) => !!track);
   const relevantAltGenomeTracks = labelFragmentsForFindingTracks
-    .map((regex) =>
-      flattenedAltGenomeTracks.find((track) => regex.test(track.label))
-    )
+    .map((regex) => {
+      const track = flattenedAltGenomeTracks.find((track) =>
+        regex.test(track.label)
+      );
+      if (track) {
+        return updateTrackDefaults(track);
+      } else {
+        return track;
+      }
+    })
     .filter((track) => !!track);
 
   return {
@@ -75,6 +90,22 @@ const useStructuralVariantsTracks = (params: {
       areReferenceGenomeTracksLoading || areAltGenomeTracksLoading,
     referenceGenomeTracks: relevantReferenceGenomeTracks,
     altGenomeTracks: relevantAltGenomeTracks
+  };
+};
+
+/**
+ * Hack continued.
+ * The function below hard-codes logic for deciding which track should be visible by default.
+ * Intended for use until the track api can send different defaults per app
+ */
+const updateTrackDefaults = (track: GenomicTrack) => {
+  const onByDefault = ['segmental duplication'].map((string) =>
+    RegExp(string, 'i')
+  );
+
+  return {
+    ...track,
+    on_by_default: onByDefault.some((regex) => regex.test(track.label))
   };
 };
 
