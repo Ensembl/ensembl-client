@@ -15,265 +15,300 @@
  */
 
 import {
+  use,
   useState,
   useEffect,
   useRef,
+  useId,
+  type ComponentPropsWithRef,
+  type ReactNode,
   type KeyboardEvent,
-  type InputEventHandler
+  type InputEvent
 } from 'react';
-import classNames from 'classnames';
 
+import AutosuggestContextProvider, {
+  AutosuggestContext
+} from './context/AutosuggestContext';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
-import AutosuggestionPanel, {
-  type GroupOfMatchesType,
-  type MatchIndex
-} from './AutosuggestionPanel';
 
 import styles from './AutosuggestSearchField.module.css';
 
-export const defaultNotFoundText = 'No results found';
+type SuggestionSelectedPayload = {
+  index: number; // 0-based index of the position of the suggestion in the list
+  data: unknown; // data associated with the suggestion
+  element: HTMLElement; // DOM element of the suggestion; hopefully not needed by consumer, but sending it for good measure
+};
 
-type CommonProps = {
-  search: string;
-  onChange: (value: string) => void;
-  onSelect: (match: any) => void;
-  matchGroups?: GroupOfMatchesType[];
-  canShowSuggestions?: boolean;
-  placeholder?: string;
-  onFocus?: () => void;
-  onBlur?: () => void;
+export type Props = Omit<
+  ComponentPropsWithRef<'input'>,
+  'size' | 'onSubmit'
+> & {
+  query: string;
+  suggestions?: ReactNode;
+  onSubmit?: (query: string) => void;
+  onSuggestionSelected: (payload: SuggestionSelectedPayload) => void;
   help?: string;
-  className?: string;
-  searchFieldClassName?: string;
-  notFound?: boolean;
-  notFoundText?: string;
 };
 
-// with this set of props user can submit raw content of the search field
-// (not just one of suggested matches)
-type PropsAllowingRawDataSubmission = {
-  allowRawInputSubmission: true;
-  onSubmit: (value: string) => void;
-};
+const useValuesFromContext = () => {
+  const context = use(AutosuggestContext);
 
-// with this set of props user can submit only one of suggested matches
-// (notice no onSubmit prop; typescript is smart enough to know it won't be available)
-type PropsDisallowingRawDataSubmission = {
-  allowRawInputSubmission?: false;
-};
-
-type Props =
-  | (CommonProps & PropsAllowingRawDataSubmission)
-  | (CommonProps & PropsDisallowingRawDataSubmission);
-
-function getNextItemIndex(
-  props: Props,
-  currentItemIndex: MatchIndex | null
-): MatchIndex {
-  const { matchGroups = [], allowRawInputSubmission = false } = props;
-  const [groupIndex, itemIndex] = currentItemIndex || [null, null];
-  const currentGroup =
-    typeof groupIndex === 'number' ? matchGroups[groupIndex] : null;
-  const firstItemIndex: MatchIndex = [0, 0];
-
-  if (itemIndex === null) {
-    return firstItemIndex;
-  } else if (currentGroup && itemIndex < currentGroup.matches.length - 1) {
-    // move to the next item in the group
-    return [groupIndex, itemIndex + 1] as MatchIndex;
-  } else if (groupIndex === matchGroups.length - 1) {
-    // this is the last item in the last group;
-    // either return null if submitting raw input is allowed, or
-    // cycle back to the first item in the list
-    return allowRawInputSubmission ? null : firstItemIndex;
-  } else if (typeof groupIndex === 'number') {
-    // move to the next group in the list
-    return [groupIndex + 1, 0];
-  } else {
-    return null; // should never happen, but makes Typescript happy
+  if (!context) {
+    throw new Error('This component requires AutosuggestContext');
   }
-}
 
-function getPreviousItemIndex(
-  props: Props,
-  currentItemIndex: MatchIndex | null
-): MatchIndex {
-  const { matchGroups = [], allowRawInputSubmission } = props;
-  const [groupIndex, itemIndex] = currentItemIndex || [null, null];
-  const lastGroupIndex = matchGroups.length - 1;
-  const lastGroupItemIndex = matchGroups[lastGroupIndex].matches.length - 1;
-  const lastItemIndex: MatchIndex = [lastGroupIndex, lastGroupItemIndex];
-  if (itemIndex === null) {
-    return lastItemIndex;
-  } else if (itemIndex > 0) {
-    // move to the previous item
-    return [groupIndex, itemIndex - 1] as MatchIndex;
-  } else if (groupIndex === 0) {
-    // this is the first item in the first group;
-    // either return null if submitting raw input is allowed,
-    // or cycle back to the very last item in the list
-    return allowRawInputSubmission ? null : lastItemIndex;
-  } else if (typeof groupIndex === 'number') {
-    // move to the last item in the previous group
-    const previousGroupIndex = groupIndex - 1;
-    const lastItemIndex = matchGroups[previousGroupIndex].matches.length - 1;
-    return [previousGroupIndex, lastItemIndex];
-  } else {
-    return null; // should never happen, but makes Typescript happy
-  }
-}
+  const {
+    state,
+    activeSuggestionId,
+    setActiveSuggestion,
+    unsetActiveSuggestion,
+    resetSuggestions
+  } = context;
+
+  const { activeSuggestionIndex, activeSuggestionElement } = state;
+
+  return {
+    activeSuggestionIndex,
+    activeSuggestionElement,
+    activeSuggestionId,
+    setActiveSuggestion,
+    unsetActiveSuggestion,
+    resetSuggestions
+  };
+};
 
 const AutosuggestSearchField = (props: Props) => {
-  const {
-    matchGroups = [],
-    allowRawInputSubmission = false,
-    notFoundText = defaultNotFoundText
-  } = props;
-  const preventSuggestionsProp = props.canShowSuggestions === false;
-
-  const initialHighlightedItemIndex: MatchIndex = allowRawInputSubmission
-    ? null
-    : [0, 0];
-  const [highlightedItemIndex, setHighlightedItemIndex] = useState(
-    initialHighlightedItemIndex
-  );
-  const [isSelected, setIsSelected] = useState(false);
-  const [canShowSuggesions, setCanShowSuggestions] = useState(true);
-  const element = useRef<HTMLDivElement>(null);
+  const { query, suggestions, onSubmit, onSuggestionSelected, ...otherProps } =
+    props;
+  const [areSuggestionsDisabled, setAreSuggestionsDisabled] = useState(false);
+  const dropdownPanelId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const isPointerDownOnPanel = useRef(false);
+  const popoverRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setIsSelected(false);
-  }, [props.search]);
+  const {
+    activeSuggestionIndex,
+    activeSuggestionElement,
+    activeSuggestionId,
+    setActiveSuggestion,
+    unsetActiveSuggestion,
+    resetSuggestions
+  } = useValuesFromContext();
+  const hasSuggestions = !!suggestions;
 
-  useEffect(() => {
-    const onClickOutside = (event: MouseEvent) => {
-      const currentElement = element.current;
-      if (!currentElement) return;
-
-      if (
-        event.target !== currentElement &&
-        !currentElement.contains(event.target as HTMLElement)
-      ) {
-        setCanShowSuggestions(false);
-      }
-    };
-    window.addEventListener('click', onClickOutside);
-    return () => window.removeEventListener('click', onClickOutside);
-  }, []);
-
-  const handleSelect = (match: any) => {
-    setIsSelected(true);
-    props.onSelect(match);
+  const getAllSuggestionElements = () => {
+    const container = popoverRef.current as HTMLElement;
+    return container.querySelectorAll('[data-type="suggestion"]');
   };
 
-  const handleBlur = () => {
-    props.onBlur?.();
-  };
-
-  const handleFocus = () => {
-    if (!canShowSuggesions) {
-      setCanShowSuggestions(true);
+  useEffect(() => {
+    if (!hasSuggestions) {
+      resetSuggestions();
     }
-    props.onFocus?.();
-  };
+  }, [hasSuggestions, resetSuggestions]);
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return;
+  /**
+   * This function (used as a callback ref) will be called during every render.
+   * It would take a useCallback to prevent this from happening.
+   * But a useCallback would require changes to onSuggestionClick function
+   * and all its dependencies.
+   */
+  const onPopoverMount = (element: HTMLDivElement) => {
+    element.showPopover();
+    popoverRef.current = element;
 
-    event.preventDefault();
+    element.addEventListener('autosuggest-suggestion-click', onSuggestionClick);
 
-    if (event.key === 'ArrowUp') {
-      setHighlightedItemIndex(
-        getPreviousItemIndex(props, highlightedItemIndex)
+    return () => {
+      popoverRef.current = null;
+      element.removeEventListener(
+        'autosuggest-suggestion-click',
+        onSuggestionClick
       );
-    } else {
-      setHighlightedItemIndex(getNextItemIndex(props, highlightedItemIndex));
-    }
+    };
   };
 
-  const handleItemHover = (itemIndex: MatchIndex) => {
-    setHighlightedItemIndex(itemIndex);
-  };
-
-  const handleChange: InputEventHandler<HTMLInputElement> = (event) => {
-    const value = event.currentTarget.value;
-
-    if (value !== props.search) {
-      props.onChange(value);
-    }
-  };
-
-  const handleSubmit = () => {
-    const input = inputRef.current as HTMLInputElement;
-    const value = input.value;
-
-    if (!highlightedItemIndex && props.allowRawInputSubmission) {
-      props.onSubmit(value);
-    } else if (highlightedItemIndex) {
-      const [groupIndex, itemIndex] = highlightedItemIndex;
-      const match = matchGroups[groupIndex]?.matches[itemIndex];
-
-      if (!match) {
-        return;
+  const onKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+    const key = event.key;
+    if (key === 'Enter') {
+      // - If one of the suggestions is focused, then submit this suggestion
+      // - Alternatively, if parent has provided an onSubmit property, call it passing the query into it
+      // - If onSubmit property isn't present, the component will behave as any regular input field does
+      //   (i.e. if it is inside of a form, it will trigger form submission)
+      setAreSuggestionsDisabled(true);
+      if (activeSuggestionElement) {
+        event.preventDefault();
+        onSuggestionSubmit();
+      } else if (onSubmit) {
+        event.preventDefault();
+        onSubmit(query);
       }
-
-      props.onSelect(match.data);
-
-      setHighlightedItemIndex(initialHighlightedItemIndex);
+    } else if (key === 'ArrowDown') {
+      event.preventDefault();
+      if (areSuggestionsDisabled) {
+        setAreSuggestionsDisabled(false);
+      } else {
+        focusNextSuggestion();
+      }
+    } else if (key === 'ArrowUp') {
+      event.preventDefault();
+      focusPreviousSuggestion();
+    } else if (key === 'Escape') {
+      event.preventDefault();
+      setAreSuggestionsDisabled(true);
+      resetSuggestions();
     }
-    setIsSelected(true);
   };
 
-  const shouldShowSuggestions = Boolean(
-    props.search &&
-    !props.notFound &&
-    matchGroups.length > 0 &&
-    canShowSuggesions &&
-    !isSelected &&
-    !preventSuggestionsProp
-  );
+  const onInput = (event: InputEvent<HTMLInputElement>) => {
+    if (areSuggestionsDisabled) {
+      setAreSuggestionsDisabled(false);
+    }
+    props.onInput?.(event);
+  };
 
-  const className = classNames(
-    styles.autosuggestionSearchField,
-    props.className
-  );
+  const onSearchFieldFocus = () => {
+    setAreSuggestionsDisabled(false);
+  };
 
+  // This would handle tabbing out or clicking outside the input field.
+  // Notice, however, that a click on the suggestion panel also produces a blur event
+  const onSearchFieldBlur = () => {
+    if (isPointerDownOnPanel.current) {
+      // Blur event was caused by clicking on suggestions panel;
+      // ignore it
+      return;
+    }
+    setAreSuggestionsDisabled(true);
+    resetSuggestions();
+  };
+
+  const onPointerDownOnPanel = () => {
+    isPointerDownOnPanel.current = true;
+    setTimeout(() => {
+      isPointerDownOnPanel.current = false;
+    }, 0);
+  };
+
+  const focusPreviousSuggestion = () => {
+    if (!suggestions || activeSuggestionIndex === null) {
+      return;
+    } else if (activeSuggestionIndex === 0) {
+      unsetActiveSuggestion();
+      return;
+    }
+    const allSuggestionElements = getAllSuggestionElements();
+    const previousIndex = activeSuggestionIndex - 1;
+    const suggestionElement = allSuggestionElements[previousIndex];
+
+    setActiveSuggestion({
+      index: previousIndex,
+      element: suggestionElement as HTMLElement
+    });
+  };
+
+  const focusNextSuggestion = () => {
+    if (!suggestions) {
+      return;
+    }
+
+    const allSuggestionElements = getAllSuggestionElements();
+
+    if (activeSuggestionIndex === allSuggestionElements.length - 1) {
+      return;
+    }
+
+    const nextIndex =
+      activeSuggestionIndex === null ? 0 : activeSuggestionIndex + 1;
+    const suggestionElement = allSuggestionElements[nextIndex];
+
+    setActiveSuggestion({
+      index: nextIndex,
+      element: suggestionElement as HTMLElement
+    });
+  };
+
+  const getSearchDataFromSuggestionElement = (element: HTMLElement) => {
+    const dataString = element.dataset.search;
+    return dataString ? JSON.parse(dataString) : null;
+  };
+
+  const onSuggestionSubmit = () => {
+    const suggestionData = getSearchDataFromSuggestionElement(
+      activeSuggestionElement as HTMLElement
+    );
+    const payload = {
+      index: activeSuggestionIndex as number,
+      element: activeSuggestionElement as HTMLElement,
+      data: suggestionData
+    };
+    resetSuggestions();
+
+    onSuggestionSelected(payload);
+  };
+
+  const onSuggestionClick = (event: Event) => {
+    const element = event.target as HTMLElement;
+    const suggestionData = getSearchDataFromSuggestionElement(element);
+
+    const suggestionElements = getAllSuggestionElements();
+    const index = [...suggestionElements].indexOf(element);
+
+    const payload = {
+      index: index,
+      element,
+      data: suggestionData
+    };
+
+    setAreSuggestionsDisabled(true);
+    onSuggestionSelected(payload);
+  };
+
+  const shouldShowSuggestions = hasSuggestions && !areSuggestionsDisabled;
+  const ariaActivedescendant = activeSuggestionElement
+    ? activeSuggestionId
+    : undefined;
+
+  // The 'role' attribute and aria attributes in the components below help screen readers
+  // focus on and announce the suggestions
   return (
-    <div ref={element} className={className}>
-      <form
-        className={styles.autosuggestionSearchFieldWrapper}
-        onSubmit={handleSubmit}
-      >
-        <ShadedInput
-          ref={inputRef}
-          type="search"
-          value={props.search}
-          placeholder={props.placeholder}
-          onInput={handleChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          help={props.help}
-          className={props.searchFieldClassName}
-          size="large"
-          autoComplete="off"
-        />
-      </form>
+    <div className={styles.wrapper}>
+      <ShadedInput
+        {...otherProps}
+        value={query}
+        onKeyDown={onKeyPress}
+        onFocus={onSearchFieldFocus}
+        onBlur={onSearchFieldBlur}
+        onInput={onInput}
+        autoComplete="off"
+        role="combobox"
+        aria-expanded={shouldShowSuggestions}
+        aria-controls={dropdownPanelId}
+        aria-activedescendant={ariaActivedescendant}
+        ref={inputRef}
+      />
       {shouldShowSuggestions && (
-        <AutosuggestionPanel
-          highlightedItemIndex={highlightedItemIndex}
-          matchGroups={matchGroups}
-          onSelect={handleSelect}
-          allowRawInputSubmission={allowRawInputSubmission}
-          onItemHover={handleItemHover}
-        />
-      )}
-      {props.notFound && (
-        <div className={styles.autosuggestionPlate}>{notFoundText}</div>
+        <div
+          id={dropdownPanelId}
+          popover="manual"
+          role="listbox"
+          className={styles.suggestionsPanel}
+          ref={onPopoverMount}
+          onPointerDown={onPointerDownOnPanel}
+        >
+          {suggestions}
+        </div>
       )}
     </div>
   );
 };
 
-export default AutosuggestSearchField;
+const WrappedAutosuggestSearchField = (props: Props) => {
+  return (
+    <AutosuggestContextProvider>
+      <AutosuggestSearchField {...props} />
+    </AutosuggestContextProvider>
+  );
+};
+
+export default WrappedAutosuggestSearchField;
