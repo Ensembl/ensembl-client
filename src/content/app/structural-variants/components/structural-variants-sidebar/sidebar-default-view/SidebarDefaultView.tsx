@@ -21,6 +21,7 @@ import { toggleSidebarModal } from 'src/content/app/structural-variants/state/si
 import SearchButton from 'src/shared/components/search-button/SearchButton';
 import AlignmentsLegend from '../alignments-legend/AlignmentsLegend';
 import VariantsLegend from '../variants-legend/VariantsLegend';
+import ShortVariantsLegend from '../short-variants-legend/ShortVariantsLegend';
 
 const SidebarDefaultView = () => {
   const dispatch = useAppDispatch();
@@ -36,6 +37,7 @@ const SidebarDefaultView = () => {
       </div>
       <AlignmentsLegend />
       <VariantsLegend />
+      <ShortVariantsLegend />
     </>
   );
 };
