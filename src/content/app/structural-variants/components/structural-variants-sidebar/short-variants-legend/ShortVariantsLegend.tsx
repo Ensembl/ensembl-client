@@ -38,11 +38,11 @@ const ShortVariantsLegend = () => {
           <span>Transcript variants</span>
         </LegendItem>
         <LegendItem>
-          <LegendMarker className={shortVariantsStyles.variantColour3} />
+          <LegendMarker className={shortVariantsStyles.variantColour4} />
           <span>Regulatory region variants</span>
         </LegendItem>
         <LegendItem>
-          <LegendMarker className={shortVariantsStyles.variantColour3} />
+          <LegendMarker className={shortVariantsStyles.variantColour5} />
           <span>Intergenic variants</span>
         </LegendItem>
       </Legend>
