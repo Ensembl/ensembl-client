@@ -18,9 +18,13 @@
   display: flex;
   align-items: center;
   justify-content: end;
-  height: 30px;
-  padding-left: var(--double-standard-gutter);
-  padding-right: var(--standard-gutter);
+  padding: 18px var(--standard-gutter) 18px 0;
+}
+
+.imageControlsRight {
+  display: flex;
+  align-items: center;
+  column-gap: var(--standard-gutter);
 }
 
 .imageContainer {
