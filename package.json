@@ -28,9 +28,10 @@
     "test": "npm run test-node && npm run test-browser",
     "test-node": "vitest run",
     "test-node:watch": "vitest",
+    "test-coverage-node": "vitest run --coverage",
     "test-browser": "vitest run --config ./vitest.config.browser.mts",
     "test-browser:watch": "vitest --config ./vitest.config.browser.mts",
-    "coverage": "vitest run --coverage"
+    "test-coverage-browser": "vitest run --config ./vitest.config.browser.mts --coverage"
   },
   "dependencies": {
     "@ensembl/ensembl-elements-common": "0.0.4",
