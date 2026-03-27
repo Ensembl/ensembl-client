@@ -1,13 +1,3 @@
-.tab {
-  display: flex;
-  gap: 25px;
-  margin-left: 20px;
-}
-
-.activeTab {
-  color: black;
-}
-
 .searchForm {
   display: flex;
   gap: 46px;
@@ -21,32 +11,4 @@
 
 .submit {
   flex: 0 0 auto;
-}
-
-.searchFormSidebar {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  margin-top: 15px;
-  gap: 15px;
-}
-
-.sidebarBottomRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.resultsInfo {
-  flex: 0 0 auto;
-  margin-left: 20px;
-}
-
-.resultsInfoInterstitial {
-  margin: 20px 0 0 20px;
-}
-
-.submitSidebar {
-  flex: 0 0 auto;
-  margin-left: auto;
 }

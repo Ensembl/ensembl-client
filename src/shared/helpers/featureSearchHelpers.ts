@@ -16,7 +16,9 @@
 
 const featureSearchModes = ['gene', 'variant'] as const;
 
-export type FeatureSearchMode = typeof featureSearchModes[number];
+export type FeatureSearchModesType = typeof featureSearchModes;
+
+export type FeatureSearchMode = (typeof featureSearchModes)[number];
 
 export type FeatureSearchLabels = {
   label: string;
@@ -24,29 +26,46 @@ export type FeatureSearchLabels = {
   help?: string;
 };
 
-const featureSearchModeLabels: Record<FeatureSearchMode, FeatureSearchLabels> = {
-  gene: {
-    label: 'Find a gene',
-    placeholder: 'Gene ID or name',
-    help: 'Find a gene using a stable ID (versioned or un-versioned), symbol or synonym'
-  },
-  variant: {
-    label: 'Find a variant',
-    placeholder: 'Variant ID',
-    help: 'Find a variant using rsID'
-  }
+const featureSearchModeLabels: Record<FeatureSearchMode, FeatureSearchLabels> =
+  {
+    gene: {
+      label: 'Find a gene',
+      placeholder: 'Gene ID or name',
+      help: 'Find a gene using a stable ID (versioned or un-versioned), symbol or synonym'
+    },
+    variant: {
+      label: 'Find a variant',
+      placeholder: 'Variant ID',
+      help: 'Find a variant using rsID'
+    }
+  };
+
+export const isFeatureSearchMode = (mode: string) => {
+  return featureSearchModes.includes(mode as FeatureSearchMode);
 };
 
 export const getFeatureSearchModes = () => {
   return featureSearchModes;
-}
+};
 
-export const getFeatureSearchLabelsByMode = (mode: FeatureSearchMode): FeatureSearchLabels => {
+export const getFeatureSearchLabelsByMode = (
+  mode: FeatureSearchMode
+): FeatureSearchLabels => {
   return featureSearchModeLabels[mode];
 };
 
-export const getFeatureSearchModeByLocation = (locationPathname: string): FeatureSearchMode => {
-  return locationPathname.includes('/variant')
-    ? 'variant'
-    : 'gene';
-}
+export const getFeatureSearchModeByLocation = (
+  locationPathname: string
+): FeatureSearchMode => {
+  return locationPathname.includes('/variant') ? 'variant' : 'gene';
+};
+
+export type FeatureSearchAppName =
+  | 'speciesHome'
+  | 'genomeBrowser'
+  | 'entityViewer';
+
+export const featureSearchMatchPositions = ['sidebar', 'interstitial'] as const;
+
+export type FeatureSearchMatchPosition =
+  (typeof featureSearchMatchPositions)[number];

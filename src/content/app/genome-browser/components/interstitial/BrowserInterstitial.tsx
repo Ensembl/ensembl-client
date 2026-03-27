@@ -25,7 +25,7 @@ import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import BrowserInterstitialInstructions from './browser-interstitial-instructions/BrowserInterstitialInstructions';
-import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
+import InterstitialSearch from 'src/shared/components/interstitial-search/InterstitialSearch';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './BrowserInterstitial.module.css';
@@ -41,11 +41,10 @@ const BrowserInterstitial = () => {
   return (
     <div>
       <div className={styles.topPanel}>
-        <InAppSearch
+        <InterstitialSearch
           app="genomeBrowser"
           genomeId={activeGenomeId}
           genomeIdForUrl={genomeIdForUrl as string}
-          mode="interstitial"
           onSearchSubmit={trackInterstitialPageSearch}
         />
       </div>
