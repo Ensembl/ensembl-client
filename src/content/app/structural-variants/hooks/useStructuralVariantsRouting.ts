@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useAppDispatch } from 'src/store';
@@ -58,18 +58,6 @@ const useStructuralVariantsRouting = () => {
     altLocationParam
   });
 
-  // Reference and alt genome locations returned from useCheckedParams are plain objects
-  // created every time useCheckedParams runs. Memoize them to enable their use for props
-  // or dependency arrays of useEffect etc.
-  const memoizedReferenceGenomeLocation = useMemo(
-    () => referenceGenomeLocation,
-    [referenceLocationParam, isValidating]
-  );
-  const memoizedAltGenomeLocation = useMemo(
-    () => altGenomeLocation,
-    [altLocationParam, isValidating]
-  );
-
   useEffect(() => {
     if (isValidating) {
       return;
@@ -79,16 +67,16 @@ const useStructuralVariantsRouting = () => {
       setGenomesAndLocations({
         referenceGenome,
         alternativeGenome: altGenome,
-        referenceGenomeLocation: memoizedReferenceGenomeLocation,
-        alternativeGenomeLocation: memoizedAltGenomeLocation
+        referenceGenomeLocation: referenceGenomeLocation,
+        alternativeGenomeLocation: altGenomeLocation
       })
     );
   }, [
     dispatch,
     referenceGenome,
     altGenome,
-    memoizedReferenceGenomeLocation,
-    memoizedAltGenomeLocation,
+    referenceGenomeLocation,
+    altGenomeLocation,
     isValidating
   ]);
 
@@ -103,8 +91,8 @@ const useStructuralVariantsRouting = () => {
     isAltGenomeIdValid,
     referenceGenomeId,
     altGenomeId,
-    referenceGenomeLocation: memoizedReferenceGenomeLocation,
-    altGenomeLocation: memoizedAltGenomeLocation,
+    referenceGenomeLocation,
+    altGenomeLocation,
     isReferenceGenomeLocationValid,
     isAltGenomeLocationValid,
     isMissingAltGenomeRegion: hasNoAlignments, // FIXME
@@ -124,16 +112,23 @@ const useCheckedParams = ({
   referenceLocationParam: string | null;
   altLocationParam: string | null;
 }) => {
-  const [validationState, setValidationState] = useState<ValidationState>(initialValidationState);
+  const [validationState, setValidationState] = useState<ValidationState>(
+    initialValidationState
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const subscription = validationStateObservable.subscribe(setValidationState);
+    const subscription =
+      validationStateObservable.subscribe(setValidationState);
     return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
-    if (!referenceGenomeIdParam || !altGenomeIdParam || !referenceLocationParam) {
+    if (
+      !referenceGenomeIdParam ||
+      !altGenomeIdParam ||
+      !referenceLocationParam
+    ) {
       return;
     }
     validateUrlParameters({
@@ -142,7 +137,7 @@ const useCheckedParams = ({
       referenceLocationString: referenceLocationParam,
       altGenomeId: altGenomeIdParam,
       altLocationString: altLocationParam
-    })
+    });
   }, [
     dispatch,
     referenceGenomeIdParam,
@@ -151,24 +146,7 @@ const useCheckedParams = ({
     altLocationParam
   ]);
 
-
   return validationState;
-
-  // return {
-  //   isValidating,
-  //   areUrlParamsValid,
-  //   isReferenceGenomeIdValid,
-  //   isAltGenomeIdValid,
-  //   referenceGenomeId: referenceGenome?.genome_id ?? null,
-  //   altGenomeId: altGenome?.genome_id ?? null,
-  //   referenceGenomeLocation,
-  //   altGenomeLocation,
-  //   isReferenceGenomeLocationValid,
-  //   isAltGenomeLocationValid,
-  //   isMissingAltGenomeRegion, // a special and common kind of invalid alt genome location
-  //   referenceGenome: referenceGenome ?? null,
-  //   altGenome: altGenome ?? null
-  // };
 };
 
 export default useStructuralVariantsRouting;

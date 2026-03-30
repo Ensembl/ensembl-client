@@ -37,7 +37,7 @@ type Props = {
   referenceGenomeId: string;
   altGenomeId: string;
   referenceGenomeLocation: GenomicLocation;
-  altGenomeLocation: GenomicLocation | null;
+  altGenomeLocation: GenomicLocation;
   regionLength: number;
   altRegionLength: number;
 };
@@ -48,17 +48,18 @@ const StructuralVariantsNavButtons = (props: Props) => {
   const onViewportChange = (event: CustomEvent<ViewportChangePayload>) => {
     const referenceGenomeLocation = event.detail.reference;
     const altGenomeLocation = event.detail.alt;
-    const regionName = props.referenceGenomeLocation.regionName;
+    const refRegionName = props.referenceGenomeLocation.regionName;
+    const altRegionName = props.altGenomeLocation.regionName;
 
     const url = urlFor.structuralVariantsViewer({
       referenceGenomeId: props.referenceGenomeId,
       altGenomeId: props.altGenomeId,
       referenceGenomeLocation: {
-        regionName,
+        regionName: refRegionName,
         ...referenceGenomeLocation
       },
       altGenomeLocation: {
-        regionName,
+        regionName: altRegionName,
         ...altGenomeLocation
       }
     });

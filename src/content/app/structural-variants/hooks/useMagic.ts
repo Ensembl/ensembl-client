@@ -47,13 +47,19 @@
 
 import {
   Subject,
-  distinctUntilChanged,
   of,
   from,
+  merge,
   concat,
+  pairwise,
+  partition,
   switchMap,
+  map,
+  filter,
   scan,
-  shareReplay
+  startWith,
+  shareReplay,
+  type Observable
 } from 'rxjs';
 
 import config from 'config';
@@ -178,6 +184,18 @@ type SuccessAction = {
   };
 };
 
+// This action is used to directly update reference and alt genome's locations
+// without going through validation
+type UpdateLocationAction = {
+  type: 'update-location';
+  payload: {
+    referenceGenomeLocationString: string;
+    referenceGenomeLocation: GenomicLocation;
+    altGenomeLocationString: string;
+    altGenomeLocation: GenomicLocation;
+  };
+};
+
 type Action =
   | StartValidatingAction
   | ReferenceGenomeIdInvalidAction
@@ -185,7 +203,8 @@ type Action =
   | ReferenceGenomeLocationInvalidAction
   | AltGenomeLocationInvalidAction
   | NoAlignmentsAction
-  | SuccessAction;
+  | SuccessAction
+  | UpdateLocationAction;
 
 const initialState: State = {
   isValidating: false,
@@ -602,6 +621,11 @@ const stateReducer = (state: State, action: Action): State => {
         ...action.payload,
         isValidating: false
       };
+    case 'update-location':
+      return {
+        ...state,
+        ...action.payload
+      };
     default:
       return state;
   }
@@ -609,8 +633,20 @@ const stateReducer = (state: State, action: Action): State => {
 
 const input$ = new Subject<InputParams>();
 
-const action$ = input$.pipe(
-  distinctUntilChanged(comparator),
+const pairwiseInput$ = input$.pipe(startWith(null), pairwise());
+
+const [inputForValidation$, inputNoValidation$] = partition(
+  pairwiseInput$,
+  ([prevInput, currentInput]) => {
+    if (!prevInput || !currentInput) {
+      return true;
+    }
+    return !comparator(prevInput, currentInput);
+  }
+);
+
+const actionAfterValidation$ = inputForValidation$.pipe(
+  map(([, currentInput]) => currentInput as InputParams),
   switchMap((input) => {
     const startValidatingAction = {
       type: 'start-validating',
@@ -618,6 +654,37 @@ const action$ = input$.pipe(
     } as StartValidatingAction;
     return concat(of(startValidatingAction), from(runFullLogic(input)));
   })
+);
+
+const actionWithoutValidation$ = inputNoValidation$.pipe(
+  map(([, currentInput]) => {
+    const { referenceLocationString, altLocationString } =
+      currentInput as InputParams;
+    let referenceLocation: GenomicLocation;
+    let altLocation: GenomicLocation;
+    try {
+      referenceLocation = getGenomicLocationFromString(referenceLocationString);
+      altLocation = getGenomicLocationFromString(altLocationString as string);
+
+      return {
+        type: 'update-location',
+        payload: {
+          referenceGenomeLocationString: referenceLocationString as string,
+          referenceGenomeLocation: referenceLocation,
+          altGenomeLocationString: altLocationString as string,
+          altGenomeLocation: altLocation
+        }
+      } as UpdateLocationAction;
+    } catch {
+      return null;
+    }
+  }),
+  filter((action) => Boolean(action))
+);
+
+const action$ = merge(
+  actionAfterValidation$,
+  actionWithoutValidation$ as Observable<UpdateLocationAction>
 );
 
 const state$ = action$.pipe(scan(stateReducer, initialState), shareReplay(1));
