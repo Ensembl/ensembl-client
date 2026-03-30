@@ -140,25 +140,25 @@ type AltGenomeIdInvalidAction = {
 type ReferenceGenomeLocationInvalidAction = {
   type: 'reference-genome-location-invalid';
   payload: {
-    genomeId: string;
-    locationString: string;
+    referenceGenome: BriefGenomeSummary;
+    altGenome: BriefGenomeSummary;
   };
 };
 
 type AltGenomeLocationInvalidAction = {
   type: 'alt-genome-location-invalid';
   payload: {
-    genomeId: string;
-    locationString: string;
+    referenceGenome: BriefGenomeSummary;
+    altGenome: BriefGenomeSummary;
   };
 };
 
 type NoAlignmentsAction = {
   type: 'no-alignments';
   payload: {
-    referenceGenomeId: string;
-    referenceGenomeLocationString: string;
-    altGenomeId: string;
+    referenceGenome: BriefGenomeSummary;
+    altGenome: BriefGenomeSummary;
+    referenceGenomeLocation: GenomicLocation;
   };
 };
 
@@ -306,8 +306,8 @@ const runFullLogic = async (params: InputParams): Promise<Action> => {
     return {
       type: 'reference-genome-location-invalid',
       payload: {
-        genomeId: referenceGenomeId,
-        locationString: referenceLocationString
+        referenceGenome,
+        altGenome
       }
     };
   }
@@ -328,8 +328,8 @@ const runFullLogic = async (params: InputParams): Promise<Action> => {
     return {
       type: 'reference-genome-location-invalid',
       payload: {
-        genomeId: referenceGenomeId,
-        locationString: referenceLocationString
+        referenceGenome,
+        altGenome
       }
     };
   }
@@ -341,8 +341,8 @@ const runFullLogic = async (params: InputParams): Promise<Action> => {
       return {
         type: 'alt-genome-location-invalid',
         payload: {
-          genomeId: altGenomeId,
-          locationString: altLocationString
+          referenceGenome,
+          altGenome
         }
       };
     }
@@ -390,9 +390,8 @@ const runFullLogic = async (params: InputParams): Promise<Action> => {
       return {
         type: 'alt-genome-location-invalid',
         payload: {
-          genomeId: altGenomeId,
-          locationString:
-            altLocationString ?? getGenomicLocationString(altGenomeLocation)
+          referenceGenome,
+          altGenome
         }
       };
     }
@@ -400,9 +399,9 @@ const runFullLogic = async (params: InputParams): Promise<Action> => {
     return {
       type: 'no-alignments',
       payload: {
-        referenceGenomeId,
-        referenceGenomeLocationString: referenceLocationString,
-        altGenomeId
+        referenceGenome,
+        altGenome,
+        referenceGenomeLocation
       }
     };
   }
@@ -573,6 +572,7 @@ const stateReducer = (state: State, action: Action): State => {
     case 'reference-genome-location-invalid':
       return {
         ...state,
+        ...action.payload,
         isValidating: false,
         isReferenceGenomeLocationValid: false
       };
@@ -585,20 +585,22 @@ const stateReducer = (state: State, action: Action): State => {
     case 'alt-genome-location-invalid':
       return {
         ...state,
+        ...action.payload,
         isValidating: false,
         isAltGenomeLocationValid: false
       };
     case 'no-alignments':
       return {
         ...state,
+        ...action.payload,
         isValidating: false,
         hasNoAlignments: true
       };
     case 'success':
       return {
         ...state,
-        isValidating: false,
-        ...action.payload
+        ...action.payload,
+        isValidating: false
       };
     default:
       return state;

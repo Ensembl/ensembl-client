@@ -45,7 +45,8 @@ const StructuralVariantsMain = () => {
   const alternativeGenome = useAppSelector(getAlternativeGenome);
   const referenceGenomeLocation = useAppSelector(getReferenceGenomeLocation);
   const altGenomeLocation = useAppSelector(getAlternativeGenomeLocation);
-  const [urlValidationState, setUrlValidationState] = useState<ValidationState>();
+  const [urlValidationState, setUrlValidationState] =
+    useState<ValidationState>();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -63,6 +64,7 @@ const StructuralVariantsMain = () => {
     !alternativeGenome ||
     !referenceGenomeLocation ||
     !referenceRegionLength ||
+    !altGenomeLocation ||
     !altRegionLength
   ) {
     return null;
