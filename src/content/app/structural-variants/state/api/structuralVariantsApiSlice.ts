@@ -44,5 +44,9 @@ const structuralVariantsApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
+export const genomeGroupsEndpoint =
+  structuralVariantsApiSlice.endpoints.genomeGroups;
+export const genomesInGroupEndpoint =
+  structuralVariantsApiSlice.endpoints.genomesInGroup;
 export const { useGenomeGroupsQuery, useGenomesInGroupQuery } =
   structuralVariantsApiSlice;
