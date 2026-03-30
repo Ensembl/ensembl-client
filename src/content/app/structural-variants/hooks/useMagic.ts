@@ -52,7 +52,8 @@ import {
   from,
   concat,
   switchMap,
-  scan
+  scan,
+  shareReplay
 } from 'rxjs';
 
 import config from 'config';
@@ -96,15 +97,17 @@ type State = {
   isAltGenomeIdValid: boolean;
   referenceGenomeId: string | null;
   altGenomeId: string | null;
+  referenceGenome: BriefGenomeSummary | null;
+  altGenome: BriefGenomeSummary | null;
   referenceGenomeLocationString: string | null;
   altGenomeLocationString: string | null;
   referenceGenomeLocation: GenomicLocation | null;
   altGenomeLocation: GenomicLocation | null;
   isReferenceGenomeLocationValid: boolean;
   isAltGenomeLocationValid: boolean;
+  referenceRegionLength: number | null;
+  altRegionLength: number | null;
   hasNoAlignments: boolean;
-  referenceGenome: BriefGenomeSummary | null;
-  altGenome: BriefGenomeSummary | null;
 };
 
 type InputParams = {
@@ -170,6 +173,8 @@ type SuccessAction = {
     altGenome: BriefGenomeSummary;
     altGenomeLocationString: string;
     altGenomeLocation: GenomicLocation;
+    referenceRegionLength: number;
+    altRegionLength: number;
   };
 };
 
@@ -189,15 +194,17 @@ const initialState: State = {
   isAltGenomeIdValid: true,
   referenceGenomeId: null,
   altGenomeId: null,
+  referenceGenome: null,
+  altGenome: null,
   referenceGenomeLocationString: null,
   altGenomeLocationString: null,
   referenceGenomeLocation: null,
   altGenomeLocation: null,
   isReferenceGenomeLocationValid: true,
   isAltGenomeLocationValid: true,
-  hasNoAlignments: false,
-  referenceGenome: null,
-  altGenome: null
+  referenceRegionLength: null,
+  altRegionLength: null,
+  hasNoAlignments: false
 };
 
 /**
@@ -311,7 +318,13 @@ const runFullLogic = async (params: InputParams): Promise<Action> => {
     regionName: referenceGenomeLocation.regionName
   });
 
-  if (!referenceRegion) {
+  if (
+    !referenceRegion ||
+    !isGenomicLocationValid({
+      region: referenceRegion,
+      genomicLocation: referenceGenomeLocation
+    })
+  ) {
     return {
       type: 'reference-genome-location-invalid',
       payload: {
@@ -343,21 +356,46 @@ const runFullLogic = async (params: InputParams): Promise<Action> => {
   }
 
   if (altGenomeLocation) {
-    // all parameters have resolved successfully; hooray!
-    return {
-      type: 'success',
-      payload: {
-        referenceGenomeId,
-        altGenomeId,
-        referenceGenome,
-        altGenome,
-        referenceGenomeLocation,
-        altGenomeLocation,
-        referenceGenomeLocationString: referenceLocationString,
-        altGenomeLocationString:
-          altLocationString ?? getGenomicLocationString(altGenomeLocation)
-      }
-    };
+    const altRegion = await fetchRegion({
+      genomeId: altGenomeId,
+      regionName: altGenomeLocation.regionName,
+      reduxDispatch
+    });
+
+    if (
+      altRegion &&
+      isGenomicLocationValid({
+        region: altRegion,
+        genomicLocation: altGenomeLocation
+      })
+    ) {
+      // all parameters have resolved successfully; hooray!
+      return {
+        type: 'success',
+        payload: {
+          referenceGenomeId,
+          altGenomeId,
+          referenceGenome,
+          altGenome,
+          referenceGenomeLocation,
+          altGenomeLocation,
+          referenceGenomeLocationString: referenceLocationString,
+          altGenomeLocationString:
+            altLocationString ?? getGenomicLocationString(altGenomeLocation),
+          referenceRegionLength: referenceRegion.length,
+          altRegionLength: altRegion.length
+        }
+      };
+    } else {
+      return {
+        type: 'alt-genome-location-invalid',
+        payload: {
+          genomeId: altGenomeId,
+          locationString:
+            altLocationString ?? getGenomicLocationString(altGenomeLocation)
+        }
+      };
+    }
   } else {
     return {
       type: 'no-alignments',
@@ -494,6 +532,19 @@ const fetchAlignments = async ({
   return fetch(url).then((response) => response.json());
 };
 
+const isGenomicLocationValid = ({
+  genomicLocation,
+  region
+}: {
+  genomicLocation: GenomicLocation;
+  region: { length: number };
+}) => {
+  return (
+    genomicLocation.start < genomicLocation.end &&
+    genomicLocation.end <= region.length
+  );
+};
+
 // Getting alignments
 // https://dev-2020.ensembl.org/api/structural-variants/alignments?reference_genome_id=4c07817b-c7c5-463f-8624-982286bc4355&alt_genome_id=9d3b2ead-a987-4f08-8d18-10a1eb1e0fb0&reference_viewport=13:48000001-50000000
 
@@ -516,31 +567,37 @@ const stateReducer = (state: State, action: Action): State => {
     case 'reference-genome-id-invalid':
       return {
         ...state,
+        isValidating: false,
         isReferenceGenomeIdValid: false
       };
     case 'reference-genome-location-invalid':
       return {
         ...state,
+        isValidating: false,
         isReferenceGenomeLocationValid: false
       };
     case 'alt-genome-id-invalid':
       return {
         ...state,
+        isValidating: false,
         isAltGenomeIdValid: false
       };
     case 'alt-genome-location-invalid':
       return {
         ...state,
+        isValidating: false,
         isAltGenomeLocationValid: false
       };
     case 'no-alignments':
       return {
         ...state,
+        isValidating: false,
         hasNoAlignments: true
       };
     case 'success':
       return {
         ...state,
+        isValidating: false,
         ...action.payload
       };
     default:
@@ -561,10 +618,14 @@ const action$ = input$.pipe(
   })
 );
 
-const state$ = action$.pipe(scan(stateReducer, initialState));
+const state$ = action$.pipe(scan(stateReducer, initialState), shareReplay(1));
 
 export { state$ as validationStateObservable };
+
+export { initialState as initialValidationState };
 
 export const validateUrlParameters = (input: InputParams) => {
   input$.next(input);
 };
+
+export type { State as ValidationState };
