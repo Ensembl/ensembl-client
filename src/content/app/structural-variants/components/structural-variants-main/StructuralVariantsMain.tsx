@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useState, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import {
@@ -23,8 +24,12 @@ import {
   getAlternativeGenomeLocation
 } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSelectors';
 
-import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import { setSidebarView } from 'src/content/app/structural-variants/state/sidebar/sidebarSlice';
+
+import {
+  validationStateObservable,
+  type ValidationState
+} from 'src/content/app/structural-variants/hooks/useMagic';
 
 import { StructuralVariantsImageContextProvider } from 'src/content/app/structural-variants/contexts/StructuralVariantsImageContext';
 import StructuralVariantsImage from 'src/content/app/structural-variants/components/structural-variants-image/StructuralVariantsImage';
@@ -40,28 +45,18 @@ const StructuralVariantsMain = () => {
   const alternativeGenome = useAppSelector(getAlternativeGenome);
   const referenceGenomeLocation = useAppSelector(getReferenceGenomeLocation);
   const altGenomeLocation = useAppSelector(getAlternativeGenomeLocation);
+  const [urlValidationState, setUrlValidationState] = useState<ValidationState>();
   const dispatch = useAppDispatch();
 
-  const { currentData: referenceGenomeKaryotype } = useGenomeKaryotypeQuery(
-    referenceGenome?.genome_id ?? '',
-    {
-      skip: !referenceGenome
-    }
-  );
+  useEffect(() => {
+    const subscription = validationStateObservable.subscribe((state) => {
+      setUrlValidationState(state);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
-  const { currentData: altGenomeKaryotype } = useGenomeKaryotypeQuery(
-    alternativeGenome?.genome_id ?? '',
-    {
-      skip: !referenceGenome
-    }
-  );
-
-  const referenceRegionLength = referenceGenomeKaryotype?.find(
-    (region) => region.name === referenceGenomeLocation?.regionName
-  )?.length;
-  const altRegionLength = altGenomeKaryotype?.find(
-    (region) => region.name === referenceGenomeLocation?.regionName
-  )?.length; // region name is the same between reference and alt genomes
+  const referenceRegionLength = urlValidationState?.referenceRegionLength;
+  const altRegionLength = urlValidationState?.altRegionLength;
 
   if (
     !referenceGenome ||
