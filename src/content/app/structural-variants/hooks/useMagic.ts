@@ -14,37 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * We have some kind of function
- * It receives:
- *
- * - reference genome id
- * - alternative genome id
- * - reference location
- * - possibly alternative location?
- *
- *
- * If checking url for the first time and anternative location is present in the url
- * - should validate alternative location
- *
- * If there is no alternative location in the url
- * - Call alignments endpoint
- * - Get first alignment
- * - Get region from first alignment
- * - Call Thoas to get region's info
- *  - region length
- * - Generate initial location for the alt genome (using the algorithm from variation-alignments)
- * - Add location to url
- *
- *
- *
- * Possible outcomes
- * - alignment exists; location on alternative genome calculated successfully
- * - no alignment
- * - alternative location either has a non-existing region, or its coordinates are outside of length
- *
- */
-
 import {
   Subject,
   of,
