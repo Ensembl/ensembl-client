@@ -95,7 +95,7 @@ const useStructuralVariantsRouting = () => {
     altGenomeLocation,
     isReferenceGenomeLocationValid,
     isAltGenomeLocationValid,
-    isMissingAltGenomeRegion: hasNoAlignments, // FIXME
+    hasNoAlignments,
     referenceGenome,
     altGenome
   };

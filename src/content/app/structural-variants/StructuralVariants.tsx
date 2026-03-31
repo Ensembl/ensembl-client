@@ -53,12 +53,11 @@ const StructuralVariants = () => {
     altLocationParam,
     referenceGenome,
     altGenome,
-    referenceGenomeLocation,
     isReferenceGenomeIdValid,
     isAltGenomeIdValid,
     isReferenceGenomeLocationValid,
     isAltGenomeLocationValid,
-    isMissingAltGenomeRegion
+    hasNoAlignments
   } = useStructuralVariantsRouting();
   const referenceGenomeFromRedux = useAppSelector(getReferenceGenome);
   const referenceGenomeLocationFromRedux = useAppSelector(
@@ -81,7 +80,8 @@ const StructuralVariants = () => {
     !isReferenceGenomeIdValid ||
     !isAltGenomeIdValid ||
     !isReferenceGenomeLocationValid ||
-    !isAltGenomeLocationValid
+    !isAltGenomeLocationValid ||
+    hasNoAlignments
   ) {
     return (
       <div className={styles.containerInterstitial}>
@@ -95,12 +95,11 @@ const StructuralVariants = () => {
           referenceLocationParam={referenceLocationParam}
           altGenomeIdParam={altGenomeIdParam}
           altLocationParam={altLocationParam}
-          referenceGenomeLocation={referenceGenomeLocation}
           isReferenceGenomeIdValid={isReferenceGenomeIdValid}
           isReferenceGenomeLocationValid={isReferenceGenomeLocationValid}
           isAltGenomeIdValid={isAltGenomeIdValid}
           isAltGenomeLocationValid={isAltGenomeLocationValid}
-          isMissingAltGenomeRegion={isMissingAltGenomeRegion}
+          hasNoAlignments={hasNoAlignments}
         />
       </div>
     );

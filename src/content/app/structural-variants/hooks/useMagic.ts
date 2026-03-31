@@ -418,7 +418,7 @@ const getInitialAltLocation = async ({
   referenceGenomeLocation: GenomicLocation;
   referenceGenomeLocationString: string;
   altGenomeId: string;
-}): Promise<GenomicLocation> => {
+}): Promise<GenomicLocation | null> => {
   const alignments = await fetchAlignments({
     referenceGenomeId,
     altGenomeId,
@@ -428,7 +428,10 @@ const getInitialAltLocation = async ({
   const { start: referenceStart, end: referenceEnd } = referenceGenomeLocation;
   const sliceLength = referenceEnd - referenceStart;
   const firstAlignment = alignments[0];
-  // FIXME: what if there aren't any alignments in that array?
+
+  if (!firstAlignment) {
+    return null;
+  }
 
   const alignmentRefEnd =
     firstAlignment.reference.start + firstAlignment.reference.length - 1;
