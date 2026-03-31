@@ -127,7 +127,7 @@
     "terser-webpack-plugin": "5.4.0",
     "ts-multipick": "1.0.0",
     "ts-node": "10.9.2",
-    "typescript": "5.9.3",
+    "typescript": "6.0.2",
     "typescript-eslint": "8.58.0",
     "vitest": "4.1.0",
     "vitest-browser-react": "2.1.0",
