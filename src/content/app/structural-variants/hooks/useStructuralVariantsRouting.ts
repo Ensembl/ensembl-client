@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useAppDispatch } from 'src/store';
 
-import {
-  validationStateObservable,
-  validateUrlParameters,
-  initialValidationState,
-  type ValidationState
-} from './useMagic';
+import useParsedUrlParamsStore from './useParsedUrlParamsStore';
+import { validateUrlParameters } from './parsedUrlParamsStore';
 
 import { setGenomesAndLocations } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSlice';
 
@@ -112,16 +108,8 @@ const useCheckedParams = ({
   referenceLocationParam: string | null;
   altLocationParam: string | null;
 }) => {
-  const [validationState, setValidationState] = useState<ValidationState>(
-    initialValidationState
-  );
+  const parsedUrlParams = useParsedUrlParamsStore();
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const subscription =
-      validationStateObservable.subscribe(setValidationState);
-    return () => subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     if (
@@ -146,7 +134,7 @@ const useCheckedParams = ({
     altLocationParam
   ]);
 
-  return validationState;
+  return parsedUrlParams;
 };
 
 export default useStructuralVariantsRouting;

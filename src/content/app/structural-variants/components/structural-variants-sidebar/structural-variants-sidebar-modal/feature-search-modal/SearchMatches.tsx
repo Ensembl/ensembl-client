@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import {
-  validationStateObservable,
-  type ValidationState
-} from 'src/content/app/structural-variants/hooks/useMagic';
+import useParsedUrlParamsStore from 'src/content/app/structural-variants/hooks/useParsedUrlParamsStore';
 
 import TextButton from 'src/shared/components/text-button/TextButton';
 
@@ -53,21 +49,8 @@ const SearchMatches = ({
   altGenomeId: string;
   matches: GeneSearchMatch[];
 }) => {
-  const [urlValidationState, setUrlValidationState] =
-    useState<ValidationState>();
+  const { referenceRegionLength } = useParsedUrlParamsStore();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const subscription = validationStateObservable.subscribe(
-      setUrlValidationState
-    );
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (!urlValidationState) {
-    return null;
-  }
-  const { referenceRegionLength } = urlValidationState;
 
   const onMatchSelect = (match: GeneSearchMatch) => {
     const referenceGenomeLocation = calculateViewportLocation({

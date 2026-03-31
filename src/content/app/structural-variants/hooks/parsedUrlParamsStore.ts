@@ -670,3 +670,25 @@ export const validateUrlParameters = (input: InputParams) => {
 };
 
 export type { State as ValidationState };
+
+export class Store {
+  static #snapshot: State = initialState;
+
+  // initialisation block
+  static {
+    state$.subscribe((state) => {
+      this.#snapshot = state;
+    });
+  }
+
+  static subscribe = (fn: (state: State) => void) => {
+    const subscription = state$.subscribe((state) => {
+      fn(state);
+    });
+    return () => subscription.unsubscribe();
+  };
+
+  static getSnapshot = () => {
+    return this.#snapshot;
+  };
+}
