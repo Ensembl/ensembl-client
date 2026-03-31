@@ -197,14 +197,15 @@ const initialState: State = {
 
 /**
  * This is the function that checks input parameters
- * before it passes them for validation / alignment initial position seeking.
- * It makes sure that subsequent logic will only run if:
+ * to decide whether to perform async validation of the parameters
+ * and the search of appropriate location on the alternative genome.
+ * It makes sure that the validation and the position seeking will only occur if:
  * - Reference genome changes
  * - Alt genome changes
  * - Reference genome's region changes
  * - Alt genome's region changes
  */
-const comparator = (previous: InputParams, current: InputParams) => {
+const canSkipValidation = (previous: InputParams, current: InputParams) => {
   const prevRefGenomeId = previous.referenceGenomeId;
   const currRefGenomeId = current.referenceGenomeId;
   const prevAltGenomeId = previous.altGenomeId;
@@ -535,14 +536,6 @@ const isGenomicLocationValid = ({
   );
 };
 
-// Getting alignments
-// https://dev-2020.ensembl.org/api/structural-variants/alignments?reference_genome_id=4c07817b-c7c5-463f-8624-982286bc4355&alt_genome_id=9d3b2ead-a987-4f08-8d18-10a1eb1e0fb0&reference_viewport=13:48000001-50000000
-
-// validation example:
-// https://staging-2020.ensembl.org/api/metadata/validate_location?genome_id=9d3b2ead-a987-4f08-8d18-10a1eb1e0fb0&location=JAHEOL020000002.1:34631154-34632154
-
-//  JAHEOL020000002.1: 34631154-34632154
-
 const stateReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'start-validating':
@@ -613,7 +606,7 @@ const [inputForValidation$, inputNoValidation$] = partition(
     if (!prevInput || !currentInput) {
       return true;
     }
-    return !comparator(prevInput, currentInput);
+    return !canSkipValidation(prevInput, currentInput);
   }
 );
 
