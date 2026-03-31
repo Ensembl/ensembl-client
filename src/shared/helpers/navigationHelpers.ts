@@ -38,10 +38,8 @@ export const getPreviousPageUrl = () => {
   // but hopefully will be released soon.
   // We could install @types/dom-navigation; but it probably isn't worth it.
 
-  // @ts-expect-error types for navigation api not yet available
   const historyEntries = navigation.entries();
-  // @ts-expect-error types for navigation api not yet available
-  const previousEntry = historyEntries[navigation.currentEntry.index - 1];
+  const previousEntry = historyEntries[(navigation.currentEntry?.index ?? 0) - 1];
 
   if (previousEntry) {
     return previousEntry.url as string;
