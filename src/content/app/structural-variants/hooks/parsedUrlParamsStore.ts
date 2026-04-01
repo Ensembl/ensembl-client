@@ -48,7 +48,27 @@ import { getGBRegion } from 'src/content/app/genome-browser/state/api/genomeBrow
 import type { AppDispatch } from 'src/store';
 import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
-// Should import this from the package
+/**
+ * The interface of this module is:
+ * - A store of data collected by interpreting the url parameters.
+ *   This has a "subscribe" function that the consumer can use to subscribe
+ *   to state updates.
+ * - The function `validateUrlParameters`, which accepts url parameters as an input
+ *   and eventually will result in a state update.
+ *
+ * The logic is modelled as a stream of inputs that is split into a stream
+ * of inputs that need asynchronous data validation and discovery of the initial location
+ * on the alternative genome, and a stream of inputs that do not need any validation
+ * (i.e. when genomes and region names have not changed since previous input).
+ *
+ * The input streams are transformed into streams of "action" objects,
+ * which are then used by a reducer function to update the state
+ * in a manner similar to redux or react's useReducer.
+ *
+ * This logic relies on the rxjs library to produce the stream of inputs
+ * and eventually transform it into a stream of updated states.
+ */
+
 type Alignment = {
   reference: {
     region_name: string;
@@ -90,7 +110,7 @@ type InputParams = {
   altGenomeId: string;
   referenceLocationString: string;
   altLocationString: string | null;
-  reduxDispatch: AppDispatch;
+  reduxDispatch: AppDispatch; // to make http requests using redux-toolkit-query, which provides caching
 };
 
 type StartValidatingAction = {
@@ -653,10 +673,6 @@ const action$ = merge(
 );
 
 const state$ = action$.pipe(scan(stateReducer, initialState), shareReplay(1));
-
-export { state$ as validationStateObservable };
-
-export { initialState as initialValidationState };
 
 export const validateUrlParameters = (input: InputParams) => {
   input$.next(input);
