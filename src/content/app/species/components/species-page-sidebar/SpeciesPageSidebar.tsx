@@ -36,10 +36,11 @@ import styles from './SpeciesPageSidebar.module.css';
 
 type Props = {
   data: GenomeInfo;
+  genomeSuppressionMessage: string | null;
 };
 
 const SpeciesPageSidebar = (props: Props) => {
-  const { data } = props;
+  const { data, genomeSuppressionMessage } = props;
   const activeGenomeId = useAppSelector(getActiveGenomeId) as string;
   const dispatch = useAppDispatch();
 
@@ -54,6 +55,12 @@ const SpeciesPageSidebar = (props: Props) => {
 
   return (
     <Sidebar>
+      {genomeSuppressionMessage && (
+        <section className={styles.section}>
+          <div className={styles.warning}>{genomeSuppressionMessage}</div>
+        </section>
+      )}
+
       <section className={styles.section}>
         <div className={styles.fieldsGroup}>
           <div>

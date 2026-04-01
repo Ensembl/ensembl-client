@@ -88,3 +88,9 @@
   width: 55%;
   fill: var(--color-white);
 }
+
+.warning {
+  color: var(--color-red);
+  padding-right: var(--standard-gutter);
+  padding-bottom: var(--standard-gutter);
+}
