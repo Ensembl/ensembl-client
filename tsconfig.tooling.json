@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "rootDir": "./", 
     "module": "commonjs",
-    "target": "es5",
+    "target": "es2024",
     "esModuleInterop": true
   },
-  "include": ["scripts"],
-  "exclude": ["src"]
+  "include": ["./scripts"],
+  "exclude": ["./src"]
 }
