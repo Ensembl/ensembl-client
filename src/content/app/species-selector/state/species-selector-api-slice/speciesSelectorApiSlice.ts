@@ -32,7 +32,7 @@ export type SpeciesSearchRequestParams = {
 export type SpeciesSearchResponse = {
   matches: SpeciesSearchMatch[];
   meta: {
-    total_count: number;
+    total_hits: number;
   };
 };
 

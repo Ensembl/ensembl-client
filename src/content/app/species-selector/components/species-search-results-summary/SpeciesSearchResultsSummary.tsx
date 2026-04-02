@@ -23,7 +23,7 @@ type Props = {
 };
 
 const SpeciesSearchResultsSummary = (props: Props) => {
-  const searchMatchesCount = props.searchResults?.meta.total_count ?? 0;
+  const searchMatchesCount = props.searchResults?.meta.total_hits ?? 0;
 
   return searchMatchesCount > 0 ? (
     <SuccessfulSearchResults count={searchMatchesCount} />
