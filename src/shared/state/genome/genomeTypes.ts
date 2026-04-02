@@ -68,6 +68,8 @@ export type BriefGenomeSummary = Pick<
   | 'is_reference'
   | 'number_of_genomes_in_group'
 > & {
+  is_suppressed: boolean;
+  suppression_details: string | null;
   assembly: Pick<GenomeInfo['assembly'], 'name' | 'accession_id'>;
 };
 

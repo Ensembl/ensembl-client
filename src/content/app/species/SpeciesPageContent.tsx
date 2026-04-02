@@ -46,7 +46,10 @@ import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseBu
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import type { GenomeInfo } from 'src/shared/state/genome/genomeTypes';
+import type {
+  BriefGenomeSummary,
+  GenomeInfo
+} from 'src/shared/state/genome/genomeTypes';
 
 import styles from './SpeciesPage.module.css';
 
@@ -90,7 +93,7 @@ const SpeciesPageContent = () => {
       return;
     }
     dispatch(setActiveGenomeId(genomeId));
-  }, [genomeId]);
+  }, [dispatch, genomeId]);
 
   if (isError && isGenomeNotFoundError(error)) {
     return (
@@ -101,7 +104,7 @@ const SpeciesPageContent = () => {
     );
   }
 
-  if (!speciesDetails) {
+  if (!genomeSummary || !speciesDetails) {
     return null; // TODO: consider some kind of a spinner?
   }
 
@@ -111,7 +114,12 @@ const SpeciesPageContent = () => {
 
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
-        sidebarContent={<SidebarContent speciesDetails={speciesDetails} />}
+        sidebarContent={
+          <SidebarContent
+            genomeSummary={genomeSummary}
+            speciesDetails={speciesDetails}
+          />
+        }
         sidebarNavigation={null}
         topbarContent={<TopBar isSidebarOpen={sidebarStatus} />}
         isSidebarOpen={sidebarStatus}
@@ -125,14 +133,20 @@ const SpeciesPageContent = () => {
   );
 };
 
-const SidebarContent = (props: { speciesDetails: GenomeInfo }) => {
+const SidebarContent = (props: {
+  genomeSummary: BriefGenomeSummary;
+  speciesDetails: GenomeInfo;
+}) => {
   const isSpeciesSidebarModalOpened = useAppSelector(
     getIsSpeciesSidebarModalOpened
   );
   return isSpeciesSidebarModalOpened ? (
     <SpeciesSidebarModal />
   ) : (
-    <SpeciesPageSidebar data={props.speciesDetails} />
+    <SpeciesPageSidebar
+      data={props.speciesDetails}
+      genomeSuppressionMessage={props.genomeSummary.suppression_details}
+    />
   );
 };
 
