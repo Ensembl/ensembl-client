@@ -113,9 +113,19 @@ type InputParams = {
   reduxDispatch: AppDispatch; // to make http requests using redux-toolkit-query, which provides caching
 };
 
+type InputParamsWithParsedLocation = {
+  referenceGenomeId: string;
+  altGenomeId: string;
+  referenceLocationString: string;
+  altLocationString: string | null;
+  referenceGenomeLocation: GenomicLocation;
+  altGenomeLocation: GenomicLocation | null;
+  reduxDispatch: AppDispatch;
+};
+
 type StartValidatingAction = {
   type: 'start-validating';
-  payload: Omit<InputParams, 'reduxDispatch'>;
+  payload: Omit<InputParamsWithParsedLocation, 'reduxDispatch'>;
 };
 
 type ReferenceGenomeIdInvalidAction = {
@@ -135,16 +145,18 @@ type AltGenomeIdInvalidAction = {
 type ReferenceGenomeLocationInvalidAction = {
   type: 'reference-genome-location-invalid';
   payload: {
-    referenceGenome: BriefGenomeSummary;
-    altGenome: BriefGenomeSummary;
+    referenceGenomeLocationString: string;
+    referenceGenome?: BriefGenomeSummary;
+    altGenome?: BriefGenomeSummary;
   };
 };
 
 type AltGenomeLocationInvalidAction = {
   type: 'alt-genome-location-invalid';
   payload: {
-    referenceGenome: BriefGenomeSummary;
-    altGenome: BriefGenomeSummary;
+    altGenomeLocationString: string;
+    referenceGenome?: BriefGenomeSummary;
+    altGenome?: BriefGenomeSummary;
   };
 };
 
@@ -225,25 +237,20 @@ const initialState: State = {
  * - Reference genome's region changes
  * - Alt genome's region changes
  */
-const canSkipValidation = (previous: InputParams, current: InputParams) => {
+const canSkipValidation = (
+  previous: InputParamsWithParsedLocation,
+  current: InputParamsWithParsedLocation
+) => {
   const prevRefGenomeId = previous.referenceGenomeId;
   const currRefGenomeId = current.referenceGenomeId;
   const prevAltGenomeId = previous.altGenomeId;
   const currAltGenomeId = current.altGenomeId;
-  const prevRefGenomicLocation = previous.referenceLocationString
-    ? getGenomicLocationFromString(previous.referenceLocationString)
-    : null;
-  const currRefGenomicLocation = current.referenceLocationString
-    ? getGenomicLocationFromString(current.referenceLocationString)
-    : null;
-  const prevAltGenomicLocation = previous.altLocationString
-    ? getGenomicLocationFromString(previous.altLocationString)
-    : null;
-  const currAltGenomicLocation = current.altLocationString
-    ? getGenomicLocationFromString(current.altLocationString)
-    : null;
-  const prevRefRegionName = prevRefGenomicLocation?.regionName ?? null;
-  const currRefRegionName = currRefGenomicLocation?.regionName ?? null;
+  const prevRefGenomicLocation = previous.referenceGenomeLocation;
+  const currRefGenomicLocation = current.referenceGenomeLocation;
+  const prevAltGenomicLocation = previous.altGenomeLocation;
+  const currAltGenomicLocation = current.altGenomeLocation;
+  const prevRefRegionName = prevRefGenomicLocation.regionName;
+  const currRefRegionName = currRefGenomicLocation.regionName;
   const prevAltRegionName = prevAltGenomicLocation?.regionName ?? null;
   const currAltRegionName = currAltGenomicLocation?.regionName ?? null;
 
@@ -264,14 +271,18 @@ const canSkipValidation = (previous: InputParams, current: InputParams) => {
  * - Check that reference genome's region exists and that location is within it
  * - If params include location in alternative genome, check that this region exists and that location is within it
  */
-const runFullLogic = async (params: InputParams): Promise<Action> => {
+const runFullLogic = async (
+  params: InputParamsWithParsedLocation
+): Promise<Action> => {
   const {
     reduxDispatch,
     referenceGenomeId,
     altGenomeId,
     referenceLocationString,
-    altLocationString
+    altLocationString,
+    referenceGenomeLocation
   } = params;
+  let { altGenomeLocation } = params;
 
   const genomeGroups = await fetchGenomeGroups({
     reduxDispatch: params.reduxDispatch
@@ -304,23 +315,6 @@ const runFullLogic = async (params: InputParams): Promise<Action> => {
     };
   }
 
-  let referenceGenomeLocation: GenomicLocation;
-  let altGenomeLocation: GenomicLocation | null = null;
-
-  try {
-    referenceGenomeLocation = getGenomicLocationFromString(
-      referenceLocationString
-    );
-  } catch {
-    return {
-      type: 'reference-genome-location-invalid',
-      payload: {
-        referenceGenome,
-        altGenome
-      }
-    };
-  }
-
   const referenceRegion = await fetchRegion({
     reduxDispatch,
     genomeId: referenceGenomeId,
@@ -337,25 +331,14 @@ const runFullLogic = async (params: InputParams): Promise<Action> => {
     return {
       type: 'reference-genome-location-invalid',
       payload: {
+        referenceGenomeLocationString: referenceLocationString,
         referenceGenome,
         altGenome
       }
     };
   }
 
-  if (altLocationString) {
-    try {
-      altGenomeLocation = getGenomicLocationFromString(altLocationString);
-    } catch {
-      return {
-        type: 'alt-genome-location-invalid',
-        payload: {
-          referenceGenome,
-          altGenome
-        }
-      };
-    }
-  } else {
+  if (!altGenomeLocation) {
     altGenomeLocation = await getInitialAltLocation({
       referenceGenomeId,
       altGenomeId,
@@ -399,6 +382,8 @@ const runFullLogic = async (params: InputParams): Promise<Action> => {
       return {
         type: 'alt-genome-location-invalid',
         payload: {
+          altGenomeLocationString:
+            altLocationString ?? getGenomicLocationString(altGenomeLocation),
           referenceGenome,
           altGenome
         }
@@ -540,7 +525,17 @@ const fetchAlignments = async ({
   queryParams.set('reference_viewport', referenceGenomeLocationString);
   queryParams.set('alt_genome_id', altGenomeId);
   const url = `${urlPath}?${queryParams.toString()}`;
-  return fetch(url).then((response) => response.json());
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error();
+    }
+    const alignments = await response.json();
+    return alignments;
+  } catch {
+    return [];
+  }
 };
 
 const isGenomicLocationValid = ({
@@ -618,7 +613,78 @@ const stateReducer = (state: State, action: Action): State => {
 
 const input$ = new Subject<InputParams>();
 
-const pairwiseInput$ = input$.pipe(startWith(null), pairwise());
+// First step of validation: make sure that location parameters from the url can be parsed
+const inputWithParsedLocation$: Observable<
+  | { isOk: true; payload: InputParamsWithParsedLocation }
+  | {
+      isOk: false;
+      action:
+        | ReferenceGenomeLocationInvalidAction
+        | AltGenomeLocationInvalidAction;
+    }
+> = input$.pipe(
+  map((input) => {
+    const { referenceLocationString, altLocationString } = input;
+    let referenceGenomeLocation: GenomicLocation;
+    let altGenomeLocation: GenomicLocation | null = null;
+
+    try {
+      referenceGenomeLocation = getGenomicLocationFromString(
+        referenceLocationString
+      );
+    } catch {
+      const action = {
+        type: 'reference-genome-location-invalid',
+        payload: {
+          referenceGenomeLocationString: referenceLocationString
+        }
+      } as ReferenceGenomeLocationInvalidAction;
+      return {
+        isOk: false,
+        action
+      };
+    }
+    try {
+      if (altLocationString) {
+        altGenomeLocation = getGenomicLocationFromString(altLocationString);
+      }
+    } catch {
+      const action = {
+        type: 'alt-genome-location-invalid',
+        payload: {
+          altGenomeLocationString: altLocationString
+        }
+      } as AltGenomeLocationInvalidAction;
+      return {
+        isOk: false,
+        action
+      };
+    }
+
+    return {
+      isOk: true,
+      payload: {
+        referenceGenomeId: input.referenceGenomeId,
+        altGenomeId: input.altGenomeId,
+        referenceLocationString,
+        altLocationString,
+        referenceGenomeLocation,
+        altGenomeLocation,
+        reduxDispatch: input.reduxDispatch
+      }
+    };
+  })
+);
+
+const [goodInput$, badInput$] = partition(inputWithParsedLocation$, (input) => {
+  return input.isOk;
+});
+
+const pairwiseInput$ = goodInput$.pipe(
+  map(({ payload }) => payload),
+  startWith(null),
+  pairwise()
+);
 
 const [inputForValidation$, inputNoValidation$] = partition(
   pairwiseInput$,
@@ -631,7 +697,7 @@ const [inputForValidation$, inputNoValidation$] = partition(
 );
 
 const actionAfterValidation$ = inputForValidation$.pipe(
-  map(([, currentInput]) => currentInput as InputParams),
+  map(([, currentInput]) => currentInput as InputParamsWithParsedLocation),
   switchMap((input) => {
     const startValidatingAction = {
       type: 'start-validating',
@@ -644,7 +710,7 @@ const actionAfterValidation$ = inputForValidation$.pipe(
 const actionWithoutValidation$ = inputNoValidation$.pipe(
   map(([, currentInput]) => {
     const { referenceLocationString, altLocationString } =
-      currentInput as InputParams;
+      currentInput as InputParamsWithParsedLocation;
     let referenceLocation: GenomicLocation;
     let altLocation: GenomicLocation;
     try {
@@ -667,7 +733,12 @@ const actionWithoutValidation$ = inputNoValidation$.pipe(
   filter((action) => Boolean(action))
 );
 
+const invalidLocationInInputAction$ = badInput$.pipe(
+  map(({ action }) => action)
+);
+
 const action$ = merge(
+  invalidLocationInInputAction$,
   actionAfterValidation$,
   actionWithoutValidation$ as Observable<UpdateLocationAction>
 );
