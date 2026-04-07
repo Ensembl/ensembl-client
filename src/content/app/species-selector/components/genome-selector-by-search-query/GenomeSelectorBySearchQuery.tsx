@@ -48,7 +48,6 @@ type Props = {
 
 const GenomeSelectorBySearchQuery = (props: Props) => {
   const { onClose } = props;
-  const [filterQuery, setFilterQuery] = useState('');
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
   const committedSpecies = useAppSelector(getCommittedSpecies);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,8 +66,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     changeSortRule
   } = useSelectableGenomesTable({
     genomes: currentData?.matches ?? [],
-    selectedGenomes: committedSpecies,
-    filterQuery
+    selectedGenomes: committedSpecies
   });
 
   const deferredGenomes = useDeferredValue(genomes);
@@ -106,7 +104,6 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
         onSearchSubmit={onSearchSubmit}
         onSearchInput={onSearchInput}
         onGenomesAdd={onSpeciesAdd}
-        onFilterChange={setFilterQuery}
         onClose={onClose}
       />
 
@@ -136,7 +133,6 @@ type TopSectionProps = {
   onSearchSubmit: (query: string) => void;
   onSearchInput: () => void;
   onGenomesAdd: () => void;
-  onFilterChange: (filter: string) => void;
   onClose: () => void;
 };
 

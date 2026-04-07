@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useDeferredValue, type FormEvent } from 'react';
+import { useState, useDeferredValue, type InputEvent } from 'react';
 
 import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
@@ -60,7 +60,6 @@ const BlastSpeciesSelector = (
 ) => {
   const { onClose, selectedSpecies } = props;
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterQuery, setFilterQuery] = useState('');
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
   const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
   const { currentData, isLoading, isError } = result;
@@ -75,8 +74,7 @@ const BlastSpeciesSelector = (
     changeSortRule
   } = useSelectableGenomesTable({
     genomes: currentData?.matches ?? [],
-    selectedGenomes: selectedSpecies,
-    filterQuery
+    selectedGenomes: selectedSpecies
   });
 
   const deferredGenomes = useDeferredValue(genomes);
@@ -87,7 +85,7 @@ const BlastSpeciesSelector = (
       : Infinity;
   const selectedGenomesCount = selectedSpecies.length;
 
-  const onSearchInput = (event: FormEvent<HTMLInputElement>) => {
+  const onSearchInput = (event: InputEvent<HTMLInputElement>) => {
     setSearchQuery(event.currentTarget.value);
     if (!canSubmitSearch) {
       setCanSubmitSearch(true);
@@ -115,7 +113,6 @@ const BlastSpeciesSelector = (
         onSearchSubmit={onSearchSubmit}
         onSearchInput={onSearchInput}
         onGenomesAdd={onSpeciesAdd}
-        onFilterChange={setFilterQuery}
         onClose={onClose}
       />
 
@@ -147,9 +144,8 @@ type TopSectionProps = {
   canAddGenomes: boolean;
   canSubmitSearch: boolean;
   onSearchSubmit: () => void;
-  onSearchInput: (event: FormEvent<HTMLInputElement>) => void;
+  onSearchInput: (event: InputEvent<HTMLInputElement>) => void;
   onGenomesAdd: () => void;
-  onFilterChange: (filter: string) => void;
   onClose: () => void;
 };
 

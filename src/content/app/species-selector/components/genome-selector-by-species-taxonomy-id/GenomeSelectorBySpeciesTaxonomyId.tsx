@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
@@ -45,7 +45,6 @@ type Props = {
 
 const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   const { speciesTaxonomyId } = props;
-  const [filterQuery, setFilterQuery] = useState('');
   const committedSpecies = useAppSelector(getCommittedSpecies);
   const [searchTrigger, result] = useLazyGetGenomesBySpeciesTaxonomyIdQuery();
   const { currentData: popularSpeciesData } = useGetPopularSpeciesQuery();
@@ -61,8 +60,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
     changeSortRule
   } = useSelectableGenomesTable({
     genomes: currentData?.matches ?? [],
-    selectedGenomes: committedSpecies,
-    filterQuery
+    selectedGenomes: committedSpecies
   });
 
   useEffect(() => {
@@ -83,7 +81,6 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
             genomes={genomes}
             stagedGenomes={stagedGenomes}
             speciesImageUrl={speciesImageUrl}
-            onFilterChange={setFilterQuery}
           />
           <div className={styles.tableContainer}>
             <SpeciesSearchResultsTable
@@ -106,7 +103,6 @@ type TopSectionProps = Props & {
   genomes: ReturnType<typeof useSelectableGenomesTable>['genomes'];
   stagedGenomes: ReturnType<typeof useSelectableGenomesTable>['stagedGenomes'];
   speciesImageUrl: string | undefined;
-  onFilterChange: (filter: string) => void;
 };
 
 const TopSection = (props: TopSectionProps) => {

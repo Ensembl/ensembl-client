@@ -18,8 +18,6 @@ import { useState, useMemo } from 'react';
 
 import useOrderedGenomes from './useOrderedGenomes';
 
-import filterGenomes from './filterGenomes';
-
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
 export type SelectableGenome = SpeciesSearchMatch & {
@@ -30,18 +28,14 @@ export type SelectableGenome = SpeciesSearchMatch & {
 type Params = {
   genomes: SpeciesSearchMatch[];
   selectedGenomes: Array<{ genome_id: string }>;
-  filterQuery?: string;
 };
 
 const useSelectableGenomesTable = (params: Params) => {
-  const { genomes, selectedGenomes, filterQuery } = params;
+  const { genomes, selectedGenomes } = params;
   const [stagedGenomes, setStagedGenomes] = useState<SpeciesSearchMatch[]>([]);
   const [isTableExpanded, setIsTableExpanded] = useState(false);
-  const filteredGenomes = filterQuery
-    ? filterGenomes({ query: filterQuery, genomes })
-    : genomes;
   const selectableGenomes = useMarkedGenomes({
-    genomes: filteredGenomes,
+    genomes,
     selectedGenomes,
     stagedGenomes
   });
