@@ -197,6 +197,10 @@ type UpdateLocationAction = {
   };
 };
 
+type ResetAction = {
+  type: 'reset';
+};
+
 type Action =
   | StartValidatingAction
   | ReferenceGenomeIdInvalidAction
@@ -205,7 +209,8 @@ type Action =
   | AltGenomeLocationInvalidAction
   | NoAlignmentsAction
   | SuccessAction
-  | UpdateLocationAction;
+  | UpdateLocationAction
+  | ResetAction;
 
 const initialState: State = {
   isValidating: false,
@@ -606,6 +611,8 @@ const stateReducer = (state: State, action: Action): State => {
         ...state,
         ...action.payload
       };
+    case 'reset':
+      return initialState;
     default:
       return state;
   }
@@ -737,16 +744,23 @@ const invalidLocationInInputAction$ = badInput$.pipe(
   map(({ action }) => action)
 );
 
+const resetAction$ = new Subject<ResetAction>();
+
 const action$ = merge(
   invalidLocationInInputAction$,
   actionAfterValidation$,
-  actionWithoutValidation$ as Observable<UpdateLocationAction>
+  actionWithoutValidation$ as Observable<UpdateLocationAction>,
+  resetAction$
 );
 
 const state$ = action$.pipe(scan(stateReducer, initialState), shareReplay(1));
 
 export const validateUrlParameters = (input: InputParams) => {
   input$.next(input);
+};
+
+export const resetParsedParameters = () => {
+  resetAction$.next({ type: 'reset' });
 };
 
 export type { State as ValidationState };

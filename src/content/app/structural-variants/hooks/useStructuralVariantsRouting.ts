@@ -20,7 +20,10 @@ import { useSearchParams } from 'react-router-dom';
 import { useAppDispatch } from 'src/store';
 
 import useParsedUrlParamsStore from './useParsedUrlParamsStore';
-import { validateUrlParameters } from './parsedUrlParamsStore';
+import {
+  validateUrlParameters,
+  resetParsedParameters
+} from './parsedUrlParamsStore';
 
 import { setGenomesAndLocations } from 'src/content/app/structural-variants/state/general/structuralVariantsGeneralSlice';
 
@@ -117,15 +120,16 @@ const useCheckedParams = ({
       !altGenomeIdParam ||
       !referenceLocationParam
     ) {
-      return;
+      resetParsedParameters();
+    } else {
+      validateUrlParameters({
+        reduxDispatch: dispatch,
+        referenceGenomeId: referenceGenomeIdParam,
+        referenceLocationString: referenceLocationParam,
+        altGenomeId: altGenomeIdParam,
+        altLocationString: altLocationParam
+      });
     }
-    validateUrlParameters({
-      reduxDispatch: dispatch,
-      referenceGenomeId: referenceGenomeIdParam,
-      referenceLocationString: referenceLocationParam,
-      altGenomeId: altGenomeIdParam,
-      altLocationString: altLocationParam
-    });
   }, [
     dispatch,
     referenceGenomeIdParam,
