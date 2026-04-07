@@ -6,11 +6,12 @@
   padding-left: var(--global-padding-left);
 }
 
+/* FIXME: review grid areas */
 .topSection {
   display: grid;
   grid-template-areas:
     "search-field ."
-    "results-summary filter";
+    "results-summary .";
   grid-template-columns: max-content max-content;
   column-gap: 80px;
   row-gap: 32px;
@@ -26,10 +27,6 @@
 
 .resultsSummaryWrapper {
   grid-area: results-summary;
-}
-
-.filterFieldWrapper {
-  grid-area: filter;
 }
 
 .loader {
