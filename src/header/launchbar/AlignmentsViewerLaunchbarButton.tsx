@@ -16,8 +16,6 @@
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { isProductionEnvironment } from 'src/shared/helpers/environment';
-
 import useLastVisitedPath from './useLastVisitedPath';
 
 import LaunchbarButton from './LaunchbarButton';
@@ -33,10 +31,6 @@ const rootPath = urlFor.structuralVariantsViewer();
 
 const RegulatoryActivityViewerLaunchbarButton = () => {
   const lastVisitedPath = useLastVisitedPath({ rootPath });
-
-  if (isProductionEnvironment()) {
-    return null;
-  }
 
   return (
     <LaunchbarButton

@@ -26,6 +26,7 @@ import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
+import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 const StructuralVariantsAppBar = () => {
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
@@ -46,6 +47,7 @@ const StructuralVariantsAppBar = () => {
       topLeft={appName}
       topRight={<SpeciesManagerIndicator />}
       mainContent={mainContent}
+      aside={<HelpPopupButton slug="alignments-viewer" />}
     />
   );
 };
