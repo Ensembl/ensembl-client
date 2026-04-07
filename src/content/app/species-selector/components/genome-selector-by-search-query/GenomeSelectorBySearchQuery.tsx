@@ -34,7 +34,6 @@ import AddSpecies from 'src/content/app/species-selector/components/species-sear
 import { SpeciesSearchField } from '../species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
-import GenomesFilterField from 'src/content/app/species-selector/components/genomes-filter-field/GenomesFilterField';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
@@ -188,9 +187,6 @@ const TopSection = (props: TopSectionProps) => {
         </div>
         <div className={styles.resultsSummaryWrapper}>
           <SpeciesSearchResultsSummary searchResults={props.searchResults} />
-        </div>
-        <div className={styles.filterFieldWrapper}>
-          <GenomesFilterField onFilterChange={props.onFilterChange} />
         </div>
       </section>
     );

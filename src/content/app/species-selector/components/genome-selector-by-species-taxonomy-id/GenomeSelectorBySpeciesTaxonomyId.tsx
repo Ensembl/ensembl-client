@@ -29,7 +29,6 @@ import {
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
-import GenomesFilterField from 'src/content/app/species-selector/components/genomes-filter-field/GenomesFilterField';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
 import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
@@ -68,7 +67,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
 
   useEffect(() => {
     searchTrigger({ speciesTaxonomyId });
-  }, []);
+  }, [searchTrigger, speciesTaxonomyId]);
 
   const speciesImageUrl = popularSpeciesData?.popular_species.find(
     (species) => species.species_taxonomy_id === speciesTaxonomyId
@@ -148,9 +147,6 @@ const TopSection = (props: TopSectionProps) => {
         Add
       </PrimaryButton>
       <CloseButtonWithLabel className={styles.closeButton} onClick={onClose} />
-      <div className={styles.filterWrapper}>
-        <GenomesFilterField onFilterChange={props.onFilterChange} />
-      </div>
     </section>
   );
 };

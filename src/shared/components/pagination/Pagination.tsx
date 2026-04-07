@@ -17,7 +17,7 @@ import {
   useState,
   type ChangeEvent,
   type FocusEvent,
-  type FormEvent
+  type SubmitEvent
 } from 'react';
 import classNames from 'classnames';
 
@@ -58,7 +58,7 @@ const Pagination = (props: PaginationProps) => {
     }
   };
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const parsedPageNumber = Number(pageNumber);
