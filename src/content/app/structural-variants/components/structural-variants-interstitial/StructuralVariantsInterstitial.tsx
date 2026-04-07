@@ -19,10 +19,6 @@ import { useNavigate } from 'react-router-dom';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import {
-  getGenomicLocationFromString,
-  type GenomicLocation
-} from 'src/shared/helpers/genomicLocationHelpers';
-import {
   doesSupportNavigationApi,
   getPreviousPageUrl
 } from 'src/shared/helpers/navigationHelpers';
@@ -60,10 +56,9 @@ type Props = {
   isAltGenomeIdValid: boolean;
   isReferenceGenomeLocationValid: boolean;
   isAltGenomeLocationValid: boolean;
-  isMissingAltGenomeRegion: boolean;
+  hasNoAlignments: boolean;
   referenceGenome: BriefGenomeSummary | null;
   altGenome: BriefGenomeSummary | null;
-  referenceGenomeLocation: GenomicLocation | null;
 };
 
 const StructuralVariantsInterstitial = (props: Props) => {
@@ -77,9 +72,8 @@ const StructuralVariantsInterstitial = (props: Props) => {
     isAltGenomeIdValid,
     isReferenceGenomeLocationValid,
     isAltGenomeLocationValid,
-    isMissingAltGenomeRegion,
+    hasNoAlignments,
     referenceGenome,
-    referenceGenomeLocation,
     altGenome
   } = props;
 
@@ -113,20 +107,8 @@ const StructuralVariantsInterstitial = (props: Props) => {
     );
   }
 
-  if (isMissingAltGenomeRegion) {
-    let regionName: string | null = null;
-    if (altLocationParam) {
-      regionName = getGenomicLocationFromString(altLocationParam).regionName;
-    } else if (referenceGenomeLocation) {
-      regionName = referenceGenomeLocation.regionName;
-    }
-
-    return (
-      <NoMatchingRegion
-        regionName={regionName}
-        genome={altGenome as BriefGenomeSummary}
-      />
-    );
+  if (hasNoAlignments) {
+    return <NoAlignmentsInSelection />;
   }
 
   if (altLocationParam && !isAltGenomeLocationValid) {
@@ -159,28 +141,11 @@ const InvalidGenomeId = (props: { genomeId: string }) => {
   );
 };
 
-/**
- * This is likely to be the most common error, given how easy it is right now
- * to ask for a location in the reference genome that does not exist in the
- * alternative genome, because the corresponding top-level region has not
- * been assembled at chromosome level
- */
-const NoMatchingRegion = (props: {
-  genome: BriefGenomeSummary;
-  regionName: string | null;
-}) => {
-  const { genome, regionName } = props;
-  const speciesName = createGenomeLabel(genome);
-
-  const displayRegionName = regionName
-    ? `chromosome ${regionName}`
-    : 'this region';
-
+const NoAlignmentsInSelection = () => {
   return (
     <div className={styles.container}>
-      <span>The selected genomes do not have corresponding regions</span>
       <span>
-        Data for {displayRegionName} is not available for {speciesName}
+        The selected genomes do not have any alignments in this region
       </span>
       <BackButton />
       <StartAgainButton />

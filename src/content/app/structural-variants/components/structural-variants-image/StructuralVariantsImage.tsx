@@ -53,7 +53,7 @@ type Props = {
   referenceGenome: BriefGenomeSummary;
   altGenome: BriefGenomeSummary;
   referenceGenomeLocation: GenomicLocation;
-  altGenomeLocation: GenomicLocation | null;
+  altGenomeLocation: GenomicLocation;
   regionLength: number;
   altRegionLength: number;
 };
@@ -86,6 +86,7 @@ const StructuralVariantsImage = (props: Props) => {
     const referenceGenomeLocation = event.detail.reference;
     const altGenomeLocation = event.detail.alt;
     const regionName = props.referenceGenomeLocation.regionName;
+    const altRegionName = props.altGenomeLocation.regionName;
 
     const url = urlFor.structuralVariantsViewer({
       referenceGenomeId,
@@ -95,7 +96,7 @@ const StructuralVariantsImage = (props: Props) => {
         ...referenceGenomeLocation
       },
       altGenomeLocation: {
-        regionName,
+        regionName: altRegionName,
         ...altGenomeLocation
       }
     });
@@ -151,6 +152,7 @@ const StructuralVariantsImage = (props: Props) => {
         altEnd={props.altGenomeLocation?.end ?? 0}
         regionName={props.referenceGenomeLocation.regionName}
         regionLength={props.regionLength}
+        altRegionName={props.altGenomeLocation.regionName}
         altRegionLength={props.altRegionLength}
         referenceTracks={trackIds.referenceGenomeTrackIds}
         altTracks={trackIds.altGenomeTrackIds}
@@ -227,6 +229,7 @@ type StructuralVariantsBrowserProps = DetailedHTMLProps<
   end: number;
   regionName: string;
   regionLength: number;
+  altRegionName: string;
   altStart?: number;
   altEnd?: number;
   altRegionLength: number;

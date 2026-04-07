@@ -19,12 +19,11 @@ import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
+import useParsedUrlParamsStore from 'src/content/app/structural-variants/hooks/useParsedUrlParamsStore';
 
 import TextButton from 'src/shared/components/text-button/TextButton';
 
 import type { GeneSearchMatch } from 'src/shared/types/search-api/search-match';
-import type { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 
 import sharedStyles from 'src/shared/components/in-app-search/InAppSearch.module.css';
 import styles from './FeatureSearchModal.module.css';
@@ -50,26 +49,13 @@ const SearchMatches = ({
   altGenomeId: string;
   matches: GeneSearchMatch[];
 }) => {
+  const { referenceRegionLength } = useParsedUrlParamsStore();
   const navigate = useNavigate();
-  const { currentData: referenceGenomeKaryotype } =
-    useGenomeKaryotypeQuery(referenceGenomeId);
-  const { currentData: altGenomeKaryotype } =
-    useGenomeKaryotypeQuery(altGenomeId);
-
-  if (!referenceGenomeKaryotype || !altGenomeKaryotype) {
-    return null;
-  }
-
-  const { navigableMatches, nonNavigableMatches } = partitionSearchMatches({
-    matches,
-    referenceGenomeKaryotype,
-    altGenomeKaryotype
-  });
 
   const onMatchSelect = (match: GeneSearchMatch) => {
     const referenceGenomeLocation = calculateViewportLocation({
       match,
-      referenceGenomeKaryotype
+      referenceRegionLength: referenceRegionLength as number
     });
 
     const url = urlFor.structuralVariantsViewer({
@@ -87,32 +73,14 @@ const SearchMatches = ({
   );
 
   return (
-    <div>
-      <div className={searchMatchesContainerClasses}>
-        {navigableMatches.map((match) => (
-          <div key={match.stable_id}>
-            <TextButton onClick={() => onMatchSelect(match)}>
-              <GeneResult gene={match} />
-            </TextButton>
-          </div>
-        ))}
-      </div>
-
-      {nonNavigableMatches.length > 0 && (
-        <>
-          <div className={styles.searchMatchesSectionHead}>
-            Not available in the alignment with this alternative genome:
-          </div>
-
-          <div className={searchMatchesContainerClasses}>
-            {nonNavigableMatches.map((match) => (
-              <div key={match.stable_id}>
-                <GeneResult gene={match} />
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+    <div className={searchMatchesContainerClasses}>
+      {matches.map((match) => (
+        <div key={match.stable_id}>
+          <TextButton onClick={() => onMatchSelect(match)}>
+            <GeneResult gene={match} />
+          </TextButton>
+        </div>
+      ))}
     </div>
   );
 };
@@ -130,39 +98,6 @@ const GeneResult = ({ gene }: { gene: GeneSearchMatch }) => {
   );
 };
 
-const partitionSearchMatches = ({
-  matches,
-  referenceGenomeKaryotype,
-  altGenomeKaryotype
-}: {
-  matches: GeneSearchMatch[];
-  referenceGenomeKaryotype: GenomeKaryotypeItem[];
-  altGenomeKaryotype: GenomeKaryotypeItem[];
-}) => {
-  const navigableMatches: GeneSearchMatch[] = [];
-  const nonNavigableMatches: GeneSearchMatch[] = [];
-
-  for (const match of matches) {
-    const isRefRegionAvailable = referenceGenomeKaryotype.some(
-      (item) => item.name === match.slice.region.name
-    );
-    const isAltRegionAvailable = altGenomeKaryotype.some(
-      (item) => item.name === match.slice.region.name
-    );
-
-    if (isRefRegionAvailable && isAltRegionAvailable) {
-      navigableMatches.push(match);
-    } else {
-      nonNavigableMatches.push(match);
-    }
-  }
-
-  return {
-    navigableMatches,
-    nonNavigableMatches
-  };
-};
-
 /**
  * Let's say target gene should be positioned centrally,
  * and take up half the viewport.
@@ -172,23 +107,19 @@ const partitionSearchMatches = ({
  */
 const calculateViewportLocation = ({
   match,
-  referenceGenomeKaryotype
+  referenceRegionLength
 }: {
   match: GeneSearchMatch;
-  referenceGenomeKaryotype: GenomeKaryotypeItem[];
+  referenceRegionLength: number;
 }) => {
   const regionName = match.slice.region.name;
-  const region = referenceGenomeKaryotype.find(
-    (item) => item.name === regionName
-  ) as GenomeKaryotypeItem;
-  const regionLength = region.length;
 
   const geneLength = match.slice.location.end - match.slice.location.start + 1;
   const desiredViewportBpLength = geneLength * 2;
   const quarterViewportLength = Math.ceil(desiredViewportBpLength / 4);
   const start = Math.max(1, match.slice.location.start - quarterViewportLength);
   const end = Math.min(
-    regionLength,
+    referenceRegionLength,
     match.slice.location.end + quarterViewportLength
   );
 
