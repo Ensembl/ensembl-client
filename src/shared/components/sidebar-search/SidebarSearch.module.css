@@ -86,8 +86,8 @@
 .pageNavButton {
   --image-button-default-svg-color: var(--color-blue);
   --image-button-disabled-svg-color: var(--color-grey);
-  width: var(--browser-nav-button-size, 22px);
-  height: var(--browser-nav-button-size, 22px);
+  width: 22px;
+  height: 22px;
 }
 
 .pageNavNextButton {
