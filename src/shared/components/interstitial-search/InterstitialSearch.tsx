@@ -24,8 +24,7 @@ import {
   getFeatureSearchModes,
   type FeatureSearchAppName,
   type FeatureSearchMode,
-  type FeatureSearchModesType,
-  type FeatureSearchMatchPosition
+  type FeatureSearchModesType
 } from 'src/shared/helpers/featureSearchHelpers';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -63,7 +62,6 @@ export type Props = {
 };
 
 const InterstitialSearch = (props: Props) => {
-  const searchPosition: FeatureSearchMatchPosition = 'interstitial';
   const { app, genomeId, genomeIdForUrl, onSearchSubmit } = props;
   const dispatch = useAppDispatch();
 
@@ -72,13 +70,15 @@ const InterstitialSearch = (props: Props) => {
     useState<FeatureSearchMode>(initialMode);
 
   const featureSearchQueries = useAppSelector((state) =>
-    getFeatureSearchQueries(state, app, genomeId, searchPosition)
+    getFeatureSearchQueries(state, app, genomeId)
   );
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
+  const resetGeneSearch = geneSearchResults.reset;
+  const resetVariantSearch = variantSearchResults.reset;
   const {
     currentData: currentVariantSearchResults,
     error: variantSearchError
@@ -89,6 +89,11 @@ const InterstitialSearch = (props: Props) => {
     featureSearchQueries[activeSearchMode as keyof typeof featureSearchQueries];
   const isGeneSearchMode = activeSearchMode === 'gene';
   const isVariantSearchMode = activeSearchMode === 'variant';
+
+  useEffect(() => {
+    resetGeneSearch();
+    resetVariantSearch();
+  }, [genomeId, resetGeneSearch, resetVariantSearch]);
 
   useEffect(() => {
     if (!query) {
@@ -126,7 +131,6 @@ const InterstitialSearch = (props: Props) => {
         updateGeneQuery({
           app,
           genomeId,
-          position: searchPosition,
           query: input
         })
       );
@@ -139,7 +143,6 @@ const InterstitialSearch = (props: Props) => {
         updateVariantQuery({
           app,
           genomeId,
-          position: searchPosition,
           query: input
         })
       );

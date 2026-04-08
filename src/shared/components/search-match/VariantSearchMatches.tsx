@@ -142,14 +142,14 @@ const Match = (props: MatchProps) => {
     })
   });
 
-  // NOTE: If this panel opens in genome browser, we should add `replaceState: true`
-  // to the genomeBrowser link config below
   const links = {
     genomeBrowser: {
-      url: urlForGenomeBrowser
+      url: urlForGenomeBrowser,
+      replaceState: false
     },
     entityViewer: {
-      url: urlForEntityViewer
+      url: urlForEntityViewer,
+      replaceState: false
     }
   };
 

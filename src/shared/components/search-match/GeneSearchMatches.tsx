@@ -197,7 +197,7 @@ const MatchDetails = (
   const links = {
     genomeBrowser: {
       url: urlForGenomeBrowser,
-      replaceState: true // TODO: could be more complicated than that; depending on the app
+      replaceState: false // TODO: could be more complicated than that; depending on the app
     },
     entityViewer: {
       url: urlForEntityViewer,

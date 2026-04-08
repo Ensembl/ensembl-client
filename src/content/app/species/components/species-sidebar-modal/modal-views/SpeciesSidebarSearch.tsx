@@ -45,6 +45,7 @@ const SpeciesSidebarSearch = () => {
 
   return activeGenomeId ? (
     <SidebarSearch
+      key={activeGenomeId}
       app="speciesHome"
       genomeId={activeGenomeId}
       genomeIdForUrl={genomeIdForUrl as string}

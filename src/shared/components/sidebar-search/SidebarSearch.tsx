@@ -17,12 +17,6 @@
 import { useState, type InputEvent, type SubmitEvent } from 'react';
 import classNames from 'classnames';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
-import { getFeatureSearchQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
-import {
-  updateGeneQuery,
-  updateVariantQuery
-} from 'src/shared/state/feature-search/featureSearchSlice';
 import {
   useLazySearchGenesQuery,
   useLazySearchVariantsQuery
@@ -37,8 +31,7 @@ import {
   getFeatureSearchLabelsByMode,
   getFeatureSearchModes,
   type FeatureSearchMode,
-  type FeatureSearchAppName,
-  type FeatureSearchMatchPosition
+  type FeatureSearchAppName
 } from 'src/shared/helpers/featureSearchHelpers';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -69,26 +62,15 @@ type Props = {
 };
 
 const SidebarSearch = (props: Props) => {
-  const searchPosition: FeatureSearchMatchPosition = 'sidebar';
   const { app, genomeId, genomeIdForUrl, onSearchSubmit, onMatchNavigation } =
     props;
-  const dispatch = useAppDispatch();
   const searchModes = getFeatureSearchModes();
-  const submittedQueries = useAppSelector((state) =>
-    getFeatureSearchQueries(state, app, genomeId, searchPosition)
-  );
 
   const [searchInputs, setSearchInputs] = useState<
     Record<FeatureSearchMode, string>
   >({
-    gene: submittedQueries.gene ?? '',
-    variant: submittedQueries.variant ?? ''
-  });
-  const [disableSubmitByMode, setDisableSubmitByMode] = useState<
-    Record<FeatureSearchMode, boolean>
-  >({
-    gene: !(submittedQueries.gene ?? '').trim(),
-    variant: !(submittedQueries.variant ?? '').trim()
+    gene: '',
+    variant: ''
   });
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
@@ -109,10 +91,6 @@ const SidebarSearch = (props: Props) => {
     };
 
     if (searchMode === 'gene') {
-      dispatch(
-        updateGeneQuery({ app, genomeId, position: searchPosition, query })
-      );
-
       if (!query.trim()) {
         geneSearchResults.reset();
         return;
@@ -123,10 +101,6 @@ const SidebarSearch = (props: Props) => {
     }
 
     if (searchMode === 'variant') {
-      dispatch(
-        updateVariantQuery({ app, genomeId, position: searchPosition, query })
-      );
-
       if (!query.trim()) {
         variantSearchResults.reset();
         return;
@@ -142,11 +116,6 @@ const SidebarSearch = (props: Props) => {
   ) => {
     event.preventDefault();
     const query = searchInputs[searchMode] || '';
-
-    setDisableSubmitByMode((currentDisableSubmitByMode) => ({
-      ...currentDisableSubmitByMode,
-      [searchMode]: true
-    }));
 
     submitSearch(searchMode, query, 1, 20);
 
@@ -164,11 +133,6 @@ const SidebarSearch = (props: Props) => {
       ...currentSearchInputs,
       [searchMode]: newQuery
     }));
-    setDisableSubmitByMode((currentDisableSubmitByMode) => ({
-      ...currentDisableSubmitByMode,
-      [searchMode]: !newQuery.trim()
-    }));
-
     if (!newQuery.trim()) {
       submitSearch(searchMode, '', 1, 20);
     }
@@ -209,13 +173,16 @@ const SidebarSearch = (props: Props) => {
                     currentVariantSearchResults={
                       variantSearchResults.currentData
                     }
-                    submittedQueries={submittedQueries}
+                    submittedGeneQuery={geneSearchResults.originalArgs?.query}
+                    submittedVariantQuery={
+                      variantSearchResults.originalArgs?.query
+                    }
                     submitSearch={submitSearch}
                   />
                   <PrimaryButton
                     type="submit"
                     className={styles.submitSidebar}
-                    disabled={disableSubmitByMode[searchMode]}
+                    disabled={!searchInputs[searchMode]?.trim()}
                   >
                     Go
                   </PrimaryButton>
@@ -246,7 +213,8 @@ type FeaturePageDetailsProps = {
   searchMode: FeatureSearchMode;
   currentGeneSearchResults: SearchResults | undefined;
   currentVariantSearchResults: SearchResults | undefined;
-  submittedQueries: ReturnType<typeof getFeatureSearchQueries>;
+  submittedGeneQuery: string | undefined;
+  submittedVariantQuery: string | undefined;
   submitSearch: (
     searchMode: FeatureSearchMode,
     query: string,
@@ -261,14 +229,15 @@ const FeaturePageDetails = (props: FeaturePageDetailsProps) => {
     currentGeneSearchResults,
     currentVariantSearchResults,
     submitSearch,
-    submittedQueries
+    submittedGeneQuery,
+    submittedVariantQuery
   } = props;
 
   if (searchMode === 'gene' && currentGeneSearchResults) {
     const { page, per_page, total_hits } = currentGeneSearchResults.meta;
     const hasPreviousPage = page > 1;
     const hasNextPage = total_hits > page * per_page;
-    const query = submittedQueries.gene ?? '';
+    const query = submittedGeneQuery ?? '';
 
     return (
       <PageDetails
@@ -287,7 +256,7 @@ const FeaturePageDetails = (props: FeaturePageDetailsProps) => {
     const { page, per_page, total_hits } = currentVariantSearchResults.meta;
     const hasPreviousPage = page > 1;
     const hasNextPage = total_hits > page * per_page;
-    const query = submittedQueries.variant ?? '';
+    const query = submittedVariantQuery ?? '';
 
     return (
       <PageDetails
