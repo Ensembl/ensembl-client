@@ -5,6 +5,12 @@
   height: 100%;
 }
 
+.resultsControls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--standard-gutter);
+}
+
 .tableContainer {
   overflow: auto;
   padding-bottom: var(--global-padding-bottom);
