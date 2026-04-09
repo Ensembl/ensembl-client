@@ -16,7 +16,10 @@
 
 import { useState, useDeferredValue, type InputEvent } from 'react';
 
-import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import {
+  useLazyGenomesQuery,
+  getSpeciesSearchLastPageNumber
+} from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
@@ -24,6 +27,7 @@ import AddSpecies from 'src/content/app/species-selector/components/species-sear
 import { SpeciesSearchField } from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
+import Pagination from 'src/shared/components/pagination/Pagination';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
@@ -60,9 +64,10 @@ const BlastSpeciesSelector = (
 ) => {
   const { onClose, selectedSpecies } = props;
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResultsPage, setSearchResultsPage] = useState(1);
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
-  const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
-  const { currentData, isLoading, isError } = result;
+  const [searchTrigger, result] = useLazyGenomesQuery();
+  const { data, isLoading, isError } = result;
 
   const {
     genomes,
@@ -73,7 +78,7 @@ const BlastSpeciesSelector = (
     sortRule,
     changeSortRule
   } = useSelectableGenomesTable({
-    genomes: currentData?.matches ?? [],
+    genomes: data?.matches ?? [],
     selectedGenomes: selectedSpecies
   });
 
@@ -97,8 +102,15 @@ const BlastSpeciesSelector = (
   };
 
   const onSearchSubmit = () => {
-    searchTrigger({ query: searchQuery });
+    const initialSearchPage = 1;
+    searchTrigger({ query: searchQuery, page: initialSearchPage });
+    setSearchResultsPage(initialSearchPage);
     setCanSubmitSearch(false);
+  };
+
+  const onPageNumberChange = (pageNumber: number) => {
+    setSearchResultsPage(pageNumber);
+    searchTrigger({ query: searchQuery, page: pageNumber });
   };
 
   return (
@@ -107,7 +119,7 @@ const BlastSpeciesSelector = (
         query={searchQuery}
         isLoading={isLoading}
         isError={isError}
-        searchResults={currentData}
+        searchResults={data}
         canAddGenomes={stagedGenomes.length > 0}
         canSubmitSearch={canSubmitSearch}
         onSearchSubmit={onSearchSubmit}
@@ -116,20 +128,32 @@ const BlastSpeciesSelector = (
         onClose={onClose}
       />
 
-      {currentData?.matches.length ? (
-        <div className={styles.tableContainer}>
-          <SpeciesSearchResultsTable
-            results={deferredGenomes}
-            isExpanded={isTableExpanded}
-            maxStagedGenomesNumber={
-              maxSelectableGenomesCount - selectedGenomesCount
-            }
-            sortRule={sortRule}
-            onSortRuleChange={changeSortRule}
-            onTableExpandToggle={onTableExpandToggle}
-            onSpeciesSelectToggle={onGenomeStageToggle}
-          />
-        </div>
+      {data?.matches.length ? (
+        <>
+          <div className={styles.resultsControls}>
+            <Pagination
+              currentPageNumber={searchResultsPage}
+              lastPageNumber={getSpeciesSearchLastPageNumber({
+                data,
+                perPage: 100
+              })}
+              onChange={onPageNumberChange}
+            />
+          </div>
+          <div className={styles.tableContainer}>
+            <SpeciesSearchResultsTable
+              results={deferredGenomes}
+              isExpanded={isTableExpanded}
+              maxStagedGenomesNumber={
+                maxSelectableGenomesCount - selectedGenomesCount
+              }
+              sortRule={sortRule}
+              onSortRuleChange={changeSortRule}
+              onTableExpandToggle={onTableExpandToggle}
+              onSpeciesSelectToggle={onGenomeStageToggle}
+            />
+          </div>
+        </>
       ) : null}
     </div>
   );

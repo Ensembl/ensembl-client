@@ -21,7 +21,10 @@ import { useAppSelector } from 'src/store';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import { useGenomesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import {
+  useGenomesQuery,
+  getSpeciesSearchLastPageNumber
+} from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
@@ -117,7 +120,10 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
           <div className={styles.resultsControls}>
             <Pagination
               currentPageNumber={pageNumber}
-              lastPageNumber={getTotalHitsCount(data)}
+              lastPageNumber={getSpeciesSearchLastPageNumber({
+                data,
+                perPage: matchesPerPage
+              })}
               onChange={onResultsPageChange}
             />
           </div>
@@ -224,10 +230,6 @@ const TopSection = (props: TopSectionProps) => {
 
   // this must be an error
   return <div>An unexpected error happened during search.</div>;
-};
-
-const getTotalHitsCount = (data: SpeciesSearchResponse) => {
-  return Math.ceil(data.meta.total_hits / matchesPerPage);
 };
 
 export default GenomeSelectorBySearchQuery;
