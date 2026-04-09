@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  useState,
-  useLayoutEffect,
-  useDeferredValue,
-  type InputEvent
-} from 'react';
+import { useState, useDeferredValue, type InputEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import { useGenomesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
@@ -34,6 +29,7 @@ import AddSpecies from 'src/content/app/species-selector/components/species-sear
 import { SpeciesSearchField } from '../species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
+import Pagination from 'src/shared/components/pagination/Pagination';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
@@ -46,15 +42,23 @@ type Props = {
   onClose: () => void;
 };
 
+const matchesPerPage = 100;
+
 const GenomeSelectorBySearchQuery = (props: Props) => {
   const { onClose } = props;
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
   const committedSpecies = useAppSelector(getCommittedSpecies);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
-  const { currentData, isFetching } = result;
-
   const query = searchParams.get('query') as string;
+  const pageString = searchParams.get('page') ?? '1';
+  let pageNumber = parseInt(pageString);
+  if (!pageNumber) {
+    pageNumber = 1;
+  }
+  const { data, isLoading } = useGenomesQuery({
+    query,
+    page: pageNumber
+  });
 
   const {
     genomes,
@@ -65,16 +69,11 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     sortRule,
     changeSortRule
   } = useSelectableGenomesTable({
-    genomes: currentData?.matches ?? [],
+    genomes: data?.matches ?? [],
     selectedGenomes: committedSpecies
   });
 
   const deferredGenomes = useDeferredValue(genomes);
-
-  // trigger the query before the component had a chance to render
-  useLayoutEffect(() => {
-    searchTrigger({ query });
-  }, [query, searchTrigger]);
 
   const onSearchInput = () => {
     if (!canSubmitSearch) {
@@ -93,12 +92,18 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     setCanSubmitSearch(false);
   };
 
+  const onResultsPageChange = (page: number) => {
+    const newPageParam = new URLSearchParams(searchParams);
+    newPageParam.set('page', `${page}`);
+    setSearchParams(newPageParam, { replace: true });
+  };
+
   return (
     <div className={styles.main}>
       <TopSection
         query={query}
-        isLoading={isFetching}
-        searchResults={currentData}
+        isLoading={isLoading}
+        searchResults={data}
         canAddGenomes={stagedGenomes.length > 0}
         canSubmitSearch={canSubmitSearch}
         onSearchSubmit={onSearchSubmit}
@@ -107,17 +112,26 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
         onClose={onClose}
       />
 
-      {currentData && currentData.matches.length > 0 && (
-        <div className={styles.tableContainer}>
-          <SpeciesSearchResultsTable
-            results={deferredGenomes}
-            isExpanded={isTableExpanded}
-            sortRule={sortRule}
-            onSortRuleChange={changeSortRule}
-            onTableExpandToggle={onTableExpandToggle}
-            onSpeciesSelectToggle={onGenomeStageToggle}
-          />
-        </div>
+      {data && data.matches.length > 0 && (
+        <>
+          <div className={styles.resultsControls}>
+            <Pagination
+              currentPageNumber={pageNumber}
+              lastPageNumber={getTotalHitsCount(data)}
+              onChange={onResultsPageChange}
+            />
+          </div>
+          <div className={styles.tableContainer}>
+            <SpeciesSearchResultsTable
+              results={deferredGenomes}
+              isExpanded={isTableExpanded}
+              sortRule={sortRule}
+              onSortRuleChange={changeSortRule}
+              onTableExpandToggle={onTableExpandToggle}
+              onSpeciesSelectToggle={onGenomeStageToggle}
+            />
+          </div>
+        </>
       )}
     </div>
   );
@@ -210,6 +224,10 @@ const TopSection = (props: TopSectionProps) => {
 
   // this must be an error
   return <div>An unexpected error happened during search.</div>;
+};
+
+const getTotalHitsCount = (data: SpeciesSearchResponse) => {
+  return Math.ceil(data.meta.total_hits / matchesPerPage);
 };
 
 export default GenomeSelectorBySearchQuery;
