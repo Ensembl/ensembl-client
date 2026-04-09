@@ -27,6 +27,7 @@ export type PopularSpeciesResponse = {
 
 export type SpeciesSearchRequestParams = {
   query: string;
+  page: number;
 };
 
 export type SpeciesSearchResponse = {
@@ -51,8 +52,8 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       SpeciesSearchResponse,
       SpeciesSearchRequestParams
     >({
-      query: ({ query }) => ({
-        url: `${config.searchApiBaseUrl}/genomes?query=${query}`
+      query: ({ query, page }) => ({
+        url: `${config.searchApiBaseUrl}/genomes?query=${query}&page=${page}&per_page=100`
       })
     }),
     getGenomesBySpeciesTaxonomyId: builder.query<
@@ -65,6 +66,10 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
     })
   })
 });
+
+// FIXME: update names of exports from this module to avoid the redundancy of "get ... query"
+export const useGenomesQuery =
+  speciesSelectorApiSlice.useGetSpeciesSearchResultsQuery;
 
 export const {
   useGetPopularSpeciesQuery,
