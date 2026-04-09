@@ -34,3 +34,13 @@
 .warning {
   color: var(--color-red);
 }
+
+.tabs {
+  display: flex;
+  gap: 25px;
+  margin-left: 20px;
+}
+
+.activeTab {
+  --text-button-disabled-color: var(--color-black);
+}

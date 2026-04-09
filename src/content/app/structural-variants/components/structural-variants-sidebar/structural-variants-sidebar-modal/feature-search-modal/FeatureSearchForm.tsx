@@ -26,8 +26,6 @@ import { getFeatureSearchLabelsByMode } from 'src/shared/helpers/featureSearchHe
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 
-// Reusing styles of a shared component
-import sharedStyles from 'src/shared/components/feature-search-form/FeatureSearchForm.module.css';
 import styles from './FeatureSearchModal.module.css';
 
 type Props = {
@@ -75,7 +73,7 @@ const FeatureSearchForm = (props: Props) => {
   return (
     <div>
       <div className={styles.inputLabel}>Find a gene in the reference</div>
-      <form className={sharedStyles.searchFormSidebar} onSubmit={onFormSubmit}>
+      <form className={styles.searchForm} onSubmit={onFormSubmit}>
         <ShadedInput
           onInput={onQueryChange}
           help={helpText}
@@ -84,13 +82,13 @@ const FeatureSearchForm = (props: Props) => {
           autoFocus={true}
           size="small"
         />
-        <div className={sharedStyles.sidebarBottomRow}>
+        <div className={styles.searchFormBottomRow}>
           {resultsInfo && (
-            <div className={sharedStyles.resultsInfo}>{resultsInfo}</div>
+            <div className={styles.resultsInfo}>{resultsInfo}</div>
           )}
           <PrimaryButton
             type="submit"
-            className={sharedStyles.submitSidebar}
+            className={styles.searchFormSubmit}
             disabled={shouldDisableSubmit}
           >
             Go

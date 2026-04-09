@@ -32,7 +32,7 @@ import {
   BrowserSidebarModalView
 } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
+import { clearSearch } from 'src/shared/state/feature-search/featureSearchSlice';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 

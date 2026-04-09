@@ -22,7 +22,7 @@ import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/sta
 
 import EntityViewerInterstitialInstructions from './entity-viewer-interstitial-instructions/EntityViewerInterstitialInstructions';
 import ExampleLinks from 'src/content/app/entity-viewer/components/example-links/ExampleLinks';
-import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
+import InterstitialSearch from 'src/shared/components/interstitial-search/InterstitialSearch';
 
 import styles from './EntityViewerInterstitial.module.css';
 
@@ -37,9 +37,8 @@ const EntityViewerInterstitial = () => {
   return (
     <div>
       <div className={styles.topPanel}>
-        <InAppSearch
+        <InterstitialSearch
           app="entityViewer"
-          mode="interstitial"
           genomeId={activeGenomeId}
           genomeIdForUrl={genomeIdForUrl as string}
         />

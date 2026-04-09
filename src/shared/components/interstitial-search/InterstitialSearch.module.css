@@ -1,0 +1,50 @@
+@layer components {
+
+  .interstitialSearch {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .spinner {
+    --circle-loader-display: block;
+    margin-top: 30px;
+    margin-left: 20px;
+  }
+
+  .searchMatches {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .resultsContainer {
+    flex: 1;
+    padding-left: 20px;
+    margin-top: 20px;
+  }
+
+  .hitsNumber {
+    font-weight: var(--font-weight-bold);
+  }
+
+  .warning {
+    color: var(--color-red);
+  }
+
+  .totalSearchHits {
+    margin: 20px 0 0 20px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 25px;
+    margin-left: 20px;
+  }
+
+  .activeTab {
+    --text-button-disabled-color: var(--color-black);
+  }
+
+}

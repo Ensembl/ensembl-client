@@ -19,12 +19,14 @@ import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import { faker } from '@faker-js/faker';
 
-import inAppSearchReducer from 'src/shared/state/in-app-search/inAppSearchSlice';
+import featureSearchReducer from 'src/shared/state/feature-search/featureSearchSlice';
 
-import InAppSearch, { Props as InAppSearchProps } from './InAppSearch';
+import InterstitialSearch, {
+  Props as InterstitialSearchProps
+} from './InterstitialSearch';
 
 const rootReducer = {
-  inAppSearch: inAppSearchReducer
+  featureSearch: featureSearchReducer
 };
 
 const getStore = (initialState = {}) => {
@@ -35,65 +37,40 @@ const getStore = (initialState = {}) => {
   });
 };
 
-const defaultProps: InAppSearchProps = {
+const defaultProps: InterstitialSearchProps = {
   app: 'genomeBrowser',
   genomeId: faker.string.uuid(),
-  genomeIdForUrl: 'human',
-  mode: 'interstitial'
+  genomeIdForUrl: 'human'
 };
 
-describe('<InAppSearch />', () => {
+describe('<InterstitialSearch />', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   describe('initial rendering', () => {
-    it('renders correctly before the request', () => {
-      const { container } = render(
-        <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} />
-        </Provider>
-      );
-
-      const inAppSearch = container.querySelector('.inAppSearch');
-      expect(inAppSearch).toBeTruthy();
-    });
-
-    it('renders with sidebar mode', () => {
-      const { container } = render(
-        <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} mode="sidebar" />
-        </Provider>
-      );
-
-      const inAppSearch = container.querySelector('.inAppSearch');
-      expect(inAppSearch).toBeTruthy();
-    });
-
     it('renders with interstitial mode', () => {
       const { container } = render(
         <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} mode="interstitial" />
+          <InterstitialSearch {...defaultProps} />
         </Provider>
       );
 
-      const inAppSearch = container.querySelector('.inAppSearch');
-      expect(inAppSearch).toBeTruthy();
+      const interstitialSearch = container.querySelector('.interstitialSearch');
+      expect(interstitialSearch).toBeTruthy();
     });
 
-    it('does not show results initially', () => {
+    it('does not show search matches initially', () => {
       const { container } = render(
         <Provider store={getStore()}>
-          <InAppSearch {...defaultProps} />
+          <InterstitialSearch {...defaultProps} />
         </Provider>
       );
 
       const resultsContainer = container.querySelector('.resultsContainer');
-      const resultsContainerSidebar = container.querySelector('.resultsContainerSidebar');
       const searchMatches = container.querySelector('.searchMatches');
-      
-      expect(resultsContainer).toBeFalsy();
-      expect(resultsContainerSidebar).toBeFalsy();
+
+      expect(resultsContainer).toBeTruthy();
       expect(searchMatches).toBeFalsy();
     });
   });
