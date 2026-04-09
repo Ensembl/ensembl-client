@@ -58,7 +58,6 @@ export type Props = {
   genomeId: string;
   genomeIdForUrl: string; // this should be a temporary measure; it should be returned by search api
   onSearchSubmit?: (query: string) => void;
-  onMatchNavigation?: () => void; // currently, there are no requirements for this callback to receive any data
 };
 
 const InterstitialSearch = (props: Props) => {
@@ -187,7 +186,6 @@ const InterstitialSearch = (props: Props) => {
       app={app}
       mode="interstitial"
       genomeIdForUrl={genomeIdForUrl}
-      onMatchNavigation={props.onMatchNavigation}
     />
   ) : isVariantSearchMode ? (
     isMissingResourceError(variantSearchError) ? (
@@ -200,7 +198,6 @@ const InterstitialSearch = (props: Props) => {
         app={app}
         mode="interstitial"
         genomeIdForUrl={genomeIdForUrl}
-        onMatchNavigation={props.onMatchNavigation}
       />
     ) : null
   ) : null;
