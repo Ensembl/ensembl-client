@@ -1,10 +1,11 @@
 .main {
   height: 100%;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
   grid-template-columns: 60px 1fr;
   grid-template-areas:
     "top top"
+    "controls controls"
     ". table";
   row-gap: 30px;
   padding-left: var(--double-standard-gutter);
@@ -52,6 +53,12 @@
 
 .loader {
   grid-area: table;  
+}
+
+.resultsControls {
+  grid-area: controls;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .tableContainer {

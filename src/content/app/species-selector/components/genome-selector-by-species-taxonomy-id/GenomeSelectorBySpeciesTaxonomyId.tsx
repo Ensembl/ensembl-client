@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import {
-  useGetPopularSpeciesQuery,
-  useLazyGetGenomesBySpeciesTaxonomyIdQuery
+  usePopularSpeciesQuery,
+  useGenomesBySpeciesTaxonomyIdQuery,
+  getSpeciesSearchLastPageNumber
 } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
@@ -33,6 +33,7 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
 import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 import InfoPill from 'src/shared/components/info-pill/InfoPill';
+import Pagination from 'src/shared/components/pagination/Pagination';
 
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
@@ -46,9 +47,17 @@ type Props = {
 const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   const { speciesTaxonomyId } = props;
   const committedSpecies = useAppSelector(getCommittedSpecies);
-  const [searchTrigger, result] = useLazyGetGenomesBySpeciesTaxonomyIdQuery();
-  const { currentData: popularSpeciesData } = useGetPopularSpeciesQuery();
-  const { currentData, isLoading, isError } = result;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageString = searchParams.get('page') ?? '1';
+  const { currentData: popularSpeciesData } = usePopularSpeciesQuery();
+  let pageNumber = parseInt(pageString);
+  if (!pageNumber) {
+    pageNumber = 1;
+  }
+  const { data, isLoading, isError } = useGenomesBySpeciesTaxonomyIdQuery({
+    speciesTaxonomyId,
+    page: pageNumber
+  });
 
   const {
     genomes,
@@ -59,13 +68,15 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
     sortRule,
     changeSortRule
   } = useSelectableGenomesTable({
-    genomes: currentData?.matches ?? [],
+    genomes: data?.matches ?? [],
     selectedGenomes: committedSpecies
   });
 
-  useEffect(() => {
-    searchTrigger({ speciesTaxonomyId });
-  }, [searchTrigger, speciesTaxonomyId]);
+  const onResultsPageChange = (page: number) => {
+    const newPageParam = new URLSearchParams(searchParams);
+    newPageParam.set('page', `${page}`);
+    setSearchParams(newPageParam, { replace: true });
+  };
 
   const speciesImageUrl = popularSpeciesData?.popular_species.find(
     (species) => species.species_taxonomy_id === speciesTaxonomyId
@@ -74,7 +85,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   return (
     <div className={styles.main}>
       {isLoading && <CircleLoader className={styles.loader} />}
-      {currentData && (
+      {data && (
         <>
           <TopSection
             {...props}
@@ -82,6 +93,16 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
             stagedGenomes={stagedGenomes}
             speciesImageUrl={speciesImageUrl}
           />
+          <div className={styles.resultsControls}>
+            <Pagination
+              currentPageNumber={pageNumber}
+              lastPageNumber={getSpeciesSearchLastPageNumber({
+                data,
+                perPage: 100
+              })}
+              onChange={onResultsPageChange}
+            />
+          </div>
           <div className={styles.tableContainer}>
             <SpeciesSearchResultsTable
               results={genomes}
