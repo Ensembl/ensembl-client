@@ -27,7 +27,7 @@ import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalyti
 
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { useGetPopularSpeciesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import { usePopularSpeciesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import { useSpeciesDetailsQuery } from 'src/content/app/species/state/api/speciesApiSlice';
 
 import DeletionConfirmation from 'src/shared/components/deletion-confirmation/DeletionConfirmation';
@@ -42,7 +42,7 @@ import type { RootState } from 'src/store';
 import styles from './SpeciesTitleArea.module.css';
 
 const useSpecies = () => {
-  const { currentData } = useGetPopularSpeciesQuery();
+  const { currentData } = usePopularSpeciesQuery();
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const committedSpecies = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)
@@ -100,7 +100,9 @@ const SpeciesTitleArea = () => {
 
   const onRemove = () => {
     dispatch(deleteSpeciesAndSave(activeGenomeId));
-    species && trackDeletedSpecies(species);
+    if (species) {
+      trackDeletedSpecies(species);
+    }
     navigate(urlFor.speciesSelector());
   };
 
