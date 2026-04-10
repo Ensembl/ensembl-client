@@ -40,6 +40,8 @@ export type SpeciesSearchResponse = {
 
 export type GenomesSearchBySpeciesTaxonomyIdRequestParams = {
   speciesTaxonomyId: string | number;
+  page: number;
+  perPage?: number;
 };
 
 const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
@@ -61,8 +63,8 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       SpeciesSearchResponse,
       GenomesSearchBySpeciesTaxonomyIdRequestParams
     >({
-      query: ({ speciesTaxonomyId }) => ({
-        url: `${config.searchApiBaseUrl}/genomes?species_taxonomy_id=${speciesTaxonomyId}`
+      query: ({ speciesTaxonomyId, page, perPage = 100 }) => ({
+        url: `${config.searchApiBaseUrl}/genomes?species_taxonomy_id=${speciesTaxonomyId}&page=${page}&per_page=${perPage}`
       })
     })
   })
@@ -83,6 +85,10 @@ export const useGenomesQuery =
   speciesSelectorApiSlice.useGetSpeciesSearchResultsQuery;
 export const useLazyGenomesQuery =
   speciesSelectorApiSlice.useLazyGetSpeciesSearchResultsQuery;
+export const useGenomesBySpeciesTaxonomyIdQuery =
+  speciesSelectorApiSlice.useGetGenomesBySpeciesTaxonomyIdQuery;
+export const usePopularSpeciesQuery =
+  speciesSelectorApiSlice.useGetPopularSpeciesQuery;
 
 export const {
   useGetPopularSpeciesQuery,
