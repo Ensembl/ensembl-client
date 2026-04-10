@@ -80,7 +80,6 @@ export const getSpeciesSearchLastPageNumber = ({
   return Math.ceil(data.meta.total_hits / perPage);
 };
 
-// FIXME: update names of exports from this module to avoid the redundancy of "get ... query"
 export const useGenomesQuery =
   speciesSelectorApiSlice.useGetSpeciesSearchResultsQuery;
 export const useLazyGenomesQuery =
@@ -89,9 +88,3 @@ export const useGenomesBySpeciesTaxonomyIdQuery =
   speciesSelectorApiSlice.useGetGenomesBySpeciesTaxonomyIdQuery;
 export const usePopularSpeciesQuery =
   speciesSelectorApiSlice.useGetPopularSpeciesQuery;
-
-export const {
-  useGetPopularSpeciesQuery,
-  useLazyGetSpeciesSearchResultsQuery,
-  useLazyGetGenomesBySpeciesTaxonomyIdQuery
-} = speciesSelectorApiSlice;
