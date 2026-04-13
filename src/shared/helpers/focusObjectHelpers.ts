@@ -55,15 +55,14 @@ export const buildFocusIdForUrl = (
 };
 
 export const parseFocusIdFromUrl = (id: string) => {
-  const regex = /(.+?):(.+)/;
+  const regex = /(?<feature_type>.+?):(?<feature_id>.+)/;
   const match = id.match(regex);
 
-  if (match?.length === 3) {
-    // whole id plus its two constituent parts
-    const [, type, objectId] = match;
+  if (match?.groups?.feature_type && match?.groups?.feature_id) {
+    const { feature_type, feature_id } = match.groups;
     return {
-      type,
-      objectId
+      type: feature_type,
+      objectId: feature_id
     };
   } else {
     throw new Error(`Malformed focus id "${id}" in url`);

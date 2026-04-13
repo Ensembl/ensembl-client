@@ -35,6 +35,7 @@ import EntityViewerInterstitial from './interstitial/EntityViewerInterstitial';
 import MissingGenomeError from 'src/shared/components/error-screen/url-errors/MissingGenomeError';
 import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 import EntityViewerForGene from './EntityViewerForGene';
+import EntityViewerForTranscript from './EntityViewerForTranscript';
 import EntityViewerForVariant from './EntityViewerForVariant';
 
 import styles from './EntityViewer.module.css';
@@ -100,6 +101,8 @@ const EntityViewerController = (props: { entityType: string }) => {
 
   if (entityType === 'gene') {
     return <EntityViewerForGene />;
+  } else if (entityType === 'transcript') {
+    return <EntityViewerForTranscript />;
   } else if (entityType === 'variant') {
     return <EntityViewerForVariant />;
   } else {

@@ -25,10 +25,10 @@ import type { FocusObjectIdConstituents } from 'src/shared/types/focus-object/fo
  * - genomeIdForUrl — same; but generated considering what the active genome id is
  * - entityIdInUrl — a combination of the entity type with the stable id of the entity
  * - genomeId — actual id of a genome, as retrieved from the backend
- * - entityId — the full id that is used on the client as a key when storing entity information;
+ * - entityId — the full id that is used on the client as a key when storing entity information;
  *   is comprised of genome id, entity type, and entity stable id
- * - activeGenomeId — the id of the genome that is currently being viewed
- * - activeEntityId — the full id of the entity that that is currently being viewed
+ * - activeGenomeId — the id of the genome that is currently being viewed
+ * - activeEntityId — the full id of the entity that that is currently being viewed
  */
 
 export type EntityViewerIdsContextType = {
