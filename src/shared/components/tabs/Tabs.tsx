@@ -15,7 +15,6 @@
  */
 
 import classNames from 'classnames';
-import noop from 'lodash/noop';
 
 import styles from './Tabs.module.css';
 
@@ -68,13 +67,14 @@ export const Tabs = (props: TabsProps) => {
   return (
     <div className={tabsContainerClassName}>
       {Object.values(props.tabs).map((tab: Tab) => (
-        <span
+        <button
           className={getTabClassNames(tab)}
           key={tab.title}
-          onClick={tab.isDisabled ? noop : () => onTabSelect(tab.title)}
+          onClick={() => onTabSelect(tab.title)}
+          disabled={tab.isDisabled}
         >
           {tab.title}
-        </span>
+        </button>
       ))}
     </div>
   );

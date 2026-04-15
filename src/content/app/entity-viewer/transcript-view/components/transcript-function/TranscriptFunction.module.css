@@ -1,0 +1,34 @@
+.panel {
+  width: initial;
+  min-height: 100%;
+}
+
+.panelBody {
+  color: var(--color-black);
+  min-height: 300px;
+  margin-right: 30px;
+  padding-bottom: 100px;
+  z-index: 0; /* so that a tooltip brought up inside the body goes behind the panel header instead of over it on scrolling */
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  position: sticky;
+  z-index: 1;
+}
+
+/* FIXME: instead of trying to unset the height of the tabs component, the tabs component should be updated to not have default height */
+.tabsContainer {
+  height: auto;
+}
+
+.tab {
+  padding: 3px 30px;
+}
+
+.selectedTab {
+  background-color: transparent;
+  color: var(--color-black);
+  font-weight: var(--font-weight-bold);
+}

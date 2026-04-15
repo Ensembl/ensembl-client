@@ -24,7 +24,7 @@ import type { FullProductGeneratingContext } from 'src/shared/types/core-api/pro
 import type { Product } from 'src/shared/types/core-api/product';
 import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
-const transcriptFieldsFragment = gql`
+export const transcriptFieldsFragment = gql`
   fragment transcriptFields on Transcript {
     stable_id
     unversioned_stable_id
