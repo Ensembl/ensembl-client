@@ -15,3 +15,4 @@
  */
 
 export const GENE_IMAGE_WIDTH = 695;
+export const GENE_IMAGE_HEIGHT = 18;

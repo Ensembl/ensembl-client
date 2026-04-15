@@ -20,6 +20,7 @@ import classNames from 'classnames';
 import useTranscriptViewIds from 'src/content/app/entity-viewer/transcript-view/hooks/useTranscriptViewIds';
 import { useDefaultEntityViewerTranscriptQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
+import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import TranscriptViewTabs from './components/transcript-view-tabs/TranscriptViewTabs';
 import TranscriptFunction from './components/transcript-function/TranscriptFunction';
 
@@ -38,13 +39,17 @@ const TranscriptView = () => {
     }
   );
 
+  if (!currentData) {
+    return null; // FIXME: show a spinner?
+  }
+
   return (
     <div className={styles.container}>
-      <div className={styles.gridColumns}>
-        <div className={styles.geneSectionLeft}>gene section left</div>
-        <div className={styles.geneSectionMiddle}>gene section middle</div>
-        <div className={styles.geneSectionRight}>gene section right</div>
-      </div>
+      <GeneOverviewImage
+        transcript={currentData.transcript}
+        gene={currentData.transcript.gene}
+        onTicksCalculated={(ticks) => console.log('ticks calculated!', ticks)}
+      />
       <div className={classNames(styles.tabsSection, styles.gridColumns)}>
         <div className={styles.tabs}>
           <TranscriptViewTabs
