@@ -14,9 +14,58 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
+import classNames from 'classnames';
+
+import useTranscriptViewIds from 'src/content/app/entity-viewer/transcript-view/hooks/useTranscriptViewIds';
+import { useDefaultEntityViewerTranscriptQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+
+import TranscriptViewTabs from './components/transcript-view-tabs/TranscriptViewTabs';
+import TranscriptFunction from './components/transcript-function/TranscriptFunction';
+
+import styles from './TranscriptView.module.css';
+
 const TranscriptView = () => {
-  return <div>Transcript view!</div>;
-  // <div>{ JSON.stringify({ activeGenomeId, activeEntityId }) }</div>
+  const { activeGenomeId, transcriptId } = useTranscriptViewIds();
+  const [selectedView, setSelectedView] = useState('Transcript'); // this is temporary
+  const { currentData } = useDefaultEntityViewerTranscriptQuery(
+    {
+      genomeId: activeGenomeId ?? '',
+      transcriptId: transcriptId ?? ''
+    },
+    {
+      skip: !activeGenomeId || !transcriptId
+    }
+  );
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.gridColumns}>
+        <div className={styles.geneSectionLeft}>gene section left</div>
+        <div className={styles.geneSectionMiddle}>gene section middle</div>
+        <div className={styles.geneSectionRight}>gene section right</div>
+      </div>
+      <div className={classNames(styles.tabsSection, styles.gridColumns)}>
+        <div className={styles.tabs}>
+          <TranscriptViewTabs
+            activeView={selectedView}
+            onViewChange={setSelectedView}
+          />
+        </div>
+      </div>
+      {selectedView === 'Transcript' ? (
+        <div className={styles.gridColumns}>
+          <div>Left</div>
+          <div className={styles.middleColumn}>
+            Default content for the transcript view for{' '}
+            {currentData?.transcript.stable_id}
+          </div>
+        </div>
+      ) : (
+        <TranscriptFunction />
+      )}
+    </div>
+  );
 };
 
 export default TranscriptView;

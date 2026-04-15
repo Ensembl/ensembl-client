@@ -1,0 +1,55 @@
+.container {
+  --gene-image-width: 695px; /* Note that there is a GENE_IMAGE_WIDTH js constant that this value should be in agreement with */
+  --gene-view-left-column-width: 160px;
+  --gene-view-middle-column-left-gap: 18px;
+  --gene-view-middle-column-width: var(--gene-image-width);
+  --gene-view-middle-column-right-gap: 27px;
+  --gene-view-right-column-width: 180px;
+
+  color: var(--color-white);
+  display: grid;
+  grid-template-rows:
+    [gene-section-row] min-content
+    [tabs-row] minmax(76px, auto)
+    [tab-content-row] minmax(0, 1fr);
+  
+  background-color: var(--color-black);
+  padding: 60px var(--standard-gutter) 0;
+  height: 100%; /* may need to change this later */
+  width: 100%;
+  overflow: auto;
+}
+
+.gridColumns {
+  display: grid;
+  grid-template-columns:
+    [column-left] 160px
+    [column-left-gap] 18px
+    [column-middle] var(--gene-image-width)
+    [column-right-gap] 27px
+    [column-right] minmax(180px, 1fr);
+}
+
+.middleColumn {
+  grid-column: column-middle;
+}
+
+.geneSectionLeft {
+  grid-column: column-left;
+}
+
+.geneSectionMiddle {
+  grid-column: column-middle;
+}
+
+.geneSectionRight {
+  grid-column: column-right;
+}
+
+.tabsSection {
+  align-self: end;
+}
+
+.tabs {
+  grid-column: column-middle;
+}
