@@ -24,10 +24,14 @@ import {
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
-import { GENE_IMAGE_WIDTH } from 'src/content/app/entity-viewer/gene-view/constants/geneViewConstants';
+import {
+  GENE_IMAGE_WIDTH,
+  GENE_IMAGE_HEIGHT
+} from 'src/content/app/entity-viewer/gene-view/constants/geneViewConstants';
 
 import UnsplicedTranscript, {
-  UnsplicedTranscriptProps
+  UnsplicedTranscriptProps,
+  UNSPLICED_TRANSCRIPT_HEIGHT
 } from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
@@ -89,7 +93,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
         getFeatureCoordinates(transcript);
       const startX = scale(transcriptStart);
       const endX = scale(transcriptEnd);
-      const y = 10;
+      const y = GENE_IMAGE_HEIGHT / 2 - UNSPLICED_TRANSCRIPT_HEIGHT / 2;
       const width = Math.floor(endX - startX);
       return (
         <g key={index} transform={`translate(${startX} ${y})`}>
@@ -105,8 +109,10 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
     }
   );
 
+  const viewBox = `0 0 ${GENE_IMAGE_WIDTH} ${GENE_IMAGE_HEIGHT}`;
+
   return (
-    <svg className={styles.containerSVG} width={GENE_IMAGE_WIDTH}>
+    <svg className={styles.containerSVG} viewBox={viewBox}>
       {renderedTranscripts}
     </svg>
   );

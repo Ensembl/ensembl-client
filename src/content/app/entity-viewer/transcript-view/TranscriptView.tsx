@@ -22,13 +22,17 @@ import { useDefaultEntityViewerTranscriptQuery } from 'src/content/app/entity-vi
 
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import TranscriptViewTabs from './components/transcript-view-tabs/TranscriptViewTabs';
+import TranscriptDetails from './components/transcript-details/TranscriptDetails';
 import TranscriptFunction from './components/transcript-function/TranscriptFunction';
+
+import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
 import styles from './TranscriptView.module.css';
 
 const TranscriptView = () => {
   const { activeGenomeId, transcriptId } = useTranscriptViewIds();
   const [selectedView, setSelectedView] = useState('Transcript'); // this is temporary
+  const [rulerTicks, setRulerTicks] = useState<TicksAndScale | null>(null);
   const { currentData } = useDefaultEntityViewerTranscriptQuery(
     {
       genomeId: activeGenomeId ?? '',
@@ -48,7 +52,7 @@ const TranscriptView = () => {
       <GeneOverviewImage
         transcript={currentData.transcript}
         gene={currentData.transcript.gene}
-        onTicksCalculated={(ticks) => console.log('ticks calculated!', ticks)}
+        onTicksCalculated={setRulerTicks}
       />
       <div className={classNames(styles.tabsSection, styles.gridColumns)}>
         <div className={styles.tabs}>
@@ -58,14 +62,11 @@ const TranscriptView = () => {
           />
         </div>
       </div>
-      {selectedView === 'Transcript' ? (
-        <div className={styles.gridColumns}>
-          <div>Left</div>
-          <div className={styles.middleColumn}>
-            Default content for the transcript view for{' '}
-            {currentData?.transcript.stable_id}
-          </div>
-        </div>
+      {selectedView === 'Transcript' && rulerTicks ? (
+        <TranscriptDetails
+          transcript={currentData.transcript}
+          rulerTicks={rulerTicks}
+        />
       ) : (
         <TranscriptFunction />
       )}

@@ -1,0 +1,57 @@
+.container {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+}
+
+.header {
+  border-bottom: 1px solid var(--color-orange);
+  padding: 0;
+  position: sticky;
+  top: -5px;
+  background-color: var(--color-black);
+  z-index: 1;
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.main {
+  position: relative;
+  padding-top: 36px;
+  padding-bottom: var(--global-padding-bottom);
+}
+
+.stripedBackground {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--gene-view-left-column-width) + var(--gene-view-middle-column-left-gap));
+}
+
+.stripe {
+  position: absolute;
+  width: 1px;
+  top: 0;
+  bottom: 0;
+  background: var(--color-orange);
+  opacity: 0.4;
+}
+
+.row {
+  align-items: center;
+}
+
+.columnRight {
+  grid-column: column-right;
+}
+
+.columnMiddle {
+  grid-column: column-middle;
+}
+
+.transcriptImageWrapper {
+  display: inline-block;
+  fill: white;
+  stroke: white;
+}
+

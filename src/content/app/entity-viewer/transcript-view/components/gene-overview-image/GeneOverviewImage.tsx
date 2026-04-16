@@ -30,7 +30,8 @@ import {
 } from 'src/content/app/entity-viewer/gene-view/constants/geneViewConstants';
 
 import UnsplicedTranscript, {
-  UnsplicedTranscriptProps
+  UnsplicedTranscriptProps,
+  UNSPLICED_TRANSCRIPT_HEIGHT
 } from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import FeatureLengthRuler, {
   type TicksAndScale
@@ -90,7 +91,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
     getFeatureCoordinates(transcript);
   const startX = geneScale(transcriptStart);
   const endX = geneScale(transcriptEnd);
-  const y = 10; // offset from the top of the drawing area
+  const y = GENE_IMAGE_HEIGHT / 2 - UNSPLICED_TRANSCRIPT_HEIGHT / 2; // offset from the top of the drawing area
   const width = Math.floor(endX - startX);
 
   return (

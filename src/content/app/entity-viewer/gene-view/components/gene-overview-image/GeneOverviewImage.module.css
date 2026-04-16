@@ -13,7 +13,6 @@
 .containerSVG {
   grid-column: 3/4;
   background-color: var(--color-light-grey);
-  height: 18px;
 }
 
 .transcript rect {
