@@ -20,6 +20,7 @@ import { getFeatureLength } from 'src/content/app/entity-viewer/shared/helpers/e
 
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
+import TranscriptInfoPanel from 'src/content/app/entity-viewer/transcript-view/components/transcript-details/transcript-info-panel/TranscriptInfoPanel';
 
 import type { DefaultEntityViewerTranscriptQueryResult } from 'src/content/app/entity-viewer/state/api/queries/transcriptDefaultQuery';
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
@@ -30,6 +31,7 @@ import styles from './TranscriptDetails.module.css';
 type Transcript = DefaultEntityViewerTranscriptQueryResult['transcript'];
 
 export type Props = {
+  genomeId: string;
   transcript: Transcript;
   rulerTicks: TicksAndScale;
 };
@@ -48,7 +50,7 @@ const TranscriptDetails = (props: Props) => {
   return (
     <div className={styles.container}>
       <div className={classNames(styles.header, commonStyles.gridColumns)}>
-        <div className={styles.columnRight}>Header</div>
+        <div className={styles.columnRight}>Transcript ID</div>
       </div>
       <div className={styles.main}>
         <StripedBackground {...props} />
@@ -66,6 +68,15 @@ const TranscriptDetails = (props: Props) => {
               />
             </div>
           </div>
+          <div className={styles.columnRight}>{props.transcript.stable_id}</div>
+        </div>
+        <div className={classNames(commonStyles.gridColumns, styles.row)}>
+          <TranscriptInfoPanel
+            genomeId={props.genomeId}
+            transcript={props.transcript}
+            gene={props.transcript.gene}
+            className={styles.columnMiddle}
+          />
         </div>
       </div>
     </div>

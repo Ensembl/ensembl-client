@@ -48,6 +48,12 @@
 
 .tabsSection {
   align-self: end;
+  position: sticky;
+  top: -80px;
+  background-color: var(--color-black);
+  height: 76px;
+  align-items: flex-end;
+  z-index: 2;
 }
 
 .tabs {

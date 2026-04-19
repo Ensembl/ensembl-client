@@ -43,7 +43,7 @@ const TranscriptView = () => {
     }
   );
 
-  if (!currentData) {
+  if (!activeGenomeId || !currentData) {
     return null; // FIXME: show a spinner?
   }
 
@@ -64,6 +64,7 @@ const TranscriptView = () => {
       </div>
       {selectedView === 'Transcript' && rulerTicks ? (
         <TranscriptDetails
+          genomeId={activeGenomeId}
           transcript={currentData.transcript}
           rulerTicks={rulerTicks}
         />

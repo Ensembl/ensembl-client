@@ -38,7 +38,13 @@
 }
 
 .row {
+  position: relative;
   align-items: center;
+  padding: 9px 0;
+}
+
+.row + .row {
+  padding-top: 0;
 }
 
 .columnRight {
@@ -54,4 +60,3 @@
   fill: white;
   stroke: white;
 }
-
