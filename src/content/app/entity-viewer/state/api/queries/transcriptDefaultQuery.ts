@@ -14,12 +14,34 @@
  * limitations under the License.
  */
 
+import { Pick3 } from 'ts-multipick';
+
 import { gql } from 'graphql-request';
 
 import {
   transcriptFieldsFragment,
   type DefaultEntityViewerTranscript
 } from './defaultGeneQuery';
+
+import type { FullGene } from 'src/shared/types/core-api/gene';
+
+const geneFieldsFragment = gql`
+  fragment geneFields on Gene {
+    stable_id
+    symbol
+    unversioned_stable_id
+    slice {
+      location {
+        start
+        end
+        length
+      }
+      strand {
+        code
+      }
+    }
+  }
+`;
 
 export const defaultTranscriptQuery = gql`
   query DefaultEntityViewerTranscript(
@@ -28,11 +50,24 @@ export const defaultTranscriptQuery = gql`
   ) {
     transcript(by_id: { genome_id: $genomeId, stable_id: $transcriptId }) {
       ...transcriptFields
+      gene {
+        ...geneFields
+      }
     }
   }
   ${transcriptFieldsFragment}
+  ${geneFieldsFragment}
 `;
 
+type GeneInDefaultTranscriptRequest = Pick<
+  FullGene,
+  'stable_id' | 'symbol' | 'unversioned_stable_id'
+> &
+  Pick3<FullGene, 'slice', 'location', 'start' | 'end' | 'length'> &
+  Pick3<FullGene, 'slice', 'strand', 'code'>;
+
 export type DefaultEntityViewerTranscriptQueryResult = {
-  transcript: DefaultEntityViewerTranscript;
+  transcript: DefaultEntityViewerTranscript & {
+    gene: GeneInDefaultTranscriptRequest;
+  };
 };

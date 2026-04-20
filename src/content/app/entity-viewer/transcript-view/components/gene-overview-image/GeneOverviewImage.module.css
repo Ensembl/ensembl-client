@@ -1,24 +1,12 @@
-
-.container {
-  color: white;
-  display: grid;
-  grid-template-columns:
-    var(--gene-view-left-column-width)
-    var(--gene-view-middle-column-left-gap)
-    var(--gene-view-middle-column-width)
-    var(--gene-view-middle-column-right-gap)
-    var(--gene-view-right-column-width)
-}
-
-.containerSVG {
+.svg {
   grid-column: 3/4;
   background-color: var(--color-light-grey);
+  height: 18px;
 }
 
 .transcript rect {
   stroke: var(--color-dark-grey);
   fill: var(--color-dark-grey);
-  opacity: 0.3;
 }
 
 .geneId {

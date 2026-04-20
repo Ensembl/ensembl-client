@@ -1,0 +1,98 @@
+.container {
+  display: grid;
+  grid-template-areas:
+    'left middle right'
+    'more-info-button . .'
+    'more-info more-info more-info'
+    'download-button . .'
+    'download download download';
+  column-gap: 10px;
+  background: var(--color-soft-black);
+  padding: 15px 30px;
+  color: var(--color-white);
+  font-weight: var(--font-weight-light);
+}
+
+.topLeft {
+  grid-area: left;
+  width: 190px;
+  margin-bottom: 12px;
+}
+
+.topLeft div {
+  padding-bottom: 6px;
+}
+
+.topMiddle {
+  grid-area: middle;
+  width: 150px;
+}
+
+.topMiddle div {
+  padding-bottom: 6px;
+}
+
+.topRight {
+  grid-area: right;
+  width: 210px;
+}
+
+.topRight div {
+  padding-bottom: 6px;
+}
+
+.moreInfoShowHide,
+.downloadShowHide {
+  justify-self: start;
+}
+
+.moreInfoShowHide {
+  grid-area: more-info-button;
+  padding-top: 6px;
+  font-weight: var(--font-weight-normal);
+}
+
+.normalText {
+  font-weight: var(--font-weight-normal);
+}
+
+.wrapText {
+  overflow-wrap: break-word;
+}
+
+.moreInformation {
+  grid-area: more-info;
+  display: grid;
+  grid-template-columns: 190px auto;
+  column-gap: 20px;
+  padding-top: 6px;
+  padding-left: 12px;
+  margin-bottom: 6px;
+}
+
+.moreInfoColumn {
+  width: 190px;
+}
+
+.moreInfoColumn div {
+  padding-bottom: 6px;
+}
+
+.externalRefLink {
+  font-weight: var(--font-weight-normal);
+}
+
+.downloadShowHide {
+  grid-area: download-button;
+  padding-top: 6px;
+  font-weight: var(--font-weight-normal);
+}
+
+.download {
+  grid-area: download;
+  padding-top: 6px;
+}
+
+.viewInApp {
+  padding-top: 12px;
+}

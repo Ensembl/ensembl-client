@@ -22,7 +22,7 @@ import {
   getFeatureLength
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
-import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+// import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
 import {
   GENE_IMAGE_WIDTH,
@@ -33,24 +33,25 @@ import UnsplicedTranscript, {
   UnsplicedTranscriptProps,
   UNSPLICED_TRANSCRIPT_HEIGHT
 } from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
-import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
+import FeatureLengthRuler, {
+  type TicksAndScale
+} from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
 import type { FullGene } from 'src/shared/types/core-api/gene';
 import type { FullTranscript } from 'src/shared/types/core-api/transcript';
-import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
+import commonStyles from '../../TranscriptView.module.css';
 import styles from './GeneOverviewImage.module.css';
 
 type Gene = Pick<FullGene, 'stable_id'> &
   Pick3<FullGene, 'slice', 'location', 'start' | 'end' | 'length'> &
-  Pick3<FullGene, 'slice', 'strand', 'code'> & {
-    transcripts: Array<
-      UnsplicedTranscriptProps['transcript'] &
-        Pick3<FullTranscript, 'slice', 'location', 'start' | 'end' | 'length'>
-    >;
-  };
+  Pick3<FullGene, 'slice', 'strand', 'code'>;
+
+type Transcript = UnsplicedTranscriptProps['transcript'] &
+  Pick3<FullTranscript, 'slice', 'location', 'start' | 'end' | 'length'>;
 
 export type GeneOverviewImageProps = {
+  transcript: Transcript;
   gene: Gene;
   onTicksCalculated: (payload: TicksAndScale) => void;
 };
@@ -59,12 +60,12 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
   const length = getFeatureLength(props.gene);
 
   return (
-    <div className={styles.container}>
+    <div className={commonStyles.gridColumns}>
       <GeneId {...props} />
       <DirectionIndicator />
       <GeneImage {...props} />
       <StrandIndicator {...props} />
-      <NumberOfTranscripts {...props} />
+      {/* <NumberOfTranscripts {...props} /> */}
       <div className={styles.ruler}>
         <FeatureLengthRuler
           length={length}
@@ -80,40 +81,34 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
 
 export const GeneImage = (props: GeneOverviewImageProps) => {
   const { start: geneStart, end: geneEnd } = getFeatureCoordinates(props.gene);
+  const { transcript } = props;
 
-  // FIXME: use the "length" property of the gene when it is added to payload;
-  // (it will help with drawing genes of circular chromosomes)
-  const scale = scaleLinear()
+  const geneScale = scaleLinear()
     .domain([geneStart, geneEnd])
     .rangeRound([0, GENE_IMAGE_WIDTH]);
 
-  const renderedTranscripts = props.gene.transcripts.map(
-    (transcript, index) => {
-      const { start: transcriptStart, end: transcriptEnd } =
-        getFeatureCoordinates(transcript);
-      const startX = scale(transcriptStart);
-      const endX = scale(transcriptEnd);
-      const y = GENE_IMAGE_HEIGHT / 2 - UNSPLICED_TRANSCRIPT_HEIGHT / 2;
-      const width = Math.floor(endX - startX);
-      return (
-        <g key={index} transform={`translate(${startX} ${y})`}>
-          <UnsplicedTranscript
-            transcript={transcript}
-            width={width}
-            classNames={{
-              transcript: styles.transcript
-            }}
-          />
-        </g>
-      );
-    }
-  );
-
-  const viewBox = `0 0 ${GENE_IMAGE_WIDTH} ${GENE_IMAGE_HEIGHT}`;
+  const { start: transcriptStart, end: transcriptEnd } =
+    getFeatureCoordinates(transcript);
+  const startX = geneScale(transcriptStart);
+  const endX = geneScale(transcriptEnd);
+  const y = GENE_IMAGE_HEIGHT / 2 - UNSPLICED_TRANSCRIPT_HEIGHT / 2; // offset from the top of the drawing area
+  const width = Math.floor(endX - startX);
 
   return (
-    <svg className={styles.containerSVG} viewBox={viewBox}>
-      {renderedTranscripts}
+    <svg
+      className={styles.svg}
+      viewBox={`0 0 ${GENE_IMAGE_WIDTH} ${GENE_IMAGE_HEIGHT}`}
+      width={GENE_IMAGE_WIDTH}
+    >
+      <g transform={`translate(${startX} ${y})`}>
+        <UnsplicedTranscript
+          transcript={transcript}
+          width={width}
+          classNames={{
+            transcript: styles.transcript
+          }}
+        />
+      </g>
     </svg>
   );
 };
@@ -142,16 +137,6 @@ const StrandIndicator = (props: GeneOverviewImageProps) => {
 
   return (
     <div className={styles.strand}>{getStrandDisplayName(strandCode)}</div>
-  );
-};
-
-const NumberOfTranscripts = (props: GeneOverviewImageProps) => {
-  const transcripts = props.gene.transcripts;
-  return (
-    <div className={styles.numberOfTranscripts}>
-      <span className={styles.transcriptsCount}>{transcripts.length}</span>
-      {` ${pluralise('transcript', transcripts.length)}`}
-    </div>
   );
 };
 

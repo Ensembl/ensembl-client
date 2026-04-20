@@ -26,6 +26,7 @@ import type { FullCDS } from 'src/shared/types/core-api/cds';
 import styles from './UnsplicedTranscript.module.css';
 
 const BLOCK_HEIGHT = 7;
+export const UNSPLICED_TRANSCRIPT_HEIGHT = BLOCK_HEIGHT;
 
 type ProductGeneratingContext = {
   cds: Pick<FullCDS, 'relative_start' | 'relative_end'> | null;
@@ -95,7 +96,7 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
       className={styles.containerSvg}
       width={scale(transcriptLength)}
       height={BLOCK_HEIGHT}
-      viewBox={`0 0 ${scale(transcriptLength)} ${BLOCK_HEIGHT}`}
+      viewBox={`0 0 ${scale(transcriptLength)} ${UNSPLICED_TRANSCRIPT_HEIGHT}`}
     >
       {renderedTranscript}
     </svg>
@@ -116,6 +117,8 @@ const Backbone = (props: BackboneProps) => {
   }
 
   const segments: ReactNode[] = [];
+  const backboneHeight = 1;
+  const backboneTopOffset = BLOCK_HEIGHT / 2 - backboneHeight / 2;
 
   for (let i = 0; i < exonRectangles.length - 1; i++) {
     /*
@@ -143,8 +146,8 @@ const Backbone = (props: BackboneProps) => {
       <rect
         key={currentRectangleEnd}
         className={className}
-        y={0}
-        height={1}
+        y={backboneTopOffset}
+        height={backboneHeight}
         x={currentRectangleEnd + 1}
         width={segmentWidth}
       />
@@ -162,7 +165,7 @@ type ExonBlockProps = {
 };
 
 const ExonBlock = (props: ExonBlockProps) => {
-  const y = -3;
+  const y = 0;
   const height = BLOCK_HEIGHT;
 
   const rectElements = props.exonRectangles.map((exonRect, index) => {
