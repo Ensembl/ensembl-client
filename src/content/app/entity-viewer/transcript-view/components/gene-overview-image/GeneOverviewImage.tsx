@@ -140,14 +140,4 @@ const StrandIndicator = (props: GeneOverviewImageProps) => {
   );
 };
 
-// const NumberOfTranscripts = (props: GeneOverviewImageProps) => {
-//   const transcripts = props.gene.transcripts;
-//   return (
-//     <div className={styles.numberOfTranscripts}>
-//       <span className={styles.transcriptsCount}>{transcripts.length}</span>
-//       {` ${pluralise('transcript', transcripts.length)}`}
-//     </div>
-//   );
-// };
-
 export default GeneOverviewImage;
