@@ -16,8 +16,6 @@
 
 import { useState, useMemo } from 'react';
 
-import useOrderedGenomes from './useOrderedGenomes';
-
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
 export type SelectableGenome = SpeciesSearchMatch & {
@@ -39,8 +37,6 @@ const useSelectableGenomesTable = (params: Params) => {
     selectedGenomes,
     stagedGenomes
   });
-  const { orderedGenomes, sortRule, changeSortRule } =
-    useOrderedGenomes(selectableGenomes);
 
   const onGenomeStageToggle = (
     genome: SpeciesSearchMatch,
@@ -61,14 +57,12 @@ const useSelectableGenomesTable = (params: Params) => {
   };
 
   return {
-    genomes: orderedGenomes,
+    genomes: selectableGenomes,
     stagedGenomes,
     onGenomeStageToggle,
     isTableExpanded,
     onTableExpandToggle,
-    setStagedGenomes,
-    sortRule,
-    changeSortRule
+    setStagedGenomes
   };
 };
 

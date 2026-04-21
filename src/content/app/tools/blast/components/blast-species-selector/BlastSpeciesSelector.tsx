@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { useState, useDeferredValue, type InputEvent } from 'react';
+import {
+  useState,
+  useDeferredValue,
+  useCallback,
+  type InputEvent
+} from 'react';
+
+import { getSortRule } from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
 
 import {
   useLazyGenomesQuery,
@@ -32,6 +39,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
+import type { SortOrderWithNone } from 'src/shared/types/sort-order';
 
 import styles from './BlastSpeciesSelector.module.css';
 
@@ -65,6 +73,8 @@ const BlastSpeciesSelector = (
   const { onClose, selectedSpecies } = props;
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResultsPage, setSearchResultsPage] = useState(1);
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<string | null>(null);
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
   const [searchTrigger, result] = useLazyGenomesQuery();
   const { data, isLoading, isError } = result;
@@ -74,9 +84,7 @@ const BlastSpeciesSelector = (
     stagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
-    onGenomeStageToggle,
-    sortRule,
-    changeSortRule
+    onGenomeStageToggle
   } = useSelectableGenomesTable({
     genomes: data?.matches ?? [],
     selectedGenomes: selectedSpecies
@@ -103,15 +111,40 @@ const BlastSpeciesSelector = (
 
   const onSearchSubmit = () => {
     const initialSearchPage = 1;
-    searchTrigger({ query: searchQuery, page: initialSearchPage });
+    searchTrigger({
+      query: searchQuery,
+      page: initialSearchPage,
+      sortBy,
+      sortOrder
+    });
     setSearchResultsPage(initialSearchPage);
     setCanSubmitSearch(false);
   };
 
   const onPageNumberChange = (pageNumber: number) => {
     setSearchResultsPage(pageNumber);
-    searchTrigger({ query: searchQuery, page: pageNumber });
+    searchTrigger({
+      query: searchQuery,
+      page: pageNumber,
+      sortBy,
+      sortOrder
+    });
   };
+
+  const sortRule = getSortRule(sortBy, sortOrder);
+
+  const onSortRuleChange = useCallback(
+    (sortBy: string, sortOrder: SortOrderWithNone) => {
+      if (sortOrder === 'none') {
+        setSortBy(null);
+        setSortOrder(null);
+      } else {
+        setSortBy(sortBy);
+        setSortOrder(sortOrder);
+      }
+    },
+    []
+  );
 
   return (
     <div className={styles.main}>
@@ -148,7 +181,7 @@ const BlastSpeciesSelector = (
                 maxSelectableGenomesCount - selectedGenomesCount
               }
               sortRule={sortRule}
-              onSortRuleChange={changeSortRule}
+              onSortRuleChange={onSortRuleChange}
               onTableExpandToggle={onTableExpandToggle}
               onSpeciesSelectToggle={onGenomeStageToggle}
             />

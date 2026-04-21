@@ -17,7 +17,6 @@
 import classNames from 'classnames';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import { getSortOrderForColumn } from 'src/content/app/species-selector/components/selectable-genomes-table/useOrderedGenomes';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
@@ -37,24 +36,37 @@ import {
 
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 import type { SelectableGenome } from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
-import type {
-  SortRule,
-  ChangeSortRule
-} from 'src/content/app/species-selector/components/selectable-genomes-table/useOrderedGenomes';
+import type { SortOrder, SortOrderWithNone } from 'src/shared/types/sort-order';
 
 import styles from './SpeciesSearchResultsTable.module.css';
+
+export type SortProps = {
+  sortBy: string;
+  sortOrder: SortOrder;
+};
 
 type Props = {
   isExpanded: boolean;
   results: SelectableGenome[];
   maxStagedGenomesNumber?: number; // if you need to limit how many of the displayed genomes can be added
-  sortRule: SortRule | null;
+  sortRule: SortProps | null;
+  onSortRuleChange: (sortBy: string, sortOrder: SortOrderWithNone) => void;
   onTableExpandToggle: () => void;
   onSpeciesSelectToggle: (
     species: SpeciesSearchMatch,
     isAdding?: boolean
   ) => void;
-  onSortRuleChange: ChangeSortRule;
+};
+
+const getSortOrderForColumn = (
+  sortParam: string,
+  sortProps: SortProps | null
+) => {
+  if (sortProps?.sortBy === sortParam) {
+    return sortProps.sortOrder;
+  } else {
+    return 'none';
+  }
 };
 
 const SpeciesSearchResultsTable = (props: Props) => {
@@ -106,18 +118,18 @@ const SpeciesSearchResultsTable = (props: Props) => {
             Type
           </ColumnHead>
           <ColumnHead
-            sortOrder={getSortOrderForColumn('assembly_name', sortRule)}
+            sortOrder={getSortOrderForColumn('assembly.name', sortRule)}
             onSortOrderChange={(newOrder) =>
-              onSortRuleChange('assembly_name', newOrder)
+              onSortRuleChange('assembly.name', newOrder)
             }
           >
             Assembly
           </ColumnHead>
 
           <ColumnHead
-            sortOrder={getSortOrderForColumn('release_name', sortRule)}
+            sortOrder={getSortOrderForColumn('release.name', sortRule)}
             onSortOrderChange={(newOrder) =>
-              onSortRuleChange('release_name', newOrder)
+              onSortRuleChange('release.name', newOrder)
             }
           >
             Release
@@ -126,9 +138,9 @@ const SpeciesSearchResultsTable = (props: Props) => {
           <ColumnHead>Release type</ColumnHead>
 
           <ColumnHead
-            sortOrder={getSortOrderForColumn('assembly_accession_id', sortRule)}
+            sortOrder={getSortOrderForColumn('assembly.accession_id', sortRule)}
             onSortOrderChange={(newOrder) =>
-              onSortRuleChange('assembly_accession_id', newOrder)
+              onSortRuleChange('assembly.accession_id', newOrder)
             }
           >
             Assembly accession
