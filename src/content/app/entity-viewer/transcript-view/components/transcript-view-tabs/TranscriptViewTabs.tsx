@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import Tabs, { type Tab } from 'src/shared/components/tabs/Tabs';
+import {
+  defaultView,
+  type ViewName
+} from 'src/content/app/entity-viewer/state/transcript-view/general/transcriptViewGeneralSlice';
+
+import Tabs from 'src/shared/components/tabs/Tabs';
 
 import styles from './TranscriptViewTabs.module.css';
 
-const tabsData: Tab[] = [
-  { title: 'Transcript' },
-  { title: 'Transcript function' }
+const tabsData: Array<{ title: string; view: ViewName }> = [
+  { title: 'Transcript', view: defaultView },
+  { title: 'Transcript function', view: 'protein' }
 ];
 
 const TranscriptViewTabs = ({
@@ -36,12 +41,23 @@ const TranscriptViewTabs = ({
     tabsContainer: styles.geneViewTabs //FIXME: Pass this as a props so that it can be styled from the parent
   };
 
+  const handleTabChange = (tabTitle: string) => {
+    const tab = tabsData.find((tab) => tab.title === tabTitle) as {
+      view: string;
+    };
+    onViewChange(tab.view);
+  };
+
+  const selectedTab = tabsData.find((tab) => tab.view === activeView) as {
+    title: string;
+  };
+
   return (
     <Tabs
       tabs={tabsData}
       classNames={tabClassNames}
-      selectedTab={activeView}
-      onTabChange={onViewChange}
+      selectedTab={selectedTab.title}
+      onTabChange={handleTabChange}
     />
   );
 };

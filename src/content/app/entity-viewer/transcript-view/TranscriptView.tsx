@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import classNames from 'classnames';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
+
+import { getViewForTranscript } from 'src/content/app/entity-viewer/state/transcript-view/general/transcriptViewGeneralSelectors';
 
 import useTranscriptViewIds from 'src/content/app/entity-viewer/transcript-view/hooks/useTranscriptViewIds';
 import { useDefaultEntityViewerTranscriptQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import {
+  setView,
+  isValidView,
+  defaultView,
+  type ViewName as TranscriptViewName
+} from 'src/content/app/entity-viewer/state/transcript-view/general/transcriptViewGeneralSlice';
 
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import TranscriptViewTabs from './components/transcript-view-tabs/TranscriptViewTabs';
@@ -31,8 +42,8 @@ import styles from './TranscriptView.module.css';
 
 const TranscriptView = () => {
   const { activeGenomeId, transcriptId } = useTranscriptViewIds();
-  const [selectedView, setSelectedView] = useState('Transcript'); // this is temporary
   const [rulerTicks, setRulerTicks] = useState<TicksAndScale | null>(null);
+  const [searchParams] = useSearchParams();
   const { currentData } = useDefaultEntityViewerTranscriptQuery(
     {
       genomeId: activeGenomeId ?? '',
@@ -43,9 +54,21 @@ const TranscriptView = () => {
     }
   );
 
+  const viewInUrl = searchParams.get('view');
+
+  const { view, navigateToView } = useTranscriptViewRouter({
+    genomeId: activeGenomeId ?? '',
+    transcriptId: transcriptId ?? '',
+    viewInUrl
+  });
+
   if (!activeGenomeId || !currentData) {
     return null; // FIXME: show a spinner?
   }
+
+  const onViewChange = (view: string) => {
+    navigateToView({ view });
+  };
 
   return (
     <div className={styles.container}>
@@ -56,13 +79,10 @@ const TranscriptView = () => {
       />
       <div className={classNames(styles.tabsSection, styles.gridColumns)}>
         <div className={styles.tabs}>
-          <TranscriptViewTabs
-            activeView={selectedView}
-            onViewChange={setSelectedView}
-          />
+          <TranscriptViewTabs activeView={view} onViewChange={onViewChange} />
         </div>
       </div>
-      {selectedView === 'Transcript' && rulerTicks ? (
+      {view === defaultView && rulerTicks ? (
         <TranscriptDetails
           genomeId={activeGenomeId}
           transcript={currentData.transcript}
@@ -73,6 +93,81 @@ const TranscriptView = () => {
       )}
     </div>
   );
+};
+
+const useTranscriptViewRouter = ({
+  genomeId,
+  transcriptId,
+  viewInUrl
+}: {
+  genomeId: string;
+  transcriptId: string;
+  viewInUrl: string | null;
+}) => {
+  const prevViewInUrl = useRef(viewInUrl);
+  const viewInRedux = useAppSelector((state) =>
+    getViewForTranscript(state, genomeId, transcriptId)
+  );
+  const dispatch = useAppDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const navigateToView = useCallback(
+    ({ view, replace = false }: { view: string | null; replace?: boolean }) => {
+      const searchParams = new URLSearchParams(location.search);
+      if (!view || view === defaultView) {
+        searchParams.delete('view');
+      } else {
+        searchParams.set('view', view);
+      }
+      const url = `${location.pathname}?${searchParams.toString()}`;
+      navigate(url, { replace });
+    },
+    [location.pathname, location.search, navigate]
+  );
+
+  const updateReduxData = useCallback(() => {
+    const view = viewInUrl ?? defaultView;
+    dispatch(
+      setView({
+        genomeId,
+        transcriptId,
+        view: view as TranscriptViewName
+      })
+    );
+  }, [dispatch, genomeId, transcriptId, viewInUrl]);
+
+  useEffect(() => {
+    if (viewInUrl) {
+      if (!isValidView(viewInUrl)) {
+        // this can only happen if user edited the url
+        // remove the view information from the url
+        navigateToView({ view: null, replace: true });
+      }
+      // always trust the url
+      if (viewInUrl !== viewInRedux) {
+        updateReduxData();
+      }
+    } else {
+      // choose between showing the default view or updating url with view stored in redux
+      if (!prevViewInUrl.current) {
+        // this is the first navigation to the transcripts view
+        // check redux for stored view
+        if (viewInRedux !== defaultView) {
+          navigateToView({ view: viewInRedux, replace: true });
+        }
+      } else {
+        updateReduxData();
+      }
+    }
+
+    prevViewInUrl.current = viewInUrl;
+  }, [viewInUrl, navigateToView, updateReduxData, viewInRedux]);
+
+  return {
+    view: viewInRedux,
+    navigateToView
+  };
 };
 
 export default TranscriptView;
