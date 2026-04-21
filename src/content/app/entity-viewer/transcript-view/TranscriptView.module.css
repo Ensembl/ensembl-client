@@ -54,6 +54,7 @@
   height: 76px;
   align-items: flex-end;
   z-index: 2;
+  padding-bottom: 4px;
 }
 
 .tabs {
