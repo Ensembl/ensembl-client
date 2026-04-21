@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-import { useState, useDeferredValue, type FormEvent } from 'react';
+import {
+  useState,
+  useDeferredValue,
+  useCallback,
+  type InputEvent
+} from 'react';
 import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { useAppDispatch } from 'src/store';
+
+import { getSortRule } from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
 
 import {
   useLazyGenomesQuery,
@@ -38,6 +45,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 import Pagination from 'src/shared/components/pagination/Pagination';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import type { SortOrderWithNone } from 'src/shared/types/sort-order';
 
 import styles from './VepSpeciesSelector.module.css';
 
@@ -51,6 +59,8 @@ import styles from './VepSpeciesSelector.module.css';
 const VepSpeciesSelector = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResultsPage, setSearchResultsPage] = useState(1);
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<string | null>(null);
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
   const [searchTrigger, result] = useLazyGenomesQuery();
   const { data, isLoading, isError } = result;
@@ -62,9 +72,7 @@ const VepSpeciesSelector = () => {
     stagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
-    onGenomeStageToggle,
-    sortRule,
-    changeSortRule
+    onGenomeStageToggle
   } = useSelectableGenomesTable({
     genomes: data?.matches ?? [],
     selectedGenomes: []
@@ -72,7 +80,7 @@ const VepSpeciesSelector = () => {
 
   const deferredGenomes = useDeferredValue(genomes);
 
-  const onSearchInput = (event: FormEvent<HTMLInputElement>) => {
+  const onSearchInput = (event: InputEvent<HTMLInputElement>) => {
     setSearchQuery(event.currentTarget.value);
     if (!canSubmitSearch) {
       setCanSubmitSearch(true);
@@ -88,19 +96,44 @@ const VepSpeciesSelector = () => {
 
   const onSearchSubmit = () => {
     const initialSearchPage = 1;
-    searchTrigger({ query: searchQuery, page: initialSearchPage });
+    searchTrigger({
+      query: searchQuery,
+      page: initialSearchPage,
+      sortBy,
+      sortOrder
+    });
     setSearchResultsPage(initialSearchPage);
     setCanSubmitSearch(false);
   };
 
   const onPageNumberChange = (pageNumber: number) => {
     setSearchResultsPage(pageNumber);
-    searchTrigger({ query: searchQuery, page: pageNumber });
+    searchTrigger({
+      query: searchQuery,
+      page: pageNumber,
+      sortBy,
+      sortOrder
+    });
   };
 
   const onClose = () => {
     navigate(urlFor.vepForm(), { replace: true });
   };
+
+  const sortRule = getSortRule(sortBy, sortOrder);
+
+  const onSortRuleChange = useCallback(
+    (sortBy: string, sortOrder: SortOrderWithNone) => {
+      if (sortOrder === 'none') {
+        setSortBy(null);
+        setSortOrder(null);
+      } else {
+        setSortBy(sortBy);
+        setSortOrder(sortOrder);
+      }
+    },
+    []
+  );
 
   return (
     <ModalView onClose={onClose}>
@@ -136,7 +169,7 @@ const VepSpeciesSelector = () => {
                 isExpanded={isTableExpanded}
                 maxStagedGenomesNumber={1}
                 sortRule={sortRule}
-                onSortRuleChange={changeSortRule}
+                onSortRuleChange={onSortRuleChange}
                 onTableExpandToggle={onTableExpandToggle}
                 onSpeciesSelectToggle={onGenomeStageToggle}
               />
@@ -156,7 +189,7 @@ type TopSectionProps = {
   canAddGenomes: boolean;
   canSubmitSearch: boolean;
   onSearchSubmit: () => void;
-  onSearchInput: (event: FormEvent<HTMLInputElement>) => void;
+  onSearchInput: (event: InputEvent<HTMLInputElement>) => void;
   onGenomesAdd: () => void;
   onClose: () => void;
 };

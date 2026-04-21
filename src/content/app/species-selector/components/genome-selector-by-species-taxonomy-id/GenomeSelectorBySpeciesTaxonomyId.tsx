@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import { useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
+
+import { getSortRule } from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
@@ -36,6 +39,7 @@ import InfoPill from 'src/shared/components/info-pill/InfoPill';
 import Pagination from 'src/shared/components/pagination/Pagination';
 
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
+import type { SortOrderWithNone } from 'src/shared/types/sort-order';
 
 import styles from './GenomeSelectorBySpeciesTaxonomyId.module.css';
 
@@ -49,6 +53,8 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   const committedSpecies = useAppSelector(getCommittedSpecies);
   const [searchParams, setSearchParams] = useSearchParams();
   const pageString = searchParams.get('page') ?? '1';
+  const sortBy = searchParams.get('sort_by');
+  const sortOrder = searchParams.get('order');
   const { currentData: popularSpeciesData } = usePopularSpeciesQuery();
   let pageNumber = parseInt(pageString);
   if (!pageNumber) {
@@ -56,7 +62,9 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   }
   const { data, isLoading, isError } = useGenomesBySpeciesTaxonomyIdQuery({
     speciesTaxonomyId,
-    page: pageNumber
+    page: pageNumber,
+    sortBy,
+    sortOrder
   });
 
   const {
@@ -64,9 +72,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
     stagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
-    onGenomeStageToggle,
-    sortRule,
-    changeSortRule
+    onGenomeStageToggle
   } = useSelectableGenomesTable({
     genomes: data?.matches ?? [],
     selectedGenomes: committedSpecies
@@ -81,6 +87,23 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   const speciesImageUrl = popularSpeciesData?.popular_species.find(
     (species) => species.species_taxonomy_id === speciesTaxonomyId
   )?.image;
+
+  const onSortRuleChange = useCallback(
+    (sortBy: string, sortOrder: SortOrderWithNone) => {
+      const newSearchParams = new URLSearchParams(searchParams);
+      if (sortOrder === 'none') {
+        newSearchParams.delete('sort_by');
+        newSearchParams.delete('order');
+      } else {
+        newSearchParams.set('sort_by', sortBy);
+        newSearchParams.set('order', sortOrder);
+      }
+      setSearchParams(newSearchParams, { replace: true });
+    },
+    [searchParams, setSearchParams]
+  );
+
+  const sortRule = getSortRule(sortBy, sortOrder);
 
   return (
     <div className={styles.main}>
@@ -110,7 +133,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
               sortRule={sortRule}
               onTableExpandToggle={onTableExpandToggle}
               onSpeciesSelectToggle={onGenomeStageToggle}
-              onSortRuleChange={changeSortRule}
+              onSortRuleChange={onSortRuleChange}
             />
           </div>
         </>

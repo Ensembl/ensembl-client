@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-import { useState, useDeferredValue, type InputEvent } from 'react';
+import {
+  useState,
+  useDeferredValue,
+  useCallback,
+  type InputEvent
+} from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
+
+import { getSortRule } from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
@@ -37,6 +44,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
+import type { SortOrderWithNone } from 'src/shared/types/sort-order';
 
 import styles from './GenomeSelectorBySearchQuery.module.css';
 
@@ -54,13 +62,17 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('query') as string;
   const pageString = searchParams.get('page') ?? '1';
+  const sortBy = searchParams.get('sort_by');
+  const sortOrder = searchParams.get('order');
   let pageNumber = parseInt(pageString);
   if (!pageNumber) {
     pageNumber = 1;
   }
   const { data, isLoading } = useGenomesQuery({
     query,
-    page: pageNumber
+    page: pageNumber,
+    sortBy,
+    sortOrder
   });
 
   const {
@@ -68,9 +80,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     stagedGenomes,
     isTableExpanded,
     onTableExpandToggle,
-    onGenomeStageToggle,
-    sortRule,
-    changeSortRule
+    onGenomeStageToggle
   } = useSelectableGenomesTable({
     genomes: data?.matches ?? [],
     selectedGenomes: committedSpecies
@@ -100,6 +110,23 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     newPageParam.set('page', `${page}`);
     setSearchParams(newPageParam, { replace: true });
   };
+
+  const sortRule = getSortRule(sortBy, sortOrder);
+
+  const onSortRuleChange = useCallback(
+    (sortBy: string, sortOrder: SortOrderWithNone) => {
+      const newSearchParams = new URLSearchParams(searchParams);
+      if (sortOrder === 'none') {
+        newSearchParams.delete('sort_by');
+        newSearchParams.delete('order');
+      } else {
+        newSearchParams.set('sort_by', sortBy);
+        newSearchParams.set('order', sortOrder);
+      }
+      setSearchParams(newSearchParams, { replace: true });
+    },
+    [searchParams, setSearchParams]
+  );
 
   return (
     <div className={styles.main}>
@@ -132,7 +159,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
               results={deferredGenomes}
               isExpanded={isTableExpanded}
               sortRule={sortRule}
-              onSortRuleChange={changeSortRule}
+              onSortRuleChange={onSortRuleChange}
               onTableExpandToggle={onTableExpandToggle}
               onSpeciesSelectToggle={onGenomeStageToggle}
             />
