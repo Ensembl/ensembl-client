@@ -1,0 +1,7 @@
+@layer components {
+  .container {
+    display: inline-grid;
+    grid-template-columns: repeat(2, auto);
+    column-gap: var(--standard-gutter);
+  }
+}

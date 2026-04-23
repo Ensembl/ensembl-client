@@ -21,7 +21,10 @@ import {
   type InputEvent
 } from 'react';
 
-import { getSortRule } from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
+import {
+  getSortRule,
+  DEFAULT_NUM_RESULTS_PER_PAGE
+} from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
 
 import {
   useLazyGenomesQuery,
@@ -34,7 +37,7 @@ import AddSpecies from 'src/content/app/species-selector/components/species-sear
 import { SpeciesSearchField } from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
-import Pagination from 'src/shared/components/pagination/Pagination';
+import PaginationWithPerPage from 'src/shared/components/pagination/PaginationWithPerPage';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
@@ -73,6 +76,9 @@ const BlastSpeciesSelector = (
   const { onClose, selectedSpecies } = props;
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResultsPage, setSearchResultsPage] = useState(1);
+  const [searchResultsPerPage, setSearchResultsPerPage] = useState(
+    DEFAULT_NUM_RESULTS_PER_PAGE
+  );
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<string | null>(null);
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
@@ -114,6 +120,7 @@ const BlastSpeciesSelector = (
     searchTrigger({
       query: searchQuery,
       page: initialSearchPage,
+      perPage: searchResultsPerPage,
       sortBy,
       sortOrder
     });
@@ -126,9 +133,23 @@ const BlastSpeciesSelector = (
     searchTrigger({
       query: searchQuery,
       page: pageNumber,
+      perPage: searchResultsPerPage,
       sortBy,
       sortOrder
     });
+  };
+
+  const onResultsPerPageChange = (perPage: number) => {
+    const initialSearchPage = 1;
+    searchTrigger({
+      query: searchQuery,
+      page: initialSearchPage,
+      perPage: perPage,
+      sortBy,
+      sortOrder
+    });
+    setSearchResultsPage(initialSearchPage);
+    setSearchResultsPerPage(perPage);
   };
 
   const sortRule = getSortRule(sortBy, sortOrder);
@@ -164,13 +185,15 @@ const BlastSpeciesSelector = (
       {data?.matches.length ? (
         <>
           <div className={styles.resultsControls}>
-            <Pagination
+            <PaginationWithPerPage
               currentPageNumber={searchResultsPage}
               lastPageNumber={getSpeciesSearchLastPageNumber({
                 data,
-                perPage: 100
+                perPage: searchResultsPerPage
               })}
-              onChange={onPageNumberChange}
+              onPageChange={onPageNumberChange}
+              perPageValue={searchResultsPerPage}
+              onPerPageChange={onResultsPerPageChange}
             />
           </div>
           <div className={styles.tableContainer}>
