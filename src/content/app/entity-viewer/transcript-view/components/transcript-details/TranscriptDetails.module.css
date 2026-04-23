@@ -13,6 +13,7 @@
   z-index: 1;
   font-size: 12px;
   font-weight: var(--font-weight-light);
+  padding: 9px 0;
 }
 
 .main {

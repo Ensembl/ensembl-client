@@ -19,6 +19,7 @@ import { combineReducers } from 'redux';
 import entityViewerGeneralReducer from './general/entityViewerGeneralSlice';
 import entityViewerSidebarReducer from './sidebar/entityViewerSidebarSlice';
 import entityViewerGeneViewReducer from './gene-view/entityViewerGeneViewReducer';
+import entityViewerTranscriptViewReducer from './transcript-view/entityViewerTranscriptViewReducer';
 import entityViewerBookmarksReducer from './bookmarks/entityViewerBookmarksSlice';
 import entityViewerVariantViewReducer from './variant-view/entityViewerVariantViewReducer';
 
@@ -26,6 +27,7 @@ export default combineReducers({
   general: entityViewerGeneralReducer,
   sidebar: entityViewerSidebarReducer,
   geneView: entityViewerGeneViewReducer,
+  transcriptView: entityViewerTranscriptViewReducer,
   variantView: entityViewerVariantViewReducer,
   bookmarks: entityViewerBookmarksReducer
 });
