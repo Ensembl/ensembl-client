@@ -28,6 +28,7 @@ import styles from './DownloadButton.module.css';
  */
 
 type Props = AnchorHTMLAttributes<HTMLAnchorElement> & {
+  label?: string; // content for aria-label attribute, if anyone ever wants to use this with screen reader
   disabled?: boolean;
 };
 
@@ -47,6 +48,7 @@ const DownloadLink = (props: Props) => {
       className={componentClasses}
       download={true}
       inert={disabled || undefined}
+      aria-label={props.label ?? 'download'}
       {...otherProps}
     >
       <DownloadIcon />

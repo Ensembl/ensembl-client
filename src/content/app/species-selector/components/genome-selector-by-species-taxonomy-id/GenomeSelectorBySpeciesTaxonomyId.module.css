@@ -59,6 +59,11 @@
   grid-area: controls;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+}
+
+.downloadButton {
+  margin-left: var(--standard-gutter);
 }
 
 .tableContainer {
