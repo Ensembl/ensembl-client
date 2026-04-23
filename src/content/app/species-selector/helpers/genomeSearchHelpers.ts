@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
+import {
+  defaultPerPageOptions,
+  defaultPerPageValue
+} from 'src/shared/components/pagination/PerPage';
+
 import type { SortOrder } from 'src/shared/types/sort-order';
 import type { SortProps } from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
+
+export const DEFAULT_NUM_RESULTS_PER_PAGE = defaultPerPageValue;
 
 export const getSortRule = (
   sortBy: string | null,
@@ -39,4 +46,8 @@ export const getSortRule = (
 
 export const isValidSortOrder = (input: string): input is SortOrder => {
   return input === 'asc' || input === 'desc';
+};
+
+export const isValidPerPageParam = (input: string) => {
+  return defaultPerPageOptions.some((option) => `${option}` === input);
 };

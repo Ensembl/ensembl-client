@@ -24,7 +24,11 @@ import { useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
-import { getSortRule } from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
+import {
+  getSortRule,
+  isValidPerPageParam,
+  DEFAULT_NUM_RESULTS_PER_PAGE
+} from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
@@ -39,7 +43,7 @@ import AddSpecies from 'src/content/app/species-selector/components/species-sear
 import { SpeciesSearchField } from '../species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
-import Pagination from 'src/shared/components/pagination/Pagination';
+import PaginationWithPerPage from 'src/shared/components/pagination/PaginationWithPerPage';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
@@ -53,8 +57,6 @@ type Props = {
   onClose: () => void;
 };
 
-const matchesPerPage = 100;
-
 const GenomeSelectorBySearchQuery = (props: Props) => {
   const { onClose } = props;
   const [canSubmitSearch, setCanSubmitSearch] = useState(false);
@@ -62,15 +64,23 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('query') as string;
   const pageString = searchParams.get('page') ?? '1';
+  const perPageParam = searchParams.get('per_page');
   const sortBy = searchParams.get('sort_by');
   const sortOrder = searchParams.get('order');
+
   let pageNumber = parseInt(pageString);
   if (!pageNumber) {
     pageNumber = 1;
   }
+  const perPage =
+    perPageParam && isValidPerPageParam(perPageParam)
+      ? parseInt(perPageParam)
+      : DEFAULT_NUM_RESULTS_PER_PAGE;
+
   const { data, isLoading } = useGenomesQuery({
     query,
     page: pageNumber,
+    perPage,
     sortBy,
     sortOrder
   });
@@ -111,6 +121,13 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     setSearchParams(newPageParam, { replace: true });
   };
 
+  const onResultsPerPageChange = (perPage: number) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('per_page', `${perPage}`);
+    newSearchParams.set('page', `${pageNumber}`);
+    setSearchParams(newSearchParams, { replace: true });
+  };
+
   const sortRule = getSortRule(sortBy, sortOrder);
 
   const onSortRuleChange = useCallback(
@@ -145,13 +162,15 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
       {data && data.matches.length > 0 && (
         <>
           <div className={styles.resultsControls}>
-            <Pagination
+            <PaginationWithPerPage
               currentPageNumber={pageNumber}
               lastPageNumber={getSpeciesSearchLastPageNumber({
                 data,
-                perPage: matchesPerPage
+                perPage: perPage
               })}
-              onChange={onResultsPageChange}
+              onPageChange={onResultsPageChange}
+              perPageValue={perPage}
+              onPerPageChange={onResultsPerPageChange}
             />
           </div>
           <div className={styles.tableContainer}>
