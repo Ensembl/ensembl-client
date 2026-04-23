@@ -38,6 +38,11 @@
   display: flex;
   justify-content: flex-end;
   margin-bottom: var(--standard-gutter);
+  align-items: center;
+}
+
+.downloadButton {
+  margin-left: var(--standard-gutter);
 }
 
 .tableContainer {

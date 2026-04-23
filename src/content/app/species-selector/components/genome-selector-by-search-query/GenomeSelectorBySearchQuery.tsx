@@ -45,6 +45,7 @@ import SpeciesSearchResultsSummary from 'src/content/app/species-selector/compon
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 import PaginationWithPerPage from 'src/shared/components/pagination/PaginationWithPerPage';
 import { CircleLoader } from 'src/shared/components/loader';
+import GenomesDownloadButton from 'src/content/app/species-selector/components/genomes-download-button/GenomesDownloadButton';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
@@ -171,6 +172,10 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
               onPageChange={onResultsPageChange}
               perPageValue={perPage}
               onPerPageChange={onResultsPerPageChange}
+            />
+            <GenomesDownloadButton
+              searchParam={{ name: 'query', value: query }}
+              className={styles.downloadButton}
             />
           </div>
           <div className={styles.tableContainer}>

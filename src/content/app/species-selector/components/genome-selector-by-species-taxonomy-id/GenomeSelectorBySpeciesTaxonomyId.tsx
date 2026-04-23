@@ -41,6 +41,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 import InfoPill from 'src/shared/components/info-pill/InfoPill';
 import PaginationWithPerPage from 'src/shared/components/pagination/PaginationWithPerPage';
+import GenomesDownloadButton from 'src/content/app/species-selector/components/genomes-download-button/GenomesDownloadButton';
 
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 import type { SortOrderWithNone } from 'src/shared/types/sort-order';
@@ -145,6 +146,13 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
               onPageChange={onResultsPageChange}
               perPageValue={perPage}
               onPerPageChange={onResultsPerPageChange}
+            />
+            <GenomesDownloadButton
+              searchParam={{
+                name: 'species_taxonomy_id',
+                value: `${speciesTaxonomyId}`
+              }}
+              className={styles.downloadButton}
             />
           </div>
           <div className={styles.tableContainer}>
