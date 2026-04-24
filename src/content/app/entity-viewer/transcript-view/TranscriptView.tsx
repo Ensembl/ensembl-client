@@ -89,7 +89,7 @@ const TranscriptView = () => {
           rulerTicks={rulerTicks}
         />
       ) : (
-        <TranscriptFunction />
+        <TranscriptFunction transcript={currentData.transcript} />
       )}
     </div>
   );

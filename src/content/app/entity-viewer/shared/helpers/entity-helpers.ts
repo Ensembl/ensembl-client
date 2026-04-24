@@ -200,3 +200,16 @@ export const getProteinXrefs = <
 
   return proteinXrefs;
 };
+
+export const getProteinDescription = <
+  T extends Pick<ExternalReference, 'description'> &
+    Pick2<ExternalReference, 'source', 'id'>
+>(product: {
+  external_references: T[];
+}) => {
+  const swissprotReference = product.external_references.find(
+    (reference) => reference.source.id === SWISSPROT_SOURCE
+  );
+
+  return swissprotReference?.description;
+};

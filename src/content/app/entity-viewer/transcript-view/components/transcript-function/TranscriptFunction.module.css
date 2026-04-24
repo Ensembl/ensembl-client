@@ -32,3 +32,14 @@
   color: var(--color-black);
   font-weight: var(--font-weight-bold);
 }
+
+.proteinInfo {
+  font-weight: var(--font-weight-light);
+}
+
+.proteinInfoMiddle {
+  display: grid;
+  grid-template-columns: 10% 43% 43%;
+  column-gap: 2%;
+  font-weight: var(--font-weight-normal);
+}
