@@ -54,7 +54,7 @@ import type { ProteinCodingTranscript } from 'src/content/app/entity-viewer/gene
 import styles from './ProteinsListItemInfo.module.css';
 
 export type Props = {
-  gene: DefaultEntityViewerGene;
+  gene: Pick<DefaultEntityViewerGene, 'symbol' | 'stable_id'>;
   transcript: ProteinCodingTranscript;
   trackLength: number;
 };
