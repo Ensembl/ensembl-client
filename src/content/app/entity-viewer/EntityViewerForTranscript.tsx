@@ -20,6 +20,7 @@ import { getBreakpointWidth } from 'src/global/globalSelectors';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import TranscriptView from './transcript-view/TranscriptView';
+import TranscriptViewSidebar from './transcript-view/components/transcript-view-sidebar/TranscriptViewSidebar';
 
 const EntityViewerForTranscript = () => {
   const viewportWidth = useAppSelector(getBreakpointWidth);
@@ -28,7 +29,7 @@ const EntityViewerForTranscript = () => {
     <StandardAppLayout
       topbarContent={null}
       mainContent={<TranscriptView />}
-      sidebarContent={null}
+      sidebarContent={<TranscriptViewSidebar />}
       isSidebarOpen={true}
       onSidebarToggle={() => true}
       sidebarNavigation={null}
