@@ -22,6 +22,7 @@ import { sidebarTabNames } from 'src/content/app/entity-viewer/state/transcript-
 import useTranscriptViewIds from 'src/content/app/entity-viewer/transcript-view/hooks/useTranscriptViewIds';
 
 import SidebarDefault from './sidebar-default/SidebarDefault';
+import SidebarExternalReferences from './sidebar-external-references/SidebarExternalReferences';
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 
 const TranscriptViewSidebar = () => {
@@ -40,7 +41,10 @@ const TranscriptViewSidebar = () => {
         <SidebarDefault genomeId={activeGenomeId} transcriptId={transcriptId} />
       )}
       {activeSidebarTab === sidebarTabNames[1] && (
-        <div>External references!</div>
+        <SidebarExternalReferences
+          genomeId={activeGenomeId}
+          transcriptId={transcriptId}
+        />
       )}
     </Sidebar>
   );

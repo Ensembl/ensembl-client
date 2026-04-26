@@ -19,7 +19,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 export const sidebarTabNames = ['Overview', 'External references'] as const;
 export const defaultSidebarTabName = sidebarTabNames[0];
 
-type SidebarTabName = (typeof sidebarTabNames)[number];
+export type SidebarTabName = (typeof sidebarTabNames)[number];
 
 type StateForTranscript = {
   isOpen: boolean;
@@ -54,17 +54,27 @@ const transcriptViewSidebarSlice = createSlice({
   name: 'entity-viewer-transcript-view-sidebar',
   initialState: {} as State,
   reducers: {
-    setIsOpen(
+    openSidebar(
       state,
       action: PayloadAction<{
         genomeId: string;
         transcriptId: string;
-        isOpen: boolean;
       }>
     ) {
-      const { genomeId, transcriptId, isOpen } = action.payload;
+      const { genomeId, transcriptId } = action.payload;
       ensureTranscriptState(state, genomeId, transcriptId);
-      state[genomeId][transcriptId].isOpen = isOpen;
+      state[genomeId][transcriptId].isOpen = true;
+    },
+    closeSidebar(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        transcriptId: string;
+      }>
+    ) {
+      const { genomeId, transcriptId } = action.payload;
+      ensureTranscriptState(state, genomeId, transcriptId);
+      state[genomeId][transcriptId].isOpen = false;
     },
     setSelectedTab(
       state,
@@ -81,6 +91,7 @@ const transcriptViewSidebarSlice = createSlice({
   }
 });
 
-export const { setIsOpen, setSelectedTab } = transcriptViewSidebarSlice.actions;
+export const { openSidebar, closeSidebar, setSelectedTab } =
+  transcriptViewSidebarSlice.actions;
 
 export default transcriptViewSidebarSlice.reducer;
