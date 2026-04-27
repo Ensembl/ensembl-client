@@ -82,6 +82,18 @@ const transcriptViewSidebarSlice = createSlice({
       ensureTranscriptState(state, genomeId, transcriptId);
       state[genomeId][transcriptId].isOpen = false;
     },
+    toggleSidebar(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        transcriptId: string;
+      }>
+    ) {
+      const { genomeId, transcriptId } = action.payload;
+      ensureTranscriptState(state, genomeId, transcriptId);
+      state[genomeId][transcriptId].isOpen =
+        !state[genomeId][transcriptId].isOpen;
+    },
     setSelectedTab(
       state,
       action: PayloadAction<{
@@ -123,6 +135,7 @@ const transcriptViewSidebarSlice = createSlice({
 export const {
   openSidebar,
   closeSidebar,
+  toggleSidebar,
   setSelectedTab,
   setSidebarModalView,
   closeSidebarModal

@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
+
+import useTranscriptViewIds from 'src/content/app/entity-viewer/transcript-view/hooks/useTranscriptViewIds';
+
+import { getIsSidebarOpen } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSelectors';
+
+import { toggleSidebar } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSlice';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import TranscriptView from './transcript-view/TranscriptView';
@@ -24,15 +30,33 @@ import TranscriptViewSidebar from './transcript-view/components/transcript-view-
 import TranscriptViewSidebarTabs from './transcript-view/components/transcript-view-sidebar-tabs/TranscriptViewSidebarTabs';
 
 const EntityViewerForTranscript = () => {
+  const { activeGenomeId, transcriptId } = useTranscriptViewIds();
+  const isSidebarOpen = useAppSelector((state) =>
+    getIsSidebarOpen(state, activeGenomeId ?? '', transcriptId ?? '')
+  );
   const viewportWidth = useAppSelector(getBreakpointWidth);
+  const dispatch = useAppDispatch();
+
+  const onSidebarToggle = () => {
+    if (!activeGenomeId || !transcriptId) {
+      // this should not happen
+      return;
+    }
+    dispatch(
+      toggleSidebar({
+        genomeId: activeGenomeId,
+        transcriptId
+      })
+    );
+  };
 
   return (
     <StandardAppLayout
       topbarContent={<div />}
       mainContent={<TranscriptView />}
       sidebarContent={<TranscriptViewSidebar />}
-      isSidebarOpen={true}
-      onSidebarToggle={() => true}
+      isSidebarOpen={isSidebarOpen}
+      onSidebarToggle={onSidebarToggle}
       sidebarNavigation={<TranscriptViewSidebarTabs />}
       viewportWidth={viewportWidth}
     />
