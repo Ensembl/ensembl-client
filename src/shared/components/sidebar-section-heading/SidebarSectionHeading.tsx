@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import classNames from 'classnames';
+import type { ReactNode } from 'react';
 
-import transcriptViewGeneralReducer from './general/transcriptViewGeneralSlice';
-import transcriptViewSidebarReducer from './sidebar/transcriptViewSidebarSlice';
+import styles from './SidebarSectionHeading.module.css';
 
-export default combineReducers({
-  general: transcriptViewGeneralReducer,
-  sidebar: transcriptViewSidebarReducer
-});
+type Props = {
+  children: ReactNode;
+  className?: string;
+};
+
+const SidebarSectionHeading = (props: Props) => {
+  const componentClasses = classNames(styles.container, props.className);
+
+  return <div className={componentClasses}>{props.children}</div>;
+};
+
+export default SidebarSectionHeading;

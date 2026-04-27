@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { gql } from 'graphql-request';
 
-import transcriptViewGeneralReducer from './general/transcriptViewGeneralSlice';
-import transcriptViewSidebarReducer from './sidebar/transcriptViewSidebarSlice';
+import {
+  transcriptFieldsFragment,
+  type QueriedTranscript
+} from './geneExternalReferencesQuery';
 
-export default combineReducers({
-  general: transcriptViewGeneralReducer,
-  sidebar: transcriptViewSidebarReducer
-});
+export const transcriptExternalReferencesQuery = gql`
+  query TranscriptExternalReferences(
+    $transcriptId: String!
+    $genomeId: String!
+  ) {
+    transcript(by_id: { stable_id: $transcriptId, genome_id: $genomeId }) {
+      ...transcriptFields
+    }
+  }
+  ${transcriptFieldsFragment}
+`;
+
+export type TranscriptExternalReferencesQueryResult = {
+  transcript: QueriedTranscript;
+};

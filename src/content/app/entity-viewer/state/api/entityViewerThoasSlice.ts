@@ -60,6 +60,10 @@ import {
   type DefaultEntityViewerTranscriptQueryResult
 } from './queries/transcriptDefaultQuery';
 import {
+  transcriptExternalReferencesQuery,
+  type TranscriptExternalReferencesQueryResult
+} from './queries/transcriptExternalReferencesQuery';
+import {
   variantPageMetaQuery,
   type VariantPageMetaQueryResult,
   type VariantPageMeta
@@ -196,6 +200,16 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
       query: (params) => ({
         url: config.coreApiUrl,
         body: defaultTranscriptQuery,
+        variables: params
+      })
+    }),
+    transcriptExternalReferences: builder.query<
+      TranscriptExternalReferencesQueryResult,
+      TranscriptQueryParams
+    >({
+      query: (params) => ({
+        url: config.coreApiUrl,
+        body: transcriptExternalReferencesQuery,
         variables: params
       })
     }),
@@ -341,6 +355,7 @@ export const {
   useProteinDomainsQuery,
   useEvGeneHomologyQuery,
   useDefaultEntityViewerTranscriptQuery,
+  useTranscriptExternalReferencesQuery,
   useVariantPageMetaQuery,
   useDefaultEntityViewerVariantQuery,
   useVariantStudyPopulationsQuery,

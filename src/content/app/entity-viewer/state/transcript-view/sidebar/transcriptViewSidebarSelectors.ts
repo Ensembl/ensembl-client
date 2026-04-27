@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { defaultView } from './transcriptViewGeneralSlice';
+import { defaultSidebarTabName } from './transcriptViewSidebarSlice';
 
 import type { RootState } from 'src/store';
 
@@ -23,14 +23,32 @@ const getSliceForTranscript = (
   genomeId: string,
   transcriptId: string
 ) => {
-  return state.entityViewer.transcriptView.general[genomeId]?.[transcriptId];
+  return state.entityViewer.transcriptView.sidebar[genomeId]?.[transcriptId];
 };
 
-export const getViewForTranscript = (
+export const getIsSidebarOpen = (
   state: RootState,
   genomeId: string,
   transcriptId: string
 ) => {
   const slice = getSliceForTranscript(state, genomeId, transcriptId);
-  return slice?.view ?? defaultView;
+  return slice?.isOpen ?? true;
+};
+
+export const getActiveSidebarTab = (
+  state: RootState,
+  genomeId: string,
+  transcriptId: string
+) => {
+  const slice = getSliceForTranscript(state, genomeId, transcriptId);
+  return slice?.selectedTabName ?? defaultSidebarTabName;
+};
+
+export const getSidebarModalView = (
+  state: RootState,
+  genomeId: string,
+  transcriptId: string
+) => {
+  const slice = getSliceForTranscript(state, genomeId, transcriptId);
+  return slice?.sidebarModalView ?? null;
 };

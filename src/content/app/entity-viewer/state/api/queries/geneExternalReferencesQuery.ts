@@ -23,7 +23,7 @@ import type { FullProductGeneratingContext } from 'src/shared/types/core-api/pro
 import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 import type { ExternalReference } from 'src/shared/types/core-api/externalReference';
 
-const transcriptFieldsFragment = gql`
+export const transcriptFieldsFragment = gql`
   fragment transcriptFields on Transcript {
     stable_id
     slice {
