@@ -22,19 +22,19 @@ import {
   openSidebar,
   setSelectedTab,
   sidebarTabNames,
-  // closeSidebarModal,
-  // setSidebarTabName,
+  closeSidebarModal,
   type SidebarTabName
 } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSlice';
 
 import {
   getIsSidebarOpen,
-  getActiveSidebarTab
+  getActiveSidebarTab,
+  getSidebarModalView
 } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSelectors';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
-// import styles from './GeneViewSidebarTabs.module.css';
+import styles from './TranscriptViewSidebarTabs.module.css';
 
 const tabsData: Tab[] = sidebarTabNames.map((name) => ({ title: name }));
 
@@ -46,9 +46,11 @@ const TranscriptViewSidebarTabs = () => {
   const selectedTabName = useAppSelector((state) =>
     getActiveSidebarTab(state, activeGenomeId ?? '', transcriptId ?? '')
   );
-  // const isSidebarModalViewOpen = Boolean(
-  //   useAppSelector(getEntityViewerSidebarModalView)
-  // );
+  const isSidebarModalViewOpen = Boolean(
+    useAppSelector((state) =>
+      getSidebarModalView(state, activeGenomeId ?? '', transcriptId ?? '')
+    )
+  );
   const dispatch = useAppDispatch();
 
   const handleTabChange = (name: string) => {
@@ -64,9 +66,14 @@ const TranscriptViewSidebarTabs = () => {
         })
       );
     }
-    // if (isSidebarModalViewOpen) {
-    //   dispatch(closeSidebarModal());
-    // }
+    if (isSidebarModalViewOpen) {
+      dispatch(
+        closeSidebarModal({
+          genomeId: activeGenomeId,
+          transcriptId
+        })
+      );
+    }
     dispatch(
       setSelectedTab({
         genomeId: activeGenomeId,
@@ -77,14 +84,13 @@ const TranscriptViewSidebarTabs = () => {
   };
 
   const tabClassNames = {
-    // default: styles.defaultTab,
-    // selected: styles.selectedTab,
-    // disabled: styles.disabledTab,
-    // tabsContainer: styles.tabsContainer
+    default: styles.defaultTab,
+    selected: styles.selectedTab,
+    disabled: styles.disabledTab,
+    tabsContainer: styles.tabsContainer
   };
 
-  // const isSidebarActive = isSidebarOpen && !isSidebarModalViewOpen;
-  const isSidebarActive = isSidebarOpen;
+  const isSidebarActive = isSidebarOpen && !isSidebarModalViewOpen;
 
   return (
     <Tabs

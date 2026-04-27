@@ -43,3 +43,12 @@ export const getActiveSidebarTab = (
   const slice = getSliceForTranscript(state, genomeId, transcriptId);
   return slice?.selectedTabName ?? defaultSidebarTabName;
 };
+
+export const getSidebarModalView = (
+  state: RootState,
+  genomeId: string,
+  transcriptId: string
+) => {
+  const slice = getSliceForTranscript(state, genomeId, transcriptId);
+  return slice?.sidebarModalView ?? null;
+};

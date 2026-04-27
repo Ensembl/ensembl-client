@@ -21,9 +21,14 @@ export const defaultSidebarTabName = sidebarTabNames[0];
 
 export type SidebarTabName = (typeof sidebarTabNames)[number];
 
+export const sidebarModalViews = ['search', 'bookmarks', 'download'];
+
+export type SidebarModalView = (typeof sidebarModalViews)[number];
+
 type StateForTranscript = {
   isOpen: boolean;
   selectedTabName: SidebarTabName;
+  sidebarModalView: SidebarModalView | null;
 };
 
 type State = {
@@ -32,9 +37,10 @@ type State = {
   };
 };
 
-const initialStateForTranscript = {
+const initialStateForTranscript: StateForTranscript = {
   isOpen: true,
-  selectedTabName: sidebarTabNames[0]
+  selectedTabName: sidebarTabNames[0],
+  sidebarModalView: null
 };
 
 const ensureTranscriptState = (
@@ -87,11 +93,39 @@ const transcriptViewSidebarSlice = createSlice({
       const { genomeId, transcriptId, selectedTabName } = action.payload;
       ensureTranscriptState(state, genomeId, transcriptId);
       state[genomeId][transcriptId].selectedTabName = selectedTabName;
+    },
+    setSidebarModalView(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        transcriptId: string;
+        view: SidebarModalView | null;
+      }>
+    ) {
+      const { genomeId, transcriptId, view } = action.payload;
+      ensureTranscriptState(state, genomeId, transcriptId);
+      state[genomeId][transcriptId].sidebarModalView = view;
+    },
+    closeSidebarModal(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        transcriptId: string;
+      }>
+    ) {
+      const { genomeId, transcriptId } = action.payload;
+      ensureTranscriptState(state, genomeId, transcriptId);
+      state[genomeId][transcriptId].sidebarModalView = null;
     }
   }
 });
 
-export const { openSidebar, closeSidebar, setSelectedTab } =
-  transcriptViewSidebarSlice.actions;
+export const {
+  openSidebar,
+  closeSidebar,
+  setSelectedTab,
+  setSidebarModalView,
+  closeSidebarModal
+} = transcriptViewSidebarSlice.actions;
 
 export default transcriptViewSidebarSlice.reducer;
