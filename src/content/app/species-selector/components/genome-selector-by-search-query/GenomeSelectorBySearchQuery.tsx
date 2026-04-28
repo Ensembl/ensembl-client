@@ -161,7 +161,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
       />
 
       {data && data.matches.length > 0 && (
-        <>
+        <div className={styles.containerForTableAndControls}>
           <div className={styles.resultsControls}>
             <PaginationWithPerPage
               currentPageNumber={pageNumber}
@@ -188,7 +188,7 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
               onSpeciesSelectToggle={onGenomeStageToggle}
             />
           </div>
-        </>
+        </div>
       )}
     </div>
   );
