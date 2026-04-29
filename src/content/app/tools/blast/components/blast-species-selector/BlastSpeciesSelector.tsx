@@ -183,7 +183,7 @@ const BlastSpeciesSelector = (
       />
 
       {data?.matches.length ? (
-        <>
+        <div className={styles.containerForTableAndControls}>
           <div className={styles.resultsControls}>
             <PaginationWithPerPage
               currentPageNumber={searchResultsPage}
@@ -209,7 +209,7 @@ const BlastSpeciesSelector = (
               onSpeciesSelectToggle={onGenomeStageToggle}
             />
           </div>
-        </>
+        </div>
       ) : null}
     </div>
   );

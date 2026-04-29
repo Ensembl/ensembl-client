@@ -173,7 +173,7 @@ const VepSpeciesSelector = () => {
         />
 
         {data?.matches.length ? (
-          <>
+          <div className={styles.containerForTableAndControls}>
             <div className={styles.resultsControls}>
               <PaginationWithPerPage
                 currentPageNumber={searchResultsPage}
@@ -197,7 +197,7 @@ const VepSpeciesSelector = () => {
                 onSpeciesSelectToggle={onGenomeStageToggle}
               />
             </div>
-          </>
+          </div>
         ) : null}
       </div>
     </ModalView>

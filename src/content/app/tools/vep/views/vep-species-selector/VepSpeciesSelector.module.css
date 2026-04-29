@@ -5,6 +5,15 @@
   height: 100%;
 }
 
+.containerForTableAndControls {
+  height: 100%;
+  width: max-content;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  row-gap: 12px;
+  overflow: hidden;
+}
+
 .resultsControls {
   display: flex;
   justify-content: flex-end;
@@ -12,6 +21,9 @@
 }
 
 .tableContainer {
+  height: 100%;
+  width: max-content;
+  max-width: calc(100vw - var(--global-padding-left) - var(--standard-gutter));
   overflow: auto;
   padding-bottom: var(--global-padding-bottom);
 }

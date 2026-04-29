@@ -1,19 +1,13 @@
 .main {
   height: 100%;
   display: grid;
-  grid-template-rows: auto auto 1fr;
-  grid-template-columns: 60px 1fr;
-  grid-template-areas:
-    "top top"
-    "controls controls"
-    ". table";
-  row-gap: 30px;
+  grid-template-rows: auto 1fr;
+  row-gap: 10px;
   padding-left: var(--double-standard-gutter);
 }
 
 .top {
   display: grid;
-  grid-area: top;
   align-items: center;
   justify-self: start;
   grid-template-columns: [species-image] 60px [genomes-count] auto [add-button] max-content [close-button] auto [filter] max-content;
@@ -52,11 +46,19 @@
 }
 
 .loader {
-  grid-area: table;  
+  justify-self: center;
+}
+
+.containerForTableAndControls {
+  height: 100%;
+  width: max-content;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  row-gap: 12px;
+  overflow: hidden;
 }
 
 .resultsControls {
-  grid-area: controls;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -67,7 +69,9 @@
 }
 
 .tableContainer {
-  grid-area: table;
+  height: 100%;
+  width: max-content;
+  max-width: calc(100vw - var(--global-padding-left) - var(--standard-gutter));
   overflow: auto;
   padding-bottom: var(--global-padding-bottom);
 }
