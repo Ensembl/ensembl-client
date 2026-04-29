@@ -29,6 +29,9 @@ vi.mock('./GeneSummaryStrip', () => ({
 vi.mock('./LocationSummaryStrip', () => ({
   default: () => <div>Location Summary Strip</div>
 }));
+vi.mock('./TranscriptSummaryStrip', () => ({
+  default: () => <div>Transcript Summary Strip</div>
+}));
 
 describe('<FeatureSummaryStrip />', () => {
   const defaultProps = {
@@ -60,6 +63,16 @@ describe('<FeatureSummaryStrip />', () => {
         })
       );
       expect(container.textContent).toBe('Location Summary Strip'); // text from the mocked module
+    });
+
+    it('renders a TranscriptSummaryStrip if the focus object is a transcript', () => {
+      const { container } = render(
+        renderFeatureSummaryStrip({
+          focusObject: createFocusObject('transcript')
+        })
+      );
+
+      expect(container.textContent).toBe('Transcript Summary Strip');
     });
   });
 });

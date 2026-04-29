@@ -103,8 +103,11 @@ describe('<BookmarksModal />', () => {
   it('renders previously viewed links', () => {
     const geneId = 'TraesCS3D02G273600';
     const location = '3D:2585940-2634711';
+    const transcriptId = 'ENST00000380152';
+    const geneSymbol = 'BRCA2';
     const geneObjectId = `${activeGenomeId}:gene:${geneId}`;
     const locationObjectId = `${activeGenomeId}:location:${location}`;
+    const transcriptObjectId = `${activeGenomeId}:transcript:${transcriptId}`;
     const previouslyViewedObjects = [
       {
         genome_id: activeGenomeId,
@@ -117,6 +120,12 @@ describe('<BookmarksModal />', () => {
         object_id: locationObjectId,
         type: 'location',
         label: [location]
+      },
+      {
+        genome_id: activeGenomeId,
+        object_id: transcriptObjectId,
+        type: 'transcript',
+        label: [geneSymbol, transcriptId]
       }
     ];
     const newMockState = merge(mockState, {
@@ -133,12 +142,20 @@ describe('<BookmarksModal />', () => {
 
     const geneLink = screen.getByText(geneId).closest('a') as HTMLElement;
     const locationLink = screen.getByText(location).closest('a') as HTMLElement;
+    const transcriptLink = screen
+      .getByText(transcriptId)
+      .closest('a') as HTMLElement;
 
     const expectedGeneHref = `/genome-browser/${mockGenomeId}?focus=gene:${geneId}`;
     const expectedLocationHref = `/genome-browser/${mockGenomeId}?focus=location:${location}`;
 
     expect(geneLink.getAttribute('href')).toBe(expectedGeneHref);
     expect(locationLink.getAttribute('href')).toBe(expectedLocationHref);
+    expect(screen.getByText(geneSymbol)).toBeTruthy();
+    expect(screen.getByText('Transcript')).toBeTruthy();
+    expect(transcriptLink.getAttribute('href')).toBe(
+      `/genome-browser/${mockGenomeId}?focus=transcript:${transcriptId}`
+    );
   });
 
   it('shows link to view more only when there are more than 20 objects', () => {

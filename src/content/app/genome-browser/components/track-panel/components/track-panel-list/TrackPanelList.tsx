@@ -20,6 +20,7 @@ import classNames from 'classnames';
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import {
   getBrowserActiveFocusObject,
@@ -34,6 +35,7 @@ import {
 import TrackPanelGene from './track-panel-items/TrackPanelGene';
 import TrackPanelVariant from './track-panel-items/track-panel-variant/TrackPanelVariant';
 import TrackPanelRegularItem from './track-panel-items/TrackPanelRegularItem';
+import SimpleTrackPanelItemLayout from './track-panel-items/track-panel-item-layout/SimpleTrackPanelItemLayout';
 import {
   Accordion,
   AccordionItem,
@@ -52,10 +54,12 @@ import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/t
 import type {
   FocusObject as FocusObjectType,
   FocusGene as FocusGeneType,
+  FocusTranscript as FocusTranscriptType,
   FocusVariant as FocusVariantType
 } from 'src/shared/types/focus-object/focusObjectTypes';
 
 import styles from './TrackPanelList.module.css';
+import trackPanelItemStyles from './track-panel-items/TrackPanelItem.module.css';
 
 export const TrackPanelList = () => {
   // by the time this component renders, genome id should be available
@@ -175,6 +179,8 @@ const FocusObject = (props: { focusObject: FocusObjectType | null }) => {
 
   if (focusObject?.type === 'gene') {
     content = <FocusGene focusGene={focusObject} />;
+  } else if (focusObject?.type === 'transcript') {
+    content = <FocusTranscript focusTranscript={focusObject} />;
   } else if (focusObject?.type === 'variant') {
     content = <FocusVariant focusVariant={focusObject} />;
   }
@@ -200,6 +206,39 @@ const FocusGene = (props: { focusGene: FocusGeneType }) => {
 
 const FocusVariant = (props: { focusVariant: FocusVariantType }) => {
   return <TrackPanelVariant focusVariant={props.focusVariant} />;
+};
+
+const FocusTranscript = (props: { focusTranscript: FocusTranscriptType }) => {
+  const { focusTranscript } = props;
+  const dispatch = useAppDispatch();
+  const { trackDrawerOpened } = useGenomeBrowserAnalytics();
+
+  const onShowMore = () => {
+    trackDrawerOpened('transcript_summary');
+
+    dispatch(
+      changeDrawerViewForGenome({
+        genomeId: focusTranscript.genome_id,
+        drawerView: {
+          name: 'transcript_summary',
+          transcriptId: focusTranscript.stable_id
+        }
+      })
+    );
+  };
+
+  return (
+    <SimpleTrackPanelItemLayout onShowMore={onShowMore}>
+      <div className={trackPanelItemStyles.label}>
+        <span className={trackPanelItemStyles.labelText}>
+          {focusTranscript.stable_id}
+        </span>
+        <span className={trackPanelItemStyles.labelTextSecondaryStrong}>
+          {focusTranscript.gene_symbol}
+        </span>
+      </div>
+    </SimpleTrackPanelItemLayout>
+  );
 };
 
 export default memo(TrackPanelList);

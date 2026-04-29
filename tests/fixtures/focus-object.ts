@@ -20,6 +20,7 @@ import {
   FocusObject,
   FocusGene,
   FocusLocation,
+  FocusTranscript,
   FocusObjectType
 } from 'src/shared/types/focus-object/focusObjectTypes';
 import { Strand } from 'src/shared/types/core-api/strand';
@@ -28,6 +29,8 @@ export const createFocusObject = (
   objectType?: FocusObjectType
 ): FocusObject => {
   switch (objectType) {
+    case 'transcript':
+      return createFocusTranscript();
     case 'location':
       return createFocusLocation();
     default:
@@ -55,6 +58,18 @@ const createFocusLocation = (): FocusLocation => {
     ...commonFocusObjectFields({ genome_id }),
     type: 'location',
     object_id
+  };
+};
+
+const createFocusTranscript = (): FocusTranscript => {
+  const genome_id = faker.lorem.word();
+  const object_id = `${genome_id}:transcript:${faker.string.uuid()};`;
+
+  return {
+    ...commonFocusObjectFields({ genome_id }),
+    type: 'transcript',
+    object_id,
+    gene_symbol: faker.lorem.word()
   };
 };
 

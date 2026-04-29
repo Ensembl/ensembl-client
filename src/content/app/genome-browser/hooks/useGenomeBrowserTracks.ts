@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
@@ -72,6 +72,11 @@ const useGenomeBrowserTracks = () => {
   const { toggleTrack, genomeBrowser } = useGenomeBrowser();
 
   const dispatch = useAppDispatch();
+  const toggleTrackRef = useRef(toggleTrack);
+
+  useEffect(() => {
+    toggleTrackRef.current = toggleTrack;
+  }, [toggleTrack]);
 
   // This effect is for initialising track setting if they are missing
   useEffect(() => {
@@ -92,7 +97,13 @@ const useGenomeBrowserTracks = () => {
       trackCategories,
       focusObject
     });
-  }, [trackCategories, focusObject, genomeId]);
+  }, [
+    trackCategories,
+    focusObject,
+    genomeId,
+    trackSettingsForGenome,
+    dispatch
+  ]);
 
   // make sure to tell genome browser to hide tracks that a given genome doesn't have
   useEffect(() => {
@@ -115,9 +126,9 @@ const useGenomeBrowserTracks = () => {
     );
 
     trackIdsToHide.forEach((trackId) => {
-      toggleTrack({ trackId, isEnabled: false });
+      toggleTrackRef.current({ trackId, isEnabled: false });
     });
-  }, [trackSettingsForGenome, visibleTrackIds]);
+  }, [trackSettingsForGenome, visibleTrackIds, trackCategories]);
 
   // mark the tracks that reflect the content of the current tab inside the track panel
   useEffect(() => {
@@ -179,7 +190,10 @@ const prepareTrackSettings = ({
 }) => {
   const defaultTrackSettings: TrackSettingsPerTrack = {};
 
-  if (focusObject?.type === TrackType.GENE) {
+  if (
+    focusObject?.type === TrackType.GENE ||
+    focusObject?.type === 'transcript'
+  ) {
     defaultTrackSettings[TrackId.FOCUS_GENE] = buildDefaultFocusGeneTrack();
   } else if (focusObject?.type === TrackType.VARIANT) {
     defaultTrackSettings[TrackId.FOCUS_VARIANT] =
