@@ -85,16 +85,11 @@ const BlastSpeciesSelector = (
   const [searchTrigger, result] = useLazyGenomesQuery();
   const { data, isLoading, isError } = result;
 
-  const {
-    genomes,
-    stagedGenomes,
-    isTableExpanded,
-    onTableExpandToggle,
-    onGenomeStageToggle
-  } = useSelectableGenomesTable({
-    genomes: data?.matches ?? [],
-    selectedGenomes: selectedSpecies
-  });
+  const { genomes, stagedGenomes, onTableExpandToggle, onGenomeStageToggle } =
+    useSelectableGenomesTable({
+      genomes: data?.matches ?? [],
+      selectedGenomes: selectedSpecies
+    });
 
   const deferredGenomes = useDeferredValue(genomes);
 
@@ -199,7 +194,6 @@ const BlastSpeciesSelector = (
           <div className={styles.tableContainer}>
             <SpeciesSearchResultsTable
               results={deferredGenomes}
-              isExpanded={isTableExpanded}
               maxStagedGenomesNumber={
                 maxSelectableGenomesCount - selectedGenomesCount
               }
