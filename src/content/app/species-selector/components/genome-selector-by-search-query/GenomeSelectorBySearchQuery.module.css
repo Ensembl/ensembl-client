@@ -36,7 +36,6 @@
 
 .containerForTableAndControls {
   height: 100%;
-  width: max-content;
   display: grid;
   grid-template-rows: auto 1fr;
   overflow: hidden;
@@ -47,7 +46,6 @@
   justify-content: flex-end;
   margin-bottom: var(--standard-gutter);
   align-items: center;
-  max-width: calc(100vw - var(--global-padding-left) - var(--standard-gutter));
 }
 
 .downloadButton {
@@ -56,8 +54,10 @@
 
 .tableContainer {
   height: 100%;
-  width: max-content;
-  max-width: calc(100vw - var(--global-padding-left) - var(--standard-gutter));
   overflow: auto;
   padding-bottom: var(--global-padding-bottom);
+}
+
+.tableContainer table {
+  width: 100%;
 }
