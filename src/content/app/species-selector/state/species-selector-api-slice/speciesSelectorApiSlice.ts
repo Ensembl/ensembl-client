@@ -60,7 +60,7 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       SpeciesSearchRequestParams
     >({
       query: (params) => ({
-        url: `${config.searchApiBaseUrl}/genomes?${prepareGenomeSearchParams(params)}`
+        url: `${config.searchApiBaseUrl}/v2/genomes?${prepareGenomeSearchParams(params)}`
       })
     }),
     getGenomesBySpeciesTaxonomyId: builder.query<
@@ -68,7 +68,7 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       GenomesSearchBySpeciesTaxonomyIdRequestParams
     >({
       query: (params) => ({
-        url: `${config.searchApiBaseUrl}/genomes?${prepareGenomeSearchParams(params)}`
+        url: `${config.searchApiBaseUrl}/v2/genomes?${prepareGenomeSearchParams(params)}`
       })
     })
   })
