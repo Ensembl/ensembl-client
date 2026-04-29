@@ -136,34 +136,36 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
             stagedGenomes={stagedGenomes}
             speciesImageUrl={speciesImageUrl}
           />
-          <div className={styles.resultsControls}>
-            <PaginationWithPerPage
-              currentPageNumber={pageNumber}
-              lastPageNumber={getSpeciesSearchLastPageNumber({
-                data,
-                perPage: perPage
-              })}
-              onPageChange={onResultsPageChange}
-              perPageValue={perPage}
-              onPerPageChange={onResultsPerPageChange}
-            />
-            <GenomesDownloadButton
-              searchParam={{
-                name: 'species_taxonomy_id',
-                value: `${speciesTaxonomyId}`
-              }}
-              className={styles.downloadButton}
-            />
-          </div>
-          <div className={styles.tableContainer}>
-            <SpeciesSearchResultsTable
-              results={genomes}
-              isExpanded={isTableExpanded}
-              sortRule={sortRule}
-              onTableExpandToggle={onTableExpandToggle}
-              onSpeciesSelectToggle={onGenomeStageToggle}
-              onSortRuleChange={onSortRuleChange}
-            />
+          <div className={styles.containerForTableAndControls}>
+            <div className={styles.resultsControls}>
+              <PaginationWithPerPage
+                currentPageNumber={pageNumber}
+                lastPageNumber={getSpeciesSearchLastPageNumber({
+                  data,
+                  perPage: perPage
+                })}
+                onPageChange={onResultsPageChange}
+                perPageValue={perPage}
+                onPerPageChange={onResultsPerPageChange}
+              />
+              <GenomesDownloadButton
+                searchParam={{
+                  name: 'species_taxonomy_id',
+                  value: `${speciesTaxonomyId}`
+                }}
+                className={styles.downloadButton}
+              />
+            </div>
+            <div className={styles.tableContainer}>
+              <SpeciesSearchResultsTable
+                results={genomes}
+                isExpanded={isTableExpanded}
+                sortRule={sortRule}
+                onTableExpandToggle={onTableExpandToggle}
+                onSpeciesSelectToggle={onGenomeStageToggle}
+                onSortRuleChange={onSortRuleChange}
+              />
+            </div>
           </div>
         </>
       )}
