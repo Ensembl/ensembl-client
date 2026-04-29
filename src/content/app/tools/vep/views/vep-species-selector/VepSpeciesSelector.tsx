@@ -73,16 +73,11 @@ const VepSpeciesSelector = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const {
-    genomes,
-    stagedGenomes,
-    isTableExpanded,
-    onTableExpandToggle,
-    onGenomeStageToggle
-  } = useSelectableGenomesTable({
-    genomes: data?.matches ?? [],
-    selectedGenomes: []
-  });
+  const { genomes, stagedGenomes, onTableExpandToggle, onGenomeStageToggle } =
+    useSelectableGenomesTable({
+      genomes: data?.matches ?? [],
+      selectedGenomes: []
+    });
 
   const deferredGenomes = useDeferredValue(genomes);
 
@@ -189,7 +184,6 @@ const VepSpeciesSelector = () => {
             <div className={styles.tableContainer}>
               <SpeciesSearchResultsTable
                 results={deferredGenomes}
-                isExpanded={isTableExpanded}
                 maxStagedGenomesNumber={1}
                 sortRule={sortRule}
                 onSortRuleChange={onSortRuleChange}

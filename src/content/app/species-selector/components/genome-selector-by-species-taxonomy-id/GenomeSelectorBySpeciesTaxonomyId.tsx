@@ -80,16 +80,11 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
     sortOrder
   });
 
-  const {
-    genomes,
-    stagedGenomes,
-    isTableExpanded,
-    onTableExpandToggle,
-    onGenomeStageToggle
-  } = useSelectableGenomesTable({
-    genomes: data?.matches ?? [],
-    selectedGenomes: committedSpecies
-  });
+  const { genomes, stagedGenomes, onTableExpandToggle, onGenomeStageToggle } =
+    useSelectableGenomesTable({
+      genomes: data?.matches ?? [],
+      selectedGenomes: committedSpecies
+    });
 
   const onResultsPageChange = (page: number) => {
     const newPageParam = new URLSearchParams(searchParams);
@@ -159,7 +154,6 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
             <div className={styles.tableContainer}>
               <SpeciesSearchResultsTable
                 results={genomes}
-                isExpanded={isTableExpanded}
                 sortRule={sortRule}
                 onTableExpandToggle={onTableExpandToggle}
                 onSpeciesSelectToggle={onGenomeStageToggle}

@@ -86,16 +86,11 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
     sortOrder
   });
 
-  const {
-    genomes,
-    stagedGenomes,
-    isTableExpanded,
-    onTableExpandToggle,
-    onGenomeStageToggle
-  } = useSelectableGenomesTable({
-    genomes: data?.matches ?? [],
-    selectedGenomes: committedSpecies
-  });
+  const { genomes, stagedGenomes, onTableExpandToggle, onGenomeStageToggle } =
+    useSelectableGenomesTable({
+      genomes: data?.matches ?? [],
+      selectedGenomes: committedSpecies
+    });
 
   const deferredGenomes = useDeferredValue(genomes);
 
@@ -181,7 +176,6 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
           <div className={styles.tableContainer}>
             <SpeciesSearchResultsTable
               results={deferredGenomes}
-              isExpanded={isTableExpanded}
               sortRule={sortRule}
               onSortRuleChange={onSortRuleChange}
               onTableExpandToggle={onTableExpandToggle}
