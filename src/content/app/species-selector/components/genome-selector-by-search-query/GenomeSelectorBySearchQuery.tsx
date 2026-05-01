@@ -42,6 +42,11 @@ import useSelectableGenomesTable from 'src/content/app/species-selector/componen
 import AddSpecies from 'src/content/app/species-selector/components/species-search-field/AddSpecies';
 import { SpeciesSearchField } from '../species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
+import {
+  SpeciesSearchResultsTableWrapper,
+  TableControlsSection,
+  TableSection
+} from 'src/content/app/species-selector/components/species-search-results-table-wrapper/SpeciesSearchResultsTableWrapper';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 import PaginationWithPerPage from 'src/shared/components/pagination/PaginationWithPerPage';
 import { CircleLoader } from 'src/shared/components/loader';
@@ -156,24 +161,26 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
       />
 
       {data && data.matches.length > 0 && (
-        <div className={styles.containerForTableAndControls}>
-          <div className={styles.resultsControls}>
-            <PaginationWithPerPage
-              currentPageNumber={pageNumber}
-              lastPageNumber={getSpeciesSearchLastPageNumber({
-                data,
-                perPage: perPage
-              })}
-              onPageChange={onResultsPageChange}
-              perPageValue={perPage}
-              onPerPageChange={onResultsPerPageChange}
-            />
-            <GenomesDownloadButton
-              searchParam={{ name: 'query', value: query }}
-              className={styles.downloadButton}
-            />
-          </div>
-          <div className={styles.tableContainer}>
+        <SpeciesSearchResultsTableWrapper>
+          <TableControlsSection>
+            <>
+              <PaginationWithPerPage
+                currentPageNumber={pageNumber}
+                lastPageNumber={getSpeciesSearchLastPageNumber({
+                  data,
+                  perPage: perPage
+                })}
+                onPageChange={onResultsPageChange}
+                perPageValue={perPage}
+                onPerPageChange={onResultsPerPageChange}
+              />
+              <GenomesDownloadButton
+                searchParam={{ name: 'query', value: query }}
+                className={styles.downloadButton}
+              />
+            </>
+          </TableControlsSection>
+          <TableSection>
             <SpeciesSearchResultsTable
               results={deferredGenomes}
               sortRule={sortRule}
@@ -181,8 +188,8 @@ const GenomeSelectorBySearchQuery = (props: Props) => {
               onTableExpandToggle={onTableExpandToggle}
               onSpeciesSelectToggle={onGenomeStageToggle}
             />
-          </div>
-        </div>
+          </TableSection>
+        </SpeciesSearchResultsTableWrapper>
       )}
     </div>
   );

@@ -28,27 +28,3 @@
   margin-top: 40px;
   margin-left: 60px;
 }
-
-.containerForTableAndControls {
-  height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  row-gap: 12px;
-  overflow: hidden;
-}
-
-.resultsControls {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: var(--standard-gutter);
-}
-
-.tableContainer {
-  height: 100%;
-  overflow: auto;
-  padding-bottom: var(--global-padding-bottom);
-}
-
-.tableContainer table {
-  width: 100%;
-}

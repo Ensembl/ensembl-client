@@ -5,30 +5,6 @@
   height: 100%;
 }
 
-.containerForTableAndControls {
-  height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  row-gap: 12px;
-  overflow: hidden;
-}
-
-.resultsControls {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: var(--standard-gutter);
-}
-
-.tableContainer {
-  height: 100%;
-  overflow: auto;
-  padding-bottom: var(--global-padding-bottom);
-}
-
-.tableContainer table {
-  width: 100%;
-}
-
 /* Question to consider: is the top section of a species selector
    a sufficiently stable and repeatable component
    to be extracted into a shared component?

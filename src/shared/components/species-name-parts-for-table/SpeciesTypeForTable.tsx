@@ -21,9 +21,7 @@ import { SpeciesType } from '../species-name-parts';
 type Props = ComponentProps<typeof SpeciesType>;
 
 /**
- * In a table, species type column typically combines the type information (strain/cultivar/etc)
- * with whether this assembly is the reference.
- * If no type information is available and the assembly is not the reference one,
+ * In a table, if no type information is available,
  * we typically display a "-".
  */
 
