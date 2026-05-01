@@ -35,6 +35,11 @@ import {
 
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
+import {
+  SpeciesSearchResultsTableWrapper,
+  TableControlsSection,
+  TableSection
+} from 'src/content/app/species-selector/components/species-search-results-table-wrapper/SpeciesSearchResultsTableWrapper';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
@@ -131,8 +136,8 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
             stagedGenomes={stagedGenomes}
             speciesImageUrl={speciesImageUrl}
           />
-          <div className={styles.containerForTableAndControls}>
-            <div className={styles.resultsControls}>
+          <SpeciesSearchResultsTableWrapper>
+            <TableControlsSection>
               <PaginationWithPerPage
                 currentPageNumber={pageNumber}
                 lastPageNumber={getSpeciesSearchLastPageNumber({
@@ -150,8 +155,8 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
                 }}
                 className={styles.downloadButton}
               />
-            </div>
-            <div className={styles.tableContainer}>
+            </TableControlsSection>
+            <TableSection>
               <SpeciesSearchResultsTable
                 results={genomes}
                 sortRule={sortRule}
@@ -159,8 +164,8 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
                 onSpeciesSelectToggle={onGenomeStageToggle}
                 onSortRuleChange={onSortRuleChange}
               />
-            </div>
-          </div>
+            </TableSection>
+          </SpeciesSearchResultsTableWrapper>
         </>
       )}
       {isError && <div>An unexpected error has occurred</div>}

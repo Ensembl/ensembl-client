@@ -42,6 +42,11 @@ import useSelectableGenomesTable from 'src/content/app/species-selector/componen
 import AddSpecies from 'src/content/app/species-selector/components/species-search-field/AddSpecies';
 import { SpeciesSearchField } from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
+import {
+  SpeciesSearchResultsTableWrapper,
+  TableControlsSection,
+  TableSection
+} from 'src/content/app/species-selector/components/species-search-results-table-wrapper/SpeciesSearchResultsTableWrapper';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
 import ModalView from 'src/shared/components/modal-view/ModalView';
 import { CircleLoader } from 'src/shared/components/loader';
@@ -168,8 +173,8 @@ const VepSpeciesSelector = () => {
         />
 
         {data?.matches.length ? (
-          <div className={styles.containerForTableAndControls}>
-            <div className={styles.resultsControls}>
+          <SpeciesSearchResultsTableWrapper>
+            <TableControlsSection>
               <PaginationWithPerPage
                 currentPageNumber={searchResultsPage}
                 lastPageNumber={getSpeciesSearchLastPageNumber({
@@ -180,8 +185,8 @@ const VepSpeciesSelector = () => {
                 perPageValue={searchResultsPerPage}
                 onPerPageChange={onResultsPerPageChange}
               />
-            </div>
-            <div className={styles.tableContainer}>
+            </TableControlsSection>
+            <TableSection>
               <SpeciesSearchResultsTable
                 results={deferredGenomes}
                 maxStagedGenomesNumber={1}
@@ -190,8 +195,8 @@ const VepSpeciesSelector = () => {
                 onTableExpandToggle={onTableExpandToggle}
                 onSpeciesSelectToggle={onGenomeStageToggle}
               />
-            </div>
-          </div>
+            </TableSection>
+          </SpeciesSearchResultsTableWrapper>
         ) : null}
       </div>
     </ModalView>
