@@ -141,7 +141,14 @@ const SpeciesSearchResultsTable = (props: Props) => {
             Release
           </ColumnHead>
 
-          <ColumnHead>Release type</ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('release.type', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('release.type', newOrder)
+            }
+          >
+            Release type
+          </ColumnHead>
 
           <ColumnHead
             sortOrder={getSortOrderForColumn('assembly.accession_id', sortRule)}
@@ -168,10 +175,38 @@ const SpeciesSearchResultsTable = (props: Props) => {
           >
             N50
           </ColumnHead>
-          <ColumnHead>Variation</ColumnHead>
-          <ColumnHead>Regulation</ColumnHead>
-          <ColumnHead>Annotation provider</ColumnHead>
-          <ColumnHead>Annotation method</ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('has_variation', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('has_variation', newOrder)
+            }
+          >
+            Variation
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('has_regulation', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('has_regulation', newOrder)
+            }
+          >
+            Regulation
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('annotation_provider', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('annotation_provider', newOrder)
+            }
+          >
+            Annotation provider
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('annotation_method', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('annotation_method', newOrder)
+            }
+          >
+            Annotation method
+          </ColumnHead>
         </tr>
       </thead>
       <tbody>
