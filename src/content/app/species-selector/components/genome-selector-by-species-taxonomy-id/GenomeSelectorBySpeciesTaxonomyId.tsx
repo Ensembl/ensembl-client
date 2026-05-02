@@ -62,16 +62,12 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   const { speciesTaxonomyId } = props;
   const committedSpecies = useAppSelector(getCommittedSpecies);
   const [searchParams, setSearchParams] = useSearchParams();
-  const pageString = searchParams.get('page') ?? '1';
+  const pageNumber = parseInt(searchParams.get('page') ?? '1');
   const perPageParam = searchParams.get('per_page');
   const sortBy = searchParams.get('sort_by');
   const sortOrder = searchParams.get('order');
   const { currentData: popularSpeciesData } = usePopularSpeciesQuery();
 
-  let pageNumber = parseInt(pageString);
-  if (!pageNumber) {
-    pageNumber = 1;
-  }
   const perPage =
     perPageParam && isValidPerPageParam(perPageParam)
       ? parseInt(perPageParam)
