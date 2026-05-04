@@ -25,6 +25,7 @@ import { getIsSidebarOpen } from 'src/content/app/entity-viewer/state/transcript
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSlice';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
+import TranscriptSummaryStrip from './transcript-view/components/transcript-summary-strip/TranscriptSummaryStrip';
 import TranscriptView from './transcript-view/TranscriptView';
 import TranscriptViewSidebar from './transcript-view/components/transcript-view-sidebar/TranscriptViewSidebar';
 import TranscriptViewSidebarTabs from './transcript-view/components/transcript-view-sidebar-tabs/TranscriptViewSidebarTabs';
@@ -52,7 +53,7 @@ const EntityViewerForTranscript = () => {
 
   return (
     <StandardAppLayout
-      topbarContent={<div />}
+      topbarContent={<TranscriptSummaryStrip />}
       mainContent={<TranscriptView />}
       sidebarContent={<TranscriptViewSidebar />}
       isSidebarOpen={isSidebarOpen}
