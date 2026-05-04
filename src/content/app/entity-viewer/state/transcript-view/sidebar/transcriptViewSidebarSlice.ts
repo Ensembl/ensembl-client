@@ -21,7 +21,7 @@ export const defaultSidebarTabName = sidebarTabNames[0];
 
 export type SidebarTabName = (typeof sidebarTabNames)[number];
 
-export const sidebarModalViews = ['search', 'bookmarks', 'download'];
+export const sidebarModalViews = ['search', 'bookmarks', 'download'] as const;
 
 export type SidebarModalView = (typeof sidebarModalViews)[number];
 
@@ -106,7 +106,7 @@ const transcriptViewSidebarSlice = createSlice({
       ensureTranscriptState(state, genomeId, transcriptId);
       state[genomeId][transcriptId].selectedTabName = selectedTabName;
     },
-    setSidebarModalView(
+    openSidebarModal(
       state,
       action: PayloadAction<{
         genomeId: string;
@@ -137,7 +137,7 @@ export const {
   closeSidebar,
   toggleSidebar,
   setSelectedTab,
-  setSidebarModalView,
+  openSidebarModal,
   closeSidebarModal
 } = transcriptViewSidebarSlice.actions;
 

@@ -29,6 +29,7 @@ import TranscriptSummaryStrip from './transcript-view/components/transcript-summ
 import TranscriptView from './transcript-view/TranscriptView';
 import TranscriptViewSidebar from './transcript-view/components/transcript-view-sidebar/TranscriptViewSidebar';
 import TranscriptViewSidebarTabs from './transcript-view/components/transcript-view-sidebar-tabs/TranscriptViewSidebarTabs';
+import SidebarToolstrip from './transcript-view/components/transcript-view-sidebar/sidebar-toolstrip/SidebarToolstrip';
 
 const EntityViewerForTranscript = () => {
   const { activeGenomeId, transcriptId } = useTranscriptViewIds();
@@ -56,6 +57,7 @@ const EntityViewerForTranscript = () => {
       topbarContent={<TranscriptSummaryStrip />}
       mainContent={<TranscriptView />}
       sidebarContent={<TranscriptViewSidebar />}
+      sidebarToolstripContent={<SidebarToolstrip />}
       isSidebarOpen={isSidebarOpen}
       onSidebarToggle={onSidebarToggle}
       sidebarNavigation={<TranscriptViewSidebarTabs />}
