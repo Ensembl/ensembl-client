@@ -16,37 +16,17 @@
 
 import type { ComponentProps } from 'react';
 
-import { SpeciesType, SpeciesReference } from '../species-name-parts';
+import { SpeciesType } from '../species-name-parts';
 
-type Props = ComponentProps<typeof SpeciesType> &
-  ComponentProps<typeof SpeciesReference>;
+type Props = ComponentProps<typeof SpeciesType>;
 
 /**
- * In a table, species type column typically combines the type information (strain/cultivar/etc)
- * with whether this assembly is the reference.
- * If no type information is available and the assembly is not the reference one,
+ * In a table, if no type information is available,
  * we typically display a "-".
  */
 
 const SpeciesTypeForTable = (props: Props) => {
-  const { is_reference, type: speciesType } = props;
-
-  if (!is_reference && !speciesType) {
-    return <SpeciesType {...props} fallback="-" />;
-  } else if (is_reference && !speciesType) {
-    return <SpeciesReference {...props} />;
-  } else if (!is_reference && speciesType) {
-    return <SpeciesType {...props} />;
-  } else {
-    // has the type information, and is reference assembly
-    return (
-      <span>
-        <SpeciesType {...props} />
-        {', '}
-        <SpeciesReference {...props} />
-      </span>
-    );
-  }
+  return <SpeciesType {...props} fallback="-" />;
 };
 
 export default SpeciesTypeForTable;

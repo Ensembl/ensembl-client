@@ -1,16 +1,17 @@
 .main {
   height: 100%;
   display: grid;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto 1fr;
   padding-top: 12px;
   padding-left: var(--global-padding-left);
 }
 
+/* FIXME: review grid areas */
 .topSection {
   display: grid;
   grid-template-areas:
     "search-field ."
-    "results-summary filter";
+    "results-summary .";
   grid-template-columns: max-content max-content;
   column-gap: 80px;
   row-gap: 32px;
@@ -28,16 +29,11 @@
   grid-area: results-summary;
 }
 
-.filterFieldWrapper {
-  grid-area: filter;
-}
-
 .loader {
   margin-top: 40px;
   margin-left: 60px;
 }
 
-.tableContainer {
-  overflow: auto;
-  padding-bottom: var(--global-padding-bottom);
+.downloadButton {
+  margin-left: var(--standard-gutter);
 }

@@ -14,28 +14,35 @@
  * limitations under the License.
  */
 
-import type { FormEvent } from 'react';
+import config from 'config';
 
-import ShadedInput from 'src/shared/components/input/ShadedInput';
+import DownloadLink from 'src/shared/components/download-button/DownloadLink';
 
-const GenomesFilterField = (props: {
+type SearchParam = {
+  name: 'query' | 'species_taxonomy_id';
+  value: string;
+};
+
+type Props = {
+  searchParam: SearchParam;
   className?: string;
-  onFilterChange: (filterQuery: string) => void;
-}) => {
-  const onInput = (event: FormEvent<HTMLInputElement>) => {
-    const filterQuery = event.currentTarget.value;
-    props.onFilterChange(filterQuery);
-  };
+};
+
+const endpointUrl = `${config.searchApiBaseUrl}/genomes/v2/download`;
+
+const GenomesDownloadButton = (props: Props) => {
+  const searchParams = new URLSearchParams();
+  searchParams.set(props.searchParam.name, props.searchParam.value);
+  searchParams.set('format', 'csv');
+  const url = `${endpointUrl}?${searchParams.toString()}`;
 
   return (
-    <ShadedInput
-      placeholder="Filter results"
-      type="search"
-      size="small"
-      onInput={onInput}
+    <DownloadLink
+      href={url}
+      label="download full table of results"
       className={props.className}
     />
   );
 };
 
-export default GenomesFilterField;
+export default GenomesDownloadButton;

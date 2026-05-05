@@ -27,6 +27,10 @@ export type PopularSpeciesResponse = {
 
 export type SpeciesSearchRequestParams = {
   query: string;
+  page: number;
+  perPage?: number;
+  sortBy?: string | null;
+  sortOrder?: string | null;
 };
 
 export type SpeciesSearchResponse = {
@@ -38,6 +42,10 @@ export type SpeciesSearchResponse = {
 
 export type GenomesSearchBySpeciesTaxonomyIdRequestParams = {
   speciesTaxonomyId: string | number;
+  page: number;
+  perPage?: number;
+  sortBy?: string | null;
+  sortOrder?: string | null;
 };
 
 const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
@@ -51,23 +59,61 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       SpeciesSearchResponse,
       SpeciesSearchRequestParams
     >({
-      query: ({ query }) => ({
-        url: `${config.searchApiBaseUrl}/genomes?query=${query}`
+      query: (params) => ({
+        url: `${config.searchApiBaseUrl}/genomes/v2?${prepareGenomeSearchParams(params)}`
       })
     }),
     getGenomesBySpeciesTaxonomyId: builder.query<
       SpeciesSearchResponse,
       GenomesSearchBySpeciesTaxonomyIdRequestParams
     >({
-      query: ({ speciesTaxonomyId }) => ({
-        url: `${config.searchApiBaseUrl}/genomes?species_taxonomy_id=${speciesTaxonomyId}`
+      query: (params) => ({
+        url: `${config.searchApiBaseUrl}/genomes/v2?${prepareGenomeSearchParams(params)}`
       })
     })
   })
 });
 
-export const {
-  useGetPopularSpeciesQuery,
-  useLazyGetSpeciesSearchResultsQuery,
-  useLazyGetGenomesBySpeciesTaxonomyIdQuery
-} = speciesSelectorApiSlice;
+const prepareGenomeSearchParams = (
+  params:
+    | SpeciesSearchRequestParams
+    | GenomesSearchBySpeciesTaxonomyIdRequestParams
+) => {
+  const searchParams = new URLSearchParams();
+  if ('query' in params) {
+    searchParams.set('query', params.query);
+  } else if ('speciesTaxonomyId' in params) {
+    searchParams.set('species_taxonomy_id', `${params.speciesTaxonomyId}`);
+  }
+  searchParams.set('page', `${params.page}`);
+
+  const perPage = params.perPage ?? '100';
+  searchParams.set('per_page', `${perPage}`);
+
+  if (params.sortBy) {
+    const sortOrder = params.sortOrder ?? 'asc';
+    searchParams.set('sort', params.sortBy);
+    searchParams.set('order', sortOrder);
+  }
+
+  return searchParams.toString();
+};
+
+export const getSpeciesSearchLastPageNumber = ({
+  data,
+  perPage
+}: {
+  data: SpeciesSearchResponse;
+  perPage: number;
+}) => {
+  return Math.ceil(data.meta.total_hits / perPage);
+};
+
+export const useGenomesQuery =
+  speciesSelectorApiSlice.useGetSpeciesSearchResultsQuery;
+export const useLazyGenomesQuery =
+  speciesSelectorApiSlice.useLazyGetSpeciesSearchResultsQuery;
+export const useGenomesBySpeciesTaxonomyIdQuery =
+  speciesSelectorApiSlice.useGetGenomesBySpeciesTaxonomyIdQuery;
+export const usePopularSpeciesQuery =
+  speciesSelectorApiSlice.useGetPopularSpeciesQuery;

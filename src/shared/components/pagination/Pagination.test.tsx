@@ -40,7 +40,7 @@ describe('<Pagination />', () => {
     expect(() => container).not.toThrow();
   });
 
-  it('left chevron button is disabled on first page', () => {
+  test('left chevron button is disabled on first page', () => {
     container = renderPagination({
       currentPageNumber: 1
     }).container;
@@ -49,7 +49,7 @@ describe('<Pagination />', () => {
     expect(leftChevronButton.hasAttribute('disabled')).toBe(true);
   });
 
-  it('left chevron button is enabled when currentPageNumber > 1 ', () => {
+  test('left chevron button is enabled when currentPageNumber > 1', () => {
     container = renderPagination({
       currentPageNumber: 2
     }).container;
@@ -58,7 +58,7 @@ describe('<Pagination />', () => {
     expect(leftChevronButton.hasAttribute('disabled')).toBe(false);
   });
 
-  it('right chevron button is enabled when currentPageNumber is less lastPageNumber', () => {
+  test('right chevron button is enabled when currentPageNumber is less lastPageNumber', () => {
     container = renderPagination({
       currentPageNumber: 9,
       lastPageNumber: 10
@@ -68,7 +68,7 @@ describe('<Pagination />', () => {
     expect(rightChevronButton.hasAttribute('disabled')).toBe(false);
   });
 
-  it('right chevron button is disabled when currentPageNumber is equal to lastPageNumber', () => {
+  test('right chevron button is disabled when currentPageNumber is equal to lastPageNumber', () => {
     container = renderPagination({
       currentPageNumber: 10,
       lastPageNumber: 10

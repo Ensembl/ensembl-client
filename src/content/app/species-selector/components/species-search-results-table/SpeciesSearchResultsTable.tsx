@@ -17,7 +17,6 @@
 import classNames from 'classnames';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import { getSortOrderForColumn } from 'src/content/app/species-selector/components/selectable-genomes-table/useOrderedGenomes';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
@@ -37,29 +36,40 @@ import {
 
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 import type { SelectableGenome } from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
-import type {
-  SortRule,
-  ChangeSortRule
-} from 'src/content/app/species-selector/components/selectable-genomes-table/useOrderedGenomes';
+import type { SortOrder, SortOrderWithNone } from 'src/shared/types/sort-order';
 
 import styles from './SpeciesSearchResultsTable.module.css';
 
+export type SortProps = {
+  sortBy: string;
+  sortOrder: SortOrder;
+};
+
 type Props = {
-  isExpanded: boolean;
   results: SelectableGenome[];
   maxStagedGenomesNumber?: number; // if you need to limit how many of the displayed genomes can be added
-  sortRule: SortRule | null;
+  sortRule: SortProps | null;
+  onSortRuleChange: (sortBy: string, sortOrder: SortOrderWithNone) => void;
   onTableExpandToggle: () => void;
   onSpeciesSelectToggle: (
     species: SpeciesSearchMatch,
     isAdding?: boolean
   ) => void;
-  onSortRuleChange: ChangeSortRule;
+};
+
+const getSortOrderForColumn = (
+  sortParam: string,
+  sortProps: SortProps | null
+) => {
+  if (sortProps?.sortBy === sortParam) {
+    return sortProps.sortOrder;
+  } else {
+    return 'none';
+  }
 };
 
 const SpeciesSearchResultsTable = (props: Props) => {
   const {
-    isExpanded,
     results,
     maxStagedGenomesNumber = Infinity,
     onSpeciesSelectToggle,
@@ -106,65 +116,97 @@ const SpeciesSearchResultsTable = (props: Props) => {
             Type
           </ColumnHead>
           <ColumnHead
-            sortOrder={getSortOrderForColumn('assembly_name', sortRule)}
+            sortOrder={getSortOrderForColumn('is_reference', sortRule)}
             onSortOrderChange={(newOrder) =>
-              onSortRuleChange('assembly_name', newOrder)
+              onSortRuleChange('is_reference', newOrder)
+            }
+          >
+            Reference
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('assembly.name', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('assembly.name', newOrder)
             }
           >
             Assembly
           </ColumnHead>
 
           <ColumnHead
-            sortOrder={getSortOrderForColumn('release_name', sortRule)}
+            sortOrder={getSortOrderForColumn('release.name', sortRule)}
             onSortOrderChange={(newOrder) =>
-              onSortRuleChange('release_name', newOrder)
+              onSortRuleChange('release.name', newOrder)
             }
           >
             Release
           </ColumnHead>
 
-          <ColumnHead>Release type</ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('release.type', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('release.type', newOrder)
+            }
+          >
+            Release type
+          </ColumnHead>
 
           <ColumnHead
-            sortOrder={getSortOrderForColumn('assembly_accession_id', sortRule)}
+            sortOrder={getSortOrderForColumn('assembly.accession_id', sortRule)}
             onSortOrderChange={(newOrder) =>
-              onSortRuleChange('assembly_accession_id', newOrder)
+              onSortRuleChange('assembly.accession_id', newOrder)
             }
           >
             Assembly accession
           </ColumnHead>
 
-          <ColumnHead>
-            <ShowMore {...props} />
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('coding_genes_count', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('coding_genes_count', newOrder)
+            }
+          >
+            Coding genes
           </ColumnHead>
-
-          {isExpanded && (
-            <>
-              <ColumnHead
-                sortOrder={getSortOrderForColumn(
-                  'coding_genes_count',
-                  sortRule
-                )}
-                onSortOrderChange={(newOrder) =>
-                  onSortRuleChange('coding_genes_count', newOrder)
-                }
-              >
-                Coding genes
-              </ColumnHead>
-              <ColumnHead
-                sortOrder={getSortOrderForColumn('contig_n50', sortRule)}
-                onSortOrderChange={(newOrder) =>
-                  onSortRuleChange('contig_n50', newOrder)
-                }
-              >
-                N50
-              </ColumnHead>
-              <ColumnHead>Variation</ColumnHead>
-              <ColumnHead>Regulation</ColumnHead>
-              <ColumnHead>Annotation provider</ColumnHead>
-              <ColumnHead>Annotation method</ColumnHead>
-            </>
-          )}
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('contig_n50', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('contig_n50', newOrder)
+            }
+          >
+            N50
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('has_variation', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('has_variation', newOrder)
+            }
+          >
+            Variation
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('has_regulation', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('has_regulation', newOrder)
+            }
+          >
+            Regulation
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('annotation_provider', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('annotation_provider', newOrder)
+            }
+          >
+            Annotation provider
+          </ColumnHead>
+          <ColumnHead
+            sortOrder={getSortOrderForColumn('annotation_method', sortRule)}
+            onSortOrderChange={(newOrder) =>
+              onSortRuleChange('annotation_method', newOrder)
+            }
+          >
+            Annotation method
+          </ColumnHead>
         </tr>
       </thead>
       <tbody>
@@ -192,6 +234,7 @@ const SpeciesSearchResultsTable = (props: Props) => {
             <td>
               <SpeciesType {...searchMatch} />
             </td>
+            <td>{searchMatch.is_reference ? <SolidDot /> : <EmptyDot />}</td>
             <td>
               <AssemblyName {...searchMatch} />
             </td>
@@ -203,7 +246,10 @@ const SpeciesSearchResultsTable = (props: Props) => {
             </td>
             <td className={styles.assemblyAccessionId}>
               {!shouldDisableRow(searchMatch, canAddToStaged) ? (
-                <ExternalLink to={searchMatch.assembly.url}>
+                <ExternalLink
+                  to={searchMatch.assembly.url}
+                  className={styles.externalLink}
+                >
                   <AssemblyAccessionId {...searchMatch} />
                 </ExternalLink>
               ) : (
@@ -213,42 +259,24 @@ const SpeciesSearchResultsTable = (props: Props) => {
               )}
             </td>
 
-            {/* empty column under the 'show more' heading */}
-            <td />
-
-            {isExpanded && (
-              <>
-                <td>{formatNumber(searchMatch.coding_genes_count)}</td>
-                <td>
-                  {searchMatch.contig_n50
-                    ? formatNumber(searchMatch.contig_n50)
-                    : '-'}
-                </td>
-                <td className={styles.centered}>
-                  {searchMatch.has_variation ? <SolidDot /> : <EmptyDot />}
-                </td>
-                <td className={styles.centered}>
-                  {searchMatch.has_regulation ? <SolidDot /> : <EmptyDot />}
-                </td>
-                <td>{searchMatch.annotation_provider}</td>
-                <td>{searchMatch.annotation_method}</td>
-              </>
-            )}
+            <td>{formatNumber(searchMatch.coding_genes_count)}</td>
+            <td>
+              {searchMatch.contig_n50
+                ? formatNumber(searchMatch.contig_n50)
+                : '-'}
+            </td>
+            <td className={styles.centered}>
+              {searchMatch.has_variation ? <SolidDot /> : <EmptyDot />}
+            </td>
+            <td className={styles.centered}>
+              {searchMatch.has_regulation ? <SolidDot /> : <EmptyDot />}
+            </td>
+            <td>{searchMatch.annotation_provider}</td>
+            <td>{searchMatch.annotation_method}</td>
           </tr>
         ))}
       </tbody>
     </Table>
-  );
-};
-
-const ShowMore = (props: Props) => {
-  const { isExpanded, onTableExpandToggle } = props;
-  const text = isExpanded ? 'Show less' : 'Show more';
-
-  return (
-    <button className={styles.showMore} onClick={onTableExpandToggle}>
-      {text}
-    </button>
   );
 };
 

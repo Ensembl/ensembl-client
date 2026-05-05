@@ -22,7 +22,7 @@ import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import { useGetPopularSpeciesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import { usePopularSpeciesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -35,7 +35,7 @@ import styles from './PopularSpeciesList.module.css';
 const PopularSpeciesList = () => {
   const navigate = useNavigate();
   const committedItems = useAppSelector(getCommittedSpecies);
-  const { currentData } = useGetPopularSpeciesQuery();
+  const { currentData } = usePopularSpeciesQuery();
   const { trackPopularSpeciesClick } = useSpeciesSelectorAnalytics();
 
   const committedItemsSet = useMemo(() => {

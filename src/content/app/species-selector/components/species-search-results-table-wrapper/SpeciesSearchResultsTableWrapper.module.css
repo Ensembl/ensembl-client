@@ -1,0 +1,23 @@
+.container {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  row-gap: 12px;
+  overflow: hidden;
+}
+
+.tableControls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.tableSection {
+  height: 100%;
+  overflow: auto;
+  padding-bottom: var(--global-padding-bottom);
+}
+
+.tableSection table {
+  width: 100%;
+}

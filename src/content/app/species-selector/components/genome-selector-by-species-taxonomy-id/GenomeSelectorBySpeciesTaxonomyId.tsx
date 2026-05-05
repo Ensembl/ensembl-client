@@ -14,28 +14,42 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
+
+import {
+  getSortRule,
+  isValidPerPageParam,
+  DEFAULT_NUM_RESULTS_PER_PAGE
+} from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import {
-  useGetPopularSpeciesQuery,
-  useLazyGetGenomesBySpeciesTaxonomyIdQuery
+  usePopularSpeciesQuery,
+  useGenomesBySpeciesTaxonomyIdQuery,
+  getSpeciesSearchLastPageNumber
 } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
+import {
+  SpeciesSearchResultsTableWrapper,
+  TableControlsSection,
+  TableSection
+} from 'src/content/app/species-selector/components/species-search-results-table-wrapper/SpeciesSearchResultsTableWrapper';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
-import GenomesFilterField from 'src/content/app/species-selector/components/genomes-filter-field/GenomesFilterField';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
 import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 import InfoPill from 'src/shared/components/info-pill/InfoPill';
+import PaginationWithPerPage from 'src/shared/components/pagination/PaginationWithPerPage';
+import GenomesDownloadButton from 'src/content/app/species-selector/components/genomes-download-button/GenomesDownloadButton';
 
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
+import type { SortOrderWithNone } from 'src/shared/types/sort-order';
 
 import styles from './GenomeSelectorBySpeciesTaxonomyId.module.css';
 
@@ -46,56 +60,108 @@ type Props = {
 
 const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
   const { speciesTaxonomyId } = props;
-  const [filterQuery, setFilterQuery] = useState('');
   const committedSpecies = useAppSelector(getCommittedSpecies);
-  const [searchTrigger, result] = useLazyGetGenomesBySpeciesTaxonomyIdQuery();
-  const { currentData: popularSpeciesData } = useGetPopularSpeciesQuery();
-  const { currentData, isLoading, isError } = result;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageNumber = parseInt(searchParams.get('page') ?? '1');
+  const perPageParam = searchParams.get('per_page');
+  const sortBy = searchParams.get('sort_by');
+  const sortOrder = searchParams.get('order');
+  const { currentData: popularSpeciesData } = usePopularSpeciesQuery();
 
-  const {
-    genomes,
-    stagedGenomes,
-    isTableExpanded,
-    onTableExpandToggle,
-    onGenomeStageToggle,
-    sortRule,
-    changeSortRule
-  } = useSelectableGenomesTable({
-    genomes: currentData?.matches ?? [],
-    selectedGenomes: committedSpecies,
-    filterQuery
+  const perPage =
+    perPageParam && isValidPerPageParam(perPageParam)
+      ? parseInt(perPageParam)
+      : DEFAULT_NUM_RESULTS_PER_PAGE;
+
+  const { data, isLoading, isError } = useGenomesBySpeciesTaxonomyIdQuery({
+    speciesTaxonomyId,
+    page: pageNumber,
+    perPage,
+    sortBy,
+    sortOrder
   });
 
-  useEffect(() => {
-    searchTrigger({ speciesTaxonomyId });
-  }, []);
+  const { genomes, stagedGenomes, onTableExpandToggle, onGenomeStageToggle } =
+    useSelectableGenomesTable({
+      genomes: data?.matches ?? [],
+      selectedGenomes: committedSpecies
+    });
+
+  const onResultsPageChange = (page: number) => {
+    const newPageParam = new URLSearchParams(searchParams);
+    newPageParam.set('page', `${page}`);
+    setSearchParams(newPageParam, { replace: true });
+  };
 
   const speciesImageUrl = popularSpeciesData?.popular_species.find(
     (species) => species.species_taxonomy_id === speciesTaxonomyId
   )?.image;
 
+  const onSortRuleChange = useCallback(
+    (sortBy: string, sortOrder: SortOrderWithNone) => {
+      const newSearchParams = new URLSearchParams(searchParams);
+      if (sortOrder === 'none') {
+        newSearchParams.delete('sort_by');
+        newSearchParams.delete('order');
+      } else {
+        newSearchParams.set('sort_by', sortBy);
+        newSearchParams.set('order', sortOrder);
+      }
+      setSearchParams(newSearchParams, { replace: true });
+    },
+    [searchParams, setSearchParams]
+  );
+
+  const onResultsPerPageChange = (perPage: number) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('per_page', `${perPage}`);
+    newSearchParams.set('page', `1`);
+    setSearchParams(newSearchParams, { replace: true });
+  };
+
+  const sortRule = getSortRule(sortBy, sortOrder);
+
   return (
     <div className={styles.main}>
       {isLoading && <CircleLoader className={styles.loader} />}
-      {currentData && (
+      {data && (
         <>
           <TopSection
             {...props}
             genomes={genomes}
             stagedGenomes={stagedGenomes}
             speciesImageUrl={speciesImageUrl}
-            onFilterChange={setFilterQuery}
           />
-          <div className={styles.tableContainer}>
-            <SpeciesSearchResultsTable
-              results={genomes}
-              isExpanded={isTableExpanded}
-              sortRule={sortRule}
-              onTableExpandToggle={onTableExpandToggle}
-              onSpeciesSelectToggle={onGenomeStageToggle}
-              onSortRuleChange={changeSortRule}
-            />
-          </div>
+          <SpeciesSearchResultsTableWrapper>
+            <TableControlsSection>
+              <PaginationWithPerPage
+                currentPageNumber={pageNumber}
+                lastPageNumber={getSpeciesSearchLastPageNumber({
+                  data,
+                  perPage: perPage
+                })}
+                onPageChange={onResultsPageChange}
+                perPageValue={perPage}
+                onPerPageChange={onResultsPerPageChange}
+              />
+              <GenomesDownloadButton
+                searchParam={{
+                  name: 'species_taxonomy_id',
+                  value: `${speciesTaxonomyId}`
+                }}
+                className={styles.downloadButton}
+              />
+            </TableControlsSection>
+            <TableSection>
+              <SpeciesSearchResultsTable
+                results={genomes}
+                sortRule={sortRule}
+                onTableExpandToggle={onTableExpandToggle}
+                onSpeciesSelectToggle={onGenomeStageToggle}
+                onSortRuleChange={onSortRuleChange}
+              />
+            </TableSection>
+          </SpeciesSearchResultsTableWrapper>
         </>
       )}
       {isError && <div>An unexpected error has occurred</div>}
@@ -107,7 +173,6 @@ type TopSectionProps = Props & {
   genomes: ReturnType<typeof useSelectableGenomesTable>['genomes'];
   stagedGenomes: ReturnType<typeof useSelectableGenomesTable>['stagedGenomes'];
   speciesImageUrl: string | undefined;
-  onFilterChange: (filter: string) => void;
 };
 
 const TopSection = (props: TopSectionProps) => {
@@ -148,9 +213,6 @@ const TopSection = (props: TopSectionProps) => {
         Add
       </PrimaryButton>
       <CloseButtonWithLabel className={styles.closeButton} onClick={onClose} />
-      <div className={styles.filterWrapper}>
-        <GenomesFilterField onFilterChange={props.onFilterChange} />
-      </div>
     </section>
   );
 };
