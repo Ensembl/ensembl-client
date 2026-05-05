@@ -27,7 +27,7 @@ import {
 } from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
 
 import {
-  useLazyGenomesQuery,
+  useGenomesQuery,
   getSpeciesSearchLastPageNumber
 } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
@@ -86,9 +86,19 @@ const BlastSpeciesSelector = (
   );
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<string | null>(null);
-  const [canSubmitSearch, setCanSubmitSearch] = useState(false);
-  const [searchTrigger, result] = useLazyGenomesQuery();
-  const { data, isLoading, isError } = result;
+
+  const { data, isLoading, isError } = useGenomesQuery(
+    {
+      query: searchQuery,
+      page: searchResultsPage,
+      perPage: searchResultsPerPage,
+      sortBy,
+      sortOrder
+    },
+    {
+      skip: !searchQuery
+    }
+  );
 
   const { genomes, stagedGenomes, onTableExpandToggle, onGenomeStageToggle } =
     useSelectableGenomesTable({
@@ -104,51 +114,21 @@ const BlastSpeciesSelector = (
       : Infinity;
   const selectedGenomesCount = selectedSpecies.length;
 
-  const onSearchInput = (event: InputEvent<HTMLInputElement>) => {
-    setSearchQuery(event.currentTarget.value);
-    if (!canSubmitSearch) {
-      setCanSubmitSearch(true);
-    }
-  };
-
   const onSpeciesAdd = () => {
     props.onSpeciesAdd(stagedGenomes);
   };
 
-  const onSearchSubmit = () => {
-    const initialSearchPage = 1;
-    searchTrigger({
-      query: searchQuery,
-      page: initialSearchPage,
-      perPage: searchResultsPerPage,
-      sortBy,
-      sortOrder
-    });
-    setSearchResultsPage(initialSearchPage);
-    setCanSubmitSearch(false);
+  const onSearchSubmit = (query: string) => {
+    setSearchResultsPage(1);
+    setSearchQuery(query);
   };
 
   const onPageNumberChange = (pageNumber: number) => {
     setSearchResultsPage(pageNumber);
-    searchTrigger({
-      query: searchQuery,
-      page: pageNumber,
-      perPage: searchResultsPerPage,
-      sortBy,
-      sortOrder
-    });
   };
 
   const onResultsPerPageChange = (perPage: number) => {
-    const initialSearchPage = 1;
-    searchTrigger({
-      query: searchQuery,
-      page: initialSearchPage,
-      perPage: perPage,
-      sortBy,
-      sortOrder
-    });
-    setSearchResultsPage(initialSearchPage);
+    setSearchResultsPage(1);
     setSearchResultsPerPage(perPage);
   };
 
@@ -170,14 +150,11 @@ const BlastSpeciesSelector = (
   return (
     <div className={styles.main}>
       <TopSection
-        query={searchQuery}
         isLoading={isLoading}
         isError={isError}
         searchResults={data}
         canAddGenomes={stagedGenomes.length > 0}
-        canSubmitSearch={canSubmitSearch}
         onSearchSubmit={onSearchSubmit}
-        onSearchInput={onSearchInput}
         onGenomesAdd={onSpeciesAdd}
         onClose={onClose}
       />
@@ -216,19 +193,29 @@ const BlastSpeciesSelector = (
 
 // TODO: consider errors in response to search request
 type TopSectionProps = {
-  query: string;
   isLoading: boolean;
   isError: boolean;
   searchResults?: SpeciesSearchResponse;
   canAddGenomes: boolean;
-  canSubmitSearch: boolean;
-  onSearchSubmit: () => void;
-  onSearchInput: (event: InputEvent<HTMLInputElement>) => void;
+  onSearchSubmit: (query: string) => void;
   onGenomesAdd: () => void;
   onClose: () => void;
 };
 
 const TopSection = (props: TopSectionProps) => {
+  const [query, setQuery] = useState('');
+  const [canSubmitSearch, setCanSubmitSearch] = useState(false);
+
+  const onQueryInput = (event: InputEvent<HTMLInputElement>) => {
+    setQuery(event.currentTarget.value);
+    setCanSubmitSearch(true);
+  };
+
+  const onSubmit = () => {
+    setCanSubmitSearch(false);
+    props.onSearchSubmit(query);
+  };
+
   if (props.isError) {
     return <div>An unexpected error happened during search.</div>;
   }
@@ -237,7 +224,7 @@ const TopSection = (props: TopSectionProps) => {
     return (
       <>
         <AddSpecies
-          query={props.query}
+          query={query}
           canAdd={false}
           onAdd={props.onGenomesAdd}
           onClose={props.onClose}
@@ -253,7 +240,7 @@ const TopSection = (props: TopSectionProps) => {
       <section className={styles.topSection}>
         <div className={styles.searchFieldWrapper}>
           <AddSpecies
-            query={props.query}
+            query={query}
             canAdd={props.canAddGenomes}
             onAdd={props.onGenomesAdd}
             onClose={props.onClose}
@@ -272,10 +259,10 @@ const TopSection = (props: TopSectionProps) => {
       <section className={styles.topSection}>
         <div className={styles.searchFieldWrapper}>
           <SpeciesSearchField
-            query={props.query}
-            onInput={props.onSearchInput}
-            canSubmit={props.canSubmitSearch}
-            onSearchSubmit={props.onSearchSubmit}
+            query={query}
+            onInput={onQueryInput}
+            canSubmit={canSubmitSearch}
+            onSearchSubmit={onSubmit}
           />
         </div>
         {props.searchResults && (
@@ -286,9 +273,6 @@ const TopSection = (props: TopSectionProps) => {
       </section>
     );
   }
-
-  // this shouldn't happen
-  return null;
 };
 
 export default BlastSpeciesSelector;
