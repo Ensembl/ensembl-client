@@ -19,6 +19,7 @@ import classNames from 'classnames';
 
 import {
   useLazySearchGenesQuery,
+  useLazySearchTranscriptsQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
 import {
@@ -44,6 +45,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { CircleLoader } from '../loader';
 import GeneSearchMatches from 'src/shared/components/search-match/GeneSearchMatches';
+import TranscriptSearchMatches from 'src/shared/components/search-match/TranscriptSearchMatches';
 import VariantSearchMatches from 'src/shared/components/search-match/VariantSearchMatches';
 import NavigateLeftIcon from 'static/icons/navigate-left.svg';
 import NavigateRightIcon from 'static/icons/navigate-right.svg';
@@ -70,10 +72,13 @@ const SidebarSearch = (props: Props) => {
     Record<FeatureSearchMode, string>
   >({
     gene: '',
+    transcript: '',
     variant: ''
   });
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
+  const [triggerTranscriptSearch, transcriptSearchResults] =
+    useLazySearchTranscriptsQuery();
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
 
@@ -97,6 +102,16 @@ const SidebarSearch = (props: Props) => {
       }
 
       triggerGeneSearch(searchParams);
+      return;
+    }
+
+    if (searchMode === 'transcript') {
+      if (!query.trim()) {
+        transcriptSearchResults.reset();
+        return;
+      }
+
+      triggerTranscriptSearch(searchParams);
       return;
     }
 
@@ -170,10 +185,16 @@ const SidebarSearch = (props: Props) => {
                   <FeaturePageDetails
                     searchMode={searchMode}
                     currentGeneSearchResults={geneSearchResults.currentData}
+                    currentTranscriptSearchResults={
+                      transcriptSearchResults.currentData
+                    }
                     currentVariantSearchResults={
                       variantSearchResults.currentData
                     }
                     submittedGeneQuery={geneSearchResults.originalArgs?.query}
+                    submittedTranscriptQuery={
+                      transcriptSearchResults.originalArgs?.query
+                    }
                     submittedVariantQuery={
                       variantSearchResults.originalArgs?.query
                     }
@@ -195,6 +216,7 @@ const SidebarSearch = (props: Props) => {
                     genomeIdForUrl={genomeIdForUrl}
                     searchMode={searchMode}
                     geneSearchResults={geneSearchResults}
+                    transcriptSearchResults={transcriptSearchResults}
                     variantSearchResults={variantSearchResults}
                     onMatchNavigation={onMatchNavigation}
                   />
@@ -212,8 +234,10 @@ const SidebarSearch = (props: Props) => {
 type FeaturePageDetailsProps = {
   searchMode: FeatureSearchMode;
   currentGeneSearchResults: SearchResults | undefined;
+  currentTranscriptSearchResults: SearchResults | undefined;
   currentVariantSearchResults: SearchResults | undefined;
   submittedGeneQuery: string | undefined;
+  submittedTranscriptQuery: string | undefined;
   submittedVariantQuery: string | undefined;
   submitSearch: (
     searchMode: FeatureSearchMode,
@@ -227,9 +251,11 @@ const FeaturePageDetails = (props: FeaturePageDetailsProps) => {
   const {
     searchMode,
     currentGeneSearchResults,
+    currentTranscriptSearchResults,
     currentVariantSearchResults,
     submitSearch,
     submittedGeneQuery,
+    submittedTranscriptQuery,
     submittedVariantQuery
   } = props;
 
@@ -242,6 +268,25 @@ const FeaturePageDetails = (props: FeaturePageDetailsProps) => {
     return (
       <PageDetails
         results={currentGeneSearchResults}
+        hasPreviousPage={hasPreviousPage}
+        hasNextPage={hasNextPage}
+        onPreviousClick={() =>
+          submitSearch(searchMode, query, page - 1, per_page)
+        }
+        onNextClick={() => submitSearch(searchMode, query, page + 1, per_page)}
+      />
+    );
+  }
+
+  if (searchMode === 'transcript' && currentTranscriptSearchResults) {
+    const { page, per_page, total_hits } = currentTranscriptSearchResults.meta;
+    const hasPreviousPage = page > 1;
+    const hasNextPage = total_hits > page * per_page;
+    const query = submittedTranscriptQuery ?? '';
+
+    return (
+      <PageDetails
+        results={currentTranscriptSearchResults}
         hasPreviousPage={hasPreviousPage}
         hasNextPage={hasNextPage}
         onPreviousClick={() =>
@@ -279,6 +324,7 @@ type ResultsContentProps = {
   genomeIdForUrl: string;
   searchMode: FeatureSearchMode;
   geneSearchResults: ReturnType<typeof useLazySearchGenesQuery>[1];
+  transcriptSearchResults: ReturnType<typeof useLazySearchTranscriptsQuery>[1];
   variantSearchResults: ReturnType<typeof useLazySearchVariantsQuery>[1];
   onMatchNavigation?: () => void;
 };
@@ -288,20 +334,23 @@ const ResultsContent = (props: ResultsContentProps) => {
     app,
     searchMode,
     geneSearchResults,
+    transcriptSearchResults,
     variantSearchResults,
     genomeIdForUrl,
     onMatchNavigation
   } = props;
   const { currentData: currentGeneSearchResults } = geneSearchResults;
+  const { currentData: currentTranscriptSearchResults } =
+    transcriptSearchResults;
   const {
     currentData: currentVariantSearchResults,
     error: variantSearchError
   } = variantSearchResults;
 
   const isCurrentModeLoading =
-    searchMode === 'gene'
-      ? geneSearchResults.isFetching
-      : variantSearchResults.isFetching;
+    (searchMode === 'gene' && geneSearchResults.isFetching) ||
+    (searchMode === 'transcript' && transcriptSearchResults.isFetching) ||
+    (searchMode === 'variant' && variantSearchResults.isFetching);
 
   if (isCurrentModeLoading) {
     return <CircleLoader size="small" />;
@@ -320,6 +369,27 @@ const ResultsContent = (props: ResultsContentProps) => {
     return (
       <GeneSearchMatches
         results={currentGeneSearchResults}
+        app={app}
+        mode="sidebar"
+        genomeIdForUrl={genomeIdForUrl}
+        onMatchNavigation={onMatchNavigation}
+      />
+    );
+  }
+
+  if (searchMode === 'transcript' && currentTranscriptSearchResults) {
+    if (currentTranscriptSearchResults.matches.length === 0) {
+      return (
+        <span>
+          <span className={styles.bold}>Tip:</span> Enter a valid transcript ID
+          to find a transcript in the species.
+        </span>
+      );
+    }
+
+    return (
+      <TranscriptSearchMatches
+        results={currentTranscriptSearchResults}
         app={app}
         mode="sidebar"
         genomeIdForUrl={genomeIdForUrl}
@@ -373,11 +443,16 @@ const SidebarHelpSection = () => {
           className={classNames(styles.sectionBody, styles.helpSectionBody)}
         >
           <p>
-            You can search for genes or variants by selecting the options above.
+            You can search for genes, transcripts or variants by selecting the
+            options above.
           </p>
           <p>
             Genes can be searched for by symbol (e.g. MAPK10) or stable ID (e.g.
             ENSG00000109339.24).
+          </p>
+          <p>
+            You can search for a transcript by stable ID (e.g.
+            ENST00000680071.1).
           </p>
           <p>
             You can search for a variant by rsID (only exact matches will be

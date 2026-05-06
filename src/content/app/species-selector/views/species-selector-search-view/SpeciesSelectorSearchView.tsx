@@ -35,11 +35,13 @@ import {
 import { useAppDispatch, useAppSelector } from 'src/store';
 import {
   useLazySearchGenesQuery,
+  useLazySearchTranscriptsQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
 import { getCommittedSpecies } from '../../state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import {
   setGeneQuery,
+  setTranscriptQuery,
   setVariantQuery
 } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSlice';
 import { getFeatureQueries } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSelectors';
@@ -71,6 +73,10 @@ const SpeciesSelectorSearchView = () => {
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
+  const [triggerTranscriptSearch, transcriptSearchResults] =
+    useLazySearchTranscriptsQuery();
+  const { currentData: currentTranscriptSearchResults } =
+    transcriptSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
   const {
@@ -86,11 +92,14 @@ const SpeciesSelectorSearchView = () => {
 
   const queryFromParams = searchParams.get('query') || '';
   const isGeneSearchMode = activeSearchMode === 'gene';
+  const isTranscriptSearchMode = activeSearchMode === 'transcript';
   const isVariantSearchMode = activeSearchMode === 'variant';
 
   useEffect(() => {
     if (isGeneSearchMode) {
       dispatch(setGeneQuery(queryFromParams));
+    } else if (isTranscriptSearchMode) {
+      dispatch(setTranscriptQuery(queryFromParams));
     } else if (isVariantSearchMode) {
       dispatch(setVariantQuery(queryFromParams));
     }
@@ -110,6 +119,10 @@ const SpeciesSelectorSearchView = () => {
       triggerGeneSearch(searchParams);
     }
 
+    if (isTranscriptSearchMode) {
+      triggerTranscriptSearch(searchParams);
+    }
+
     if (isVariantSearchMode) {
       triggerVariantSearch(searchParams);
     }
@@ -117,9 +130,11 @@ const SpeciesSelectorSearchView = () => {
     queryFromParams,
     dispatch,
     isGeneSearchMode,
+    isTranscriptSearchMode,
     isVariantSearchMode,
     genomeIds,
     triggerGeneSearch,
+    triggerTranscriptSearch,
     triggerVariantSearch
   ]);
 
@@ -135,6 +150,8 @@ const SpeciesSelectorSearchView = () => {
   const onSearchClear = () => {
     if (isGeneSearchMode) {
       geneSearchResults.reset();
+    } else if (isTranscriptSearchMode) {
+      transcriptSearchResults.reset();
     } else if (isVariantSearchMode) {
       variantSearchResults.reset();
     }
@@ -176,9 +193,15 @@ const SpeciesSelectorSearchView = () => {
         )}
 
         {isGeneSearchMode ? (
-          <GeneFeatureSearchResults
+          <FeatureSearchResultsWrapper
             featureSearchMode={activeSearchMode}
             searchResults={currentGeneSearchResults}
+            speciesList={committedSpecies}
+          />
+        ) : isTranscriptSearchMode ? (
+          <FeatureSearchResultsWrapper
+            featureSearchMode={activeSearchMode}
+            searchResults={currentTranscriptSearchResults}
             speciesList={committedSpecies}
           />
         ) : isVariantSearchMode ? (
@@ -228,7 +251,7 @@ const SearchTabs = (props: {
   );
 };
 
-const GeneFeatureSearchResults = (props: {
+const FeatureSearchResultsWrapper = (props: {
   featureSearchMode: FeatureSearchMode;
   searchResults: SearchResults | undefined;
   speciesList: CommittedItem[];

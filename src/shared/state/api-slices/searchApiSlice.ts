@@ -15,8 +15,10 @@
  */
 
 import config from 'config';
+import { gql } from 'graphql-request';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
+import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
@@ -25,6 +27,115 @@ type SearchParams = {
   query: string;
   page: number;
   per_page: number;
+};
+
+type TranscriptSearchQueryResponse = {
+  transcript_search?: {
+    meta?: SearchResults['meta'];
+    matches?: TranscriptSearchMatchResponse[];
+  };
+};
+
+type TranscriptSearchMatchResponse = {
+  stable_id?: string | null;
+  symbol?: string | null;
+  genome_id?: string | null;
+  gene?: {
+    stable_id?: string | null;
+    name?: string | null;
+  } | null;
+};
+
+const transcriptSearchQuery = gql`
+  query TranscriptSearch(
+    $query: String!
+    $genomeIds: [String!]!
+    $page: Int!
+    $perPage: Int!
+  ) {
+    transcript_search(
+      search_payload: {
+        query: $query
+        genome_ids: $genomeIds
+        page: $page
+        per_page: $perPage
+      }
+    ) {
+      meta {
+        total_hits
+        page
+        per_page
+      }
+      matches {
+        stable_id
+        symbol
+        genome_id
+        gene {
+          stable_id
+          name
+        }
+      }
+    }
+  }
+`;
+
+const buildEmptySearchResults = (params: SearchParams): SearchResults => ({
+  meta: {
+    total_hits: 0,
+    page: params.page,
+    per_page: params.per_page
+  },
+  matches: []
+});
+
+const getUnversionedStableId = (stableId: string) => {
+  return stableId.split('.')[0];
+};
+
+const normalizeTranscriptSearchResults = (
+  response: TranscriptSearchQueryResponse,
+  params: SearchParams
+): SearchResults => {
+  const transcriptSearch = response.transcript_search;
+
+  if (!transcriptSearch) {
+    return buildEmptySearchResults(params);
+  }
+
+  const matches = (transcriptSearch.matches ?? []).flatMap((match) => {
+    const { gene, stable_id: stableId } = match;
+    const genomeId =
+      match.genome_id ??
+      (params.genome_ids.length === 1 ? params.genome_ids[0] : undefined);
+
+    if (!stableId || !genomeId || !gene?.stable_id) {
+      return [];
+    }
+
+    return [
+      {
+        type: 'Transcript' as const,
+        stable_id: stableId,
+        unversioned_stable_id: getUnversionedStableId(stableId),
+        symbol: match.symbol ?? null,
+        genome_id: genomeId,
+        gene: {
+          stable_id: gene.stable_id,
+          unversioned_stable_id: getUnversionedStableId(gene.stable_id),
+          name: gene.name ?? null
+        }
+      }
+    ];
+  });
+
+  return {
+    meta: transcriptSearch.meta ?? {
+      total_hits: matches.length,
+      page: params.page,
+      per_page: params.per_page
+    },
+    matches
+  };
 };
 
 const searchApiSlice = restApiSlice.injectEndpoints({
@@ -50,5 +161,42 @@ const searchApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
+const transcriptSearchApiSlice = graphqlApiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    searchTranscripts: builder.query<SearchResults, SearchParams>({
+      queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
+        const query = params.query.trim();
+
+        if (!params.genome_ids.length || !query) {
+          return { data: buildEmptySearchResults(params) };
+        }
+
+        const { data, error } = await baseQuery({
+          url: config.coreApiUrl,
+          body: transcriptSearchQuery,
+          variables: {
+            query,
+            genomeIds: params.genome_ids,
+            page: params.page,
+            perPage: params.per_page
+          }
+        });
+
+        if (error) {
+          return { error };
+        }
+
+        return {
+          data: normalizeTranscriptSearchResults(
+            data as TranscriptSearchQueryResponse,
+            params
+          )
+        };
+      }
+    })
+  })
+});
+
 export const { useLazySearchGenesQuery, useLazySearchVariantsQuery } =
   searchApiSlice;
+export const { useLazySearchTranscriptsQuery } = transcriptSearchApiSlice;

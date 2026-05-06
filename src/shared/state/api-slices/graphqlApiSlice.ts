@@ -24,7 +24,7 @@ const graphqlBaseQuery = async ({
 }: {
   url: string;
   body: string;
-  variables?: Record<string, string | number | boolean>;
+  variables?: Record<string, unknown>;
 }) => {
   try {
     const result = await request(url, body, variables);

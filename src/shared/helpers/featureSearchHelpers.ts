@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const featureSearchModes = ['gene', 'variant'] as const;
+const featureSearchModes = ['gene', 'transcript', 'variant'] as const;
 
 export type FeatureSearchModesType = typeof featureSearchModes;
 
@@ -32,6 +32,11 @@ const featureSearchModeLabels: Record<FeatureSearchMode, FeatureSearchLabels> =
       label: 'Find a gene',
       placeholder: 'Gene ID or name',
       help: 'Find a gene using a stable ID (versioned or un-versioned), symbol or synonym'
+    },
+    transcript: {
+      label: 'Find a transcript',
+      placeholder: 'Transcript stable ID',
+      help: 'Find a transcript using a transcript stable ID (versioned or un-versioned)'
     },
     variant: {
       label: 'Find a variant',
@@ -57,7 +62,15 @@ export const getFeatureSearchLabelsByMode = (
 export const getFeatureSearchModeByLocation = (
   locationPathname: string
 ): FeatureSearchMode => {
-  return locationPathname.includes('/variant') ? 'variant' : 'gene';
+  if (locationPathname.includes('/transcript')) {
+    return 'transcript';
+  }
+
+  if (locationPathname.includes('/variant')) {
+    return 'variant';
+  }
+
+  return 'gene';
 };
 
 export type FeatureSearchAppName =

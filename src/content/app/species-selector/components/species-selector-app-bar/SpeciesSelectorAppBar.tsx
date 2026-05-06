@@ -44,7 +44,9 @@ export const PlaceholderMessage = () => (
 
 const isInSearchMode = (pathname: string) => {
   return (
-    pathname.includes('/search/gene') || pathname.includes('/search/variant')
+    pathname.includes('/search/gene') ||
+    pathname.includes('/search/transcript') ||
+    pathname.includes('/search/variant')
   );
 };
 
@@ -76,7 +78,9 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
 
   const onSearchOpen = () => {
     // open gene search by default
-    navigate(urlFor.speciesSelectorFeatureSearch('gene', storedGeneSearchQuery));
+    navigate(
+      urlFor.speciesSelectorFeatureSearch('gene', storedGeneSearchQuery)
+    );
   };
 
   const onSearchClose = () => {
@@ -84,7 +88,10 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
   };
 
   const searchModeButton = !inSearchMode ? (
-    <SearchButton onClick={onSearchOpen} label="Find genes or variants" />
+    <SearchButton
+      onClick={onSearchOpen}
+      label="Find genes, transcripts or variants"
+    />
   ) : (
     <CloseButtonWithLabel onClick={onSearchClose} />
   );

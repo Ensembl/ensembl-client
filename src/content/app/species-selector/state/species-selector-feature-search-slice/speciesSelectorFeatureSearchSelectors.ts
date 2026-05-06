@@ -20,6 +20,10 @@ export const getGeneQuery = (state: RootState) => {
   return state.speciesSelector.featureSearch.queries.gene;
 };
 
+export const getTranscriptQuery = (state: RootState) => {
+  return state.speciesSelector.featureSearch.queries.transcript;
+};
+
 export const getVariantQuery = (state: RootState) => {
   return state.speciesSelector.featureSearch.queries.variant;
 };
