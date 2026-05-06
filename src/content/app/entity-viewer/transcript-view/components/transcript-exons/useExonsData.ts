@@ -28,6 +28,7 @@ type Params = {
 // combines spliced exon with phased exon,
 // and adds exon sequence
 export type EnrichedExon = {
+  type: 'exon';
   stable_id: string;
   start: number;
   end: number;
@@ -38,6 +39,12 @@ export type EnrichedExon = {
   endPhase: number | null;
   sequence: string;
 };
+
+export type EnrichedIntron =
+  DefaultEntityViewerTranscriptQueryResult['transcript']['introns'][number] & {
+    type: 'intron';
+    sequence: string;
+  };
 
 const useExonsData = ({ genomeId, transcriptId }: Params) => {
   const {
@@ -73,10 +80,17 @@ const useExonsData = ({ genomeId, transcriptId }: Params) => {
     transcript: transcriptQueryCurrentData.transcript,
     sequence: refgetQueryCurrentData
   });
+  const introns: EnrichedIntron[] = prepareIntrons({
+    transcript: transcriptQueryCurrentData.transcript,
+    sequence: refgetQueryCurrentData
+  });
+  const exonsAndIntrons = combineExonsAndIntrons({ exons, introns });
 
   return {
     data: {
-      exons
+      exons,
+      introns,
+      exonsAndIntrons
     },
     ...requestStatusParams
   };
@@ -110,6 +124,7 @@ const prepareExonsData = ({
 
   for (const exon of exons) {
     const enrichedExon: EnrichedExon = {
+      type: 'exon',
       stable_id: exon.exon.stable_id,
       start: exon.exon.slice.location.start,
       end: exon.exon.slice.location.end,
@@ -118,7 +133,10 @@ const prepareExonsData = ({
       relativeEnd: exon.relative_location.end,
       startPhase: null,
       endPhase: null,
-      sequence: getExonSequence({ exon, transcriptSequence: sequence })
+      sequence: getFeatureSequence({
+        feature: exon,
+        transcriptSequence: sequence
+      })
     };
     enrichedExons.push(enrichedExon);
   }
@@ -147,17 +165,57 @@ const prepareExonsData = ({
   };
 };
 
-const getExonSequence = ({
-  exon,
+const prepareIntrons = ({
+  transcript,
+  sequence
+}: {
+  transcript: DefaultEntityViewerTranscriptQueryResult['transcript'];
+  sequence: string;
+}): EnrichedIntron[] => {
+  const { introns } = transcript;
+
+  return introns.map((intron) => ({
+    ...intron,
+    type: 'intron',
+    sequence: getFeatureSequence({
+      feature: intron,
+      transcriptSequence: sequence
+    })
+  }));
+};
+
+const getFeatureSequence = ({
+  feature,
   transcriptSequence
 }: {
-  exon: DefaultEntityViewerTranscriptQueryResult['transcript']['spliced_exons'][number];
+  feature: { relative_location: { start: number; end: number } };
   transcriptSequence: string;
 }) => {
-  const startIndex = exon.relative_location.start - 1;
-  const endIndex = exon.relative_location.end; // end-exclusive
+  const startIndex = feature.relative_location.start - 1;
+  const endIndex = feature.relative_location.end; // end-exclusive
 
   return transcriptSequence.slice(startIndex, endIndex);
+};
+
+const combineExonsAndIntrons = ({
+  exons,
+  introns
+}: {
+  exons: EnrichedExon[];
+  introns: EnrichedIntron[];
+}) => {
+  const result: Array<EnrichedExon | EnrichedIntron> = [];
+
+  for (let i = 0; i < exons.length; i++) {
+    const exon = exons[i];
+    const intron = introns[i];
+    result.push(exon);
+    if (intron) {
+      result.push(intron);
+    }
+  }
+
+  return result;
 };
 
 export default useExonsData;
