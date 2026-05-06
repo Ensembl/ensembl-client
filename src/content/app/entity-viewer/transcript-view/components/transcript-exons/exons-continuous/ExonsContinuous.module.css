@@ -5,7 +5,7 @@
 
 .sequence {
   font-family: var(--font-family-monospace);
-  border-right: 2px solid black;
+  border-right: 2px solid var(--color-dark-grey);
 }
 
 .intronicSequence {

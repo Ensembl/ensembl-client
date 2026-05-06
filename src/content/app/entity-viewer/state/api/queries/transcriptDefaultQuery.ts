@@ -87,6 +87,7 @@ export const defaultTranscriptQuery = gql`
           location {
             start
             end
+            length
           }
         }
         relative_location {
@@ -131,7 +132,7 @@ type SplicedExon = DefaultEntityViewerTranscript['spliced_exons'][number] & {
 // FIXME: move intron type to core api types
 type Intron = {
   index: number;
-  slice: Pick2<Slice, 'location', 'start' | 'end'>;
+  slice: Pick2<Slice, 'location', 'start' | 'end' | 'length'>;
   relative_location: {
     start: number;
     end: number;

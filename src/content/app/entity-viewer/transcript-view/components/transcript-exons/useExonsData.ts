@@ -29,6 +29,7 @@ type Params = {
 // and adds exon sequence
 export type EnrichedExon = {
   type: 'exon';
+  index: number;
   stable_id: string;
   start: number;
   end: number;
@@ -40,11 +41,17 @@ export type EnrichedExon = {
   sequence: string;
 };
 
-export type EnrichedIntron =
-  DefaultEntityViewerTranscriptQueryResult['transcript']['introns'][number] & {
-    type: 'intron';
-    sequence: string;
-  };
+export type EnrichedIntron = {
+  type: 'intron';
+  index: number;
+  id: string;
+  start: number;
+  end: number;
+  length: number;
+  relativeStart: number;
+  relativeEnd: number;
+  sequence: string;
+};
 
 const useExonsData = ({ genomeId, transcriptId }: Params) => {
   const {
@@ -125,6 +132,7 @@ const prepareExonsData = ({
   for (const exon of exons) {
     const enrichedExon: EnrichedExon = {
       type: 'exon',
+      index: exon.index,
       stable_id: exon.exon.stable_id,
       start: exon.exon.slice.location.start,
       end: exon.exon.slice.location.end,
@@ -175,13 +183,25 @@ const prepareIntrons = ({
   const { introns } = transcript;
 
   return introns.map((intron) => ({
-    ...intron,
     type: 'intron',
+    index: intron.index,
+    id: generateIntronId(intron),
+    start: intron.slice.location.start,
+    end: intron.slice.location.end,
+    length: intron.slice.location.length,
+    relativeStart: intron.relative_location.start,
+    relativeEnd: intron.relative_location.end,
     sequence: getFeatureSequence({
       feature: intron,
       transcriptSequence: sequence
     })
   }));
+};
+
+const generateIntronId = (
+  intron: DefaultEntityViewerTranscriptQueryResult['transcript']['introns'][number]
+) => {
+  return `Intron ${intron.index}-${intron.index + 1}`;
 };
 
 const getFeatureSequence = ({
