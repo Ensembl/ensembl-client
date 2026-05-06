@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Pick3 } from 'ts-multipick';
+import { Pick2, Pick3 } from 'ts-multipick';
 
 import { gql } from 'graphql-request';
 
@@ -24,6 +24,8 @@ import {
 } from './defaultGeneQuery';
 
 import type { FullGene } from 'src/shared/types/core-api/gene';
+import type { Slice } from 'src/shared/types/core-api/slice';
+import type { Exon } from 'src/shared/types/core-api/exon';
 
 const geneFieldsFragment = gql`
   fragment geneFields on Gene {
@@ -61,6 +63,36 @@ export const defaultTranscriptQuery = gql`
   ) {
     transcript(by_id: { genome_id: $genomeId, stable_id: $transcriptId }) {
       ...transcriptFields
+      slice {
+        region {
+          sequence {
+            checksum
+          }
+        }
+      }
+      spliced_exons {
+        exon {
+          slice {
+            location {
+              start
+              end
+            }
+          }
+        }
+      }
+      introns {
+        index
+        slice {
+          location {
+            start
+            end
+          }
+        }
+        relative_location {
+          start
+          end
+        }
+      }
       gene {
         ...geneFields
       }
@@ -89,8 +121,26 @@ type GeneInDefaultTranscriptRequest = Pick<
     };
   };
 
+type SliceInTranscript = DefaultEntityViewerTranscript['slice'] &
+  Pick3<Slice, 'region', 'sequence', 'checksum'>;
+type SplicedExon = DefaultEntityViewerTranscript['spliced_exons'][number] & {
+  exon: Pick3<Exon, 'slice', 'location', 'start' | 'end' | 'length'>;
+};
+// FIXME: move intron type to core api types
+type Intron = {
+  index: number;
+  slice: Pick2<Slice, 'location', 'start' | 'end'>;
+  relative_location: {
+    start: number;
+    end: number;
+  };
+};
+
 export type DefaultEntityViewerTranscriptQueryResult = {
   transcript: DefaultEntityViewerTranscript & {
+    slice: SliceInTranscript;
+    spliced_exons: SplicedExon[];
+    introns: Intron[];
     gene: GeneInDefaultTranscriptRequest;
   };
 };
