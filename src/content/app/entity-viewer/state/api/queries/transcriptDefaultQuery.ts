@@ -71,6 +71,7 @@ export const defaultTranscriptQuery = gql`
         }
       }
       spliced_exons {
+        index
         exon {
           slice {
             location {
@@ -124,6 +125,7 @@ type GeneInDefaultTranscriptRequest = Pick<
 type SliceInTranscript = DefaultEntityViewerTranscript['slice'] &
   Pick3<Slice, 'region', 'sequence', 'checksum'>;
 type SplicedExon = DefaultEntityViewerTranscript['spliced_exons'][number] & {
+  index: number;
   exon: Pick3<Exon, 'slice', 'location', 'start' | 'end' | 'length'>;
 };
 // FIXME: move intron type to core api types
