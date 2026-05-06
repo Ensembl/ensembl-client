@@ -1,0 +1,19 @@
+.topSection {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.table th {
+  white-space: nowrap;
+}
+
+.table td {
+  vertical-align: top;
+}
+
+.sequence {
+  width: 80ch;
+  word-break: break-all;
+  font-family: var(--font-family-monospace);
+}
