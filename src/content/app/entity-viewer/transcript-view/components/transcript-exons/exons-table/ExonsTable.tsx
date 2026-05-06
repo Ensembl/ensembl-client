@@ -19,55 +19,95 @@ import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { Table, ColumnHead } from 'src/shared/components/table';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
 
-import type { EnrichedExon as Exon } from 'src/content/app/entity-viewer/transcript-view/components/transcript-exons/useExonsData';
+import type {
+  EnrichedExon as Exon,
+  EnrichedIntron as Intron
+} from 'src/content/app/entity-viewer/transcript-view/components/transcript-exons/useExonsData';
 
 import styles from './ExonsTable.module.css';
 
 type Props = {
   exons: Exon[];
+  exonsAndIntrons: Array<Exon | Intron>;
 };
 
 const ExonsTable = (props: Props) => {
   const onDownload = () => {
-    alert('some day there will be download');
+    alert('Table will be downloaded as a csv file');
   };
 
   return (
-    <>
+    <div className={styles.container}>
       <div className={styles.topSection}>
         <DownloadButton onClick={onDownload} />
       </div>
-      <Table stickyHeader={true} className={styles.table}>
-        <thead>
-          <tr>
-            <ColumnHead>No.</ColumnHead>
-            <ColumnHead>Name</ColumnHead>
-            <ColumnHead>Start</ColumnHead>
-            <ColumnHead>End</ColumnHead>
-            <ColumnHead>Start phase</ColumnHead>
-            <ColumnHead>End phase</ColumnHead>
-            <ColumnHead>Length</ColumnHead>
-            <ColumnHead>Sequence</ColumnHead>
-          </tr>
-        </thead>
-        <tbody>
-          {props.exons.map((exon, index) => (
-            <tr key={exon.stable_id}>
-              <td>{index + 1}</td>
-              <td>{exon.stable_id}</td>
-              <td>{formatNumber(exon.start)}</td>
-              <td>{formatNumber(exon.end)}</td>
-              <td>{exon.startPhase !== -1 ? exon.startPhase : '-'}</td>
-              <td>{exon.endPhase !== -1 ? exon.endPhase : '-'}</td>
-              <td>{formatNumber(exon.length)}</td>
-              <td>
-                <div className={styles.sequence}>{exon.sequence}</div>
-              </td>
+      <div className={styles.tableWrapper}>
+        <Table stickyHeader={true} className={styles.table}>
+          <thead>
+            <tr>
+              <ColumnHead>No.</ColumnHead>
+              <ColumnHead>Name</ColumnHead>
+              <ColumnHead>Start</ColumnHead>
+              <ColumnHead>End</ColumnHead>
+              <ColumnHead>Start phase</ColumnHead>
+              <ColumnHead>End phase</ColumnHead>
+              <ColumnHead>Length</ColumnHead>
+              <ColumnHead>Sequence</ColumnHead>
             </tr>
-          ))}
-        </tbody>
-      </Table>
-    </>
+          </thead>
+          <tbody>
+            {props.exonsAndIntrons.map((feature) => (
+              <FeatureRow
+                feature={feature}
+                key={feature.type === 'exon' ? feature.stable_id : feature.id}
+              />
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    </div>
+  );
+};
+
+const FeatureRow = ({ feature }: { feature: Exon | Intron }) => {
+  if (feature.type === 'exon') {
+    return <ExonRow exon={feature} />;
+  } else {
+    return <IntronRow intron={feature} />;
+  }
+};
+
+const ExonRow = ({ exon }: { exon: Exon }) => {
+  return (
+    <tr>
+      <td>{exon.index}</td>
+      <td>{exon.stable_id}</td>
+      <td>{formatNumber(exon.start)}</td>
+      <td>{formatNumber(exon.end)}</td>
+      <td>{exon.startPhase !== -1 ? exon.startPhase : '-'}</td>
+      <td>{exon.endPhase !== -1 ? exon.endPhase : '-'}</td>
+      <td>{formatNumber(exon.length)}</td>
+      <td>
+        <div className={styles.sequence}>{exon.sequence}</div>
+      </td>
+    </tr>
+  );
+};
+
+const IntronRow = ({ intron }: { intron: Intron }) => {
+  return (
+    <tr>
+      <td>{/* empty cell */}</td>
+      <td>{intron.id}</td>
+      <td>{formatNumber(intron.start)}</td>
+      <td>{formatNumber(intron.end)}</td>
+      <td>-</td>
+      <td>-</td>
+      <td>{formatNumber(intron.length)}</td>
+      <td>
+        <div className={styles.sequence}>{intron.sequence}</div>
+      </td>
+    </tr>
   );
 };
 
