@@ -1,3 +1,13 @@
 .panelBody {
   color: var(--color-black);
 }
+
+.panelHead {
+  display: flex;
+  align-items: center;
+}
+
+/* FIXME: instead of trying to unset the height of the tabs component, the tabs component should be updated to not have default height */
+.tabsContainer {
+  height: auto;
+}

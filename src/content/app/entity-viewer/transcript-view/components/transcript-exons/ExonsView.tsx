@@ -28,7 +28,7 @@ import styles from './ExonsView.module.css';
 // const EXAMPLE_TRANSCRIPT_ID = 'ENST00000589042.5'; // One of the main transcripts of TTN, 109,224bp long
 
 const subviews = ['tabular', 'continuous'] as const;
-const defaultSubview = subviews[0];
+const defaultSubview = subviews[1];
 
 type Subview = (typeof subviews)[number];
 
@@ -54,7 +54,8 @@ const ExonsView = ({
   };
 
   const panelClasses = {
-    body: styles.panelBody
+    body: styles.panelBody,
+    header: styles.panelHead
   };
 
   return (
@@ -107,13 +108,14 @@ const PanelHeader = ({
   //         classNames={tabClassNames}
 
   return (
-    <div>
-      <Tabs
-        tabs={tabsData}
-        selectedTab={selectedTab.title}
-        onTabChange={onTabChange}
-      />
-    </div>
+    <Tabs
+      tabs={tabsData}
+      selectedTab={selectedTab.title}
+      onTabChange={onTabChange}
+      classNames={{
+        tabsContainer: styles.tabsContainer
+      }}
+    />
   );
 };
 
