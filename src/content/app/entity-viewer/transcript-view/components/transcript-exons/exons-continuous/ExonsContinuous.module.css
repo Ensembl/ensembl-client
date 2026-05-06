@@ -50,6 +50,6 @@
   right: -100%;
   transform: translateX(-30%);
   width: 10px;
-  fill: orange;
-  stroke: orange;
+  fill: var(--color-orange);
+  stroke: var(--color-orange);
 }
