@@ -1,0 +1,25 @@
+.featuresWrapper {
+  max-width: 100%;
+  word-break: break-all;
+}
+
+.sequence {
+  font-family: var(--font-family-monospace);
+  border-right: 2px solid black;
+}
+
+.intronicSequence {
+  font-weight: var(--font-weight-light);  
+}
+
+.fivePrime, .threePrime {
+  font-weight: var(--font-weight-light);
+}
+
+.fivePrime {
+  margin-right: 0.6rem;
+}
+
+.threePrime {
+  margin-left: 0.6rem;
+}
