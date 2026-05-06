@@ -28,7 +28,7 @@ import styles from './ExonsView.module.css';
 // const EXAMPLE_TRANSCRIPT_ID = 'ENST00000589042.5'; // One of the main transcripts of TTN, 109,224bp long
 
 const subviews = ['tabular', 'continuous'] as const;
-const defaultSubview = subviews[1];
+const defaultSubview = subviews[0];
 
 type Subview = (typeof subviews)[number];
 
