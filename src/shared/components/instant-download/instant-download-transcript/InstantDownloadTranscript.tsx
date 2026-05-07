@@ -62,6 +62,7 @@ export type InstantDownloadTranscriptEntityProps = {
 type Props = InstantDownloadTranscriptEntityProps & {
   layout?: Layout;
   theme?: Theme;
+  className?: string;
 };
 
 type TranscriptSectionProps = {
@@ -190,7 +191,7 @@ const InstantDownloadTranscript = (props: Props) => {
     });
   };
 
-  const wrapperClasses = classNames(styles.layout, {
+  const wrapperClasses = classNames(styles.layout, props.className, {
     [styles.layoutHorizontal]: layout === 'horizontal',
     [styles.layoutVertical]: layout === 'vertical'
   });
@@ -253,13 +254,23 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
   );
 
   return (
-    <div className={styles.transcriptSection}>
+    <div data-part="transcript-section" className={styles.transcriptSection}>
       <div className={styles.label}>
         Transcript
         <span className={styles.featureId}>{transcript.id}</span>
       </div>
-      <div className={styles.transcriptVis}>{transcriptVisualisation}</div>
-      <div className={styles.checkboxGrid}>{checkboxes}</div>
+      <div
+        data-part="transcript-visualization"
+        className={styles.transcriptVis}
+      >
+        {transcriptVisualisation}
+      </div>
+      <div
+        data-part="transcript-section-checkbox-grid"
+        className={styles.checkboxGrid}
+      >
+        {checkboxes}
+      </div>
     </div>
   );
 };

@@ -24,6 +24,7 @@ import {
 import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
 import EntityViewerSearch from 'src/content/app/entity-viewer/shared/components/entity-viewer-sidebar/entity-viewer-sidebar-modal/modal-views/EntityViewerSearch';
 import EntityViewerBookmarks from 'src/content/app/entity-viewer/shared/components/entity-viewer-sidebar/entity-viewer-sidebar-modal/modal-views/EntityViewerBookmarks';
+import SidebarTranscriptDownload from './SidebarTranscriptDownload';
 
 type Props = {
   genomeId: string;
@@ -56,7 +57,7 @@ export const EntityViewerSidebarModal = (props: Props) => {
     <SidebarModal title={modalViewTitle} onClose={onCloseModal}>
       {view === 'search' && <EntityViewerSearch />}
       {view === 'bookmarks' && <EntityViewerBookmarks />}
-      {view === 'download' && <div>Download</div>}
+      {view === 'download' && <SidebarTranscriptDownload />}
     </SidebarModal>
   );
 };
