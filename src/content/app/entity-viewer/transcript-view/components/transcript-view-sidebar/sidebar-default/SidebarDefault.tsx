@@ -79,7 +79,7 @@ const SidebarDefault = (props: Props) => {
       <div className={styles.sectionContent}>
         <GeneName stable_id={gene.stable_id} symbol={gene.symbol} />
       </div>
-      <GeneNameSection genomeId={props.genomeId} gene={gene} />
+      <GeneNameSection genomeId={genomeIdForUrl as string} gene={gene} />
       <SynonymsSection gene={gene} />
       <AttributesSection gene={gene} />
       <SearchButtonSection
@@ -104,7 +104,7 @@ const GeneNameSection = ({
   const accessionId = gene.metadata.name?.accession_id;
 
   const geneFocusIdForUrl = buildFocusIdForUrl({
-    objectId: gene.stable_id,
+    objectId: gene.unversioned_stable_id,
     type: 'gene'
   });
   const linkToGenomeBrowser = urlFor.browser({
