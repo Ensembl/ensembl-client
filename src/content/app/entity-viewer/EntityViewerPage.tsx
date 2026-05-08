@@ -26,6 +26,7 @@ import useHasMounted from 'src/shared/hooks/useHasMounted';
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 import {
   useGenePageMetaQuery,
+  useTranscriptPageMetaQuery,
   useVariantPageMetaQuery
 } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
@@ -48,7 +49,7 @@ const useEntityViewerPageMeta = () => {
   const { activeGenomeId, parsedEntityId } = useEntityViewerIds();
   const { type: entityType, objectId: entityId } = parsedEntityId ?? {};
 
-  const { currentData: genePageMeta, isLoading: isGenePageMetaLoading } =
+  const { currentData: genePageMeta, isFetching: isGenePageMetaLoading } =
     useGenePageMetaQuery(
       {
         genomeId: activeGenomeId ?? '',
@@ -59,7 +60,20 @@ const useEntityViewerPageMeta = () => {
       }
     );
 
-  const { currentData: variantPageMeta, isLoading: isVariantPageMetaLoading } =
+  const {
+    currentData: transcriptPageMeta,
+    isFetching: isTranscriptPageMetaLoading
+  } = useTranscriptPageMetaQuery(
+    {
+      genomeId: activeGenomeId ?? '',
+      transcriptId: entityId ?? ''
+    },
+    {
+      skip: entityType !== 'transcript' || !activeGenomeId || !entityId
+    }
+  );
+
+  const { currentData: variantPageMeta, isFetching: isVariantPageMetaLoading } =
     useVariantPageMetaQuery(
       {
         genomeId: activeGenomeId ?? '',
@@ -70,11 +84,14 @@ const useEntityViewerPageMeta = () => {
       }
     );
 
-  const pageMeta = genePageMeta || variantPageMeta;
-  const isLoading = isGenePageMetaLoading || isVariantPageMetaLoading;
+  const pageMeta = genePageMeta || transcriptPageMeta || variantPageMeta;
+  const isLoading =
+    isGenePageMetaLoading ||
+    isTranscriptPageMetaLoading ||
+    isVariantPageMetaLoading;
 
   useEffect(() => {
-    if (isLoading) {
+    if (!pageMeta || isLoading) {
       return;
     }
 
@@ -85,7 +102,7 @@ const useEntityViewerPageMeta = () => {
       : buildPageMeta();
 
     dispatch(updatePageMeta(preparedPageMeta));
-  }, [isLoading]);
+  }, [isLoading, pageMeta, dispatch, entityId]);
 };
 
 const WrappedEntityViewerPage = () => {

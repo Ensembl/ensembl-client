@@ -25,6 +25,7 @@ import {
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
 import {
   fetchGenePageMeta,
+  fetchTranscriptPageMeta,
   fetchVariantPageMeta
 } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
@@ -115,6 +116,11 @@ const fetchEntityData = async (params: {
 
   if (parsedEntityId.type === 'gene') {
     return await fetchGeneData({ ...params, geneId: parsedEntityId.objectId });
+  } else if (parsedEntityId.type === 'transcript') {
+    return await fetchTranscriptData({
+      ...params,
+      transcriptId: parsedEntityId.objectId
+    });
   } else if (parsedEntityId.type === 'variant') {
     return await fetchVariantData({
       ...params,
@@ -138,6 +144,43 @@ const fetchGeneData = async ({
     fetchGenePageMeta.initiate({
       genomeId,
       geneId
+    })
+  );
+  const pageMetaQueryResult = await pageMetaPromise;
+  pageMetaPromise.unsubscribe();
+
+  if (pageMetaQueryResult?.error) {
+    if ((pageMetaQueryResult.error as any)?.meta?.data?.gene === null) {
+      // this is graphql's way of telling us that there is no such gene
+      throw new NotFoundError();
+    } else {
+      throw new Error(); // must be some other error; we will respond with a status code 500
+    }
+  } else {
+    const title = pageMetaQueryResult.data?.title;
+    dispatch(
+      updatePageMeta(
+        buildPageMeta({
+          title
+        })
+      )
+    );
+  }
+};
+
+const fetchTranscriptData = async ({
+  genomeId,
+  transcriptId,
+  dispatch
+}: {
+  genomeId: string;
+  transcriptId: string;
+  dispatch: AppDispatch;
+}) => {
+  const pageMetaPromise = dispatch(
+    fetchTranscriptPageMeta.initiate({
+      genomeId,
+      transcriptId
     })
   );
   const pageMetaQueryResult = await pageMetaPromise;
