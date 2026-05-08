@@ -16,14 +16,18 @@
 
 import classNames from 'classnames';
 
+import { useAppDispatch } from 'src/store';
+
 import { getFeatureLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { useDefaultEntityViewerTranscriptQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import { openSidebarModal } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSlice';
 
 import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
 import GeneName from 'src/shared/components/gene-name/GeneName';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import { SidebarLoader } from 'src/shared/components/loader';
+import SearchButton from 'src/shared/components/search-button/SearchButton';
 
 import type { DefaultEntityViewerTranscriptQueryResult } from 'src/content/app/entity-viewer/state/api/queries/transcriptDefaultQuery';
 
@@ -72,6 +76,10 @@ const SidebarDefault = (props: Props) => {
       <GeneNameSection gene={gene} />
       <SynonymsSection gene={gene} />
       <AttributesSection gene={gene} />
+      <SearchButtonSection
+        genomeId={props.genomeId}
+        transcriptId={props.transcriptId}
+      />
     </>
   );
 };
@@ -136,6 +144,38 @@ const AttributesSection = ({
         <span>{gene.metadata.biotype.value}</span>
       </div>
     </>
+  );
+};
+
+const SearchButtonSection = ({
+  genomeId,
+  transcriptId
+}: {
+  genomeId: string;
+  transcriptId: string;
+}) => {
+  const dispatch = useAppDispatch();
+
+  const openSearch = () => {
+    dispatch(
+      openSidebarModal({
+        genomeId,
+        transcriptId,
+        view: 'search'
+      })
+    );
+  };
+
+  return (
+    <div
+      className={classNames(styles.searchButtonSection, styles.sectionContent)}
+    >
+      <SearchButton
+        onClick={openSearch}
+        label="Find"
+        className={styles.searchButton}
+      />
+    </div>
   );
 };
 

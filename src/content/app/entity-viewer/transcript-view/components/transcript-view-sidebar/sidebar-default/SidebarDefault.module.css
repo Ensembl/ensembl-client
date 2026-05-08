@@ -20,3 +20,7 @@
 .strong {
   font-weight: var(--font-weight-bold);
 }
+
+.searchButtonSection {
+  margin-top: 20px;
+}
