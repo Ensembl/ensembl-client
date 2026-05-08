@@ -145,12 +145,13 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   return query ? `${path}?${query}` : path;
 };
 
-export const entityViewerTranscript = (params?: {
+export const entityViewerTranscript = (params: {
   genomeId: string;
   transcriptId: string;
   view?: string | null;
 }) => {
-  const pathname = '/entity-viewer/${genomeId}/${transcriptId}';
+  const { genomeId, transcriptId } = params;
+  const pathname = `/entity-viewer/${genomeId}/${transcriptId}`;
   const urlSearchParams = new URLSearchParams('');
   if (params?.view) {
     urlSearchParams.append('view', params.view);

@@ -85,9 +85,12 @@ const buildEntityUrl = (genomeId: string, entity: PreviouslyViewedEntity) => {
       variantId: entity.id
     });
   } else if (entity.type === 'transcript') {
-    return urlFor.entityViewerVariant({
+    return urlFor.entityViewerTranscript({
       genomeId: genomeId,
-      variantId: entity.id
+      transcriptId: buildFocusIdForUrl({
+        type: 'transcript',
+        objectId: entity.urlId
+      })
     });
   } else {
     // this should never happen; making typescript happy
