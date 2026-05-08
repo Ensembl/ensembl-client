@@ -21,6 +21,10 @@
   font-weight: var(--font-weight-bold);
 }
 
+.viewInAppGene {
+  margin-top: 20px;
+}
+
 .searchButtonSection {
   margin-top: 20px;
 }
