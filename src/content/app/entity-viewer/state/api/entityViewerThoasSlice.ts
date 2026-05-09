@@ -212,7 +212,7 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
           transcript: { stable_id }
         } = response;
 
-        const title = `Transcript: ${stable_id ?? stable_id} — Ensembl`;
+        const title = `Transcript: ${stable_id} — Ensembl`;
 
         return {
           title

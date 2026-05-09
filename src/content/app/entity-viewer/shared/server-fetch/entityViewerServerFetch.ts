@@ -188,7 +188,7 @@ const fetchTranscriptData = async ({
 
   if (pageMetaQueryResult?.error) {
     if ((pageMetaQueryResult.error as any)?.meta?.data?.gene === null) {
-      // this is graphql's way of telling us that there is no such gene
+      // this is graphql's way of telling us that there is no such transcript
       throw new NotFoundError();
     } else {
       throw new Error(); // must be some other error; we will respond with a status code 500
