@@ -55,8 +55,8 @@ const serverConfig = getConfigForServer();
 
 const createApiProxyMiddleware = () => {
   const apiProxyMiddleware = createHttpProxyMiddleware({
-    pathFilter: '/api',
-    target: 'https://staging-2020.ensembl.org',
+    pathFilter: ['/api/**'],
+    target: 'http://transcript-focus.review.ensembl.org', // FIXME: undo before merging
     changeOrigin: true,
     secure: false
   });

@@ -104,7 +104,6 @@ describe('<BookmarksModal />', () => {
     const geneId = 'TraesCS3D02G273600';
     const location = '3D:2585940-2634711';
     const transcriptId = 'ENST00000380152';
-    const geneSymbol = 'BRCA2';
     const geneObjectId = `${activeGenomeId}:gene:${geneId}`;
     const locationObjectId = `${activeGenomeId}:location:${location}`;
     const transcriptObjectId = `${activeGenomeId}:transcript:${transcriptId}`;
@@ -125,7 +124,7 @@ describe('<BookmarksModal />', () => {
         genome_id: activeGenomeId,
         object_id: transcriptObjectId,
         type: 'transcript',
-        label: [geneSymbol, transcriptId]
+        label: [transcriptId]
       }
     ];
     const newMockState = merge(mockState, {
@@ -151,7 +150,7 @@ describe('<BookmarksModal />', () => {
 
     expect(geneLink.getAttribute('href')).toBe(expectedGeneHref);
     expect(locationLink.getAttribute('href')).toBe(expectedLocationHref);
-    expect(screen.getByText(geneSymbol)).toBeTruthy();
+    expect(screen.getByText(transcriptId)).toBeTruthy();
     expect(screen.getByText('Transcript')).toBeTruthy();
     expect(transcriptLink.getAttribute('href')).toBe(
       `/genome-browser/${mockGenomeId}?focus=transcript:${transcriptId}`
