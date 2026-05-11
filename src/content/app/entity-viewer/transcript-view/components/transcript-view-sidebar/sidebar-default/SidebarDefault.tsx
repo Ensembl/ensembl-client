@@ -16,14 +16,23 @@
 
 import classNames from 'classnames';
 
+import { useAppDispatch } from 'src/store';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFeatureLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
+
+import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 
 import { useDefaultEntityViewerTranscriptQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import { openSidebarModal } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSlice';
 
 import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
 import GeneName from 'src/shared/components/gene-name/GeneName';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import { SidebarLoader } from 'src/shared/components/loader';
+import SearchButton from 'src/shared/components/search-button/SearchButton';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import type { DefaultEntityViewerTranscriptQueryResult } from 'src/content/app/entity-viewer/state/api/queries/transcriptDefaultQuery';
 
@@ -35,6 +44,7 @@ type Props = {
 };
 
 const SidebarDefault = (props: Props) => {
+  const { genomeIdForUrl } = useEntityViewerIds();
   const { currentData, isLoading } = useDefaultEntityViewerTranscriptQuery({
     genomeId: props.genomeId,
     transcriptId: props.transcriptId
@@ -69,16 +79,22 @@ const SidebarDefault = (props: Props) => {
       <div className={styles.sectionContent}>
         <GeneName stable_id={gene.stable_id} symbol={gene.symbol} />
       </div>
-      <GeneNameSection gene={gene} />
+      <GeneNameSection genomeId={genomeIdForUrl as string} gene={gene} />
       <SynonymsSection gene={gene} />
       <AttributesSection gene={gene} />
+      <SearchButtonSection
+        genomeId={genomeIdForUrl as string}
+        transcriptId={props.transcriptId}
+      />
     </>
   );
 };
 
 const GeneNameSection = ({
+  genomeId,
   gene
 }: {
+  genomeId: string;
   gene: DefaultEntityViewerTranscriptQueryResult['transcript']['gene'];
 }) => {
   if (!gene.name) {
@@ -86,6 +102,19 @@ const GeneNameSection = ({
   }
   const url = gene.metadata.name?.url;
   const accessionId = gene.metadata.name?.accession_id;
+
+  const geneFocusIdForUrl = buildFocusIdForUrl({
+    objectId: gene.unversioned_stable_id,
+    type: 'gene'
+  });
+  const linkToGenomeBrowser = urlFor.browser({
+    genomeId: genomeId,
+    focus: geneFocusIdForUrl
+  });
+  const linkToEntityViewer = urlFor.entityViewer({
+    genomeId: genomeId,
+    entityId: geneFocusIdForUrl
+  });
 
   return (
     <>
@@ -99,6 +128,15 @@ const GeneNameSection = ({
             <ExternalLink to={url}>{accessionId}</ExternalLink>
           </div>
         )}
+
+        <ViewInApp
+          links={{
+            genomeBrowser: { url: linkToGenomeBrowser },
+            entityViewer: { url: linkToEntityViewer }
+          }}
+          theme="light"
+          className={styles.viewInAppGene}
+        />
       </div>
     </>
   );
@@ -136,6 +174,38 @@ const AttributesSection = ({
         <span>{gene.metadata.biotype.value}</span>
       </div>
     </>
+  );
+};
+
+const SearchButtonSection = ({
+  genomeId,
+  transcriptId
+}: {
+  genomeId: string;
+  transcriptId: string;
+}) => {
+  const dispatch = useAppDispatch();
+
+  const openSearch = () => {
+    dispatch(
+      openSidebarModal({
+        genomeId,
+        transcriptId,
+        view: 'search'
+      })
+    );
+  };
+
+  return (
+    <div
+      className={classNames(styles.searchButtonSection, styles.sectionContent)}
+    >
+      <SearchButton
+        onClick={openSearch}
+        label="Find"
+        className={styles.searchButton}
+      />
+    </div>
   );
 };
 

@@ -22,6 +22,7 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getViewForTranscript } from 'src/content/app/entity-viewer/state/transcript-view/general/transcriptViewGeneralSelectors';
 
+import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 import useTranscriptViewIds from 'src/content/app/entity-viewer/transcript-view/hooks/useTranscriptViewIds';
 import { useDefaultEntityViewerTranscriptQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import {
@@ -53,6 +54,28 @@ const TranscriptView = () => {
       skip: !activeGenomeId || !transcriptId
     }
   );
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!activeGenomeId || !currentData?.transcript) {
+      return;
+    }
+    const { transcript } = currentData;
+
+    return () => {
+      dispatch(
+        updatePreviouslyViewedEntities({
+          genomeId: activeGenomeId,
+          entity: {
+            id: transcript.stable_id,
+            urlId: transcript.unversioned_stable_id,
+            label: transcript.stable_id,
+            type: 'transcript'
+          }
+        })
+      );
+    };
+  }, [activeGenomeId, currentData, dispatch]);
 
   const viewInUrl = searchParams.get('view');
 

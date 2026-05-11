@@ -48,7 +48,8 @@ type Gene = Pick<FullGene, 'stable_id'> &
   Pick3<FullGene, 'slice', 'strand', 'code'>;
 
 type Transcript = UnsplicedTranscriptProps['transcript'] &
-  Pick3<FullTranscript, 'slice', 'location', 'start' | 'end' | 'length'>;
+  Pick3<FullTranscript, 'slice', 'location', 'start' | 'end' | 'length'> &
+  Pick<FullTranscript, 'stable_id'>;
 
 export type GeneOverviewImageProps = {
   transcript: Transcript;
@@ -61,7 +62,7 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
 
   return (
     <div className={commonStyles.gridColumns}>
-      <GeneId {...props} />
+      <TranscriptId {...props} />
       <DirectionIndicator />
       <GeneImage {...props} />
       <StrandIndicator {...props} />
@@ -113,8 +114,11 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
   );
 };
 
-const GeneId = (props: GeneOverviewImageProps) => (
-  <div className={styles.geneId}>{props.gene.stable_id}</div>
+const TranscriptId = (props: GeneOverviewImageProps) => (
+  <div className={styles.transcriptId}>
+    <span className={styles.light}>Location in gene</span>
+    <span>{props.transcript.stable_id}</span>
+  </div>
 );
 
 const DirectionIndicator = () => {

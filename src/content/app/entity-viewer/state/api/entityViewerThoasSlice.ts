@@ -56,6 +56,11 @@ import {
   type EntityViewerGeneHomologiesQueryResult
 } from './queries/geneHomologiesQuery';
 import {
+  transcriptPageMetaQuery,
+  TranscriptPageMetaQueryResult,
+  TranscriptPageMeta
+} from './queries/transcriptPageMetaQuery';
+import {
   defaultTranscriptQuery,
   type DefaultEntityViewerTranscriptQueryResult
 } from './queries/transcriptDefaultQuery';
@@ -192,6 +197,27 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         body: geneHomologiesQuery,
         variables: params
       })
+    }),
+    transcriptPageMeta: builder.query<
+      TranscriptPageMeta,
+      TranscriptQueryParams
+    >({
+      query: (params) => ({
+        url: config.coreApiUrl,
+        body: transcriptPageMetaQuery,
+        variables: params
+      }),
+      transformResponse(response: TranscriptPageMetaQueryResult) {
+        const {
+          transcript: { stable_id }
+        } = response;
+
+        const title = `Transcript: ${stable_id} — Ensembl`;
+
+        return {
+          title
+        };
+      }
     }),
     defaultEntityViewerTranscript: builder.query<
       DefaultEntityViewerTranscriptQueryResult,
@@ -354,6 +380,7 @@ export const {
   useGeneForSequenceDownloadQuery,
   useProteinDomainsQuery,
   useEvGeneHomologyQuery,
+  useTranscriptPageMetaQuery,
   useDefaultEntityViewerTranscriptQuery,
   useTranscriptExternalReferencesQuery,
   useVariantPageMetaQuery,
@@ -367,6 +394,7 @@ export const {
 
 export const {
   genePageMeta: fetchGenePageMeta,
+  transcriptPageMeta: fetchTranscriptPageMeta,
   variantPageMeta: fetchVariantPageMeta,
   defaultEntityViewerVariant: fetchDefaultEntityViewerVariant
 } = entityViewerThoasSlice.endpoints;

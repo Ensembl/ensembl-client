@@ -1,0 +1,6 @@
+.instantDownloadTranscript [data-part="transcript-section-checkbox-grid"] {
+  grid-template-areas:
+      'genomic cdna'
+      'protein cds'
+      'exons .'; 
+}

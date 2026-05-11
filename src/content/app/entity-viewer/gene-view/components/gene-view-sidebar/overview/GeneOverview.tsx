@@ -24,6 +24,7 @@ import { useAppDispatch } from 'src/store';
 import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
+import SearchButton from 'src/shared/components/search-button/SearchButton';
 
 import {
   openSidebarModal,
@@ -32,7 +33,6 @@ import {
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import styles from './GeneOverview.module.css';
-import SearchButton from 'src/shared/components/search-button/SearchButton';
 
 const GeneOverview = () => {
   const { genomeId, geneId } = useGeneViewIds();

@@ -34,7 +34,7 @@ export type PreviouslyViewedEntity = {
   id: string;
   urlId: string; // e.g. for genes, this is unversioned stable id rather than stable id
   label: string | string[];
-  type: 'gene' | 'variant';
+  type: 'gene' | 'variant' | 'transcript';
 };
 
 export type PreviouslyViewedEntities = {

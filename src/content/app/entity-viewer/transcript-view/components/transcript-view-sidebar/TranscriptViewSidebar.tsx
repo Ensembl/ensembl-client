@@ -16,7 +16,10 @@
 
 import { useAppSelector } from 'src/store';
 
-import { getActiveSidebarTab } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSelectors';
+import {
+  getActiveSidebarTab,
+  getSidebarModalView
+} from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSelectors';
 import { sidebarTabNames } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSlice';
 
 import useTranscriptViewIds from 'src/content/app/entity-viewer/transcript-view/hooks/useTranscriptViewIds';
@@ -24,15 +27,28 @@ import useTranscriptViewIds from 'src/content/app/entity-viewer/transcript-view/
 import SidebarDefault from './sidebar-default/SidebarDefault';
 import SidebarExternalReferences from './sidebar-external-references/SidebarExternalReferences';
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
+import TranscriptViewSidebarModal from 'src/content/app/entity-viewer/transcript-view/components/transcript-view-sidebar/sidebar-modal/TranscriptViewSidebarModal';
 
 const TranscriptViewSidebar = () => {
   const { activeGenomeId, transcriptId } = useTranscriptViewIds();
   const activeSidebarTab = useAppSelector((state) =>
     getActiveSidebarTab(state, activeGenomeId ?? '', transcriptId ?? '')
   );
+  const sidebarModalView = useAppSelector((state) =>
+    getSidebarModalView(state, activeGenomeId ?? '', transcriptId ?? '')
+  );
 
   if (!activeGenomeId || !transcriptId) {
     return null;
+  }
+  if (sidebarModalView) {
+    return (
+      <TranscriptViewSidebarModal
+        genomeId={activeGenomeId}
+        transcriptId={transcriptId}
+        view={sidebarModalView}
+      />
+    );
   }
 
   return (

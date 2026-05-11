@@ -41,14 +41,17 @@ type Props = {
 };
 
 const GeneSummaryStrip = (props: Props) => {
-  const { gene } = props;
+  const { gene, className: classNameFromProps, ref } = props;
 
-  const stripClasses = classNames(styles.featureSummaryStrip, props.className);
+  const componentClasses = classNames(
+    styles.featureSummaryStrip,
+    classNameFromProps
+  );
 
   return (
-    <div className={stripClasses} ref={props.ref}>
-      <GeneName {...props} />
-      <Biotype {...props} />
+    <div className={componentClasses} ref={ref}>
+      <GeneName gene={gene} />
+      <Biotype gene={gene} />
       {gene.strand && (
         <div className={styles.section}>
           {getStrandDisplayName(gene.strand)}
