@@ -31,8 +31,7 @@ type TranscriptFields =
   | 'versioned_stable_id'
   | 'stable_id'
   | 'strand'
-  | 'location'
-  | 'gene_symbol';
+  | 'location';
 type Transcript = Pick<FocusTranscript, TranscriptFields>;
 
 type Props = {
@@ -50,32 +49,15 @@ const TranscriptSummaryStrip = (props: Props) => {
     <div className={stripClasses} ref={elementRef}>
       <div className={styles.section}>
         <span className={styles.featureSummaryStripLabel}>Transcript</span>
-        {transcript.label && (
-          <span className={styles.featureNameEmphasized}>
-            {transcript.label}
-          </span>
-        )}
-        {transcript.label !== stableId && <span>{stableId}</span>}
+        <span className={styles.featureNameEmphasized}>{stableId}</span>
       </div>
-      {transcript.gene_symbol && (
-        <div className={styles.section}>
-          <span className={styles.featureSummaryStripLabel}>Gene</span>
-          <span className={styles.featureNameEmphasized}>
-            {transcript.gene_symbol}
-          </span>
-        </div>
-      )}
-      {transcript.bio_type && (
-        <div className={styles.section}>
-          <span className={styles.featureSummaryStripLabel}>Biotype</span>
-          {transcript.bio_type}
-        </div>
-      )}
-      {transcript.strand && (
-        <div className={styles.section}>
-          {getStrandDisplayName(transcript.strand)}
-        </div>
-      )}
+      <div className={styles.section}>
+        <span className={styles.featureSummaryStripLabel}>Biotype</span>
+        {transcript.bio_type}
+      </div>
+      <div className={styles.section}>
+        {getStrandDisplayName(transcript.strand)}
+      </div>
       <div className={styles.section}>
         {getFormattedLocation(transcript.location)}
       </div>

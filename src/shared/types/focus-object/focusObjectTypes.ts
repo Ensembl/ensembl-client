@@ -47,7 +47,6 @@ export type FocusTranscript = BasicFocusObject & {
   versioned_stable_id: string;
   bio_type: string;
   strand: Strand;
-  gene_symbol: string;
 };
 
 export type FocusLocation = BasicFocusObject & {

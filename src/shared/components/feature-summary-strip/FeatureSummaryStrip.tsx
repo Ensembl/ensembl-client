@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { RefObject } from 'react';
+import { memo, type RefObject } from 'react';
 
 import GeneSummaryStrip from './GeneSummaryStrip';
 import LocationSummaryStrip from './LocationSummaryStrip';
@@ -70,4 +70,4 @@ export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
   }
 };
 
-export default FeatureSummaryStrip;
+export default memo(FeatureSummaryStrip);
