@@ -68,8 +68,7 @@ const createFocusTranscript = (): FocusTranscript => {
   return {
     ...commonFocusObjectFields({ genome_id }),
     type: 'transcript',
-    object_id,
-    gene_symbol: faker.lorem.word()
+    object_id
   };
 };
 

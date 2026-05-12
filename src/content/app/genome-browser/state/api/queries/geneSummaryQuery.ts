@@ -45,6 +45,7 @@ export const geneSummaryQuery = gql`
       }
       slice {
         region {
+          name
           sequence {
             checksum
           }
@@ -100,6 +101,7 @@ type GeneSummary = Pick<
   metadata: GeneMetadata;
 } & Pick3<FullGene, 'slice', 'strand', 'code'> &
   Pick3<FullGene, 'slice', 'location', 'length' | 'start' | 'end'> &
+  Pick3<FullGene, 'slice', 'region', 'name'> &
   Pick4<FullGene, 'slice', 'region', 'sequence', 'checksum'> & {
     transcripts: Transcript[];
   };

@@ -40,7 +40,7 @@ export const Drawer = () => {
       case 'track_details':
         return <TrackDetails drawerView={drawerView} />;
       case 'gene_summary':
-        return <GeneSummary />;
+        return <GeneSummary geneId={drawerView.geneId} />;
       case 'transcript_summary':
         return <TranscriptSummary drawerView={drawerView} />;
       case 'variant_summary':

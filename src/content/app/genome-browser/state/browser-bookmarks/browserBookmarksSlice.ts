@@ -91,9 +91,7 @@ export const updatePreviouslyViewedObjectsAndSave =
         ? activeFocusObject.label !== stable_id
           ? activeFocusObject.label
           : null
-        : activeFocusObject.type === 'transcript'
-          ? activeFocusObject.gene_symbol
-          : null;
+        : null;
 
     const label =
       geneSymbol && stable_id

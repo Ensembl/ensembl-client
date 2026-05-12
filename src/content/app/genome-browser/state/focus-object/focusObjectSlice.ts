@@ -15,12 +15,13 @@
  */
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { Pick3 } from 'ts-multipick';
 
 import isGeneFocusObject from './isGeneFocusObject';
 import * as focusObjectStorageService from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
 import {
-  gbTranscriptSummary,
+  getGBTranscriptSummary,
   getTrackPanelGene
 } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
@@ -35,6 +36,7 @@ import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/br
 import { getFocusObject as getFocusObjectFromStorage } from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
 import { LoadingState } from 'src/shared/types/loading-state';
+import type { RootState, ThunkApi } from 'src/store';
 import type { TrackPanelGene } from 'src/content/app/genome-browser/state/types/track-panel-gene';
 import type {
   FocusObject,
@@ -44,8 +46,7 @@ import type {
   FocusTranscript,
   FocusVariant
 } from 'src/shared/types/focus-object/focusObjectTypes';
-import type { RootState, ThunkApi } from 'src/store';
-import type { TranscriptSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/transcriptSummaryQuery';
+import { FullTranscript } from 'src/shared/types/core-api/transcript';
 
 export type FocusObjectsState = Readonly<{
   [focusObjectId: string]: {
@@ -60,10 +61,19 @@ type BuildGeneObjectParams = {
   gene: TrackPanelGene;
 };
 
+type TranscriptDataForFocusObject = Pick<
+  FullTranscript,
+  'stable_id' | 'unversioned_stable_id'
+> &
+  Pick3<FullTranscript, 'slice', 'location', 'start' | 'end'> &
+  Pick3<FullTranscript, 'slice', 'region', 'name'> &
+  Pick3<FullTranscript, 'slice', 'strand', 'code'> &
+  Pick3<FullTranscript, 'metadata', 'biotype', 'label'>;
+
 type BuildTranscriptObjectParams = {
   genomeId: string;
   objectId: string;
-  transcript: TranscriptSummaryQueryResult['transcript'];
+  transcript: TranscriptDataForFocusObject;
 };
 
 // FIXME: many fields here are unnecessary for an focusObject
@@ -120,10 +130,7 @@ const buildFocusTranscriptObject = (
     stable_id: params.transcript.unversioned_stable_id,
     versioned_stable_id: params.transcript.stable_id,
     bio_type: params.transcript.metadata.biotype.label,
-    strand,
-    gene_symbol:
-      params.transcript.gene.symbol ||
-      params.transcript.gene.unversioned_stable_id
+    strand
   };
 };
 
@@ -293,7 +300,7 @@ const fetchFocusTranscript = async (
   const { genomeId, transcriptId, objectId } = payload;
   const { dispatch } = thunkApi;
   const dispatchedPromise = dispatch(
-    gbTranscriptSummary.initiate({
+    getGBTranscriptSummary.initiate({
       genomeId,
       transcriptId
     })

@@ -122,6 +122,11 @@ export const transcriptSummaryQuery = gql`
         stable_id
         unversioned_stable_id
         symbol
+        metadata {
+          biotype {
+            label
+          }
+        }
       }
     }
   }
@@ -130,7 +135,8 @@ export const transcriptSummaryQuery = gql`
 type GeneInSummaryTranscript = Pick<
   FullGene,
   'name' | 'stable_id' | 'unversioned_stable_id' | 'symbol'
->;
+> &
+  Pick3<FullGene, 'metadata', 'biotype', 'label'>;
 
 type SummaryTranscriptMetadata = Pick2<
   TranscriptMetadata,

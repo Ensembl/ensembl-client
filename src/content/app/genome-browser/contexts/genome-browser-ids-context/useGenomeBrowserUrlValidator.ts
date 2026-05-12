@@ -24,7 +24,7 @@ import {
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import {
-  gbTranscriptSummary,
+  getGBTranscriptSummary,
   getTrackPanelGene
 } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
@@ -324,7 +324,7 @@ const checkFocusTranscript = async (params: CheckFocusObjectParams) => {
   } = params;
 
   const dispatchedPromise = dispatch(
-    gbTranscriptSummary.initiate({
+    getGBTranscriptSummary.initiate({
       genomeId,
       transcriptId
     })

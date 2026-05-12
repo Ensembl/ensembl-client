@@ -139,7 +139,6 @@ describe('<TrackPanelList />', () => {
       );
 
       expect(getByText(transcriptFocusObject.stable_id)).toBeTruthy();
-      expect(getByText(transcriptFocusObject.gene_symbol)).toBeTruthy();
 
       const showMoreButton = container.querySelector(
         '.mainTrackItem .showMore button'
