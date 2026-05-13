@@ -1,6 +1,6 @@
 .container {
   display: grid;
-  grid-template-columns: repeat(3, minmax(230px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   column-gap: 80px;
   row-gap: 40px;
   max-width: 1200px;
@@ -32,12 +32,4 @@
   align-items: center;
   column-gap: 8px;
   color: var(--color-blue);
-}
-
-.count {
-  --pill-font-size: 11px;
-  --pill-padding: 2px 12px;
-  min-width: 37px;
-  font-family: var(--font-family-monospace);
-  text-align: center;
 }

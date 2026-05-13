@@ -53,7 +53,7 @@ const GenomeGroupItem = (props: { group: GenomeGroup }) => {
         <p className={styles.description}>{group.description}</p>
       )}
       <div className={styles.genomesCount}>
-        <Pill className={styles.count}>{group.genomes_count}</Pill>
+        <Pill>{group.genomes_count}</Pill>
         <span>genomes</span>
       </div>
     </section>
