@@ -17,7 +17,7 @@
 import Pill from 'src/shared/components/pill/Pill';
 
 import type {
-  GenomeGroup,
+  GenomeGroup as GenomeGroupType,
   GenomeGroupCategory
 } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
@@ -30,10 +30,6 @@ type Props = {
 const GenomeGroupsList = (props: Props) => {
   const { category } = props;
 
-  if (!category.groups.length) {
-    return null;
-  }
-
   return (
     <div className={styles.container}>
       {category.groups.map((group) => (
@@ -43,12 +39,12 @@ const GenomeGroupsList = (props: Props) => {
   );
 };
 
-const GenomeGroupItem = (props: { group: GenomeGroup }) => {
+const GenomeGroupItem = (props: { group: GenomeGroupType }) => {
   const { group } = props;
 
   return (
-    <section className={styles.group}>
-      <h2 className={styles.groupTitle}>{group.title}</h2>
+    <div className={styles.group}>
+      <span className={styles.groupTitle}>{group.title}</span>
       {group.description && (
         <p className={styles.description}>{group.description}</p>
       )}
@@ -56,7 +52,7 @@ const GenomeGroupItem = (props: { group: GenomeGroup }) => {
         <Pill>{group.genomes_count}</Pill>
         <span>genomes</span>
       </div>
-    </section>
+    </div>
   );
 };
 
