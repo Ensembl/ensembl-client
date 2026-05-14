@@ -25,6 +25,7 @@ import * as trackSettingsStorageService from 'src/content/app/genome-browser/ser
 import { getAllTrackSettingsForGenome } from './trackSettingsSelectors';
 
 import { TrackType } from './trackSettingsConstants';
+import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import type { RootState } from 'src/store';
 
@@ -47,6 +48,7 @@ export type VariantTrackSettings = {
 };
 
 export type FocusGeneTrackSettings = Omit<GeneTrackSettings, 'isVisible'>;
+export type FocusTranscriptTrackSettings = { name: boolean };
 export type FocusVariantTrackSettings = Omit<VariantTrackSettings, 'isVisible'>;
 
 export type RegularTrackSettings = {
@@ -72,6 +74,12 @@ export type FocusGeneTrack = {
   settings: FocusGeneTrackSettings;
 };
 
+export type FocusTranscriptTrack = {
+  id: string;
+  trackType: TrackType.FOCUS_TRANSCRIPT;
+  settings: RegularTrackSettings;
+};
+
 export type FocusVariantTrack = {
   id: string;
   trackType: TrackType.FOCUS_VARIANT;
@@ -88,6 +96,7 @@ export type TrackSettings =
   | GeneTrack
   | VariantTrack
   | FocusGeneTrack
+  | FocusTranscriptTrack
   | FocusVariantTrack
   | RegularTrack;
 
@@ -198,7 +207,7 @@ export const getTrackType = (trackId: string) => {
     return null;
   }
 
-  if (trackId.startsWith('gene') || trackId === 'focus') {
+  if (trackId.startsWith('gene') || trackId === TrackId.FOCUS_GENE) {
     return TrackType.GENE;
   } else if (trackId === 'focus-variant') {
     return TrackType.FOCUS_VARIANT;

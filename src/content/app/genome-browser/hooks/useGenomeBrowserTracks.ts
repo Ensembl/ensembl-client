@@ -39,6 +39,7 @@ import {
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import {
   buildDefaultFocusGeneTrack,
+  buildDefaultFocusTranscriptTrack,
   buildDefaultFocusVariantTrack,
   buildDefaultGeneTrack,
   buildDefaultVariantTrack,
@@ -190,11 +191,11 @@ const prepareTrackSettings = ({
 }) => {
   const defaultTrackSettings: TrackSettingsPerTrack = {};
 
-  if (
-    focusObject?.type === TrackType.GENE ||
-    focusObject?.type === 'transcript'
-  ) {
+  if (focusObject?.type === TrackType.GENE) {
     defaultTrackSettings[TrackId.FOCUS_GENE] = buildDefaultFocusGeneTrack();
+  } else if (focusObject?.type === 'transcript') {
+    defaultTrackSettings[TrackId.FOCUS_TRANSCRIPT] =
+      buildDefaultFocusTranscriptTrack();
   } else if (focusObject?.type === TrackType.VARIANT) {
     defaultTrackSettings[TrackId.FOCUS_VARIANT] =
       buildDefaultFocusVariantTrack();

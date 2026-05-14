@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+
 // Fields that all track summaries should have
 export type CommonTrackSummary = {
   'switch-id': string; // This is the track id. Genome browser calls them switches
@@ -21,10 +23,17 @@ export type CommonTrackSummary = {
   height: number;
 };
 
-export type FocusGeneTrackSummary = Omit<CommonTrackSummary, 'switch-id'> & {
+export type FocusTrackSummary = Omit<CommonTrackSummary, 'switch-id'> & {
   'switch-id': 'focus';
+  type: (typeof TrackId)[keyof typeof TrackId];
+};
+
+export type FocusGeneTrackSummary = FocusTrackSummary & {
   id: string; // Focus gene id
   'transcripts-shown': string[]; // an array of ids of visible transcripts
 };
 
-export type TrackSummary = CommonTrackSummary | FocusGeneTrackSummary;
+export type TrackSummary =
+  | CommonTrackSummary
+  | FocusTrackSummary
+  | FocusGeneTrackSummary;

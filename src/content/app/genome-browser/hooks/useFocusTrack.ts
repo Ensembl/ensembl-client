@@ -15,13 +15,14 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import xor from 'lodash/xor';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowserIds from './useGenomeBrowserIds';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import usePrevious from 'src/shared/hooks/usePrevious';
+
+import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
@@ -32,6 +33,7 @@ import { updateFocusGeneTranscriptsVisibility } from 'src/content/app/genome-bro
 import {
   type FocusGeneTrack,
   type FocusGeneTrackSettings,
+  type FocusTranscriptTrackSettings,
   type FocusVariantTrackSettings
 } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
@@ -46,6 +48,7 @@ import type {
 import type { TranscriptsLozengePayload } from 'src/content/app/genome-browser/services/genome-browser-service/types/hotspot';
 import type {
   FocusGene,
+  FocusTranscript,
   FocusVariant
 } from 'src/shared/types/focus-object/focusObjectTypes';
 
@@ -69,6 +72,12 @@ const useFocusTrack = () => {
     genomeBrowserMethods,
     focusGene:
       parsedFocusObjectId?.type === 'gene' ? (focusObject as FocusGene) : null,
+    focusObjectId
+  });
+
+  useFocusTranscript({
+    genomeBrowserMethods,
+    focusTranscript: focusObject?.type === 'transcript' ? focusObject : null,
     focusObjectId
   });
 
@@ -128,6 +137,33 @@ const useFocusGene = (params: UseFocusGeneParams) => {
 
   const dispatch = useAppDispatch();
 
+  const onLozengeClick = useCallback(() => {
+    const allTranscriptIds = allSortedFocusGeneTranscriptsRef.current;
+    let transcriptIds: string[];
+    if (visibleTranscriptIdsRef.current?.length === allTranscriptIds.length) {
+      // all transcripts shown; should collapse transcripts to one or several
+      transcriptIds = showSeveralTranscriptsRef.current
+        ? allTranscriptIds.slice(0, 5)
+        : allTranscriptIds.slice(0, 1);
+    } else {
+      transcriptIds = allTranscriptIds;
+    }
+
+    updateFocusGeneTranscripts(transcriptIds);
+  }, [updateFocusGeneTranscripts]);
+
+  const setVisibleTranscriptIds = useCallback(
+    (transcriptIds: string[]) => {
+      dispatch(
+        updateFocusGeneTranscriptsVisibility({
+          focusGeneId: focusObjectIdRef.current,
+          visibleTranscriptIds: transcriptIds
+        })
+      );
+    },
+    [dispatch]
+  );
+
   // update all the refs
   useEffect(() => {
     focusObjectIdRef.current = focusObjectId;
@@ -144,7 +180,9 @@ const useFocusGene = (params: UseFocusGeneParams) => {
     focusObjectId,
     geneStableId,
     fetchedFocusGeneData,
-    stringifiedVisibleTranscriptIds
+    stringifiedVisibleTranscriptIds,
+    focusGeneTrackSettings?.settings.several,
+    visibleTranscriptIds
   ]);
 
   useEffect(() => {
@@ -164,7 +202,10 @@ const useFocusGene = (params: UseFocusGeneParams) => {
         const { gene_id, transcript_ids } = focusGeneTrackInfo;
         if (
           gene_id === geneIdRef.current &&
-          xor(transcript_ids, visibleTranscriptIdsRef.current).length // symmetric difference between two arrays; TODO: replace with Set.prototype.symmetricDifference when it is included in JS standard
+          haveDifferentMembers(
+            transcript_ids,
+            visibleTranscriptIdsRef.current ?? []
+          )
         ) {
           setVisibleTranscriptIds(transcript_ids);
         }
@@ -191,7 +232,7 @@ const useFocusGene = (params: UseFocusGeneParams) => {
     return () => {
       subscriptions.forEach((subscription) => subscription.unsubscribe());
     };
-  }, [genomeBrowserService]);
+  }, [genomeBrowserService, onLozengeClick, setVisibleTranscriptIds]);
 
   /**
    * In the below hook, we are making a choice about how many transcript ids to send to the genome browser.
@@ -230,7 +271,10 @@ const useFocusGene = (params: UseFocusGeneParams) => {
     geneStableId,
     stringifiedVisibleTranscriptIds,
     focusGeneTrackSettings?.settings.several,
-    allSortedFocusGeneTranscriptsRef.current.length
+    fetchedFocusGeneData,
+    previousSeveralTranscriptsSetting,
+    updateFocusGeneTranscripts,
+    visibleTranscriptIds
   ]);
 
   // apply track settings other than several transcripts
@@ -243,42 +287,25 @@ const useFocusGene = (params: UseFocusGeneParams) => {
       focusGeneTrackSettings.settings,
       genomeBrowserMethods
     );
-  }, [genomeBrowser, focusGeneTrackSettings]);
-
-  const setVisibleTranscriptIds = (transcriptIds: string[]) => {
-    dispatch(
-      updateFocusGeneTranscriptsVisibility({
-        focusGeneId: focusObjectIdRef.current,
-        visibleTranscriptIds: transcriptIds
-      })
-    );
-  };
-
-  const onLozengeClick = useCallback(() => {
-    const allTranscriptIds = allSortedFocusGeneTranscriptsRef.current;
-    let transcriptIds: string[];
-    if (visibleTranscriptIdsRef.current?.length === allTranscriptIds.length) {
-      // all transcripts shown; should collapse transcripts to one or several
-      transcriptIds = showSeveralTranscriptsRef.current
-        ? allTranscriptIds.slice(0, 5)
-        : allTranscriptIds.slice(0, 1);
-    } else {
-      transcriptIds = allTranscriptIds;
-    }
-
-    updateFocusGeneTranscripts(transcriptIds);
   }, [
-    stringifiedVisibleTranscriptIds,
-    updateFocusGeneTranscripts,
-    focusGeneTrackSettings
+    genomeBrowser,
+    focusGeneTrackSettings,
+    geneStableId,
+    genomeBrowserMethods
   ]);
+};
+
+const haveDifferentMembers = (arr1: string[], arr2: string[]) => {
+  const set1 = new Set(arr1);
+  const set2 = new Set(arr2);
+  return set1.symmetricDifference(set2).size > 0;
 };
 
 const sendFocusGeneTrackSettings = (
   trackSettings: FocusGeneTrackSettings,
   genomeBrowserMethods: ReturnType<typeof useGenomeBrowser>
 ) => {
-  const trackId = 'focus';
+  const trackId = TrackId.FOCUS_GENE;
   const { toggleTrackSetting } = genomeBrowserMethods;
 
   // Notice that in contrast to genomic tracks, we aren't sending the "show five transcripts"
@@ -296,6 +323,39 @@ const sendFocusGeneTrackSettings = (
     });
 };
 
+type UseFocusTranscriptParams = {
+  focusTranscript: FocusTranscript | null;
+  focusObjectId: string;
+  genomeBrowserMethods: ReturnType<typeof useGenomeBrowser>;
+};
+
+const useFocusTranscript = ({
+  focusTranscript,
+  genomeBrowserMethods
+}: UseFocusTranscriptParams) => {
+  const { toggleTrackSetting } = genomeBrowserMethods;
+  const focusTranscriptTrackSettings = useAppSelector(getAllTrackSettings)
+    ?.settingsForIndividualTracks[TrackId.FOCUS_TRANSCRIPT]?.settings as
+    | FocusTranscriptTrackSettings
+    | undefined;
+
+  useEffect(() => {
+    if (!focusTranscriptTrackSettings) {
+      return;
+    }
+
+    for (const [settingName, settingValue] of Object.entries(
+      focusTranscriptTrackSettings
+    )) {
+      toggleTrackSetting({
+        trackId: TrackId.FOCUS_TRANSCRIPT,
+        setting: settingName,
+        isEnabled: settingValue
+      });
+    }
+  }, [focusTranscript, focusTranscriptTrackSettings, toggleTrackSetting]);
+};
+
 type UseFocusVariantParams = {
   focusVariant: FocusVariant | null;
   focusObjectId: string;
@@ -307,7 +367,7 @@ const useFocusVariant = (params: UseFocusVariantParams) => {
   const { setFocusObject, toggleTrackSetting, genomeBrowser } =
     genomeBrowserMethods;
   const focusVariantTrackSettings = useAppSelector(getAllTrackSettings)
-    ?.settingsForIndividualTracks['focus-variant']?.settings as
+    ?.settingsForIndividualTracks[TrackId.FOCUS_VARIANT]?.settings as
     | FocusVariantTrackSettings
     | undefined;
 
@@ -317,7 +377,7 @@ const useFocusVariant = (params: UseFocusVariantParams) => {
     }
 
     setFocusObject(focusVariant.object_id);
-  }, [genomeBrowser, focusVariant?.object_id]);
+  }, [genomeBrowser, focusVariant?.object_id, focusVariant, setFocusObject]);
 
   useEffect(() => {
     if (!focusVariant || !focusVariantTrackSettings) {
@@ -328,12 +388,12 @@ const useFocusVariant = (params: UseFocusVariantParams) => {
       focusVariantTrackSettings
     )) {
       toggleTrackSetting({
-        trackId: 'focus-variant',
+        trackId: TrackId.FOCUS_VARIANT,
         setting: settingName,
         isEnabled: settingValue
       });
     }
-  }, [focusVariant, focusVariantTrackSettings]);
+  }, [focusVariant, focusVariantTrackSettings, toggleTrackSetting]);
 };
 
 const getFocusGeneTrackInfo = (trackSummary: TrackSummary[]) => {
