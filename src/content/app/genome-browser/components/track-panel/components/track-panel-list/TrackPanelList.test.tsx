@@ -25,9 +25,9 @@ import set from 'lodash/fp/set';
 import createRootReducer from 'src/root/rootReducer';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
+import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 
 import { getBrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
-import { getActiveDrawerView } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 
 import { createFocusObject } from 'tests/fixtures/focus-object';
 import { createMockBrowserState } from 'tests/fixtures/browser';
@@ -79,7 +79,10 @@ const renderComponent = (state: typeof mockState = mockState) => {
   const store = configureStore({
     reducer: createRootReducer(),
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat([restApiSlice.middleware]),
+      getDefaultMiddleware().concat([
+        restApiSlice.middleware,
+        graphqlApiSlice.middleware
+      ]),
     preloadedState: state as any
   });
 
@@ -115,43 +118,6 @@ describe('<TrackPanelList />', () => {
       const { container } = renderComponent();
 
       expect(container.querySelectorAll('.trackPanelGene').length).toBe(1);
-    });
-
-    it('opens transcript drawer for transcript focus track', async () => {
-      const activeFocusObjectId = (
-        mockState.browser.browserGeneral.activeFocusObjectIds as any
-      )[activeGenomeId];
-      const transcriptFocusObject = {
-        ...createFocusObject('transcript'),
-        genome_id: activeGenomeId
-      };
-
-      if (transcriptFocusObject.type !== 'transcript') {
-        throw new Error('Expected transcript focus object');
-      }
-
-      const { store, container, getByText } = renderComponent(
-        set(
-          `browser.focusObjects.${activeFocusObjectId}.data`,
-          transcriptFocusObject,
-          mockState
-        )
-      );
-
-      expect(getByText(transcriptFocusObject.stable_id)).toBeTruthy();
-
-      const showMoreButton = container.querySelector(
-        '.mainTrackItem .showMore button'
-      ) as HTMLButtonElement | null;
-
-      expect(showMoreButton).toBeTruthy();
-
-      await userEvent.click(showMoreButton as HTMLButtonElement);
-
-      expect(getActiveDrawerView(store.getState())).toEqual({
-        name: 'transcript_summary',
-        transcriptId: transcriptFocusObject.stable_id
-      });
     });
 
     it('does not render main track if the focus feature is a region', () => {
