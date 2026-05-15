@@ -25,7 +25,7 @@ import { isProductionEnvironment } from 'src/shared/helpers/environment';
 import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
 import PopularSpeciesList from 'src/content/app/species-selector/components/popular-species-list/PopularSpeciesList';
-import GenomeGroupsList from 'src/content/app/species-selector/components/genome-groups-list/GenomeGroupsList';
+import GenomeGroups from 'src/content/app/species-selector/components/genome-groups/GenomeGroups';
 import { useGenomeGroupCategoriesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import TextButton from 'src/shared/components/text-button/TextButton';
 
@@ -79,7 +79,7 @@ const SpeciesSelectorMainView = () => {
       <div className={styles.tabPanel}>
         {activeTab === popularSpeciesTab && <PopularSpeciesList />}
         {activeGenomeGroupCategory && (
-          <GenomeGroupsList category={activeGenomeGroupCategory} />
+          <GenomeGroups category={activeGenomeGroupCategory} />
         )}
       </div>
     </div>

@@ -21,13 +21,13 @@ import type {
   GenomeGroupCategory
 } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
-import styles from './GenomeGroupsList.module.css';
+import styles from './GenomeGroups.module.css';
 
 type Props = {
   category: GenomeGroupCategory;
 };
 
-const GenomeGroupsList = (props: Props) => {
+const GenomeGroups = (props: Props) => {
   const { category } = props;
 
   return (
@@ -56,4 +56,4 @@ const GenomeGroupItem = (props: { group: GenomeGroupType }) => {
   );
 };
 
-export default GenomeGroupsList;
+export default GenomeGroups;
