@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, type ReactNode, type RefObject } from 'react';
+import { useEffect, useCallback, type ReactNode, type RefObject } from 'react';
 import pickBy from 'lodash/pickBy';
 import usePrevious from 'src/shared/hooks/usePrevious';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
-import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
+import useDOMElement from 'src/shared/hooks/useDOMElement';
 
 import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
@@ -28,6 +28,7 @@ import { getActualChrLocation } from 'src/content/app/genome-browser/state/brows
 
 import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
 import GeneAndOneTranscriptZmenu from './zmenus/GeneAndOneTranscriptZmenu';
+import TranscriptZmenu from './zmenus/TranscriptZmenu';
 import VariantZmenu from './zmenus/VariantZmenu';
 import RegulationZmenu from './zmenus/RegulationZmenu';
 import DefaultZmenu from './zmenus/DefaultZmenu';
@@ -52,12 +53,18 @@ export type ZmenuProps = {
 };
 
 const Zmenu = (props: ZmenuProps) => {
-  const [anchorRef, setAnchorRef] = useRefWithRerender<HTMLDivElement>(null);
+  const [anchor, setAnchorRef] = useDOMElement<HTMLDivElement>();
   const { zmenus, setZmenus } = useGenomeBrowser();
   const chromosomeLocation = useAppSelector(getActualChrLocation);
   const previousChromosomeLocation = usePrevious(chromosomeLocation);
 
   const dispatch = useAppDispatch();
+
+  const destroyZmenu = useCallback(() => {
+    dispatch(changeHighlightedTrackId(''));
+    setZmenus(pickBy(zmenus, (_, key) => key !== props.zmenuId));
+  }, [dispatch, props.zmenuId, setZmenus, zmenus]);
+
   useEffect(() => {
     if (
       chromosomeLocation &&
@@ -66,12 +73,7 @@ const Zmenu = (props: ZmenuProps) => {
     ) {
       destroyZmenu();
     }
-  }, [chromosomeLocation]);
-
-  const destroyZmenu = () => {
-    dispatch(changeHighlightedTrackId(''));
-    setZmenus(pickBy(zmenus, (_, key) => key !== props.zmenuId));
-  };
+  }, [chromosomeLocation, previousChromosomeLocation, destroyZmenu]);
 
   const direction = chooseDirection(props);
   const toolboxPosition =
@@ -92,6 +94,10 @@ const Zmenu = (props: ZmenuProps) => {
         onDestroy={destroyZmenu}
       />
     );
+  } else if (zmenuType === ZmenuPayloadVarietyType.TRANSCRIPT) {
+    zmenuContent = (
+      <TranscriptZmenu payload={props.payload} onDestroy={destroyZmenu} />
+    );
   } else if (zmenuType === ZmenuPayloadVarietyType.VARIANT) {
     zmenuContent = (
       <VariantZmenu payload={props.payload} onDestroy={destroyZmenu} />
@@ -110,10 +116,10 @@ const Zmenu = (props: ZmenuProps) => {
 
   return (
     <div ref={setAnchorRef} className={styles.zmenuAnchor} style={anchorStyles}>
-      {anchorRef.current && (
+      {anchor && (
         <Toolbox
           onOutsideClick={destroyZmenu}
-          anchor={anchorRef.current}
+          anchor={anchor}
           position={toolboxPosition}
           className={styles.toolbox}
         >

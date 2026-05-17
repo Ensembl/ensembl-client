@@ -124,6 +124,7 @@ export type ZmenuContent =
 
 export enum ZmenuPayloadVarietyType {
   GENE_AND_ONE_TRANSCRIPT = 'gene-and-one-transcript',
+  TRANSCRIPT = 'transcript',
   VARIANT = 'variant',
   REGULATION = 'regulation'
 }
