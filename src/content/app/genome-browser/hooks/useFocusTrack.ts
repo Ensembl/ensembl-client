@@ -306,7 +306,7 @@ const sendFocusGeneTrackSettings = (
   trackSettings: FocusGeneTrackSettings,
   toggleTrackSetting: ReturnType<typeof useGenomeBrowser>['toggleTrackSetting']
 ) => {
-  const trackId = TrackId.FOCUS_GENE;
+  const trackId = 'focus'; // this is the id of this track in the genome browser
 
   // Notice that in contrast to genomic tracks, we aren't sending the "show five transcripts"
   // message to the genome browser here. We haven't found a good way of reconciling the state
