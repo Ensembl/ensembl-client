@@ -103,14 +103,20 @@ type UseFocusGeneParams = {
 
 const useFocusGene = (params: UseFocusGeneParams) => {
   const { focusGene, genomeBrowserMethods, focusObjectId } = params;
-  const { genomeBrowser, genomeBrowserService, updateFocusGeneTranscripts } =
-    genomeBrowserMethods;
+  const {
+    genomeBrowser,
+    toggleTrackSetting,
+    genomeBrowserService,
+    updateFocusGeneTranscripts
+  } = genomeBrowserMethods;
   const geneStableId = focusGene?.stable_id;
   const focusObjectIdRef = useRef(focusObjectId);
   const geneIdRef = useRef(geneStableId);
   const visibleTranscriptIds = focusGene?.visibleTranscriptIds ?? null;
   const focusGeneTrackSettings = useAppSelector(getAllTrackSettings)
-    ?.settingsForIndividualTracks.focus as FocusGeneTrack | undefined;
+    ?.settingsForIndividualTracks[TrackId.FOCUS_GENE] as
+    | FocusGeneTrack
+    | undefined;
 
   const allSortedFocusGeneTranscriptsRef = useRef<string[]>([]);
   const visibleTranscriptIdsRef = useRef(visibleTranscriptIds);
@@ -120,6 +126,7 @@ const useFocusGene = (params: UseFocusGeneParams) => {
   const previousSeveralTranscriptsSetting = usePrevious(
     focusGeneTrackSettings?.settings.several
   );
+  const previousVisibleTranscriptIds = usePrevious(visibleTranscriptIds);
 
   const { currentData: fetchedFocusGeneData } = useGetTrackPanelGeneQuery(
     {
@@ -241,10 +248,9 @@ const useFocusGene = (params: UseFocusGeneParams) => {
    * 2) if not, then what is the value of the 1/5 transcripts toggle in track settings panel
    */
   useEffect(() => {
-    if (!geneStableId || !fetchedFocusGeneData) {
+    if (!geneStableId || !fetchedFocusGeneData || !focusGene) {
       return;
     }
-    let transcriptIds: string[];
 
     if (
       !visibleTranscriptIds || // hopefully, there won't be any race conditions
@@ -257,24 +263,24 @@ const useFocusGene = (params: UseFocusGeneParams) => {
         focusGeneTrackSettings?.settings.several;
       const numberOfTranscriptsToShow = shouldShowSeveralTranscripts ? 5 : 1;
 
-      transcriptIds = allSortedFocusGeneTranscriptsRef.current.slice(
+      const transcriptIds = allSortedFocusGeneTranscriptsRef.current.slice(
         0,
         numberOfTranscriptsToShow
       );
-    } else {
-      transcriptIds = visibleTranscriptIds;
+      updateFocusGeneTranscripts(transcriptIds);
+    } else if (visibleTranscriptIds !== previousVisibleTranscriptIds) {
+      updateFocusGeneTranscripts(visibleTranscriptIds);
     }
-
-    updateFocusGeneTranscripts(transcriptIds);
   }, [
     genomeBrowser, // updateFocusGeneTranscripts requires genomeBrowser to be defined
     geneStableId,
-    stringifiedVisibleTranscriptIds,
     focusGeneTrackSettings?.settings.several,
     fetchedFocusGeneData,
     previousSeveralTranscriptsSetting,
     updateFocusGeneTranscripts,
-    visibleTranscriptIds
+    focusGene,
+    visibleTranscriptIds,
+    previousVisibleTranscriptIds
   ]);
 
   // apply track settings other than several transcripts
@@ -285,14 +291,9 @@ const useFocusGene = (params: UseFocusGeneParams) => {
 
     sendFocusGeneTrackSettings(
       focusGeneTrackSettings.settings,
-      genomeBrowserMethods
+      toggleTrackSetting
     );
-  }, [
-    genomeBrowser,
-    focusGeneTrackSettings,
-    geneStableId,
-    genomeBrowserMethods
-  ]);
+  }, [genomeBrowser, focusGeneTrackSettings, geneStableId, toggleTrackSetting]);
 };
 
 const haveDifferentMembers = (arr1: string[], arr2: string[]) => {
@@ -303,10 +304,9 @@ const haveDifferentMembers = (arr1: string[], arr2: string[]) => {
 
 const sendFocusGeneTrackSettings = (
   trackSettings: FocusGeneTrackSettings,
-  genomeBrowserMethods: ReturnType<typeof useGenomeBrowser>
+  toggleTrackSetting: ReturnType<typeof useGenomeBrowser>['toggleTrackSetting']
 ) => {
   const trackId = TrackId.FOCUS_GENE;
-  const { toggleTrackSetting } = genomeBrowserMethods;
 
   // Notice that in contrast to genomic tracks, we aren't sending the "show five transcripts"
   // message to the genome browser here. We haven't found a good way of reconciling the state
