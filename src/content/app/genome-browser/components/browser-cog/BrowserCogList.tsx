@@ -18,7 +18,7 @@ import { useEffect, useCallback, memo } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
-import { getDisplayedTracks } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
+import { getOrderedDisplayedTracks } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
 import { getAllTrackSettingsForGenome } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import {
   getBrowserActiveFocusObjectId,
@@ -48,7 +48,7 @@ export const BrowserCogList = () => {
 
   const { genomeBrowserService } = useGenomeBrowser();
 
-  const displayedTracks = useAppSelector(getDisplayedTracks);
+  const displayedTracks = useAppSelector(getOrderedDisplayedTracks);
   const dispatch = useAppDispatch();
 
   const updateDisplayedTracks = useCallback(

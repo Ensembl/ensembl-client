@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react';
+import { useRef, memo } from 'react';
 
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
@@ -61,4 +61,4 @@ export const TrackSettingsPanel = (props: Props) => {
   }
 };
 
-export default TrackSettingsPanel;
+export default memo(TrackSettingsPanel);
