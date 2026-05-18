@@ -53,7 +53,10 @@ export const TrackSettingsPanel = (props: Props) => {
   ) {
     return <VariantTrackSettings {...commonProps} />;
   }
-  if (trackType === TrackType.REGULAR) {
+  if (
+    trackType === TrackType.REGULAR ||
+    trackType === TrackType.FOCUS_TRANSCRIPT
+  ) {
     return <RegularTrackSettings {...commonProps} />;
   }
 };

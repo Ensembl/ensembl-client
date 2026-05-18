@@ -97,7 +97,7 @@ export const buildDefaultFocusGeneTrack = (): FocusGeneTrack => ({
 });
 
 export const buildDefaultFocusTranscriptTrack = (): FocusTranscriptTrack => ({
-  id: TrackId.FOCUS_GENE,
+  id: TrackId.FOCUS_TRANSCRIPT,
   trackType: TrackType.FOCUS_TRANSCRIPT,
   settings: getDefaultRegularTrackSettings()
 });
