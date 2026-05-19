@@ -1,0 +1,35 @@
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 80px;
+  row-gap: 40px;
+  max-width: 1150px;
+}
+
+.group {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  row-gap: 6px;
+}
+
+.groupTitle {
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+}
+
+.description {
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.genomesCount {
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+  color: var(--color-blue);
+}

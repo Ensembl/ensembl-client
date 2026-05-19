@@ -25,6 +25,24 @@ export type PopularSpeciesResponse = {
   popular_species: PopularSpecies[];
 };
 
+export type GenomeGroup = {
+  group_id: number;
+  title: string;
+  description: string | null;
+  rank: number;
+  genomes_count: number;
+};
+
+export type GenomeGroupCategory = {
+  display_name: string;
+  type: string;
+  groups: GenomeGroup[];
+};
+
+export type GenomeGroupCategoriesResponse = {
+  group_categories: GenomeGroupCategory[];
+};
+
 export type SpeciesSearchRequestParams = {
   query: string;
   page: number;
@@ -53,6 +71,14 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
     getPopularSpecies: builder.query<PopularSpeciesResponse, void>({
       query: () => ({
         url: `${config.metadataApiBaseUrl}/popular_species`
+      })
+    }),
+    getGenomeGroupCategories: builder.query<
+      GenomeGroupCategoriesResponse,
+      void
+    >({
+      query: () => ({
+        url: `${config.metadataApiBaseUrl}/genome_group_categories`
       })
     }),
     getSpeciesSearchResults: builder.query<
@@ -117,3 +143,5 @@ export const useGenomesBySpeciesTaxonomyIdQuery =
   speciesSelectorApiSlice.useGetGenomesBySpeciesTaxonomyIdQuery;
 export const usePopularSpeciesQuery =
   speciesSelectorApiSlice.useGetPopularSpeciesQuery;
+export const useGenomeGroupCategoriesQuery =
+  speciesSelectorApiSlice.useGetGenomeGroupCategoriesQuery;

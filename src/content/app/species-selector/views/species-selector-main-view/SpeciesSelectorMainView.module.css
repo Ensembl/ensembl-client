@@ -8,6 +8,7 @@
 .searchPanel {
   display: grid;
   grid-template-columns: 600px 1fr;
+  grid-template-rows: 1fr auto;
   align-items: start;
   height: 270px;
   padding-left: var(--global-padding-left);
@@ -19,6 +20,18 @@
   .searchPanel {
     grid-template-columns: 500px 1fr;
   }
+}
+
+.tabs {
+  grid-column: 1 / -1;
+  align-self: end;
+  display: flex;
+  gap: 30px;
+  padding-bottom: 26px;
+}
+
+.activeTab {
+  --text-button-disabled-color: var(--color-black);
 }
 
 .speciesSearchFieldWrapper {
@@ -38,7 +51,7 @@
 }
 
 
-.popularSpecies {
+.tabPanel {
   height: 100%;
   padding-top: 26px;
   padding-left: var(--global-padding-left);

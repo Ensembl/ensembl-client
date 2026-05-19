@@ -52,19 +52,16 @@ const PopularSpeciesList = () => {
   };
 
   return (
-    <>
-      <h1 className={styles.sectionHeading}>Popular</h1>
-      <div className={styles.container}>
-        {currentData?.popular_species.map((species) => (
-          <PopularSpeciesButton
-            key={species.species_taxonomy_id}
-            species={species}
-            isSelected={committedItemsSet.has(`${species.species_taxonomy_id}`)}
-            onClick={() => onPopularSpeciesButtonClick(species)}
-          />
-        ))}
-      </div>
-    </>
+    <div className={styles.container}>
+      {currentData?.popular_species.map((species) => (
+        <PopularSpeciesButton
+          key={species.species_taxonomy_id}
+          species={species}
+          isSelected={committedItemsSet.has(`${species.species_taxonomy_id}`)}
+          onClick={() => onPopularSpeciesButtonClick(species)}
+        />
+      ))}
+    </div>
   );
 };
 
