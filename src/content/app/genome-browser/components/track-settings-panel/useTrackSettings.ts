@@ -17,15 +17,11 @@
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import {
-  getTrackSettingsForTrackId,
-  getAllTrackSettingsForGenome
-} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+import { getTrackSettingsForTrackId } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
 import { updateTrackSettingsAndSave } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
-import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 
 type Params = {
   selectedTrackId: string;
@@ -34,17 +30,12 @@ type Params = {
 const useBrowserTrackSettings = (params: Params) => {
   const { selectedTrackId } = params;
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-  const allTrackSettingsForGenome = useAppSelector((state) =>
-    getAllTrackSettingsForGenome(state, activeGenomeId ?? '')
-  );
   const selectedTrackSettings = useAppSelector((state) =>
     getTrackSettingsForTrackId(state, selectedTrackId)
   );
   const dispatch = useAppDispatch();
 
   const { trackToggledTrackSetting } = useGenomeBrowserAnalytics();
-
-  const { toggleTrackSetting } = useGenomeBrowser();
 
   const updateTrackSetting = (setting: string, isEnabled: boolean) => {
     if (!activeGenomeId || !selectedTrackSettings) {
@@ -58,18 +49,6 @@ const useBrowserTrackSettings = (params: Params) => {
         isEnabled
       })
     );
-
-    Object.entries(
-      allTrackSettingsForGenome?.settingsForIndividualTracks ?? {}
-    ).forEach(([trackId, track]) => {
-      if (setting in track.settings) {
-        toggleTrackSetting({
-          trackId: trackId,
-          setting,
-          isEnabled
-        });
-      }
-    });
 
     trackToggledTrackSetting(selectedTrackId, setting, isEnabled);
   };

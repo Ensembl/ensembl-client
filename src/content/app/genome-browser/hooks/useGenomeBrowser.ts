@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext, useRef, useEffect } from 'react';
+import { useContext, useRef, useEffect, useCallback, useMemo } from 'react';
 
 import config from 'config';
 import { useAppSelector } from 'src/store';
@@ -66,119 +66,134 @@ const useGenomeBrowser = () => {
     genomeBrowserServiceRef.current = genomeBrowserService;
   }, [genomeBrowserService]);
 
-  const activateGenomeBrowser = async (params: { container: HTMLElement }) => {
-    const genomeBrowserService =
-      await GenomeBrowserLoader.activateGenomeBrowser({
-        backend_url: config.genomeBrowserBackendBaseUrl,
-        target_element: params.container
-      });
-    const genomeBrowser = genomeBrowserService.getGenomeBrowser();
+  const activateGenomeBrowser = useCallback(
+    async (params: { container: HTMLElement }) => {
+      const genomeBrowserService =
+        await GenomeBrowserLoader.activateGenomeBrowser({
+          backend_url: config.genomeBrowserBackendBaseUrl,
+          target_element: params.container
+        });
+      const genomeBrowser = genomeBrowserService.getGenomeBrowser();
 
-    setGenomeBrowser(() => genomeBrowser);
-    setGenomeBrowserService(() => genomeBrowserService); // using the callback api of the state setter to avoid it calling genomeBrowserService thinking that it is a function
-  };
+      setGenomeBrowser(() => genomeBrowser);
+      setGenomeBrowserService(() => genomeBrowserService); // using the callback api of the state setter to avoid it calling genomeBrowserService thinking that it is a function
+    },
+    [setGenomeBrowser, setGenomeBrowserService]
+  );
 
   // NOTE: the cleanup code in the method below refers only to ensembl-client's code that deals with the genome browser.
   // There is no cleanup method on the genome browser itself.
   // We trust it to terminate correctly when the DOM element that it is given control over is unmounted.
-  const clearGenomeBrowser = () => {
+  const clearGenomeBrowser = useCallback(() => {
     genomeBrowserServiceRef.current?.reset();
     setGenomeBrowser(null);
     setGenomeBrowserService(null);
-  };
+  }, [setGenomeBrowser, setGenomeBrowserService]);
 
   // the focusObjectId is in the format "genome_id:object_type:object_id"
-  const setFocusObject = (focusObjectId: string, bringIntoView?: boolean) => {
-    if (!activeGenomeId || !genomeBrowser) {
-      return;
-    }
+  const setFocusObject = useCallback(
+    (focusObjectId: string, bringIntoView?: boolean) => {
+      if (!activeGenomeId || !genomeBrowser) {
+        return;
+      }
 
-    const { genomeId, objectId, type } = parseFocusObjectId(focusObjectId);
+      const { genomeId, objectId, type } = parseFocusObjectId(focusObjectId);
 
-    genomeBrowserCommands.setFocus({
-      genomeBrowser,
-      focusId: objectId,
-      focusType: type,
-      genomeId,
-      bringIntoView
-    });
-  };
+      genomeBrowserCommands.setFocus({
+        genomeBrowser,
+        focusId: objectId,
+        focusType: type,
+        genomeId,
+        bringIntoView
+      });
+    },
+    [activeGenomeId, genomeBrowser]
+  );
 
-  const changeFocusObject = (focusObjectId: string) => {
-    setFocusObject(focusObjectId, true);
-  };
+  const changeFocusObject = useCallback(
+    (focusObjectId: string) => {
+      setFocusObject(focusObjectId, true);
+    },
+    [setFocusObject]
+  );
 
-  const changeBrowserLocation = (locationData: {
-    genomeId: string;
-    chrLocation: ChrLocation;
-    focus?: {
-      id: string;
-      type: string;
-    };
-  }) => {
-    if (!genomeBrowser) {
-      return;
-    }
+  const changeBrowserLocation = useCallback(
+    (locationData: {
+      genomeId: string;
+      chrLocation: ChrLocation;
+      focus?: {
+        id: string;
+        type: string;
+      };
+    }) => {
+      if (!genomeBrowser) {
+        return;
+      }
 
-    const { genomeId, chrLocation, focus } = locationData;
+      const { genomeId, chrLocation, focus } = locationData;
 
-    const [regionName, start, end] = chrLocation;
+      const [regionName, start, end] = chrLocation;
 
-    genomeBrowserCommands.setBrowserLocation({
-      genomeBrowser,
-      genomeId,
-      regionName,
-      start,
-      end,
-      focus
-    });
-  };
+      genomeBrowserCommands.setBrowserLocation({
+        genomeBrowser,
+        genomeId,
+        regionName,
+        start,
+        end,
+        focus
+      });
+    },
+    [genomeBrowser]
+  );
 
-  const toggleTrack = (params: { trackId: string; isEnabled: boolean }) => {
-    if (!genomeBrowser) {
-      return;
-    }
-    const { trackId, isEnabled } = params;
-    const trackPath = trackIdToPathMap[trackId] ?? ['track', trackId];
+  const toggleTrack = useCallback(
+    (params: { trackId: string; isEnabled: boolean }) => {
+      if (!genomeBrowser) {
+        return;
+      }
+      const { trackId, isEnabled } = params;
+      const trackPath = trackIdToPathMap[trackId] ?? ['track', trackId];
 
-    genomeBrowserCommands.toggleTrack({
-      genomeBrowser,
-      trackPath,
-      isEnabled
-    });
-  };
+      genomeBrowserCommands.toggleTrack({
+        genomeBrowser,
+        trackPath,
+        isEnabled
+      });
+    },
+    [genomeBrowser, trackIdToPathMap]
+  );
 
   // At the moment, most track settings are just a boolean flag. Will this continue to be the case? Who knows.
-  const toggleTrackSetting = (params: {
-    trackId: string;
-    setting: string;
-    isEnabled: boolean;
-  }) => {
-    if (!genomeBrowser) {
-      return;
-    }
-    const { trackId, setting, isEnabled } = params;
-    const trackPath = trackIdToPathMap[trackId] ?? ['track', trackId];
+  const toggleTrackSetting = useCallback(
+    (params: { trackId: string; setting: string; isEnabled: boolean }) => {
+      if (!genomeBrowser) {
+        return;
+      }
+      const { trackId, setting, isEnabled } = params;
+      const trackPath = trackIdToPathMap[trackId] ?? ['track', trackId];
 
-    genomeBrowserCommands.toggleTrackSetting({
-      genomeBrowser,
-      trackPath,
-      setting,
-      isEnabled
-    });
-  };
+      genomeBrowserCommands.toggleTrackSetting({
+        genomeBrowser,
+        trackPath,
+        setting,
+        isEnabled
+      });
+    },
+    [genomeBrowser, trackIdToPathMap]
+  );
 
-  const updateFocusGeneTranscripts = (
-    visibleTranscriptIds: string[] | null
-  ) => {
-    if (!genomeBrowser) {
-      return;
-    }
-    genomeBrowserCommands.setVisibleTranscripts({
-      genomeBrowser,
-      transcriptIds: visibleTranscriptIds
-    });
-  };
+  const updateFocusGeneTranscripts = useCallback(
+    (visibleTranscriptIds: string[] | null) => {
+      if (!genomeBrowser) {
+        return;
+      }
+      genomeBrowserCommands.setVisibleTranscripts({
+        genomeBrowser,
+        transcriptIds: visibleTranscriptIds
+      });
+    },
+    [genomeBrowser]
+  );
 
   return {
     activateGenomeBrowser,
@@ -214,11 +229,6 @@ const useGenomeBrowser = () => {
 const useTrackIdToTrackPathMap = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
 
-  const trackCategoriesRef = useRef<{
-    previous: GenomeTrackCategory[];
-    current: GenomeTrackCategory[];
-  }>({ previous: [], current: [] });
-
   const { currentData: trackCategories = [] } = useGenomeTracksQuery(
     activeGenomeId ?? '',
     {
@@ -226,20 +236,9 @@ const useTrackIdToTrackPathMap = () => {
     }
   );
 
-  useEffect(() => {
-    if (
-      trackCategories.length &&
-      trackCategories !== trackCategoriesRef.current.previous
-    ) {
-      trackCategoriesRef.current.previous = trackCategoriesRef.current.current;
-      trackCategoriesRef.current.current = trackCategories;
-    }
+  const trackIdToPathMap = useMemo(() => {
+    return getTrackIdToTrackPathMap(trackCategories);
   }, [trackCategories]);
-
-  const trackIdToPathMap = getTrackIdToTrackPathMap([
-    ...trackCategoriesRef.current.previous,
-    ...trackCategoriesRef.current.current
-  ]);
 
   return trackIdToPathMap;
 };

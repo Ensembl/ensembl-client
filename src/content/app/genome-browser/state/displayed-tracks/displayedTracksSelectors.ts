@@ -21,7 +21,12 @@ import type { RootState } from 'src/store';
 export const getDisplayedTracks = (state: RootState) =>
   state.browser.displayedTracks;
 
-export const getDisplayedTrackIds = createSelector(
+export const getOrderedDisplayedTracks = createSelector(
   getDisplayedTracks,
+  (tracks) => tracks.toSorted((a, b) => a.id.localeCompare(b.id))
+);
+
+export const getDisplayedTrackIds = createSelector(
+  getOrderedDisplayedTracks,
   (tracks) => tracks.map((track) => track.id)
 );

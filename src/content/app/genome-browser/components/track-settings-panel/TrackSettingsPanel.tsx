@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react';
+import { useRef, memo } from 'react';
 
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
@@ -31,19 +31,6 @@ type Props = {
   className?: string;
 };
 
-const getTrackSettingsPanelComponent = (trackType: TrackType) => {
-  switch (trackType) {
-    case TrackType.GENE:
-    case TrackType.FOCUS_GENE:
-      return GeneTrackSettings;
-    case TrackType.VARIANT:
-    case TrackType.FOCUS_VARIANT:
-      return VariantTrackSettings;
-    case TrackType.REGULAR:
-      return RegularTrackSettings;
-  }
-};
-
 export const TrackSettingsPanel = (props: Props) => {
   const { trackId, trackType } = props;
 
@@ -51,19 +38,27 @@ export const TrackSettingsPanel = (props: Props) => {
 
   useOutsideClick(trackSettingsRef, props.onOutsideClick);
 
-  if (!trackType) {
-    return null;
+  const commonProps = {
+    trackId,
+    className: props.className,
+    ref: trackSettingsRef
+  };
+
+  if (trackType === TrackType.GENE || trackType === TrackType.FOCUS_GENE) {
+    return <GeneTrackSettings {...commonProps} />;
   }
-
-  const Track = getTrackSettingsPanelComponent(trackType);
-
-  return (
-    <Track
-      trackId={trackId}
-      className={props.className}
-      ref={trackSettingsRef}
-    />
-  );
+  if (
+    trackType === TrackType.VARIANT ||
+    trackType === TrackType.FOCUS_VARIANT
+  ) {
+    return <VariantTrackSettings {...commonProps} />;
+  }
+  if (
+    trackType === TrackType.REGULAR ||
+    trackType === TrackType.FOCUS_TRANSCRIPT
+  ) {
+    return <RegularTrackSettings {...commonProps} />;
+  }
 };
 
-export default TrackSettingsPanel;
+export default memo(TrackSettingsPanel);

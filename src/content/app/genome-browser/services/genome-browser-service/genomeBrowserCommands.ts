@@ -27,6 +27,8 @@ export const setFocus = (payload: {
 
   if (focusType === 'gene') {
     setFocusGene(payload);
+  } else if (focusType === 'transcript') {
+    setFocusTranscript(payload);
   } else if (focusType === 'variant') {
     setFocusVariant(payload);
   } else if (focusType === 'location') {
@@ -125,6 +127,22 @@ const setFocusGene: typeof setFocus = (payload) => {
   genomeBrowser.switch(['track', 'focus'], true);
   genomeBrowser.switch(['track', 'focus', 'label'], true);
   genomeBrowser.switch(['track', 'focus', 'item', 'gene'], {
+    genome_id: genomeId,
+    item_id: focusId
+  });
+};
+
+const setFocusTranscript: typeof setFocus = (payload) => {
+  const { genomeBrowser, genomeId, focusId, bringIntoView } = payload;
+
+  if (bringIntoView) {
+    genomeBrowser.jump(`focus:transcript:${genomeId}:${focusId}`);
+    genomeBrowser.wait();
+  }
+
+  genomeBrowser.switch(['track', 'focus'], true);
+  genomeBrowser.switch(['track', 'focus', 'label'], true);
+  genomeBrowser.switch(['track', 'focus', 'item', 'transcript'], {
     genome_id: genomeId,
     item_id: focusId
   });

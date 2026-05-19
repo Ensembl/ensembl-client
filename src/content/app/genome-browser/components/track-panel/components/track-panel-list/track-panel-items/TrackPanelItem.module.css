@@ -1,3 +1,7 @@
+.container {
+  padding: 4px 10px;
+}
+
 .label {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -13,6 +17,17 @@
 
 .labelTextStrong {
   font-weight: var(--font-weight-bold);
+}
+
+.labelTextLight {
+  font-weight: var(--font-weight-light);
+}
+
+.twoItemsGrid {
+  display: inline-grid;
+  grid-template-columns: repeat(2, auto);
+  column-gap: 12px;
+  align-items: baseline;
 }
 
 .labelTextSecondary {

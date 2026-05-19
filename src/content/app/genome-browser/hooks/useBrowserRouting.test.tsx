@@ -344,6 +344,19 @@ describe('useBrowserRouting', () => {
         expect(mockChangeBrowserLocation).not.toHaveBeenCalled();
       });
     });
+
+    it('supports transcript focus object from the url', async () => {
+      const transcriptStableId = 'ENST00000380737';
+      const url = `/genome-browser/${humanGenomeInfo.genome_tag}?focus=transcript:${transcriptStableId}`;
+
+      renderComponent({ path: url });
+
+      await waitFor(() => {
+        expect(mockChangeFocusObject).toHaveBeenCalledWith(
+          `${humanGenomeInfo.genome_id}:transcript:${transcriptStableId}`
+        );
+      });
+    });
   });
 
   describe('navigation to /genome-browser/:genome_id with focus object and location', () => {
@@ -386,6 +399,25 @@ describe('useBrowserRouting', () => {
           focus: {
             id: 'ENSG00000139618',
             type: 'gene'
+          }
+        });
+      });
+    });
+
+    it('supports transcript focus object and location from the url', async () => {
+      const transcriptStableId = 'ENST00000380737';
+
+      renderComponent({
+        path: `/genome-browser/${humanGenomeInfo.genome_tag}?focus=transcript:${transcriptStableId}&location=13:100-200`
+      });
+
+      await waitFor(() => {
+        expect(mockChangeBrowserLocation).toHaveBeenCalledWith({
+          genomeId: humanGenomeInfo.genome_id,
+          chrLocation: ['13', 100, 200],
+          focus: {
+            id: transcriptStableId,
+            type: 'transcript'
           }
         });
       });

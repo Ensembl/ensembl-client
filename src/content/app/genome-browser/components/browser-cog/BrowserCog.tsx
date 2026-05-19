@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useState, memo } from 'react';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
@@ -80,4 +80,4 @@ const BrowserCog = (props: BrowserCogProps) => {
   );
 };
 
-export default BrowserCog;
+export default memo(BrowserCog);

@@ -158,8 +158,11 @@ const genomeBrowserRestApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
-export const { getTrackPanelGene, gbRegion: getGBRegion } =
-  genomeBrowserApiSlice.endpoints;
+export const {
+  getTrackPanelGene,
+  gbTranscriptSummary: getGBTranscriptSummary,
+  gbRegion: getGBRegion
+} = genomeBrowserApiSlice.endpoints;
 export const {
   useGetTrackPanelGeneQuery,
   useGbGeneSummaryQuery,

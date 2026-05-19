@@ -32,6 +32,7 @@ import {
 } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSlice';
 
 import TrackPanelGene from './track-panel-items/TrackPanelGene';
+import TrackPanelTranscript from './track-panel-items/track-panel-transcript/TrackPanelTranscript';
 import TrackPanelVariant from './track-panel-items/track-panel-variant/TrackPanelVariant';
 import TrackPanelRegularItem from './track-panel-items/TrackPanelRegularItem';
 import {
@@ -52,6 +53,7 @@ import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/t
 import type {
   FocusObject as FocusObjectType,
   FocusGene as FocusGeneType,
+  FocusTranscript as FocusTranscriptType,
   FocusVariant as FocusVariantType
 } from 'src/shared/types/focus-object/focusObjectTypes';
 
@@ -175,6 +177,8 @@ const FocusObject = (props: { focusObject: FocusObjectType | null }) => {
 
   if (focusObject?.type === 'gene') {
     content = <FocusGene focusGene={focusObject} />;
+  } else if (focusObject?.type === 'transcript') {
+    content = <FocusTranscript focusTranscript={focusObject} />;
   } else if (focusObject?.type === 'variant') {
     content = <FocusVariant focusVariant={focusObject} />;
   }
@@ -200,6 +204,10 @@ const FocusGene = (props: { focusGene: FocusGeneType }) => {
 
 const FocusVariant = (props: { focusVariant: FocusVariantType }) => {
   return <TrackPanelVariant focusVariant={props.focusVariant} />;
+};
+
+const FocusTranscript = (props: { focusTranscript: FocusTranscriptType }) => {
+  return <TrackPanelTranscript focusTranscript={props.focusTranscript} />;
 };
 
 export default memo(TrackPanelList);

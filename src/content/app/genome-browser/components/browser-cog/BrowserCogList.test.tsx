@@ -116,6 +116,7 @@ describe('<BrowserCogList />', () => {
         summary: [
           {
             'switch-id': 'focus',
+            type: 'focus-gene',
             height: 200,
             offset: 0
           },
@@ -135,7 +136,7 @@ describe('<BrowserCogList />', () => {
       });
 
       const expectedPayload = newTrackSummary.summary.map((track) => ({
-        id: track['switch-id'],
+        id: track['switch-id'] === 'focus' ? track.type : track['switch-id'],
         height: track.height,
         offsetTop: track.offset
       }));

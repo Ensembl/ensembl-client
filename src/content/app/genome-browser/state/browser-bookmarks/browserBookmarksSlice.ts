@@ -81,17 +81,20 @@ export const updatePreviouslyViewedObjectsAndSave =
     }
 
     const stable_id =
-      activeFocusObject.type === 'gene'
+      activeFocusObject.type === 'gene' ||
+      activeFocusObject.type === 'transcript'
         ? activeFocusObject.versioned_stable_id || activeFocusObject.stable_id
         : null;
 
     const geneSymbol =
-      activeFocusObject.type === 'gene' && activeFocusObject.label !== stable_id
-        ? activeFocusObject.label
+      activeFocusObject.type === 'gene'
+        ? activeFocusObject.label !== stable_id
+          ? activeFocusObject.label
+          : null
         : null;
 
     const label =
-      activeFocusObject.type === 'gene' && geneSymbol
+      geneSymbol && stable_id
         ? [geneSymbol, stable_id as string]
         : activeFocusObject.label;
 
