@@ -33,13 +33,13 @@ const GenomeGroups = (props: Props) => {
   return (
     <div className={styles.container}>
       {category.groups.map((group) => (
-        <GenomeGroupItem key={group.group_id} group={group} />
+        <GenomeGroup key={group.group_id} group={group} />
       ))}
     </div>
   );
 };
 
-const GenomeGroupItem = (props: { group: GenomeGroupType }) => {
+const GenomeGroup = (props: { group: GenomeGroupType }) => {
   const { group } = props;
 
   return (
