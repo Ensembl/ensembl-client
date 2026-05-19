@@ -60,6 +60,12 @@ import type {
  * Only one copy of this hook should be run.
  */
 
+/** Although the client uses different ids for focus gene, focus transcript, and focus variant tracks (see TrackId),
+ *  which helps the client independently keep track of the different settings for these focus tracks,
+ *  the genome browser uses the same id for all of them, which is 'focus'.
+ */
+const GENOME_BROWSER_FOCUS_TRACK_ID = 'focus';
+
 const useFocusTrack = () => {
   const genomeBrowserMethods = useGenomeBrowser(); // getting it here once to avoid unnecessarily calling this hook from inside child hooks
   const { focusObjectId = '', parsedFocusObjectId = null } =
@@ -306,8 +312,6 @@ const sendFocusGeneTrackSettings = (
   trackSettings: FocusGeneTrackSettings,
   toggleTrackSetting: ReturnType<typeof useGenomeBrowser>['toggleTrackSetting']
 ) => {
-  const trackId = 'focus'; // this is the id of this track in the genome browser
-
   // Notice that in contrast to genomic tracks, we aren't sending the "show five transcripts"
   // message to the genome browser here. We haven't found a good way of reconciling the state
   // of the "show five transcripts" toggle for the focus gene track, and the list of manually shown/hidden transcripts
@@ -316,7 +320,7 @@ const sendFocusGeneTrackSettings = (
     .forEach((keyValuePair) => {
       const [settingName, settingValue] = keyValuePair as [string, boolean];
       toggleTrackSetting({
-        trackId,
+        trackId: GENOME_BROWSER_FOCUS_TRACK_ID,
         setting: settingName,
         isEnabled: settingValue
       });
@@ -348,7 +352,7 @@ const useFocusTranscript = ({
       focusTranscriptTrackSettings
     )) {
       toggleTrackSetting({
-        trackId: TrackId.FOCUS_TRANSCRIPT,
+        trackId: GENOME_BROWSER_FOCUS_TRACK_ID,
         setting: settingName,
         isEnabled: settingValue
       });
@@ -388,7 +392,7 @@ const useFocusVariant = (params: UseFocusVariantParams) => {
       focusVariantTrackSettings
     )) {
       toggleTrackSetting({
-        trackId: TrackId.FOCUS_VARIANT,
+        trackId: GENOME_BROWSER_FOCUS_TRACK_ID,
         setting: settingName,
         isEnabled: settingValue
       });

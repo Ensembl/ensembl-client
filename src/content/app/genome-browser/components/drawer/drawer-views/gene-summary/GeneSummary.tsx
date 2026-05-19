@@ -59,7 +59,9 @@ const GeneSummary = (props: Props) => {
     geneId,
     genomeId: activeGenomeId ?? ''
   };
-  const { currentData, isFetching } = useGbGeneSummaryQuery(geneQueryParams);
+  const { currentData, isFetching } = useGbGeneSummaryQuery(geneQueryParams, {
+    skip: !activeGenomeId
+  });
 
   if (isFetching) {
     return <Spinner />;
