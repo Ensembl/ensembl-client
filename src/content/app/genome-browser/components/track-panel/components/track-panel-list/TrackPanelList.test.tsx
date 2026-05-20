@@ -25,6 +25,7 @@ import set from 'lodash/fp/set';
 import createRootReducer from 'src/root/rootReducer';
 
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
+import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 
 import { getBrowserSidebarModalView } from 'src/content/app/genome-browser/state/browser-sidebar-modal/browserSidebarModalSelectors';
 
@@ -53,7 +54,10 @@ vi.mock('./track-panel-items/TrackPanelRegularItem', () => ({
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => ({
-    default: () => vi.fn()
+    default: () => ({
+      reportTrackPanelSectionToggled: vi.fn(),
+      trackDrawerOpened: vi.fn()
+    })
   })
 );
 
@@ -75,7 +79,10 @@ const renderComponent = (state: typeof mockState = mockState) => {
   const store = configureStore({
     reducer: createRootReducer(),
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat([restApiSlice.middleware]),
+      getDefaultMiddleware().concat([
+        restApiSlice.middleware,
+        graphqlApiSlice.middleware
+      ]),
     preloadedState: state as any
   });
 

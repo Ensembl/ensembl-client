@@ -14,21 +14,45 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
 import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
 import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
 import PopularSpeciesList from 'src/content/app/species-selector/components/popular-species-list/PopularSpeciesList';
+import GenomeGroups from 'src/content/app/species-selector/components/genome-groups/GenomeGroups';
+import { useGenomeGroupCategoriesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import TextButton from 'src/shared/components/text-button/TextButton';
 
 import styles from './SpeciesSelectorMainView.module.css';
+
+const popularSpeciesTab = '42 popular species';
 
 const SpeciesSelectorMainView = () => {
   const navigate = useNavigate();
   const { trackSpeciesSearchQuery } = useSpeciesSelectorAnalytics();
+  const [activeTab, setActiveTab] = useState(popularSpeciesTab);
+  const shouldShowGenomeGroupTabs = !isProductionEnvironment();
+  const { currentData: genomeGroupCategoriesData } =
+    useGenomeGroupCategoriesQuery(undefined, {
+      skip: !shouldShowGenomeGroupTabs
+    });
+
+  const genomeGroupCategories = shouldShowGenomeGroupTabs
+    ? (genomeGroupCategoriesData?.group_categories ?? [])
+    : [];
+  const tabs = [
+    popularSpeciesTab,
+    ...genomeGroupCategories.map((category) => category.display_name)
+  ];
+  const activeGenomeGroupCategory = genomeGroupCategories.find(
+    (category) => category.display_name === activeTab
+  );
 
   const onSearchSubmit = (query: string) => {
     trackSpeciesSearchQuery(query);
@@ -46,10 +70,42 @@ const SpeciesSelectorMainView = () => {
           <SpeciesSearchFieldWithLinks onSearchSubmit={onSearchSubmit} />
         </div>
         <GenomeCounts variety="full" className={styles.genomeCounts} />
+        <SpeciesSelectorTabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
       </div>
-      <div className={styles.popularSpecies}>
-        <PopularSpeciesList />
+      <div className={styles.tabPanel}>
+        {activeTab === popularSpeciesTab && <PopularSpeciesList />}
+        {activeGenomeGroupCategory && (
+          <GenomeGroups category={activeGenomeGroupCategory} />
+        )}
       </div>
+    </div>
+  );
+};
+
+const SpeciesSelectorTabs = (props: {
+  tabs: string[];
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}) => {
+  const { activeTab, onTabChange, tabs } = props;
+
+  return (
+    <div className={styles.tabs}>
+      {tabs.map((tab) =>
+        tab === activeTab ? (
+          <TextButton key={tab} className={styles.activeTab} disabled>
+            {tab}
+          </TextButton>
+        ) : (
+          <TextButton key={tab} onClick={() => onTabChange(tab)}>
+            {tab}
+          </TextButton>
+        )
+      )}
     </div>
   );
 };

@@ -15,11 +15,15 @@
  */
 
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { Pick3 } from 'ts-multipick';
 
 import isGeneFocusObject from './isGeneFocusObject';
 import * as focusObjectStorageService from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
-import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import {
+  getGBTranscriptSummary,
+  getTrackPanelGene
+} from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 import {
@@ -32,15 +36,17 @@ import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/br
 import { getFocusObject as getFocusObjectFromStorage } from 'src/content/app/genome-browser/services/focus-objects/focusObjectStorageService';
 
 import { LoadingState } from 'src/shared/types/loading-state';
+import type { RootState, ThunkApi } from 'src/store';
 import type { TrackPanelGene } from 'src/content/app/genome-browser/state/types/track-panel-gene';
 import type {
   FocusObject,
   FocusGene,
   FocusObjectIdConstituents,
   FocusLocation,
+  FocusTranscript,
   FocusVariant
 } from 'src/shared/types/focus-object/focusObjectTypes';
-import type { RootState, ThunkApi } from 'src/store';
+import { FullTranscript } from 'src/shared/types/core-api/transcript';
 
 export type FocusObjectsState = Readonly<{
   [focusObjectId: string]: {
@@ -53,6 +59,21 @@ type BuildGeneObjectParams = {
   genomeId: string;
   objectId: string;
   gene: TrackPanelGene;
+};
+
+type TranscriptDataForFocusObject = Pick<
+  FullTranscript,
+  'stable_id' | 'unversioned_stable_id'
+> &
+  Pick3<FullTranscript, 'slice', 'location', 'start' | 'end'> &
+  Pick3<FullTranscript, 'slice', 'region', 'name'> &
+  Pick3<FullTranscript, 'slice', 'strand', 'code'> &
+  Pick3<FullTranscript, 'metadata', 'biotype', 'label'>;
+
+type BuildTranscriptObjectParams = {
+  genomeId: string;
+  objectId: string;
+  transcript: TranscriptDataForFocusObject;
 };
 
 // FIXME: many fields here are unnecessary for an focusObject
@@ -82,6 +103,34 @@ export const buildFocusGeneObject = (
     bio_type: params.gene.metadata.biotype.label,
     strand,
     visibleTranscriptIds: null
+  };
+};
+
+const buildFocusTranscriptObject = (
+  params: BuildTranscriptObjectParams
+): FocusTranscript => {
+  const {
+    slice: {
+      location: { start, end },
+      region: { name: chromosome },
+      strand: { code: strand }
+    }
+  } = params.transcript;
+
+  return {
+    type: 'transcript',
+    object_id: params.objectId,
+    genome_id: params.genomeId,
+    label: params.transcript.unversioned_stable_id,
+    location: {
+      chromosome,
+      start,
+      end
+    },
+    stable_id: params.transcript.unversioned_stable_id,
+    versioned_stable_id: params.transcript.stable_id,
+    bio_type: params.transcript.metadata.biotype.label,
+    strand
   };
 };
 
@@ -182,6 +231,15 @@ export const fetchFocusObject = createAsyncThunk(
           },
           thunkAPI
         );
+      } else if (payload.type === 'transcript') {
+        return await fetchFocusTranscript(
+          {
+            genomeId,
+            transcriptId: objectId,
+            objectId: focusObjectId
+          },
+          thunkAPI
+        );
       } else if (payload.type === 'variant') {
         return await fetchFocusVariant({
           genomeId,
@@ -231,6 +289,42 @@ const fetchFocusGene = async (
   });
 };
 
+const fetchFocusTranscript = async (
+  payload: {
+    genomeId: string;
+    transcriptId: string;
+    objectId: string;
+  },
+  thunkApi: ThunkApi
+) => {
+  const { genomeId, transcriptId, objectId } = payload;
+  const { dispatch } = thunkApi;
+  const dispatchedPromise = dispatch(
+    getGBTranscriptSummary.initiate({
+      genomeId,
+      transcriptId
+    })
+  );
+
+  const result = await dispatchedPromise;
+  dispatchedPromise.unsubscribe();
+
+  if (!result.data?.transcript) {
+    throw new Error(`Failed to load transcript ${transcriptId}`);
+  }
+
+  const transcriptFocusObject = buildFocusTranscriptObject({
+    objectId,
+    genomeId,
+    transcript: result.data.transcript
+  });
+
+  return buildLoadedObject({
+    id: objectId,
+    data: transcriptFocusObject
+  });
+};
+
 const fetchFocusVariant = async (payload: {
   genomeId: string;
   variantId: string;
@@ -249,7 +343,7 @@ export const updateFocusGeneTranscriptsVisibility = createAsyncThunk(
     payload: { focusGeneId: string; visibleTranscriptIds: string[] },
     thunkAPI
   ) => {
-    // focusGeneId is in the focus object id format, i.e. "<genome_id>:gene:<stable_id>"
+    // focusGeneId is in the focus object id format, i.e. "<genome_id>:gene:<stable_id>"
     const { focusGeneId, visibleTranscriptIds } = payload;
     const state = thunkAPI.getState() as RootState;
     const focusGene = state.browser.focusObjects[focusGeneId]?.data;

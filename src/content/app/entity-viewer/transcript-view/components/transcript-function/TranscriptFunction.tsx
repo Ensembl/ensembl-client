@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
+import classNames from 'classnames';
 import noop from 'lodash/noop';
+
+import {
+  isProteinCodingTranscript,
+  getProductAminoAcidLength,
+  getProteinDescription
+} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import Tabs, { type Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
+import ProteinsListItemInfo, {
+  type Props as ProteinListItemInfoProps
+} from 'src/content/app/entity-viewer/gene-view/components/proteins-list/proteins-list-item-info/ProteinsListItemInfo';
+import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
+import type { DefaultEntityViewerTranscriptQueryResult } from 'src/content/app/entity-viewer/state/api/queries/transcriptDefaultQuery';
+
+import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.module.css';
 import styles from './TranscriptFunction.module.css';
 
 const tabsData: Tab[] = [
@@ -33,7 +47,13 @@ const tabClassNames = {
   tabsContainer: styles.tabsContainer
 };
 
-const TranscriptFunction = () => {
+type Props = {
+  transcript: DefaultEntityViewerTranscriptQueryResult['transcript'];
+};
+
+const TranscriptFunction = (props: Props) => {
+  const canDisplayProtein = isProteinCodingTranscript(props.transcript);
+
   return (
     <Panel
       header={<TabWrapper />}
@@ -43,8 +63,59 @@ const TranscriptFunction = () => {
         body: styles.panelBody
       }}
     >
-      Protein view
+      {canDisplayProtein ? (
+        <ProteinInfo
+          transcript={
+            props.transcript as ProteinListItemInfoProps['transcript']
+          }
+          gene={props.transcript.gene}
+        />
+      ) : (
+        <div>This transcript is not protein-coding</div>
+      )}
     </Panel>
+  );
+};
+
+const ProteinInfo = ({
+  transcript,
+  gene
+}: {
+  transcript: ProteinListItemInfoProps['transcript'];
+  gene: ProteinListItemInfoProps['gene'];
+}) => {
+  const { product } = transcript.product_generating_contexts[0];
+  const proteinLength = getProductAminoAcidLength(transcript);
+
+  // ProteinsListItemInfo component was developed for Entity Viewer gene view;
+  // which is why it has "list" in its name, and also why it receives a "track length"
+  // property (in gene view, proteins are drawn relative to the longest protein in a gene)
+  return (
+    <div className={styles.proteinInfo}>
+      <div className={transcriptsListStyles.row}>
+        <div className={transcriptsListStyles.left}>
+          <TranscriptQualityLabel metadata={transcript.metadata} />
+        </div>
+        <div
+          className={classNames(
+            transcriptsListStyles.middle,
+            styles.proteinInfoMiddle
+          )}
+        >
+          <div>{getProductAminoAcidLength(transcript)} aa</div>
+          <div>{getProteinDescription(product)}</div>
+          <div className={styles.productStableId}>{product?.stable_id}</div>
+        </div>
+        <div className={transcriptsListStyles.right}>
+          <span className={styles.transcriptId}>{transcript.stable_id}</span>
+        </div>
+      </div>
+      <ProteinsListItemInfo
+        transcript={transcript}
+        gene={gene}
+        trackLength={proteinLength}
+      />
+    </div>
   );
 };
 

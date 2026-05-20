@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useEffect, memo } from 'react';
+import { useEffect, useCallback, memo } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
-import { getDisplayedTracks } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
+import { getOrderedDisplayedTracks } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
 import { getAllTrackSettingsForGenome } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import {
   getBrowserActiveFocusObjectId,
@@ -32,7 +32,10 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 import BrowserCog from './BrowserCog';
 
 import type { TrackSummaryMessage } from 'src/content/app/genome-browser/services/genome-browser-service/types/genomeBrowserMessages';
-import type { TrackSummary } from 'src/content/app/genome-browser/services/genome-browser-service/types/trackSummary';
+import type {
+  TrackSummary,
+  FocusTrackSummary
+} from 'src/content/app/genome-browser/services/genome-browser-service/types/trackSummary';
 
 import styles from './BrowserCogList.module.css';
 
@@ -45,8 +48,21 @@ export const BrowserCogList = () => {
 
   const { genomeBrowserService } = useGenomeBrowser();
 
-  const displayedTracks = useAppSelector(getDisplayedTracks);
+  const displayedTracks = useAppSelector(getOrderedDisplayedTracks);
   const dispatch = useAppDispatch();
+
+  const updateDisplayedTracks = useCallback(
+    (trackSummaryList: TrackSummary[]) => {
+      const payload = trackSummaryList.map((track) => ({
+        id: getTrackId(track),
+        height: track.height,
+        offsetTop: track.offset
+      }));
+
+      dispatch(setDisplayedTracks(payload));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     const subscription = genomeBrowserService?.subscribe(
@@ -56,17 +72,7 @@ export const BrowserCogList = () => {
       }
     );
     return () => subscription?.unsubscribe();
-  }, [genomeBrowserService, genomeId, focusObjectId]);
-
-  const updateDisplayedTracks = (trackSummaryList: TrackSummary[]) => {
-    const payload = trackSummaryList.map((track) => ({
-      id: getTrackId(track),
-      height: track.height,
-      offsetTop: track.offset
-    }));
-
-    dispatch(setDisplayedTracks(payload));
-  };
+  }, [genomeBrowserService, genomeId, focusObjectId, updateDisplayedTracks]);
 
   const cogs = displayedTracks.map((track) => {
     const posStyle = { top: `${track.offsetTop}px` };
@@ -90,8 +96,8 @@ export const BrowserCogList = () => {
 };
 
 const getTrackId = (trackSummary: TrackSummary) => {
-  if (trackSummary['switch-id'] === 'focus' && 'variant-id' in trackSummary) {
-    return 'focus-variant';
+  if (trackSummary['switch-id'] === 'focus') {
+    return (trackSummary as FocusTrackSummary).type;
   } else {
     return trackSummary['switch-id'];
   }

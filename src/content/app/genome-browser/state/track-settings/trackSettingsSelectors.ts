@@ -69,7 +69,7 @@ export const getAllNonFocusTrackSettingsForGenome = createSelector(
     for (const [trackId, trackSettings] of Object.entries(
       trackSettingsForGenome.settingsForIndividualTracks
     )) {
-      if (trackId !== 'focus' && trackId !== 'focus-variant') {
+      if (!trackId.startsWith('focus')) {
         settings[trackId] = trackSettings;
       }
     }

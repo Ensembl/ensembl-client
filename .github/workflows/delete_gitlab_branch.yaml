@@ -6,6 +6,8 @@ on:
       - master
       - dev
 
+permissions: {}
+
 jobs:
   branch-delete:
     if: github.event.ref_type == 'branch'

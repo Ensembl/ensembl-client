@@ -76,7 +76,8 @@ const useGenomicTracks = () => {
     activeGenomeId,
     genomeTrackCategories,
     trackSettingsForGenome,
-    genomeBrowser
+    genomeBrowser,
+    genomeBrowserMethods.toggleTrack
   ]);
 
   useEffect(() => {
@@ -85,7 +86,7 @@ const useGenomicTracks = () => {
     }
 
     sendTrackSettings(trackSettingsForGenome, genomeBrowserMethods);
-  }, [trackSettingsForGenome, genomeBrowser]);
+  }, [trackSettingsForGenome, genomeBrowser, genomeBrowserMethods]);
 };
 
 type TrackIdsList = {
@@ -123,7 +124,7 @@ const sendTrackSettings = (
   const { toggleTrackSetting } = genomeBrowserMethods;
   const genomicTrackSettings = pickBy(
     trackSettings,
-    (_, key) => key !== 'focus'
+    (_, key) => !key.startsWith('focus')
   ); // exclude the focus track
   Object.entries(genomicTrackSettings).forEach(([trackId, { settings }]) => {
     Object.entries(settings).forEach((keyValuePair) => {

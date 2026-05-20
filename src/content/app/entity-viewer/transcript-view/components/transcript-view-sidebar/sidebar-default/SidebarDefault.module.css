@@ -1,0 +1,30 @@
+.sectionContent {
+  padding-left: 12px;
+}
+
+.row + .row {
+  margin-top: 6px;
+}
+
+.rowWithLabel {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 12px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.strong {
+  font-weight: var(--font-weight-bold);
+}
+
+.viewInAppGene {
+  margin-top: 20px;
+}
+
+.searchButtonSection {
+  margin-top: 20px;
+}

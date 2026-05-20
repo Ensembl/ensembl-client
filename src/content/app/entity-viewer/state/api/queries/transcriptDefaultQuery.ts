@@ -28,8 +28,10 @@ import type { FullGene } from 'src/shared/types/core-api/gene';
 const geneFieldsFragment = gql`
   fragment geneFields on Gene {
     stable_id
-    symbol
     unversioned_stable_id
+    symbol
+    alternative_symbols
+    name
     slice {
       location {
         start
@@ -38,6 +40,15 @@ const geneFieldsFragment = gql`
       }
       strand {
         code
+      }
+    }
+    metadata {
+      name {
+        accession_id
+        url
+      }
+      biotype {
+        value
       }
     }
   }
@@ -61,10 +72,22 @@ export const defaultTranscriptQuery = gql`
 
 type GeneInDefaultTranscriptRequest = Pick<
   FullGene,
-  'stable_id' | 'symbol' | 'unversioned_stable_id'
+  | 'stable_id'
+  | 'unversioned_stable_id'
+  | 'symbol'
+  | 'alternative_symbols'
+  | 'name'
 > &
   Pick3<FullGene, 'slice', 'location', 'start' | 'end' | 'length'> &
-  Pick3<FullGene, 'slice', 'strand', 'code'>;
+  Pick3<FullGene, 'slice', 'strand', 'code'> & {
+    metadata: {
+      name: Pick<
+        NonNullable<FullGene['metadata']['name']>,
+        'accession_id' | 'url'
+      > | null;
+      biotype: Pick<FullGene['metadata']['biotype'], 'value'>;
+    };
+  };
 
 export type DefaultEntityViewerTranscriptQueryResult = {
   transcript: DefaultEntityViewerTranscript & {

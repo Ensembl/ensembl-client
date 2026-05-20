@@ -21,10 +21,6 @@
   --assembly-accession-table-font-weight: var(--font-weight-normal);
 }
 
-.showMore {
-  color: var(--color-blue);
-}
-
 .referenceGenome {
   font-style: italic;
 }
@@ -36,4 +32,8 @@
 
 .centered {
   text-align: center;
+}
+
+.externalLink {
+  white-space: nowrap;
 }

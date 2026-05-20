@@ -15,7 +15,6 @@
  */
 
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -34,8 +33,6 @@ import {
 } from 'src/shared/helpers/focusObjectHelpers';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
-import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-
 import GeneSequenceView from 'src/content/app/genome-browser/components/drawer/components/sequence-view/GeneSequenceView';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadGene, {
@@ -46,29 +43,31 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import { Spinner } from 'src/content/app/genome-browser/components/drawer/DrawerSpinner';
 
-import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
-
 import styles from './GeneSummary.module.css';
 
-const GeneSummary = () => {
-  const { genomeIdForUrl } = useGenomeBrowserIds();
-  const focusGene = useSelector(getBrowserActiveFocusObject) as FocusGene;
+type Props = {
+  geneId: string; // gene stable id; probably unversioned
+};
+
+const GeneSummary = (props: Props) => {
+  const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
+  const { geneId } = props;
   const [shouldShowDownload, showDownload] = useState(false);
   const { trackDrawerSequenceDownloaded } = useGenomeBrowserAnalytics();
 
   const geneQueryParams = {
-    geneId: focusGene.stable_id,
-    genomeId: focusGene.genome_id
+    geneId,
+    genomeId: activeGenomeId ?? ''
   };
   const { currentData, isFetching } = useGbGeneSummaryQuery(geneQueryParams, {
-    skip: !focusGene.stable_id
+    skip: !activeGenomeId
   });
 
   if (isFetching) {
     return <Spinner />;
   }
 
-  if (!currentData?.gene) {
+  if (!currentData?.gene || !activeGenomeId) {
     return <div>No data available</div>;
   }
 
@@ -136,7 +135,13 @@ const GeneSummary = () => {
               </div>
             )}
             <div className={styles.featureDetail}>
-              <span>{getFormattedLocation(focusGene.location)}</span>
+              <span>
+                {getFormattedLocation({
+                  chromosome: gene.slice.region.name,
+                  start: gene.slice.location.start,
+                  end: gene.slice.location.end
+                })}
+              </span>
             </div>
           </div>
         </div>
@@ -156,7 +161,7 @@ const GeneSummary = () => {
           {shouldShowDownload && (
             <div className={styles.downloadWrapper}>
               <InstantDownloadGene
-                genomeId={focusGene.genome_id}
+                genomeId={activeGenomeId}
                 gene={{
                   id: gene.stable_id,
                   isProteinCoding: isProteinCodingGene(gene)

@@ -53,6 +53,7 @@ export type TrackStates = {
 };
 
 export const TrackId = {
-  FOCUS_GENE: 'focus',
+  FOCUS_GENE: 'focus-gene',
+  FOCUS_TRANSCRIPT: 'focus-transcript',
   FOCUS_VARIANT: 'focus-variant'
-};
+} as const;

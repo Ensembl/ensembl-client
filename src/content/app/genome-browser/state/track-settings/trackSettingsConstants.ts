@@ -27,13 +27,15 @@ import type {
   FocusVariantTrack,
   FocusGeneTrack,
   RegularTrack,
-  TrackSettings
+  TrackSettings,
+  FocusTranscriptTrack
 } from './trackSettingsSlice';
 
 export enum TrackType {
   GENE = 'gene',
   VARIANT = 'variant',
   FOCUS_GENE = 'focus-gene',
+  FOCUS_TRANSCRIPT = 'focus-transcript',
   FOCUS_VARIANT = 'focus-variant',
   REGULAR = 'regular'
 }
@@ -92,6 +94,12 @@ export const buildDefaultFocusGeneTrack = (): FocusGeneTrack => ({
   id: TrackId.FOCUS_GENE,
   trackType: TrackType.FOCUS_GENE,
   settings: getDefaultGeneTrackSettings()
+});
+
+export const buildDefaultFocusTranscriptTrack = (): FocusTranscriptTrack => ({
+  id: TrackId.FOCUS_TRANSCRIPT,
+  trackType: TrackType.FOCUS_TRANSCRIPT,
+  settings: getDefaultRegularTrackSettings()
 });
 
 export const buildDefaultFocusVariantTrack = (): FocusVariantTrack => {

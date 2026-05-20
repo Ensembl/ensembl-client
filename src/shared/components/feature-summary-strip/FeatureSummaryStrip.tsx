@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type { RefObject } from 'react';
+import { memo, type RefObject } from 'react';
 
 import GeneSummaryStrip from './GeneSummaryStrip';
 import LocationSummaryStrip from './LocationSummaryStrip';
+import TranscriptSummaryStrip from './TranscriptSummaryStrip';
 import VariantSummaryStrip from './VariantSummaryStrip';
 
 import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
@@ -37,6 +38,14 @@ export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
         <GeneSummaryStrip
           gene={focusObject}
           ref={ref}
+          className={props.className}
+        />
+      );
+    case 'transcript':
+      return (
+        <TranscriptSummaryStrip
+          transcript={focusObject}
+          elementRef={ref}
           className={props.className}
         />
       );
@@ -61,4 +70,4 @@ export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
   }
 };
 
-export default FeatureSummaryStrip;
+export default memo(FeatureSummaryStrip);

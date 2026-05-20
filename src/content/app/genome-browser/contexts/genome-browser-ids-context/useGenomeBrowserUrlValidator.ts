@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
@@ -23,7 +23,10 @@ import {
   validateGenomicLocation
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
-import { getTrackPanelGene } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import {
+  getGBTranscriptSummary,
+  getTrackPanelGene
+} from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { FocusObjectIdConstituents } from 'src/shared/types/focus-object/focusObjectTypes';
@@ -43,7 +46,11 @@ const initialState = {
 };
 
 const useGenomeBrowserUrlValidator = (params: Params) => {
-  const [state, setState] = useState(initialState);
+  const [validationResultState, setValidationResultState] = useState({
+    validationKey: null as string | null,
+    isMissingFocusObject: false,
+    isInvalidLocation: false
+  });
   const {
     genomeId,
     parsedFocusObjectId,
@@ -51,20 +58,56 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
     hasMalformedLocation
   } = params;
   const dispatch = useAppDispatch();
+  const focusObjectType = parsedFocusObjectId?.type;
+  const focusObjectId = parsedFocusObjectId?.objectId;
+  const locationRegionName = parsedLocation?.[0];
+  const locationStart = parsedLocation?.[1];
+  const locationEnd = parsedLocation?.[2];
+  const hasFocusObjectToValidate = Boolean(
+    genomeId && focusObjectType && focusObjectId
+  );
+  const validationKey = hasFocusObjectToValidate
+    ? JSON.stringify({
+        genomeId,
+        focusObjectType,
+        focusObjectId,
+        locationRegionName,
+        locationStart,
+        locationEnd,
+        hasMalformedLocation
+      })
+    : null;
+  const currentState = getCurrentValidationState({
+    hasFocusObjectToValidate,
+    validationKey,
+    validationResultState
+  });
 
-  const stateRef = useRef(state);
+  const stateRef = useRef(currentState);
   const postValidationQueueRef = useRef<Array<() => unknown>>([]);
 
-  useEffect(() => {
-    setState(initialState);
+  const flushPostValidationQueue = useCallback(() => {
+    postValidationQueueRef.current.forEach((fn) => fn());
+    postValidationQueueRef.current = [];
+  }, []);
 
-    if (!genomeId || !parsedFocusObjectId) {
-      onValidationComplete(initialState); // nothing to validate
+  useEffect(() => {
+    if (!hasFocusObjectToValidate) {
+      flushPostValidationQueue();
       return;
     }
+
+    let isCancelled = false;
+    const validatedGenomeId = genomeId as string;
+    const validatedParsedFocusObjectId = {
+      genomeId: validatedGenomeId,
+      type: focusObjectType as string,
+      objectId: focusObjectId as string
+    };
+
     const focusCheckParams = {
-      genomeId,
-      parsedFocusObjectId,
+      genomeId: validatedGenomeId,
+      parsedFocusObjectId: validatedParsedFocusObjectId,
       dispatch
     };
 
@@ -75,23 +118,27 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
 
     if (hasMalformedLocation) {
       checkPromises.push(Promise.resolve({ isInvalidLocation: true }));
-    } else if (parsedLocation) {
-      const [regionName, start, end] = parsedLocation;
+    } else if (
+      locationRegionName &&
+      typeof locationStart === 'number' &&
+      typeof locationEnd === 'number'
+    ) {
       const locationCheckPromise = checkLocationFromUrl({
-        genomeId,
-        regionName,
-        start,
-        end
+        genomeId: validatedGenomeId,
+        regionName: locationRegionName,
+        start: locationStart,
+        end: locationEnd
       });
       checkPromises.push(locationCheckPromise);
     }
 
-    setState({ ...initialState, isValidating: true });
-
     Promise.all(checkPromises).then((checkResults) => {
+      if (isCancelled) {
+        return;
+      }
+
       const newState = {
-        isValidating: false,
-        doneValidating: true,
+        validationKey,
         isMissingFocusObject: false,
         isInvalidLocation: hasMalformedLocation || false
       };
@@ -102,20 +149,41 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
           newState.isInvalidLocation = result.isInvalidLocation;
         }
       }
-      setState(newState);
-      onValidationComplete(newState);
+
+      setValidationResultState(newState);
+
+      if (!newState.isMissingFocusObject && !newState.isInvalidLocation) {
+        flushPostValidationQueue();
+      }
     });
-  }, [genomeId]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [
+    dispatch,
+    flushPostValidationQueue,
+    genomeId,
+    focusObjectId,
+    focusObjectType,
+    hasMalformedLocation,
+    hasFocusObjectToValidate,
+    locationEnd,
+    locationRegionName,
+    locationStart,
+    validationKey
+  ]);
 
   useEffect(() => {
-    stateRef.current = state;
-  });
+    stateRef.current = currentState;
+  }, [currentState]);
 
   const runAfterValidation = (fn: () => unknown) => {
     if (
-      stateRef.current.doneValidating &&
-      !stateRef.current.isMissingFocusObject &&
-      !stateRef.current.isInvalidLocation
+      !hasFocusObjectToValidate ||
+      (stateRef.current.doneValidating &&
+        !stateRef.current.isMissingFocusObject &&
+        !stateRef.current.isInvalidLocation)
     ) {
       fn();
     } else {
@@ -123,26 +191,52 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
     }
   };
 
-  const onValidationComplete = (state: typeof initialState) => {
-    setState({ ...state, doneValidating: true });
-    if (state.isMissingFocusObject || state.isInvalidLocation) {
-      return;
-    }
-    postValidationQueueRef.current.forEach((fn) => fn());
-    postValidationQueueRef.current = [];
-  };
-
   const resetValidator = () => {
-    setState({
-      ...initialState,
-      doneValidating: true // so that functions that need to run after validation could run
+    setValidationResultState({
+      validationKey,
+      isMissingFocusObject: false,
+      isInvalidLocation: false
     });
   };
 
   return {
-    ...state,
+    ...currentState,
     runAfterValidation,
     resetValidator
+  };
+};
+
+const getCurrentValidationState = (params: {
+  hasFocusObjectToValidate: boolean;
+  validationKey: string | null;
+  validationResultState: {
+    validationKey: string | null;
+    isMissingFocusObject: boolean;
+    isInvalidLocation: boolean;
+  };
+}) => {
+  const { hasFocusObjectToValidate, validationKey, validationResultState } =
+    params;
+
+  if (!hasFocusObjectToValidate) {
+    return {
+      ...initialState,
+      doneValidating: true
+    };
+  }
+
+  if (validationResultState.validationKey !== validationKey) {
+    return {
+      ...initialState,
+      isValidating: true
+    };
+  }
+
+  return {
+    isValidating: false,
+    doneValidating: true,
+    isMissingFocusObject: validationResultState.isMissingFocusObject,
+    isInvalidLocation: validationResultState.isInvalidLocation
   };
 };
 
@@ -159,6 +253,8 @@ const checkFocusObject = async (
 
   if (type === 'gene') {
     return checkFocusGene(params);
+  } else if (type === 'transcript') {
+    return checkFocusTranscript(params);
   } else if (type === 'location') {
     return checkFocusLocation(params);
   } else if (type === 'variant') {
@@ -218,6 +314,36 @@ const checkFocusLocation = async (params: CheckFocusObjectParams) => {
   }
 
   return { isMissingFocusObject };
+};
+
+const checkFocusTranscript = async (params: CheckFocusObjectParams) => {
+  const {
+    genomeId,
+    parsedFocusObjectId: { objectId: transcriptId },
+    dispatch
+  } = params;
+
+  const dispatchedPromise = dispatch(
+    getGBTranscriptSummary.initiate({
+      genomeId,
+      transcriptId
+    })
+  );
+
+  const result = await dispatchedPromise;
+  dispatchedPromise.unsubscribe();
+
+  const transcriptQueryError = result.error as any;
+  const isMissingTranscript =
+    (result.isError &&
+      transcriptQueryError &&
+      'meta' in transcriptQueryError &&
+      transcriptQueryError.meta?.data?.transcript === null) ||
+    !result.data?.transcript;
+
+  return {
+    isMissingFocusObject: isMissingTranscript
+  };
 };
 
 const checkFocusVariant = async (params: CheckFocusObjectParams) => {

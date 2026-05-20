@@ -10,6 +10,7 @@
 
 .genomeRelease {
   font-size: var(--genome-release-table-font-size, 13px);
+  white-space: nowrap;
 }
 
 .genomeReleaseType {

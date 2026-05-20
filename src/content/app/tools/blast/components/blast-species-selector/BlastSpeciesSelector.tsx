@@ -14,21 +14,40 @@
  * limitations under the License.
  */
 
-import { useState, useDeferredValue, type FormEvent } from 'react';
+import {
+  useState,
+  useDeferredValue,
+  useCallback,
+  type InputEvent
+} from 'react';
 
-import { useLazyGetSpeciesSearchResultsQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+import {
+  getSortRule,
+  DEFAULT_NUM_RESULTS_PER_PAGE
+} from 'src/content/app/species-selector/helpers/genomeSearchHelpers';
+
+import {
+  useGenomesQuery,
+  getSpeciesSearchLastPageNumber
+} from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 
 import useSelectableGenomesTable from 'src/content/app/species-selector/components/selectable-genomes-table/useSelectableGenomesTable';
 
 import AddSpecies from 'src/content/app/species-selector/components/species-search-field/AddSpecies';
 import { SpeciesSearchField } from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import SpeciesSearchResultsSummary from 'src/content/app/species-selector/components/species-search-results-summary/SpeciesSearchResultsSummary';
+import {
+  SpeciesSearchResultsTableWrapper,
+  TableControlsSection,
+  TableSection
+} from 'src/content/app/species-selector/components/species-search-results-table-wrapper/SpeciesSearchResultsTableWrapper';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
-import GenomesFilterField from 'src/content/app/species-selector/components/genomes-filter-field/GenomesFilterField';
+import PaginationWithPerPage from 'src/shared/components/pagination/PaginationWithPerPage';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
+import type { SortOrderWithNone } from 'src/shared/types/sort-order';
 
 import styles from './BlastSpeciesSelector.module.css';
 
@@ -61,24 +80,31 @@ const BlastSpeciesSelector = (
 ) => {
   const { onClose, selectedSpecies } = props;
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterQuery, setFilterQuery] = useState('');
-  const [canSubmitSearch, setCanSubmitSearch] = useState(false);
-  const [searchTrigger, result] = useLazyGetSpeciesSearchResultsQuery();
-  const { currentData, isLoading, isError } = result;
+  const [searchResultsPage, setSearchResultsPage] = useState(1);
+  const [searchResultsPerPage, setSearchResultsPerPage] = useState(
+    DEFAULT_NUM_RESULTS_PER_PAGE
+  );
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<string | null>(null);
 
-  const {
-    genomes,
-    stagedGenomes,
-    isTableExpanded,
-    onTableExpandToggle,
-    onGenomeStageToggle,
-    sortRule,
-    changeSortRule
-  } = useSelectableGenomesTable({
-    genomes: currentData?.matches ?? [],
-    selectedGenomes: selectedSpecies,
-    filterQuery
-  });
+  const { data, isLoading, isError } = useGenomesQuery(
+    {
+      query: searchQuery,
+      page: searchResultsPage,
+      perPage: searchResultsPerPage,
+      sortBy,
+      sortOrder
+    },
+    {
+      skip: !searchQuery
+    }
+  );
+
+  const { genomes, stagedGenomes, onTableExpandToggle, onGenomeStageToggle } =
+    useSelectableGenomesTable({
+      genomes: data?.matches ?? [],
+      selectedGenomes: selectedSpecies
+    });
 
   const deferredGenomes = useDeferredValue(genomes);
 
@@ -88,52 +114,78 @@ const BlastSpeciesSelector = (
       : Infinity;
   const selectedGenomesCount = selectedSpecies.length;
 
-  const onSearchInput = (event: FormEvent<HTMLInputElement>) => {
-    setSearchQuery(event.currentTarget.value);
-    if (!canSubmitSearch) {
-      setCanSubmitSearch(true);
-    }
-  };
-
   const onSpeciesAdd = () => {
     props.onSpeciesAdd(stagedGenomes);
   };
 
-  const onSearchSubmit = () => {
-    searchTrigger({ query: searchQuery });
-    setCanSubmitSearch(false);
+  const onSearchSubmit = (query: string) => {
+    setSearchResultsPage(1);
+    setSearchQuery(query);
   };
+
+  const onPageNumberChange = (pageNumber: number) => {
+    setSearchResultsPage(pageNumber);
+  };
+
+  const onResultsPerPageChange = (perPage: number) => {
+    setSearchResultsPage(1);
+    setSearchResultsPerPage(perPage);
+  };
+
+  const sortRule = getSortRule(sortBy, sortOrder);
+
+  const onSortRuleChange = useCallback(
+    (sortBy: string, sortOrder: SortOrderWithNone) => {
+      if (sortOrder === 'none') {
+        setSortBy(null);
+        setSortOrder(null);
+      } else {
+        setSortBy(sortBy);
+        setSortOrder(sortOrder);
+      }
+    },
+    []
+  );
 
   return (
     <div className={styles.main}>
       <TopSection
-        query={searchQuery}
         isLoading={isLoading}
         isError={isError}
-        searchResults={currentData}
+        searchResults={data}
         canAddGenomes={stagedGenomes.length > 0}
-        canSubmitSearch={canSubmitSearch}
         onSearchSubmit={onSearchSubmit}
-        onSearchInput={onSearchInput}
         onGenomesAdd={onSpeciesAdd}
-        onFilterChange={setFilterQuery}
         onClose={onClose}
       />
 
-      {currentData?.matches.length ? (
-        <div className={styles.tableContainer}>
-          <SpeciesSearchResultsTable
-            results={deferredGenomes}
-            isExpanded={isTableExpanded}
-            maxStagedGenomesNumber={
-              maxSelectableGenomesCount - selectedGenomesCount
-            }
-            sortRule={sortRule}
-            onSortRuleChange={changeSortRule}
-            onTableExpandToggle={onTableExpandToggle}
-            onSpeciesSelectToggle={onGenomeStageToggle}
-          />
-        </div>
+      {data?.matches.length ? (
+        <SpeciesSearchResultsTableWrapper>
+          <TableControlsSection>
+            <PaginationWithPerPage
+              currentPageNumber={searchResultsPage}
+              lastPageNumber={getSpeciesSearchLastPageNumber({
+                data,
+                perPage: searchResultsPerPage
+              })}
+              onPageChange={onPageNumberChange}
+              perPageValue={searchResultsPerPage}
+              onPerPageChange={onResultsPerPageChange}
+            />
+          </TableControlsSection>
+          <TableSection>
+            <SpeciesSearchResultsTable
+              results={deferredGenomes}
+              maxStagedGenomesNumber={
+                maxSelectableGenomesCount - selectedGenomesCount
+              }
+              sortRule={sortRule}
+              onSortRuleChange={onSortRuleChange}
+              onTableExpandToggle={onTableExpandToggle}
+              onSpeciesSelectToggle={onGenomeStageToggle}
+            />
+          </TableSection>
+        </SpeciesSearchResultsTableWrapper>
       ) : null}
     </div>
   );
@@ -141,20 +193,29 @@ const BlastSpeciesSelector = (
 
 // TODO: consider errors in response to search request
 type TopSectionProps = {
-  query: string;
   isLoading: boolean;
   isError: boolean;
   searchResults?: SpeciesSearchResponse;
   canAddGenomes: boolean;
-  canSubmitSearch: boolean;
-  onSearchSubmit: () => void;
-  onSearchInput: (event: FormEvent<HTMLInputElement>) => void;
+  onSearchSubmit: (query: string) => void;
   onGenomesAdd: () => void;
-  onFilterChange: (filter: string) => void;
   onClose: () => void;
 };
 
 const TopSection = (props: TopSectionProps) => {
+  const [query, setQuery] = useState('');
+  const [canSubmitSearch, setCanSubmitSearch] = useState(false);
+
+  const onQueryInput = (event: InputEvent<HTMLInputElement>) => {
+    setQuery(event.currentTarget.value);
+    setCanSubmitSearch(true);
+  };
+
+  const onSubmit = () => {
+    setCanSubmitSearch(false);
+    props.onSearchSubmit(query);
+  };
+
   if (props.isError) {
     return <div>An unexpected error happened during search.</div>;
   }
@@ -163,7 +224,7 @@ const TopSection = (props: TopSectionProps) => {
     return (
       <>
         <AddSpecies
-          query={props.query}
+          query={query}
           canAdd={false}
           onAdd={props.onGenomesAdd}
           onClose={props.onClose}
@@ -179,7 +240,7 @@ const TopSection = (props: TopSectionProps) => {
       <section className={styles.topSection}>
         <div className={styles.searchFieldWrapper}>
           <AddSpecies
-            query={props.query}
+            query={query}
             canAdd={props.canAddGenomes}
             onAdd={props.onGenomesAdd}
             onClose={props.onClose}
@@ -187,9 +248,6 @@ const TopSection = (props: TopSectionProps) => {
         </div>
         <div className={styles.resultsSummaryWrapper}>
           <SpeciesSearchResultsSummary searchResults={props.searchResults} />
-        </div>
-        <div className={styles.filterFieldWrapper}>
-          <GenomesFilterField onFilterChange={props.onFilterChange} />
         </div>
       </section>
     );
@@ -201,10 +259,10 @@ const TopSection = (props: TopSectionProps) => {
       <section className={styles.topSection}>
         <div className={styles.searchFieldWrapper}>
           <SpeciesSearchField
-            query={props.query}
-            onInput={props.onSearchInput}
-            canSubmit={props.canSubmitSearch}
-            onSearchSubmit={props.onSearchSubmit}
+            query={query}
+            onInput={onQueryInput}
+            canSubmit={canSubmitSearch}
+            onSearchSubmit={onSubmit}
           />
         </div>
         {props.searchResults && (
@@ -215,9 +273,6 @@ const TopSection = (props: TopSectionProps) => {
       </section>
     );
   }
-
-  // this shouldn't happen
-  return null;
 };
 
 export default BlastSpeciesSelector;

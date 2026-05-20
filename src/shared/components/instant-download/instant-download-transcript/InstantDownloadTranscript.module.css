@@ -1,142 +1,154 @@
-.checkboxGrid {
-  margin-top: 0.5em;
-  display: grid;
-  grid-template-columns: repeat(2, max-content);
-  grid-template-rows: auto;
-  column-gap: 42px;
-  row-gap: 0.2em;
-}
+/*
 
-.label {
-  margin-bottom: 0.5em;
-  font-weight: var(--font-weight-light);
-  word-break: break-all;
-  font-size: 12px;
-}
+This component exposes the following parts for styling
+that can be directly targeted by the parent:
+- data-part="transcript-section"
+- data-part="transcript-visualization"
+- data-part="transcript-section-checkbox-grid"
 
-.featureId {
-  margin-left: 0.5em;
-  font-weight: var(--font-weight-normal);
-}
+*/
 
-.transcriptVis {
-  margin-top: 18px;
-  margin-bottom: 9px;
-}
-
-.downloadButton {
-  align-self: end;
-  justify-self: end;
-  font-size: 12px;
-}
-
-.geneSection .checkboxes {
-  display: flex;
-  flex-direction: column;
-}
-
-.layout {
-  display: grid;
-  font-size: 13px;
-  align-items: start;
-}
-
-.layoutHorizontal {
-  grid-template-columns: 1fr 1fr;
-  column-gap: 10px;
-  grid-template-areas:
-    'transcript gene'
-    'transcript download';
-  margin-bottom: 12px;
-}
-
-.layoutHorizontal .transcriptSection {
-  grid-area: transcript;
-  width: 393px;
-}
-
-.layoutHorizontal .geneSection {
-  grid-area: gene;
-}
-
-.layoutHorizontal .geneSection .checkbox {
-  margin-left: 12px;
-}
-
-.layoutHorizontal .transcriptVis {
-  margin-left: 12px;
-}
-
-.layoutHorizontal .checkboxGrid {
-  padding-left: 14px;
-}
-
-.layoutHorizontal button {
-  grid-area: download;
-  justify-self: end;
-  align-self: end;
-}
-
-
-.layoutVertical {
-  row-gap: 0.5rem;
-}
-
-.layoutVertical .transcriptSection,
-.layoutVertical .geneSection {
-  padding-left: 18px;
-}
-
-.layoutVertical .geneSection {
-  margin-top: 18px;
-  margin-bottom: 18px;
-}
-
-.layoutVertical .geneSection .label {
-  margin-left: -18px;
-}
-
-.layoutVertical .geneSection .checkbox {
-  margin-left: 6px;
-}
-
-.layoutVertical .geneSection .checkbox:first-child {
-  margin-top: 12px;
-}
-
-.layoutVertical .transcriptSection .label {
-  margin-left: -18px;
-}
-
-.layoutVertical .checkboxGrid {
-  grid-template-columns: repeat(3, max-content);
-  grid-template-areas:
-    'genomic cdna exons'
-    'protein cds .';
-  padding-left: 6px;
-
-  .genomic {
-    grid-area: genomic;
+@layer components {
+ .checkboxGrid {
+    margin-top: 0.5em;
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    grid-template-rows: auto;
+    column-gap: 42px;
+    row-gap: 0.2em;
   }
 
-  .cdna {
-    grid-area: cdna;
+  .label {
+    margin-bottom: 0.5em;
+    font-weight: var(--font-weight-light);
+    word-break: break-all;
+    font-size: 12px;
   }
 
-  .exons {
-    grid-area: exons;
+  .featureId {
+    margin-left: 0.5em;
+    font-weight: var(--font-weight-normal);
   }
 
-  .protein {
-    grid-area: protein;
+  .transcriptVis {
+    margin-top: 18px;
+    margin-bottom: 9px;
   }
 
-  .cds {
-    grid-area: cds;
+  .downloadButton {
+    align-self: end;
+    justify-self: end;
+    font-size: 12px;
   }
-}
 
-.layoutVertical button {
-  justify-self: end;
-  align-self: end;
+  .geneSection .checkboxes {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .layout {
+    display: grid;
+    font-size: 13px;
+    align-items: start;
+  }
+
+  .layoutHorizontal {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 10px;
+    grid-template-areas:
+      'transcript gene'
+      'transcript download';
+    margin-bottom: 12px;
+  }
+
+  .layoutHorizontal .transcriptSection {
+    grid-area: transcript;
+    width: 393px;
+  }
+
+  .layoutHorizontal .geneSection {
+    grid-area: gene;
+  }
+
+  .layoutHorizontal .geneSection .checkbox {
+    margin-left: 12px;
+  }
+
+  .layoutHorizontal .transcriptVis {
+    margin-left: 12px;
+  }
+
+  .layoutHorizontal .checkboxGrid {
+    padding-left: 14px;
+  }
+
+  .layoutHorizontal button {
+    grid-area: download;
+    justify-self: end;
+    align-self: end;
+  }
+
+
+  .layoutVertical {
+    row-gap: 0.5rem;
+  }
+
+  .layoutVertical .transcriptSection,
+  .layoutVertical .geneSection {
+    padding-left: 18px;
+  }
+
+  .layoutVertical .geneSection {
+    margin-top: 18px;
+    margin-bottom: 18px;
+  }
+
+  .layoutVertical .geneSection .label {
+    margin-left: -18px;
+  }
+
+  .layoutVertical .geneSection .checkbox {
+    margin-left: 6px;
+  }
+
+  .layoutVertical .geneSection .checkbox:first-child {
+    margin-top: 12px;
+  }
+
+  .layoutVertical .transcriptSection .label {
+    margin-left: -18px;
+  }
+
+  .layoutVertical .checkboxGrid {
+    grid-template-columns: repeat(3, max-content);
+    grid-template-areas:
+      'genomic cdna exons'
+      'protein cds .';
+    padding-left: 6px;
+
+    .genomic {
+      grid-area: genomic;
+    }
+
+    .cdna {
+      grid-area: cdna;
+    }
+
+    .exons {
+      grid-area: exons;
+    }
+
+    .protein {
+      grid-area: protein;
+    }
+
+    .cds {
+      grid-area: cds;
+    }
+  }
+
+  .layoutVertical button {
+    justify-self: end;
+    align-self: end;
+  }
 }

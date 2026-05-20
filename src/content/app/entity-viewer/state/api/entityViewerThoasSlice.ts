@@ -56,9 +56,18 @@ import {
   type EntityViewerGeneHomologiesQueryResult
 } from './queries/geneHomologiesQuery';
 import {
+  transcriptPageMetaQuery,
+  TranscriptPageMetaQueryResult,
+  TranscriptPageMeta
+} from './queries/transcriptPageMetaQuery';
+import {
   defaultTranscriptQuery,
   type DefaultEntityViewerTranscriptQueryResult
 } from './queries/transcriptDefaultQuery';
+import {
+  transcriptExternalReferencesQuery,
+  type TranscriptExternalReferencesQueryResult
+} from './queries/transcriptExternalReferencesQuery';
 import {
   variantPageMetaQuery,
   type VariantPageMetaQueryResult,
@@ -189,6 +198,27 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
         variables: params
       })
     }),
+    transcriptPageMeta: builder.query<
+      TranscriptPageMeta,
+      TranscriptQueryParams
+    >({
+      query: (params) => ({
+        url: config.coreApiUrl,
+        body: transcriptPageMetaQuery,
+        variables: params
+      }),
+      transformResponse(response: TranscriptPageMetaQueryResult) {
+        const {
+          transcript: { stable_id }
+        } = response;
+
+        const title = `Transcript: ${stable_id} — Ensembl`;
+
+        return {
+          title
+        };
+      }
+    }),
     defaultEntityViewerTranscript: builder.query<
       DefaultEntityViewerTranscriptQueryResult,
       TranscriptQueryParams
@@ -196,6 +226,16 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
       query: (params) => ({
         url: config.coreApiUrl,
         body: defaultTranscriptQuery,
+        variables: params
+      })
+    }),
+    transcriptExternalReferences: builder.query<
+      TranscriptExternalReferencesQueryResult,
+      TranscriptQueryParams
+    >({
+      query: (params) => ({
+        url: config.coreApiUrl,
+        body: transcriptExternalReferencesQuery,
         variables: params
       })
     }),
@@ -340,7 +380,9 @@ export const {
   useGeneForSequenceDownloadQuery,
   useProteinDomainsQuery,
   useEvGeneHomologyQuery,
+  useTranscriptPageMetaQuery,
   useDefaultEntityViewerTranscriptQuery,
+  useTranscriptExternalReferencesQuery,
   useVariantPageMetaQuery,
   useDefaultEntityViewerVariantQuery,
   useVariantStudyPopulationsQuery,
@@ -352,6 +394,7 @@ export const {
 
 export const {
   genePageMeta: fetchGenePageMeta,
+  transcriptPageMeta: fetchTranscriptPageMeta,
   variantPageMeta: fetchVariantPageMeta,
   defaultEntityViewerVariant: fetchDefaultEntityViewerVariant
 } = entityViewerThoasSlice.endpoints;

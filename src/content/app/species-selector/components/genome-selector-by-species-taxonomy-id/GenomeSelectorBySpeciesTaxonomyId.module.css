@@ -2,17 +2,12 @@
   height: 100%;
   display: grid;
   grid-template-rows: auto 1fr;
-  grid-template-columns: 60px 1fr;
-  grid-template-areas:
-    "top top"
-    ". table";
-  row-gap: 30px;
+  row-gap: 10px;
   padding-left: var(--double-standard-gutter);
 }
 
 .top {
   display: grid;
-  grid-area: top;
   align-items: center;
   justify-self: start;
   grid-template-columns: [species-image] 60px [genomes-count] auto [add-button] max-content [close-button] auto [filter] max-content;
@@ -51,11 +46,9 @@
 }
 
 .loader {
-  grid-area: table;  
+  justify-self: center;
 }
 
-.tableContainer {
-  grid-area: table;
-  overflow: auto;
-  padding-bottom: var(--global-padding-bottom);
+.downloadButton {
+  margin-left: var(--standard-gutter);
 }

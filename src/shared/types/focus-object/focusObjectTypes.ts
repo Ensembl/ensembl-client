@@ -22,7 +22,7 @@ export type FocusObjectLocation = {
   start: number;
 };
 
-export type FocusObjectType = 'gene' | 'location' | 'variant';
+export type FocusObjectType = 'gene' | 'transcript' | 'location' | 'variant';
 
 type BasicFocusObject = {
   object_id: string;
@@ -41,6 +41,14 @@ export type FocusGene = BasicFocusObject & {
   visibleTranscriptIds: string[] | null; // null means that chrome doesn't have an opinion on which transcripts should be visible in the genome browser
 };
 
+export type FocusTranscript = BasicFocusObject & {
+  type: 'transcript';
+  stable_id: string;
+  versioned_stable_id: string;
+  bio_type: string;
+  strand: Strand;
+};
+
 export type FocusLocation = BasicFocusObject & {
   type: 'location';
 };
@@ -50,7 +58,11 @@ export type FocusVariant = BasicFocusObject & {
   variant_id: string; // to store the variant id as it is read from the url; this field will likely change when we change what a variant id is
 };
 
-export type FocusObject = FocusGene | FocusLocation | FocusVariant;
+export type FocusObject =
+  | FocusGene
+  | FocusTranscript
+  | FocusLocation
+  | FocusVariant;
 
 export type FocusObjectResponse = FocusGene;
 
