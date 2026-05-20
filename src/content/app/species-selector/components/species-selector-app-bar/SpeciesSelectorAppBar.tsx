@@ -21,7 +21,6 @@ import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import { getGeneQuery } from 'src/content/app/species-selector/state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSelectors';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -29,7 +28,6 @@ import { HelpPopupButton } from 'src/shared/components/help-popup';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
 import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
-import SearchButton from 'src/shared/components/search-button/SearchButton';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
@@ -71,36 +69,19 @@ export const SpeciesSelectorAppBar = () => {
 };
 
 const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
-  const storedGeneSearchQuery = useAppSelector(getGeneQuery);
   const navigate = useNavigate();
   const location = useLocation();
   const inSearchMode = isInSearchMode(location.pathname);
-
-  const onSearchOpen = () => {
-    // open gene search by default
-    navigate(
-      urlFor.speciesSelectorFeatureSearch('gene', storedGeneSearchQuery)
-    );
-  };
 
   const onSearchClose = () => {
     navigate(-1);
   };
 
-  const searchModeButton = !inSearchMode ? (
-    <SearchButton
-      onClick={onSearchOpen}
-      label="Find genes, transcripts or variants"
-    />
-  ) : (
-    <CloseButtonWithLabel onClick={onSearchClose} />
-  );
-
   return (
     <div className={styles.grid}>
       <SelectedSpeciesList selectedSpecies={props.selectedSpecies} />
       <div className={styles.aside}>
-        {searchModeButton}
+        {inSearchMode && <CloseButtonWithLabel onClick={onSearchClose} />}
         {!inSearchMode && (
           <span className={styles.selectTabMessage}>
             Select a tab to see a Species home page

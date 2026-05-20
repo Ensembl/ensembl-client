@@ -87,10 +87,6 @@
 }
 
 .featureSearchLink {
-  color: var(--color-grey);
-  text-decoration: none;
-}
-
-.featureSearchLink:hover {
   color: var(--color-blue);
+  text-decoration: none;
 }
