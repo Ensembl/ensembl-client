@@ -89,10 +89,6 @@ export const FeatureSearchResults = (props: {
     searchResults.matches
   );
 
-  if (!groupedSearchMatches.length) {
-    return <NoResults featureSearchMode={featureSearchMode} />;
-  }
-
   const isGeneSearchMode = featureSearchMode === 'gene';
   const capitalizedFeatureSearchMode =
     featureSearchMode.charAt(0).toUpperCase() + featureSearchMode.slice(1);
