@@ -58,13 +58,13 @@
   vertical-align: top;
 }
 
-.speciesName [data-part='common-name'],
-.speciesName [data-part='scientific-name'],
-.speciesName [data-part='assembly-id'] {
+.speciesName [data-part="common-name"],
+.speciesName [data-part="scientific-name"],
+.speciesName [data-part="assembly-id"] {
   font-weight: normal;
 }
 
-.speciesName [data-part='assembly-name'] {
+.speciesName [data-part="assembly-name"] {
   font-size: 11px;
   font-weight: var(--font-weight-light);
 }
@@ -102,25 +102,4 @@
 
 .tooltip {
   --pointer-box-padding: 12px 20px;
-}
-
-.tooltipContent {
-  font-weight: var(--font-weight-light);
-  width: 225px;
-}
-
-.tooltipContent > div:not(:last-child) {
-  margin-bottom: 4px;
-}
-
-.tooltipContent > div:last-child {
-  margin-top: 28px;
-}
-
-.withExtraSpaceRight {
-  margin-right: 0.6ch;
-}
-
-.strong {
-  font-weight: var(--font-weight-bold);
 }

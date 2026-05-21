@@ -17,8 +17,8 @@
 import config from 'config';
 import { gql } from 'graphql-request';
 
-import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
+import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
