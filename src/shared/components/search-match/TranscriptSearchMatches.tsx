@@ -186,21 +186,7 @@ const Match = (props: MatchProps) => {
           onOutsideClick={hideTooltip}
           onClose={hideTooltip}
         >
-          <div className={styles.tooltipContent}>
-            <div>
-              <span className={styles.withExtraSpaceRight}>Gene</span>
-              <span className={styles.strong}>
-                {match.gene.name ?? match.gene.stable_id}
-              </span>
-            </div>
-            <div>
-              <ViewInApp
-                theme="dark"
-                links={links}
-                onAnyAppClick={onAppClick}
-              />
-            </div>
-          </div>
+          <ViewInApp theme="dark" links={links} onAnyAppClick={onAppClick} />
         </PointerBox>
       )}
     </>

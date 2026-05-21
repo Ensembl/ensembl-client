@@ -83,7 +83,7 @@ const SidebarDefault = (props: Props) => {
       <SynonymsSection gene={gene} />
       <AttributesSection gene={gene} />
       <SearchButtonSection
-        genomeId={genomeIdForUrl as string}
+        genomeId={props.genomeId}
         transcriptId={props.transcriptId}
       />
     </>

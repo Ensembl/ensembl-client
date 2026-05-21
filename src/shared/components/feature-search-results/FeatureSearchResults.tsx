@@ -255,15 +255,7 @@ const TranscriptRecord = (props: {
           position={PointerBoxPosition.RIGHT_TOP}
           onOutsideClick={handleClick}
         >
-          <div className={styles.tooltipContent}>
-            <div>
-              <span className={styles.withExtraSpaceRight}>Gene</span>
-              <span className={styles.strong}>
-                {match.gene.name ?? match.gene.stable_id}
-              </span>
-            </div>
-            <ViewInApp theme="dark" links={links} />
-          </div>
+          <ViewInApp theme="dark" links={links} />
         </PointerBox>
       )}
     </>

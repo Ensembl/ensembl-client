@@ -52,11 +52,6 @@ export type TranscriptSearchMatch = {
   unversioned_stable_id: string;
   symbol: string | null;
   genome_id: string;
-  gene: {
-    stable_id: string;
-    unversioned_stable_id: string;
-    name: string | null;
-  };
 };
 
 export type SearchMatch =

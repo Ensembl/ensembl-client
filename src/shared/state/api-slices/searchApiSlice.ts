@@ -40,10 +40,6 @@ type TranscriptSearchMatchResponse = {
   stable_id?: string | null;
   symbol?: string | null;
   genome_id?: string | null;
-  gene?: {
-    stable_id?: string | null;
-    name?: string | null;
-  } | null;
 };
 
 const transcriptSearchQuery = gql`
@@ -70,10 +66,6 @@ const transcriptSearchQuery = gql`
         stable_id
         symbol
         genome_id
-        gene {
-          stable_id
-          name
-        }
       }
     }
   }
@@ -103,12 +95,12 @@ const normalizeTranscriptSearchResults = (
   }
 
   const matches = (transcriptSearch.matches ?? []).flatMap((match) => {
-    const { gene, stable_id: stableId } = match;
+    const { stable_id: stableId } = match;
     const genomeId =
       match.genome_id ??
       (params.genome_ids.length === 1 ? params.genome_ids[0] : undefined);
 
-    if (!stableId || !genomeId || !gene?.stable_id) {
+    if (!stableId || !genomeId) {
       return [];
     }
 
@@ -118,12 +110,7 @@ const normalizeTranscriptSearchResults = (
         stable_id: stableId,
         unversioned_stable_id: getUnversionedStableId(stableId),
         symbol: match.symbol ?? null,
-        genome_id: genomeId,
-        gene: {
-          stable_id: gene.stable_id,
-          unversioned_stable_id: getUnversionedStableId(gene.stable_id),
-          name: gene.name ?? null
-        }
+        genome_id: genomeId
       }
     ];
   });
