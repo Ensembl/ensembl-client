@@ -38,6 +38,7 @@ type TranscriptSearchQueryResponse = {
 
 type TranscriptSearchMatchResponse = {
   stable_id?: string | null;
+  unversioned_stable_id?: string | null;
   symbol?: string | null;
   genome_id?: string | null;
 };
@@ -64,6 +65,7 @@ const transcriptSearchQuery = gql`
       }
       matches {
         stable_id
+        unversioned_stable_id
         symbol
         genome_id
       }
@@ -71,36 +73,20 @@ const transcriptSearchQuery = gql`
   }
 `;
 
-const buildEmptySearchResults = (params: SearchParams): SearchResults => ({
-  meta: {
-    total_hits: 0,
-    page: params.page,
-    per_page: params.per_page
-  },
-  matches: []
-});
-
-const getUnversionedStableId = (stableId: string) => {
-  return stableId.split('.')[0];
-};
-
-const normalizeTranscriptSearchResults = (
+const parseTranscriptSearchResults = (
   response: TranscriptSearchQueryResponse,
   params: SearchParams
 ): SearchResults => {
   const transcriptSearch = response.transcript_search;
 
-  if (!transcriptSearch) {
-    return buildEmptySearchResults(params);
-  }
-
-  const matches = (transcriptSearch.matches ?? []).flatMap((match) => {
-    const { stable_id: stableId } = match;
+  const matches = (transcriptSearch?.matches ?? []).flatMap((match) => {
+    const { stable_id: stableId, unversioned_stable_id: unversionedStableId } =
+      match;
     const genomeId =
       match.genome_id ??
       (params.genome_ids.length === 1 ? params.genome_ids[0] : undefined);
 
-    if (!stableId || !genomeId) {
+    if (!stableId || !unversionedStableId || !genomeId) {
       return [];
     }
 
@@ -108,7 +94,7 @@ const normalizeTranscriptSearchResults = (
       {
         type: 'Transcript' as const,
         stable_id: stableId,
-        unversioned_stable_id: getUnversionedStableId(stableId),
+        unversioned_stable_id: unversionedStableId,
         symbol: match.symbol ?? null,
         genome_id: genomeId
       }
@@ -116,7 +102,7 @@ const normalizeTranscriptSearchResults = (
   });
 
   return {
-    meta: transcriptSearch.meta ?? {
+    meta: transcriptSearch?.meta ?? {
       total_hits: matches.length,
       page: params.page,
       per_page: params.per_page
@@ -155,7 +141,16 @@ const transcriptSearchApiSlice = graphqlApiSlice.injectEndpoints({
         const query = params.query.trim();
 
         if (!params.genome_ids.length || !query) {
-          return { data: buildEmptySearchResults(params) };
+          return {
+            data: {
+              meta: {
+                total_hits: 0,
+                page: params.page,
+                per_page: params.per_page
+              },
+              matches: []
+            }
+          };
         }
 
         const { data, error } = await baseQuery({
@@ -174,7 +169,7 @@ const transcriptSearchApiSlice = graphqlApiSlice.injectEndpoints({
         }
 
         return {
-          data: normalizeTranscriptSearchResults(
+          data: parseTranscriptSearchResults(
             data as TranscriptSearchQueryResponse,
             params
           )

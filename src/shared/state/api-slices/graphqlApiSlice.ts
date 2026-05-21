@@ -15,7 +15,7 @@
  */
 
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { request, ClientError } from 'graphql-request';
+import { request, ClientError, type Variables } from 'graphql-request';
 
 const graphqlBaseQuery = async ({
   body,
@@ -24,7 +24,7 @@ const graphqlBaseQuery = async ({
 }: {
   url: string;
   body: string;
-  variables?: Record<string, unknown>;
+  variables?: Variables;
 }) => {
   try {
     const result = await request(url, body, variables);
