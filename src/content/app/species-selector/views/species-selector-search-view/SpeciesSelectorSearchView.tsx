@@ -90,27 +90,31 @@ const SpeciesSelectorSearchView = () => {
     [committedSpecies]
   );
 
-  const queryFromParams = searchParams.get('query') || '';
+  const queryFromParams = searchParams.get('query');
+  const query = queryFromParams ?? featureQueries[activeSearchMode];
   const isGeneSearchMode = activeSearchMode === 'gene';
   const isTranscriptSearchMode = activeSearchMode === 'transcript';
   const isVariantSearchMode = activeSearchMode === 'variant';
 
   useEffect(() => {
-    if (isGeneSearchMode) {
-      dispatch(setGeneQuery(queryFromParams));
-    } else if (isTranscriptSearchMode) {
-      dispatch(setTranscriptQuery(queryFromParams));
-    } else if (isVariantSearchMode) {
-      dispatch(setVariantQuery(queryFromParams));
+    if (queryFromParams !== null) {
+      if (isGeneSearchMode) {
+        dispatch(setGeneQuery(queryFromParams));
+      } else if (isTranscriptSearchMode) {
+        dispatch(setTranscriptQuery(queryFromParams));
+      } else if (isVariantSearchMode) {
+        dispatch(setVariantQuery(queryFromParams));
+      }
     }
 
-    if (!queryFromParams) {
+    // no query in param or state, don't trigger search
+    if (!query) {
       return;
     }
 
     const searchParams = {
       genome_ids: genomeIds,
-      query: queryFromParams,
+      query,
       page: 1,
       per_page: 50
     };
@@ -127,6 +131,7 @@ const SpeciesSelectorSearchView = () => {
       triggerVariantSearch(searchParams);
     }
   }, [
+    query,
     queryFromParams,
     dispatch,
     isGeneSearchMode,
@@ -150,10 +155,13 @@ const SpeciesSelectorSearchView = () => {
   const onSearchClear = () => {
     if (isGeneSearchMode) {
       geneSearchResults.reset();
+      dispatch(setGeneQuery(''));
     } else if (isTranscriptSearchMode) {
       transcriptSearchResults.reset();
+      dispatch(setTranscriptQuery(''));
     } else if (isVariantSearchMode) {
       variantSearchResults.reset();
+      dispatch(setVariantQuery(''));
     }
     searchParams.delete('query');
     setSearchParams(searchParams, { replace: true });
@@ -183,8 +191,9 @@ const SpeciesSelectorSearchView = () => {
         {isFeatureSearchMode(activeSearchMode) && (
           <>
             <FeatureSearchForm
+              key={activeSearchMode}
               activeFeatureSearchMode={activeSearchMode as FeatureSearchMode}
-              query={queryFromParams}
+              query={query}
               onSearchSubmit={onFeatureSearchSubmit}
               onClear={onSearchClear}
             />
