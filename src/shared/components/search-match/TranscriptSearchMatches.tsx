@@ -23,16 +23,11 @@ import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/t
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import analyticsTracking from 'src/services/analytics-service';
-
 import PointerBox, {
   Position as PointerBoxPosition
 } from 'src/shared/components/pointer-box/PointerBox';
 import TextButton from 'src/shared/components/text-button/TextButton';
-import {
-  ViewInApp,
-  type AppName as AppNameForViewInApp
-} from 'src/shared/components/view-in-app/ViewInApp';
+import { ViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { TranscriptSearchMatch as TranscriptSearchMatchType } from 'src/shared/types/search-api/search-match';
@@ -58,7 +53,7 @@ const TranscriptSearchMatches = (props: TranscriptSearchMatchesProps) => {
 
   return (
     <div className={styles.searchMatches}>
-      {matches.map((match, index) => {
+      {matches.map((match) => {
         const transcriptMatch = match as TranscriptSearchMatchType;
         const key = transcriptMatch.stable_id;
 
@@ -69,7 +64,6 @@ const TranscriptSearchMatches = (props: TranscriptSearchMatchesProps) => {
             app={app}
             mode={mode}
             genomeIdForUrl={genomeIdForUrl}
-            position={index + 1}
             onMatchNavigation={onMatchNavigation}
           />
         );
@@ -82,13 +76,12 @@ type MatchProps = {
   match: TranscriptSearchMatchType;
   app: FeatureSearchAppName;
   mode: FeatureSearchMatchPosition;
-  position: number;
   genomeIdForUrl?: string;
   onMatchNavigation?: () => void;
 };
 
 const Match = (props: MatchProps) => {
-  const { app, mode, position, match, genomeIdForUrl } = props;
+  const { app, mode, match, genomeIdForUrl } = props;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
   const dispatch = useAppDispatch();
   const [anchorElement, setAnchorElement] = useState<HTMLSpanElement | null>(
@@ -97,28 +90,11 @@ const Match = (props: MatchProps) => {
 
   const onMatchClick = () => {
     setShouldShowTooltip(!shouldShowTooltip);
-
-    if (app === 'entityViewer') {
-      analyticsTracking.trackEvent({
-        category: `${app}_${mode}_search`,
-        action: 'select_link',
-        label: match.stable_id,
-        value: position
-      });
-    }
   };
 
-  const onAppClick = (selectedAppName?: AppNameForViewInApp) => {
+  const onAppClick = () => {
     if (app === 'genomeBrowser') {
       dispatch(changeHighlightedTrackId(''));
-    }
-
-    if (app === 'entityViewer') {
-      analyticsTracking.trackEvent({
-        category: `${app}_${mode}_search`,
-        action: 'select_app',
-        label: selectedAppName
-      });
     }
 
     setShouldShowTooltip(!shouldShowTooltip);

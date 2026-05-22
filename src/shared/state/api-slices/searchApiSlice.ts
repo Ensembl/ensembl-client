@@ -134,7 +134,7 @@ const searchApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
-const transcriptSearchApiSlice = graphqlApiSlice.injectEndpoints({
+const graphqlSearchApiSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     searchTranscripts: builder.query<SearchResults, SearchParams>({
       queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
@@ -181,4 +181,4 @@ const transcriptSearchApiSlice = graphqlApiSlice.injectEndpoints({
 
 export const { useLazySearchGenesQuery, useLazySearchVariantsQuery } =
   searchApiSlice;
-export const { useLazySearchTranscriptsQuery } = transcriptSearchApiSlice;
+export const { useLazySearchTranscriptsQuery } = graphqlSearchApiSlice;
