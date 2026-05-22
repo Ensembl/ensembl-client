@@ -25,8 +25,8 @@ import styles from './TranscriptViewTabs.module.css';
 
 const tabsData: Array<{ title: string; view: ViewName }> = [
   { title: 'Transcript', view: defaultView },
-  { title: 'Transcript function', view: 'protein' },
-  { title: 'Exons', view: 'exons' }
+  { title: 'Exons', view: 'exons' },
+  { title: 'Transcript function', view: 'protein' }
 ];
 
 const TranscriptViewTabs = ({

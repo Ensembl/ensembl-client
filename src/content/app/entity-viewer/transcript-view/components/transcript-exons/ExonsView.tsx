@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
-import useExonsData from './useExonsData';
+import { use, Suspense } from 'react';
+
+import useExonsData from './useExonsDataReducer';
 
 import ExonsTable from './exons-table/ExonsTable';
-import ExonsContinuous from './exons-continuous/ExonsContinous';
+// FIXME: delete ExonsContinuous module
+// import ExonsContinuous from './exons-continuous/ExonsContinous';
 import Panel from 'src/shared/components/panel/Panel';
-import Tabs from 'src/shared/components/tabs/Tabs';
 
 import styles from './ExonsView.module.css';
-
-// const HUMAN_GENOME = 'a7335667-93e7-11ec-a39d-005056b38ce3';
-// const EXAMPLE_TRANSCRIPT_ID = 'ENST00000589042.5'; // One of the main transcripts of TTN, 109,224bp long
-
-const subviews = ['tabular', 'continuous'] as const;
-const defaultSubview = subviews[0];
-
-type Subview = (typeof subviews)[number];
 
 const ExonsView = ({
   genomeId,
@@ -39,84 +32,54 @@ const ExonsView = ({
   genomeId: string;
   transcriptId: string;
 }) => {
-  const [presentation, setPresentation] = useState<Subview>(defaultSubview);
-  const { data } = useExonsData({
+  const exonsDataPromise = useExonsData({
     genomeId,
     transcriptId
   });
 
-  if (!data) {
-    return null; // FIXME: show spinner
+  if (!exonsDataPromise) {
+    return null;
   }
 
-  const onPresentationChange = (subview: Subview) => {
-    setPresentation(subview);
-  };
-
   const panelClasses = {
+    panel: styles.panel,
     body: styles.panelBody,
     header: styles.panelHead
   };
 
   return (
-    <Panel
-      header={
-        <PanelHeader
-          currentSubview={presentation}
-          onSubviewChange={onPresentationChange}
-        />
-      }
-      classNames={panelClasses}
-    >
-      {presentation === 'tabular' && (
-        <ExonsTable exons={data.exons} exonsAndIntrons={data.exonsAndIntrons} />
-      )}
+    <Panel header={<PanelHeader />} classNames={panelClasses}>
+      <Suspense fallback={<p>Downloading data...</p>}>
+        <PanelContent promise={exonsDataPromise} />
+      </Suspense>
+    </Panel>
+  );
+};
+
+const PanelContent = ({
+  promise
+}: {
+  promise: NonNullable<ReturnType<typeof useExonsData>>;
+}) => {
+  const { data } = use(promise);
+
+  if (data) {
+    return <ExonsTable data={data} />;
+  }
+};
+
+const PanelHeader = () => {
+  return <span className={styles.panelHeadTabActive}>Sequences</span>;
+};
+
+/**
       {presentation === 'continuous' && (
         <ExonsContinuous
           exons={data.exons}
           introns={data.introns}
           exonsAndIntrons={data.exonsAndIntrons}
         />
-      )}
-    </Panel>
-  );
-};
-
-const tabsData: Array<{ title: string; subview: Subview }> = [
-  { title: 'Tabular view', subview: 'tabular' },
-  { title: 'Continuous view', subview: 'continuous' }
-];
-
-const PanelHeader = ({
-  currentSubview,
-  onSubviewChange
-}: {
-  currentSubview: Subview;
-  onSubviewChange: (subview: Subview) => void;
-}) => {
-  const selectedTab = tabsData.find(
-    (tab) => tab.subview === currentSubview
-  ) as (typeof tabsData)[number];
-
-  const onTabChange = (selectedTab: string) => {
-    const selectedSubview = tabsData.find(
-      (tab) => tab.title === selectedTab
-    ) as (typeof tabsData)[number];
-    onSubviewChange(selectedSubview.subview);
-  };
-
-  //         classNames={tabClassNames}
-
-  return (
-    <Tabs
-      tabs={tabsData}
-      selectedTab={selectedTab.title}
-      onTabChange={onTabChange}
-      classNames={{
-        tabsContainer: styles.tabsContainer
-      }}
-    />
-  );
-};
+      )} 
+ */
 
 export default ExonsView;

@@ -14,39 +14,73 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
+import classNames from 'classnames';
+
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { collapseSequence } from '../exonHelpers';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import DownloadButton from 'src/shared/components/download-button/DownloadButton';
+import TextButton from 'src/shared/components/text-button/TextButton';
 
 import type {
+  Data,
   EnrichedExon as Exon,
   EnrichedIntron as Intron
-} from 'src/content/app/entity-viewer/transcript-view/components/transcript-exons/useExonsData';
+} from 'src/content/app/entity-viewer/transcript-view/components/transcript-exons/useExonsDataReducer';
 
 import styles from './ExonsTable.module.css';
 
 type Props = {
-  exons: Exon[];
-  exonsAndIntrons: Array<Exon | Intron>;
+  data: Data;
 };
 
-const ExonsTable = (props: Props) => {
+const ExonsTable = ({ data }: Props) => {
+  const [shouldDisplayIntrons, setShouldDisplayIntrons] = useState(true);
+  const [shouldCollapseIntrons, setShouldCollapseIntrons] = useState(false);
+  const [shouldCollapseAll, setShouldCollapseAll] = useState(false);
+
+  const onToggleIntrons = () => {
+    setShouldDisplayIntrons(!shouldDisplayIntrons);
+  };
+
+  const onToggleIntronsCollapse = () => {
+    setShouldCollapseIntrons(!shouldCollapseIntrons);
+  };
+
+  const onToggleAllCollapse = () => {
+    setShouldCollapseAll(!shouldCollapseAll);
+  };
+
   const onDownload = () => {
     alert('Table will be downloaded as a csv file');
   };
 
+  // add total exon count
+
+  // in a collapsed state, the number of dots in the middle of a sequence is 10
+
   return (
     <div className={styles.container}>
       <div className={styles.topSection}>
-        <DownloadButton onClick={onDownload} />
+        <Controls
+          shouldDisplayIntrons={shouldDisplayIntrons}
+          shouldCollapseIntrons={shouldCollapseIntrons}
+          shouldCollapseAll={shouldCollapseAll}
+          onIntronsDisplayChange={onToggleIntrons}
+          onToggleIntronsCollapse={onToggleIntronsCollapse}
+          onToggleAllCollapse={onToggleAllCollapse}
+          onDownload={onDownload}
+        />
       </div>
       <div className={styles.tableWrapper}>
         <Table stickyHeader={true} className={styles.table}>
           <thead>
             <tr>
               <ColumnHead>No.</ColumnHead>
-              <ColumnHead>Name</ColumnHead>
+              <ColumnHead>Exon/Intron</ColumnHead>
               <ColumnHead>Start</ColumnHead>
               <ColumnHead>End</ColumnHead>
               <ColumnHead>Start phase</ColumnHead>
@@ -56,12 +90,25 @@ const ExonsTable = (props: Props) => {
             </tr>
           </thead>
           <tbody>
-            {props.exonsAndIntrons.map((feature) => (
+            <FlankingSequenceRow
+              title={"5' upstream sequence"}
+              sequence={data.upstreamFlankingSequence}
+              position="start"
+            />
+            {data.exonsAndIntrons.map((feature) => (
               <FeatureRow
                 feature={feature}
                 key={feature.type === 'exon' ? feature.stable_id : feature.id}
+                shouldDisplayIntrons={shouldDisplayIntrons}
+                shouldCollapseIntrons={shouldCollapseIntrons}
+                shouldCollapseAll={shouldCollapseAll}
               />
             ))}
+            <FlankingSequenceRow
+              title={"3' downstream sequence"}
+              sequence={data.downstreamFlankingSequence}
+              position="end"
+            />
           </tbody>
         </Table>
       </div>
@@ -69,15 +116,110 @@ const ExonsTable = (props: Props) => {
   );
 };
 
-const FeatureRow = ({ feature }: { feature: Exon | Intron }) => {
+const Controls = ({
+  shouldDisplayIntrons,
+  shouldCollapseIntrons,
+  shouldCollapseAll,
+  onToggleIntronsCollapse,
+  onToggleAllCollapse,
+  onIntronsDisplayChange,
+  onDownload
+}: {
+  shouldDisplayIntrons: boolean;
+  shouldCollapseIntrons: boolean;
+  shouldCollapseAll: boolean;
+  onIntronsDisplayChange: () => void;
+  onToggleIntronsCollapse: () => void;
+  onToggleAllCollapse: () => void;
+  onDownload: () => void;
+}) => {
+  return (
+    <div>
+      <span>Sequence</span>
+      <CheckboxWithLabel
+        checked={shouldDisplayIntrons}
+        label="Introns"
+        onChange={() => onIntronsDisplayChange()}
+      />
+      <TextButton
+        onClick={onToggleIntronsCollapse}
+        disabled={shouldCollapseAll}
+      >
+        {shouldCollapseIntrons ? 'Expand' : 'Collapse'}
+      </TextButton>
+      <TextButton onClick={onToggleAllCollapse}>
+        {shouldCollapseAll ? 'Expand all' : 'Collapse all'}
+      </TextButton>
+      <DownloadButton onClick={onDownload} />
+    </div>
+  );
+};
+
+const FlankingSequenceRow = ({
+  title,
+  sequence,
+  position
+}: {
+  title: string;
+  sequence: string;
+  position: 'start' | 'end';
+}) => {
+  sequence = position === 'start' ? `...${sequence}` : `${sequence}...`;
+
+  return (
+    <tr>
+      <td>{/* exon number column */}</td>
+      <td>{title}</td>
+      <td>{/* genomic start column */}</td>
+      <td>{/* genomic end column */}</td>
+      <td>{/* start phase column */}</td>
+      <td>{/* end phase column */}</td>
+      <td>{/* exon/intron length column */}</td>
+      <td>
+        <span className={classNames(styles.sequence, styles.light)}>
+          {sequence}
+        </span>
+      </td>
+    </tr>
+  );
+};
+
+const FeatureRow = ({
+  feature,
+  shouldDisplayIntrons,
+  shouldCollapseIntrons,
+  shouldCollapseAll
+}: {
+  feature: Exon | Intron;
+  shouldDisplayIntrons: boolean;
+  shouldCollapseIntrons: boolean;
+  shouldCollapseAll: boolean;
+}) => {
   if (feature.type === 'exon') {
-    return <ExonRow exon={feature} />;
+    return (
+      <ExonRow exon={feature} shouldCollapseSequence={shouldCollapseAll} />
+    );
   } else {
-    return <IntronRow intron={feature} />;
+    return shouldDisplayIntrons ? (
+      <IntronRow
+        intron={feature}
+        shouldCollapseSequence={shouldCollapseIntrons || shouldCollapseAll}
+      />
+    ) : null;
   }
 };
 
-const ExonRow = ({ exon }: { exon: Exon }) => {
+const ExonRow = ({
+  exon,
+  shouldCollapseSequence
+}: {
+  exon: Exon;
+  shouldCollapseSequence: boolean;
+}) => {
+  const sequence = shouldCollapseSequence
+    ? collapseSequence(exon.sequence)
+    : exon.sequence;
+
   return (
     <tr>
       <td>{exon.index}</td>
@@ -88,13 +230,25 @@ const ExonRow = ({ exon }: { exon: Exon }) => {
       <td>{exon.endPhase !== -1 ? exon.endPhase : '-'}</td>
       <td>{formatNumber(exon.length)}</td>
       <td>
-        <div className={styles.sequence}>{exon.sequence}</div>
+        <div className={classNames(styles.sequence, styles.light)}>
+          {sequence}
+        </div>
       </td>
     </tr>
   );
 };
 
-const IntronRow = ({ intron }: { intron: Intron }) => {
+const IntronRow = ({
+  intron,
+  shouldCollapseSequence
+}: {
+  intron: Intron;
+  shouldCollapseSequence: boolean;
+}) => {
+  const sequence = shouldCollapseSequence
+    ? collapseSequence(intron.sequence)
+    : intron.sequence;
+
   return (
     <tr>
       <td>{/* empty cell */}</td>
@@ -105,7 +259,7 @@ const IntronRow = ({ intron }: { intron: Intron }) => {
       <td>-</td>
       <td>{formatNumber(intron.length)}</td>
       <td>
-        <div className={styles.sequence}>{intron.sequence}</div>
+        <div className={styles.sequence}>{sequence}</div>
       </td>
     </tr>
   );

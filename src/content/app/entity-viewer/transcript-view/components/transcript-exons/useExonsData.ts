@@ -127,8 +127,6 @@ const prepareExonsData = ({
   const exons = transcript.spliced_exons;
   const enrichedExons: EnrichedExon[] = [];
 
-  // FIXME: add introns
-
   for (const exon of exons) {
     const enrichedExon: EnrichedExon = {
       type: 'exon',

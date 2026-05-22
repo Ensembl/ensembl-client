@@ -1,4 +1,4 @@
-.panelBody {
+.panel {
   color: var(--color-black);
 }
 
@@ -7,7 +7,10 @@
   align-items: center;
 }
 
-/* FIXME: instead of trying to unset the height of the tabs component, the tabs component should be updated to not have default height */
-.tabsContainer {
-  height: auto;
+.panelHead, .panelBody {
+  padding: 0 var(--standard-gutter);
+}
+
+.panelHeadTabActive {
+  font-weight: var(--font-weight-bold);
 }

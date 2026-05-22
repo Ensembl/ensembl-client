@@ -27,7 +27,11 @@
 }
 
 .sequence {
-  width: 80ch;
+  width: 60ch;
   word-break: break-all;
   font-family: var(--font-family-monospace);
+}
+
+.light {
+  font-weight: var(--font-weight-light);
 }

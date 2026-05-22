@@ -49,4 +49,6 @@ const refgetApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
+export const { refgetSequence: fetchRefgetSequence } = refgetApiSlice.endpoints;
+
 export const { useRefgetSequenceQuery } = refgetApiSlice;
