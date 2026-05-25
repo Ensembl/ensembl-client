@@ -17,8 +17,10 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 
+import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { collapseSequence } from '../exonHelpers';
+import { prepareExportTSV } from './exportExonsTable';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
@@ -55,7 +57,11 @@ const ExonsTable = ({ data }: Props) => {
   };
 
   const onDownload = () => {
-    alert('Table will be downloaded as a csv file');
+    const tsvString = prepareExportTSV({ data });
+    const fileName = `exons-table.tsv`;
+    downloadTextAsFile(tsvString, fileName, {
+      type: 'text/tab-separated-values'
+    });
   };
 
   // add total exon count
@@ -134,19 +140,21 @@ const Controls = ({
   onDownload: () => void;
 }) => {
   return (
-    <div>
-      <span>Sequence</span>
-      <CheckboxWithLabel
-        checked={shouldDisplayIntrons}
-        label="Introns"
-        onChange={() => onIntronsDisplayChange()}
-      />
-      <TextButton
-        onClick={onToggleIntronsCollapse}
-        disabled={shouldCollapseAll}
-      >
-        {shouldCollapseIntrons ? 'Expand' : 'Collapse'}
-      </TextButton>
+    <div className={styles.tableControls}>
+      <div className={styles.tableControlsLeft}>
+        <span className={styles.light}>Sequence</span>
+        <CheckboxWithLabel
+          checked={shouldDisplayIntrons}
+          label="Introns"
+          onChange={() => onIntronsDisplayChange()}
+        />
+        <TextButton
+          onClick={onToggleIntronsCollapse}
+          disabled={!shouldDisplayIntrons || shouldCollapseAll}
+        >
+          {shouldCollapseIntrons ? 'Expand' : 'Collapse'}
+        </TextButton>
+      </div>
       <TextButton onClick={onToggleAllCollapse}>
         {shouldCollapseAll ? 'Expand all' : 'Collapse all'}
       </TextButton>
@@ -230,9 +238,7 @@ const ExonRow = ({
       <td>{exon.endPhase !== -1 ? exon.endPhase : '-'}</td>
       <td>{formatNumber(exon.length)}</td>
       <td>
-        <div className={classNames(styles.sequence, styles.light)}>
-          {sequence}
-        </div>
+        <div className={styles.sequence}>{sequence}</div>
       </td>
     </tr>
   );
@@ -259,7 +265,9 @@ const IntronRow = ({
       <td>-</td>
       <td>{formatNumber(intron.length)}</td>
       <td>
-        <div className={styles.sequence}>{sequence}</div>
+        <div className={classNames(styles.sequence, styles.light)}>
+          {sequence}
+        </div>
       </td>
     </tr>
   );

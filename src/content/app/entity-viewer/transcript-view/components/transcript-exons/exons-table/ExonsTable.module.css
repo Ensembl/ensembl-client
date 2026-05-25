@@ -3,13 +3,29 @@
   height: 100%;
   display: grid;
   grid-template-rows: auto 1fr;
+  row-gap: 1rem;
   container-type: inline-size;
 }
 
 .topSection {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 1rem;
+}
+
+.tableControls {
+  --checkbox-label-line-height: 1;
+  --checkbox-margin-top: 0;
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto 5em auto;
+  column-gap: var(--double-standard-gutter);
+  line-height: 1;
+}
+
+.tableControlsLeft {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
 }
 
 .tableWrapper {
