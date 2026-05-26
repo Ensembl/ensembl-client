@@ -76,15 +76,9 @@
 .searchLinks {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   line-height: 1;
-  row-gap: 8px;
   column-gap: 30px;
   margin-left: 20px;
-}
-
-.activeSearchLink {
-  color: var(--color-black);
 }
 
 .featureSearchLink {

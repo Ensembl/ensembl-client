@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
@@ -40,20 +40,15 @@ export const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
 );
 
-const isInSearchMode = (pathname: string) => {
-  return (
-    pathname.includes('/search/gene') ||
-    pathname.includes('/search/transcript') ||
-    pathname.includes('/search/variant')
-  );
-};
-
-export const SpeciesSelectorAppBar = () => {
+export const SpeciesSelectorAppBar = (props: { isSearchMode?: boolean }) => {
   const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
 
   const mainContent =
     enabledCommittedSpecies.length > 0 ? (
-      <AppBarMainContent selectedSpecies={enabledCommittedSpecies} />
+      <AppBarMainContent
+        selectedSpecies={enabledCommittedSpecies}
+        isSearchMode={props.isSearchMode}
+      />
     ) : (
       <PlaceholderMessage />
     );
@@ -68,10 +63,11 @@ export const SpeciesSelectorAppBar = () => {
   );
 };
 
-const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
+const AppBarMainContent = (props: {
+  selectedSpecies: CommittedItem[];
+  isSearchMode?: boolean;
+}) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const inSearchMode = isInSearchMode(location.pathname);
 
   const onSearchClose = () => {
     navigate(-1);
@@ -79,10 +75,13 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
 
   return (
     <div className={styles.grid}>
-      <SelectedSpeciesList selectedSpecies={props.selectedSpecies} />
+      <SelectedSpeciesList
+        selectedSpecies={props.selectedSpecies}
+        isSearchMode={props.isSearchMode}
+      />
       <div className={styles.aside}>
-        {inSearchMode && <CloseButtonWithLabel onClick={onSearchClose} />}
-        {!inSearchMode && (
+        {props.isSearchMode && <CloseButtonWithLabel onClick={onSearchClose} />}
+        {!props.isSearchMode && (
           <span className={styles.selectTabMessage}>
             Select a tab to see a Species home page
           </span>
@@ -92,10 +91,11 @@ const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
   );
 };
 
-const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
+const SelectedSpeciesList = (props: {
+  selectedSpecies: CommittedItem[];
+  isSearchMode?: boolean;
+}) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const inSearchMode = isInSearchMode(location.pathname);
 
   const showSpeciesPage = (species: CommittedItem) => {
     const genomeIdForUrl = species.genome_tag ?? species.genome_id;
@@ -106,7 +106,7 @@ const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
     navigate(speciesPageUrl);
   };
 
-  const conditionalSpeciesProps = !inSearchMode
+  const conditionalSpeciesProps = !props.isSearchMode
     ? ({ theme: 'blue' } as const)
     : ({ theme: 'grey', disabled: true } as const);
 

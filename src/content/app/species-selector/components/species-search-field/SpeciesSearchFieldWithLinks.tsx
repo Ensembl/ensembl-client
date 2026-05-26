@@ -30,7 +30,7 @@ const SpeciesSearchFieldWithLinks = (props: Omit<Props, 'query' | 'label'>) => {
   return (
     <div className={styles.searchFieldWithLinks}>
       <div className={styles.searchLinks}>
-        <span className={styles.activeSearchLink}>Find a species</span>
+        <span>Find a species</span>
         {getFeatureSearchModes().map((mode) => {
           const { label } = getFeatureSearchLabelsByMode(mode);
 
