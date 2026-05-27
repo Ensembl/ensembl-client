@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Pick2, Pick3 } from 'ts-multipick';
+import { Pick3 } from 'ts-multipick';
 
 import { gql } from 'graphql-request';
 
@@ -26,6 +26,7 @@ import {
 import type { FullGene } from 'src/shared/types/core-api/gene';
 import type { Slice } from 'src/shared/types/core-api/slice';
 import type { Exon } from 'src/shared/types/core-api/exon';
+import type { Intron as FullIntron } from 'src/shared/types/core-api/intron';
 
 const geneFieldsFragment = gql`
   fragment geneFields on Gene {
@@ -129,15 +130,8 @@ type SplicedExon = DefaultEntityViewerTranscript['spliced_exons'][number] & {
   index: number;
   exon: Pick3<Exon, 'slice', 'location', 'start' | 'end' | 'length'>;
 };
-// FIXME: move intron type to core api types
-type Intron = {
-  index: number;
-  slice: Pick2<Slice, 'location', 'start' | 'end' | 'length'>;
-  relative_location: {
-    start: number;
-    end: number;
-  };
-};
+type Intron = Pick<FullIntron, 'index' | 'relative_location'> &
+  Pick3<FullIntron, 'slice', 'location', 'start' | 'end' | 'length'>;
 
 export type DefaultEntityViewerTranscriptQueryResult = {
   transcript: DefaultEntityViewerTranscript & {
