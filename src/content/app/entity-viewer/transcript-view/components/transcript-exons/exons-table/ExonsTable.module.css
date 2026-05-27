@@ -9,7 +9,7 @@
 
 .topSection {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 
 .tableControls {
@@ -46,6 +46,10 @@
   width: 60ch;
   word-break: break-all;
   font-family: var(--font-family-monospace);
+}
+
+.bold {
+  font-weight: var(--font-weight-bold);
 }
 
 .light {

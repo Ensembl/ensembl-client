@@ -20,6 +20,7 @@ import useExonsData from './useExonsData';
 
 import ExonsTable from './exons-table/ExonsTable';
 import Panel from 'src/shared/components/panel/Panel';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './ExonsView.module.css';
 
@@ -47,7 +48,7 @@ const ExonsView = ({
 
   return (
     <Panel header={<PanelHeader />} classNames={panelClasses}>
-      <Suspense fallback={<p>Downloading data...</p>}>
+      <Suspense fallback={<Loading />}>
         <PanelContent promise={exonsDataPromise} />
       </Suspense>
     </Panel>
@@ -70,14 +71,12 @@ const PanelHeader = () => {
   return <span className={styles.panelHeadTabActive}>Sequences</span>;
 };
 
-/**
-      {presentation === 'continuous' && (
-        <ExonsContinuous
-          exons={data.exons}
-          introns={data.introns}
-          exonsAndIntrons={data.exonsAndIntrons}
-        />
-      )} 
- */
+const Loading = () => {
+  return (
+    <div className={styles.loadingContainer}>
+      <CircleLoader />
+    </div>
+  );
+};
 
 export default ExonsView;

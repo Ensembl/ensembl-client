@@ -69,6 +69,10 @@ const ExonsTable = ({ data }: Props) => {
   return (
     <div className={styles.container}>
       <div className={styles.topSection}>
+        <div>
+          <span className={styles.bold}>{data.exons.length} </span>
+          exons
+        </div>
         <Controls
           shouldDisplayIntrons={shouldDisplayIntrons}
           shouldCollapseIntrons={shouldCollapseIntrons}
