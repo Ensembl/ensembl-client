@@ -68,8 +68,6 @@ const ExonsTable = ({ data }: Props) => {
     });
   };
 
-  // add total exon count
-
   return (
     <div className={styles.container}>
       <div className={styles.topSection}>
