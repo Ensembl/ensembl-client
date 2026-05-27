@@ -15,14 +15,14 @@
  */
 
 import classNames from 'classnames';
-import type { ButtonHTMLAttributes, ReactNode, RefObject } from 'react';
+import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 
 import styles from './TextButton.module.css';
 
 // same props as for a button; but children are required
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & {
   children: ReactNode;
-  ref?: RefObject<HTMLButtonElement>;
+  ref?: Ref<HTMLButtonElement>;
 };
 
 export const TextButton = (props: Props) => {

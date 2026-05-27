@@ -160,8 +160,8 @@ const Match = (props: MatchProps) => {
 
   return (
     <>
-      <div className={styles.searchMatch} onClick={onMatchClick}>
-        <TextButton className={styles.searchMatchButton}>
+      <div className={styles.searchMatch}>
+        <TextButton className={styles.searchMatchButton} onClick={onMatchClick}>
           {variant_name}
         </TextButton>
         <span className={searchMatchAnchorClass} ref={setAnchorElement} />

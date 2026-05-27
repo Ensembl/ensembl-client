@@ -30,32 +30,32 @@ type SearchParams = {
 };
 
 type TranscriptSearchQueryResponse = {
-  transcript_search?: {
-    meta?: SearchResults['meta'];
-    matches?: TranscriptSearchMatchResponse[];
+  transcript_search: {
+    meta: SearchResults['meta'];
+    matches: TranscriptSearchMatchResponse[];
   };
 };
 
 type TranscriptSearchMatchResponse = {
-  stable_id?: string | null;
-  unversioned_stable_id?: string | null;
-  symbol?: string | null;
-  genome_id?: string | null;
+  stable_id: string;
+  unversioned_stable_id: string;
+  symbol: string | null;
+  genome_id: string;
 };
 
 const transcriptSearchQuery = gql`
   query TranscriptSearch(
     $query: String!
-    $genomeIds: [String!]!
+    $genome_ids: [String!]!
     $page: Int!
-    $perPage: Int!
+    $per_page: Int!
   ) {
     transcript_search(
       search_payload: {
         query: $query
-        genome_ids: $genomeIds
+        genome_ids: $genome_ids
         page: $page
-        per_page: $perPage
+        per_page: $per_page
       }
     ) {
       meta {
@@ -74,39 +74,20 @@ const transcriptSearchQuery = gql`
 `;
 
 const parseTranscriptSearchResults = (
-  response: TranscriptSearchQueryResponse,
-  params: SearchParams
+  response: TranscriptSearchQueryResponse
 ): SearchResults => {
   const transcriptSearch = response.transcript_search;
 
-  const matches = (transcriptSearch?.matches ?? []).flatMap((match) => {
-    const { stable_id: stableId, unversioned_stable_id: unversionedStableId } =
-      match;
-    const genomeId =
-      match.genome_id ??
-      (params.genome_ids.length === 1 ? params.genome_ids[0] : undefined);
-
-    if (!stableId || !unversionedStableId || !genomeId) {
-      return [];
-    }
-
-    return [
-      {
-        type: 'Transcript' as const,
-        stable_id: stableId,
-        unversioned_stable_id: unversionedStableId,
-        symbol: match.symbol ?? null,
-        genome_id: genomeId
-      }
-    ];
-  });
+  const matches = transcriptSearch.matches.map((match) => ({
+    type: 'Transcript' as const,
+    stable_id: match.stable_id,
+    unversioned_stable_id: match.unversioned_stable_id,
+    symbol: match.symbol,
+    genome_id: match.genome_id
+  }));
 
   return {
-    meta: transcriptSearch?.meta ?? {
-      total_hits: matches.length,
-      page: params.page,
-      per_page: params.per_page
-    },
+    meta: transcriptSearch.meta,
     matches
   };
 };
@@ -137,43 +118,13 @@ const searchApiSlice = restApiSlice.injectEndpoints({
 const graphqlSearchApiSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     searchTranscripts: builder.query<SearchResults, SearchParams>({
-      queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
-        const query = params.query.trim();
-
-        if (!params.genome_ids.length || !query) {
-          return {
-            data: {
-              meta: {
-                total_hits: 0,
-                page: params.page,
-                per_page: params.per_page
-              },
-              matches: []
-            }
-          };
-        }
-
-        const { data, error } = await baseQuery({
-          url: config.coreApiUrl,
-          body: transcriptSearchQuery,
-          variables: {
-            query,
-            genomeIds: params.genome_ids,
-            page: params.page,
-            perPage: params.per_page
-          }
-        });
-
-        if (error) {
-          return { error };
-        }
-
-        return {
-          data: parseTranscriptSearchResults(
-            data as TranscriptSearchQueryResponse,
-            params
-          )
-        };
+      query: (params) => ({
+        url: config.coreApiUrl,
+        body: transcriptSearchQuery,
+        variables: params
+      }),
+      transformResponse(response: TranscriptSearchQueryResponse) {
+        return parseTranscriptSearchResults(response);
       }
     })
   })

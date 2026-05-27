@@ -101,7 +101,7 @@ const Match = (props: MatchProps) => {
       analyticsTracking.trackEvent({
         category: `${app}_${mode}_search`,
         action: 'select_link',
-        label: `${symbol}: ${stable_id}`,
+        label: symbol ? `${symbol}: ${stable_id}` : stable_id,
         value: position
       });
     }
@@ -136,8 +136,8 @@ const Match = (props: MatchProps) => {
 
   return (
     <>
-      <div className={styles.searchMatch} onClick={onMatchClick}>
-        <TextButton className={styles.searchMatchButton}>
+      <div className={styles.searchMatch}>
+        <TextButton className={styles.searchMatchButton} onClick={onMatchClick}>
           {symbolElement}
           {stableIdElement}
         </TextButton>

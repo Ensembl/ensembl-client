@@ -25,6 +25,7 @@ import PointerBox, {
 } from 'src/shared/components/pointer-box/PointerBox';
 import ViewInApp from '../view-in-app/ViewInApp';
 import SpeciesName from '../species-name/SpeciesName';
+import TextButton from '../text-button/TextButton';
 
 import type {
   GeneSearchMatch,
@@ -194,7 +195,7 @@ const TranscriptRecord = (props: {
   } = props as { match: TranscriptSearchMatch; species: CommittedItem };
 
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
-  const [anchorElement, setAnchorElement] = useState<HTMLSpanElement | null>(
+  const [anchorElement, setAnchorElement] = useState<HTMLButtonElement | null>(
     null
   );
 
@@ -231,7 +232,7 @@ const TranscriptRecord = (props: {
 
   return (
     <>
-      <span
+      <TextButton
         className={styles.transcriptMatch}
         ref={setAnchorElement}
         onClick={handleClick}
@@ -240,7 +241,7 @@ const TranscriptRecord = (props: {
           <span className={styles.transcriptSymbol}>{match.symbol}</span>
         )}
         <span className={styles.stableId}>{match.stable_id}</span>
-      </span>
+      </TextButton>
       {shouldShowTooltip && anchorElement && (
         <PointerBox
           anchor={anchorElement}
@@ -268,7 +269,7 @@ const VariantSearchRecord = (props: {
   } = props as { match: VariantSearchMatch; species: CommittedItem };
 
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
-  const [anchorElement, setAnchorElement] = useState<HTMLSpanElement | null>(
+  const [anchorElement, setAnchorElement] = useState<HTMLButtonElement | null>(
     null
   );
 
@@ -305,13 +306,13 @@ const VariantSearchRecord = (props: {
 
   return (
     <div>
-      <span
+      <TextButton
         className={styles.variantMatch}
         ref={setAnchorElement}
         onClick={handleClick}
       >
         {match.variant_name}
-      </span>
+      </TextButton>
       {shouldShowTooltip && anchorElement && (
         <PointerBox
           anchor={anchorElement}
@@ -335,7 +336,7 @@ const GeneRecord = (props: { match: SearchMatch; species: CommittedItem }) => {
     species: { genome_tag, genome_id }
   } = props as { match: GeneSearchMatch; species: CommittedItem };
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
-  const [anchorElement, setAnchorElement] = useState<HTMLSpanElement | null>(
+  const [anchorElement, setAnchorElement] = useState<HTMLButtonElement | null>(
     null
   );
 
@@ -374,14 +375,16 @@ const GeneRecord = (props: { match: SearchMatch; species: CommittedItem }) => {
 
   return (
     <>
-      <span
+      <TextButton
         className={styles.geneMatch}
         ref={setAnchorElement}
         onClick={handleClick}
       >
-        <span className={styles.geneSymbol}>{match.symbol}</span>
+        {match.symbol && (
+          <span className={styles.geneSymbol}>{match.symbol}</span>
+        )}
         <span className={styles.stableId}>{match.stable_id}</span>
-      </span>
+      </TextButton>
       {shouldShowTooltip && anchorElement && (
         <PointerBox
           anchor={anchorElement}

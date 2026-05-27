@@ -108,7 +108,7 @@ const SpeciesSelectorSearchView = () => {
     }
 
     // no query in param or state, don't trigger search
-    if (!query) {
+    if (!query || !genomeIds.length) {
       return;
     }
 
