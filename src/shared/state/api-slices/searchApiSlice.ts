@@ -79,11 +79,8 @@ const parseTranscriptSearchResults = (
   const transcriptSearch = response.transcript_search;
 
   const matches = transcriptSearch.matches.map((match) => ({
-    type: 'Transcript' as const,
-    stable_id: match.stable_id,
-    unversioned_stable_id: match.unversioned_stable_id,
-    symbol: match.symbol,
-    genome_id: match.genome_id
+    ...match,
+    type: 'Transcript' as const
   }));
 
   return {
