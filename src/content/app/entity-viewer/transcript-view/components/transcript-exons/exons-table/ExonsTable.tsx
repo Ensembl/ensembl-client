@@ -24,7 +24,6 @@ import { prepareExportTSV } from './exportExonsTable';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
-import DownloadButton from 'src/shared/components/download-button/DownloadButton';
 import TextButton from 'src/shared/components/text-button/TextButton';
 
 import type {
@@ -40,9 +39,14 @@ type Props = {
 };
 
 const ExonsTable = ({ data }: Props) => {
+  const [shouldDisplayExons, setShouldDisplayExons] = useState(true);
   const [shouldDisplayIntrons, setShouldDisplayIntrons] = useState(true);
   const [shouldCollapseIntrons, setShouldCollapseIntrons] = useState(false);
   const [shouldCollapseAll, setShouldCollapseAll] = useState(false);
+
+  const onToggleExons = () => {
+    setShouldDisplayExons(!shouldDisplayExons);
+  };
 
   const onToggleIntrons = () => {
     setShouldDisplayIntrons(!shouldDisplayIntrons);
@@ -74,9 +78,11 @@ const ExonsTable = ({ data }: Props) => {
           exons
         </div>
         <Controls
+          shouldDisplayExons={shouldDisplayExons}
           shouldDisplayIntrons={shouldDisplayIntrons}
           shouldCollapseIntrons={shouldCollapseIntrons}
           shouldCollapseAll={shouldCollapseAll}
+          onExonsDisplayChange={onToggleExons}
           onIntronsDisplayChange={onToggleIntrons}
           onToggleIntronsCollapse={onToggleIntronsCollapse}
           onToggleAllCollapse={onToggleAllCollapse}
@@ -107,6 +113,7 @@ const ExonsTable = ({ data }: Props) => {
               <FeatureRow
                 feature={feature}
                 key={feature.type === 'exon' ? feature.stable_id : feature.id}
+                shouldDisplayExons={shouldDisplayExons}
                 shouldDisplayIntrons={shouldDisplayIntrons}
                 shouldCollapseIntrons={shouldCollapseIntrons}
                 shouldCollapseAll={shouldCollapseAll}
@@ -125,17 +132,21 @@ const ExonsTable = ({ data }: Props) => {
 };
 
 const Controls = ({
+  shouldDisplayExons,
   shouldDisplayIntrons,
   shouldCollapseIntrons,
   shouldCollapseAll,
   onToggleIntronsCollapse,
   onToggleAllCollapse,
+  onExonsDisplayChange,
   onIntronsDisplayChange,
   onDownload
 }: {
+  shouldDisplayExons: boolean;
   shouldDisplayIntrons: boolean;
   shouldCollapseIntrons: boolean;
   shouldCollapseAll: boolean;
+  onExonsDisplayChange: () => void;
   onIntronsDisplayChange: () => void;
   onToggleIntronsCollapse: () => void;
   onToggleAllCollapse: () => void;
@@ -145,22 +156,31 @@ const Controls = ({
     <div className={styles.tableControls}>
       <div className={styles.tableControlsLeft}>
         <span className={styles.light}>Sequence</span>
-        <CheckboxWithLabel
-          checked={shouldDisplayIntrons}
-          label="Introns"
-          onChange={() => onIntronsDisplayChange()}
-        />
-        <TextButton
-          onClick={onToggleIntronsCollapse}
-          disabled={!shouldDisplayIntrons || shouldCollapseAll}
-        >
-          {shouldCollapseIntrons ? 'Expand' : 'Collapse'}
-        </TextButton>
+        <div className={styles.checkboxGroup}>
+          <CheckboxWithLabel
+            checked={shouldDisplayExons}
+            label="Exons"
+            onChange={() => onExonsDisplayChange()}
+          />
+          <div className={styles.checkboxWithAssociatedButton}>
+            <CheckboxWithLabel
+              checked={shouldDisplayIntrons}
+              label="Introns"
+              onChange={() => onIntronsDisplayChange()}
+            />
+            <TextButton
+              onClick={onToggleIntronsCollapse}
+              disabled={!shouldDisplayIntrons || shouldCollapseAll}
+            >
+              {shouldCollapseIntrons ? 'Expand' : 'Collapse'}
+            </TextButton>
+          </div>
+        </div>
       </div>
       <TextButton onClick={onToggleAllCollapse}>
         {shouldCollapseAll ? 'Expand all' : 'Collapse all'}
       </TextButton>
-      <DownloadButton onClick={onDownload} />
+      <TextButton onClick={onDownload}>Download all data</TextButton>
     </div>
   );
 };
@@ -196,19 +216,21 @@ const FlankingSequenceRow = ({
 
 const FeatureRow = ({
   feature,
+  shouldDisplayExons,
   shouldDisplayIntrons,
   shouldCollapseIntrons,
   shouldCollapseAll
 }: {
   feature: Exon | Intron;
+  shouldDisplayExons: boolean;
   shouldDisplayIntrons: boolean;
   shouldCollapseIntrons: boolean;
   shouldCollapseAll: boolean;
 }) => {
   if (feature.type === 'exon') {
-    return (
+    return shouldDisplayExons ? (
       <ExonRow exon={feature} shouldCollapseSequence={shouldCollapseAll} />
-    );
+    ) : null;
   } else {
     return shouldDisplayIntrons ? (
       <IntronRow

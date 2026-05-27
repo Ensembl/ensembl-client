@@ -3,8 +3,9 @@
   height: 100%;
   display: grid;
   grid-template-rows: auto 1fr;
-  row-gap: 1rem;
+  row-gap: var(--standard-gutter);
   container-type: inline-size;
+  padding-top: calc(var(--standard-gutter) / 2);
 }
 
 .topSection {
@@ -26,6 +27,16 @@
   display: flex;
   align-items: center;
   column-gap: 1rem;
+}
+
+.tableControlsLeft .checkboxGroup {
+  display: flex;
+  column-gap: 1.6rem;
+}
+
+.tableControlsLeft .checkboxWithAssociatedButton {
+  display: flex;
+  column-gap: 0.6rem;
 }
 
 .tableWrapper {
