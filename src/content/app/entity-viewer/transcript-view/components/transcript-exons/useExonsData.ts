@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-import { useDefaultEntityViewerTranscriptQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
-import { useRefgetSequenceQuery } from 'src/shared/state/api-slices/refgetSlice';
+import { useState } from 'react';
+
+import { AppDispatch, useAppDispatch } from 'src/store';
+
+import { fetchDefaultEntityViewerTranscript } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import { fetchRefgetSequence } from 'src/shared/state/api-slices/refgetSlice';
 
 import type { DefaultEntityViewerTranscriptQueryResult } from 'src/content/app/entity-viewer/state/api/queries/transcriptDefaultQuery';
 
-type Params = {
+export type QueryParameters = {
   genomeId: string;
   transcriptId: string;
 };
 
-// This type flattens out exon data,
-// combines spliced exon with phased exon,
-// and adds exon sequence
+/**
+ * The types of exon and intron data
+ * are flat, compared to the nested data initially retrieved from the graphql service,
+ * and contain the full sequence string
+ */
 export type EnrichedExon = {
   type: 'exon';
   index: number;
@@ -53,62 +59,208 @@ export type EnrichedIntron = {
   sequence: string;
 };
 
-const useExonsData = ({ genomeId, transcriptId }: Params) => {
-  const {
-    currentData: transcriptQueryCurrentData,
-    isFetching: isTranscriptFetching,
-    isError: isTranscriptError
-  } = useDefaultEntityViewerTranscriptQuery({
-    genomeId,
-    transcriptId
-  });
-  const refgetQueryParams = getRefgetQueryParams(
-    transcriptQueryCurrentData?.transcript
-  ) ?? { checksum: '' };
-  const {
-    currentData: refgetQueryCurrentData,
-    isFetching: isSequenceFetching,
-    isError: isSequenceError
-  } = useRefgetSequenceQuery(refgetQueryParams, { skip: !refgetQueryParams });
+export type Data = {
+  exons: EnrichedExon[];
+  introns: EnrichedIntron[];
+  exonsAndIntrons: (EnrichedExon | EnrichedIntron)[];
+  upstreamFlankingSequence: string;
+  downstreamFlankingSequence: string;
+};
 
-  const requestStatusParams = {
-    isLoading: isTranscriptFetching || isSequenceFetching,
-    isError: isTranscriptError || isSequenceError
-  };
+// type State = {
+//   isLoading: boolean;
+//   isError: boolean;
+//   queryParams: QueryParameters | null;
+//   data: Data | null;
+// };
 
-  if (!transcriptQueryCurrentData || !refgetQueryCurrentData) {
-    return {
-      data: null,
-      ...requestStatusParams
-    };
+// type FetchStartAction = {
+//   type: 'fetch-start';
+//   payload: QueryParameters;
+// };
+
+// type SuccessAction = {
+//   type: 'success';
+//   payload: Data;
+// };
+
+// type ErrorAction = {
+//   type: 'error';
+// };
+
+// type Action =
+//   | FetchStartAction
+//   | SuccessAction
+//   | ErrorAction;
+
+// const initialState: State = {
+//   isLoading: false,
+//   isError: false,
+//   queryParams: null,
+//   data: null
+// };
+
+// const reducer = (state: State, action: Action): State => {
+//   switch (action.type) {
+//     case 'fetch-start':
+//       return {
+//         ...state,
+//         isLoading: true,
+//         isError: false,
+//         queryParams: action.payload
+//       };
+//     case 'success':
+//       return {
+//         ...state,
+//         isLoading: false,
+//         isError: false,
+//         data: action.payload
+//       };
+//     case 'error':
+//       return {
+//         ...state,
+//         isLoading: false,
+//         isError: true
+//       };
+//   }
+// };
+
+const fetchExonsData = async ({
+  transcriptId,
+  genomeId,
+  reduxDispatch
+}: QueryParameters & { reduxDispatch: AppDispatch }): Promise<{
+  isError: boolean;
+  data: Data | null;
+}> => {
+  // const sleep = new Promise(resolve => setTimeout(resolve, 5000));
+  // await sleep;
+
+  const transcriptsQueryPromise = reduxDispatch(
+    fetchDefaultEntityViewerTranscript.initiate(
+      {
+        genomeId,
+        transcriptId
+      },
+      { subscribe: false }
+    )
+  );
+  const { isError, data } = await transcriptsQueryPromise;
+
+  if (isError || !data) {
+    return { isError: true, data: null };
   }
 
-  const { enrichedExons: exons } = prepareExonsData({
-    transcript: transcriptQueryCurrentData.transcript,
-    sequence: refgetQueryCurrentData
+  const { transcript } = data;
+
+  const genomicTranscriptSequenceQueryParams =
+    getTranscriptGenomicSequenceQueryParams(transcript);
+  const upstreamSequenceQueryParams = getUpstreamGenomicSequenceQueryParams({
+    transcript
   });
-  const introns: EnrichedIntron[] = prepareIntrons({
-    transcript: transcriptQueryCurrentData.transcript,
-    sequence: refgetQueryCurrentData
+  const downstreamSequenceQueryParams = getDownstreamGenomicSequenceQueryParams(
+    { transcript }
+  );
+
+  const genomicTranscriptSequencePromise = reduxDispatch(
+    fetchRefgetSequence.initiate(genomicTranscriptSequenceQueryParams, {
+      subscribe: false
+    })
+  );
+  const upstreamSequencePromise = reduxDispatch(
+    fetchRefgetSequence.initiate(upstreamSequenceQueryParams, {
+      subscribe: false
+    })
+  );
+  const downstreamSequencePromise = reduxDispatch(
+    fetchRefgetSequence.initiate(downstreamSequenceQueryParams, {
+      subscribe: false
+    })
+  );
+
+  const [
+    genomicTranscriptSequenceResult,
+    upstreamSequenceResult,
+    downstreamSequenceResult
+  ] = await Promise.all([
+    genomicTranscriptSequencePromise,
+    upstreamSequencePromise,
+    downstreamSequencePromise
+  ]);
+
+  const { data: genomicTranscriptSequence, isError: isGenomicSequenceError } =
+    genomicTranscriptSequenceResult;
+  const {
+    data: upstreamFlankingSequence = '',
+    isError: isUpstreamSequenceError
+  } = upstreamSequenceResult;
+  const {
+    data: downstreamFlankingSequence = '',
+    isError: isDownstreamSequenceError
+  } = downstreamSequenceResult;
+
+  if (
+    isGenomicSequenceError ||
+    isUpstreamSequenceError ||
+    isDownstreamSequenceError ||
+    !genomicTranscriptSequence
+  ) {
+    return { isError: true, data: null };
+  }
+
+  const exons = prepareExonsData({
+    transcript,
+    sequence: genomicTranscriptSequence
   });
-  const exonsAndIntrons = combineExonsAndIntrons({ exons, introns });
+  const introns = prepareIntrons({
+    transcript,
+    sequence: genomicTranscriptSequence
+  });
+  const exonsAndIntrons = combineExonsAndIntrons({
+    exons,
+    introns
+  });
 
   return {
     data: {
       exons,
       introns,
-      exonsAndIntrons
+      exonsAndIntrons,
+      upstreamFlankingSequence,
+      downstreamFlankingSequence
     },
-    ...requestStatusParams
+    isError: false
   };
 };
 
-const getRefgetQueryParams = (
-  transcript: DefaultEntityViewerTranscriptQueryResult['transcript'] | undefined
-) => {
-  if (!transcript) {
-    return null;
+// FIXME: RENAME THE FILE
+
+const useExonsData = ({ genomeId, transcriptId }: QueryParameters) => {
+  const reduxDispatch = useAppDispatch();
+  const [dataPromise, setDataPromise] = useState<ReturnType<
+    typeof fetchExonsData
+  > | null>(null);
+  const [previousParams, setPreviousParams] = useState({
+    genomeId: '',
+    transcriptId: ''
+  });
+  if (
+    genomeId !== previousParams.genomeId ||
+    transcriptId !== previousParams.transcriptId
+  ) {
+    setDataPromise(fetchExonsData({ genomeId, transcriptId, reduxDispatch }));
+    setPreviousParams({
+      genomeId,
+      transcriptId
+    });
   }
+
+  return dataPromise;
+};
+
+const getTranscriptGenomicSequenceQueryParams = (
+  transcript: DefaultEntityViewerTranscriptQueryResult['transcript']
+) => {
   return {
     checksum: transcript.slice.region.sequence.checksum,
     start: transcript.slice.location.start,
@@ -116,6 +268,44 @@ const getRefgetQueryParams = (
     strand: transcript.slice.strand.code
   };
 };
+
+const getUpstreamGenomicSequenceQueryParams = ({
+  transcript,
+  length = 57
+}: {
+  transcript: DefaultEntityViewerTranscriptQueryResult['transcript'];
+  length?: number;
+}) => {
+  const end = transcript.slice.location.start - 1;
+  const start = Math.max(end - length + 1, 1);
+
+  return {
+    checksum: transcript.slice.region.sequence.checksum,
+    start,
+    end,
+    strand: transcript.slice.strand.code
+  };
+};
+
+const getDownstreamGenomicSequenceQueryParams = ({
+  transcript,
+  length = 57
+}: {
+  transcript: DefaultEntityViewerTranscriptQueryResult['transcript'];
+  length?: number;
+}) => {
+  const start = transcript.slice.location.end + 1;
+  const end = start + length - 1;
+
+  return {
+    checksum: transcript.slice.region.sequence.checksum,
+    start,
+    end,
+    strand: transcript.slice.strand.code
+  };
+};
+
+// TODO: getCDSSequenceQueryParams
 
 const prepareExonsData = ({
   transcript,
@@ -166,9 +356,7 @@ const prepareExonsData = ({
     enrichedExon.endPhase = end_phase;
   }
 
-  return {
-    enrichedExons
-  };
+  return enrichedExons;
 };
 
 const prepareIntrons = ({

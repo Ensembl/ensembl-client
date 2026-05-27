@@ -31,7 +31,7 @@ import type {
   Data,
   EnrichedExon as Exon,
   EnrichedIntron as Intron
-} from 'src/content/app/entity-viewer/transcript-view/components/transcript-exons/useExonsDataReducer';
+} from 'src/content/app/entity-viewer/transcript-view/components/transcript-exons/useExonsData';
 
 import styles from './ExonsTable.module.css';
 
@@ -65,8 +65,6 @@ const ExonsTable = ({ data }: Props) => {
   };
 
   // add total exon count
-
-  // in a collapsed state, the number of dots in the middle of a sequence is 10
 
   return (
     <div className={styles.container}>

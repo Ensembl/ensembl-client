@@ -18,7 +18,7 @@ import type {
   Data,
   EnrichedExon as Exon,
   EnrichedIntron as Intron
-} from 'src/content/app/entity-viewer/transcript-view/components/transcript-exons/useExonsDataReducer';
+} from 'src/content/app/entity-viewer/transcript-view/components/transcript-exons/useExonsData';
 
 type RowMap = {
   number?: number;

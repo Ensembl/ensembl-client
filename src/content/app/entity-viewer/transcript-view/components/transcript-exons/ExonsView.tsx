@@ -16,11 +16,9 @@
 
 import { use, Suspense } from 'react';
 
-import useExonsData from './useExonsDataReducer';
+import useExonsData from './useExonsData';
 
 import ExonsTable from './exons-table/ExonsTable';
-// FIXME: delete ExonsContinuous module
-// import ExonsContinuous from './exons-continuous/ExonsContinous';
 import Panel from 'src/shared/components/panel/Panel';
 
 import styles from './ExonsView.module.css';
