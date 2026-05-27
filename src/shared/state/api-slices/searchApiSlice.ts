@@ -15,11 +15,14 @@
  */
 
 import config from 'config';
-import { gql } from 'graphql-request';
 
 import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
+import {
+  transcriptSearchQuery,
+  type TranscriptSearchQueryResponse
+} from './queries/transcriptSearchQuery';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
 type SearchParams = {
@@ -27,66 +30,6 @@ type SearchParams = {
   query: string;
   page: number;
   per_page: number;
-};
-
-type TranscriptSearchQueryResponse = {
-  transcript_search: {
-    meta: SearchResults['meta'];
-    matches: TranscriptSearchMatchResponse[];
-  };
-};
-
-type TranscriptSearchMatchResponse = {
-  stable_id: string;
-  unversioned_stable_id: string;
-  symbol: string | null;
-  genome_id: string;
-};
-
-const transcriptSearchQuery = gql`
-  query TranscriptSearch(
-    $query: String!
-    $genome_ids: [String!]!
-    $page: Int!
-    $per_page: Int!
-  ) {
-    transcript_search(
-      search_payload: {
-        query: $query
-        genome_ids: $genome_ids
-        page: $page
-        per_page: $per_page
-      }
-    ) {
-      meta {
-        total_hits
-        page
-        per_page
-      }
-      matches {
-        stable_id
-        unversioned_stable_id
-        symbol
-        genome_id
-      }
-    }
-  }
-`;
-
-const parseTranscriptSearchResults = (
-  response: TranscriptSearchQueryResponse
-): SearchResults => {
-  const transcriptSearch = response.transcript_search;
-
-  const matches = transcriptSearch.matches.map((match) => ({
-    ...match,
-    type: 'Transcript' as const
-  }));
-
-  return {
-    meta: transcriptSearch.meta,
-    matches
-  };
 };
 
 const searchApiSlice = restApiSlice.injectEndpoints({
@@ -121,7 +64,7 @@ const graphqlSearchApiSlice = graphqlApiSlice.injectEndpoints({
         variables: params
       }),
       transformResponse(response: TranscriptSearchQueryResponse) {
-        return parseTranscriptSearchResults(response);
+        return response.transcript_search;
       }
     })
   })
