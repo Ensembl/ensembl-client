@@ -21,6 +21,7 @@ import isEqual from 'lodash/isEqual';
 import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
+import usePrevious from 'src/shared/hooks/usePrevious';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
@@ -33,10 +34,7 @@ import {
   parseFocusIdFromUrl
 } from 'src/shared/helpers/focusObjectHelpers';
 
-import {
-  setActiveGenomeId,
-  setDataFromUrlAndSave
-} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { setDataFromUrlAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
@@ -45,6 +43,7 @@ import { getFocusObjectById } from 'src/content/app/genome-browser/state/focus-o
 import { getAllChrLocations } from '../state/browser-general/browserGeneralSelectors';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:
@@ -92,6 +91,9 @@ const useBrowserRouting = () => {
   );
 
   const chrLocation = location ? getParsedChromosomeLocation(location) : null;
+  const previousGenomeId = usePrevious(genomeId);
+  const previousFocusObjectIdInUrl = usePrevious(focusObjectIdInUrl);
+  const previousChrLocation = usePrevious(chrLocation);
 
   const changeGenomeId = useCallback(
     (genomeId: string) => {
@@ -111,7 +113,6 @@ const useBrowserRouting = () => {
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
 
-      dispatch(setActiveGenomeId(genomeId));
       // Consider it as first render when we change genome
       firstRenderRef.current = true;
 
@@ -131,10 +132,31 @@ const useBrowserRouting = () => {
       allActiveFocusObjectIds,
       allChrLocations,
       allCommittedSpecies,
-      dispatch,
       navigate
     ]
   );
+
+  const areSameParameters = ({
+    genomeId,
+    previousGenomeId,
+    focusObjectIdInUrl,
+    previousFocusObjectIdInUrl,
+    chrLocation,
+    previousChrLocation
+  }: {
+    genomeId: string | undefined;
+    previousGenomeId: string | undefined;
+    focusObjectIdInUrl: string | null;
+    previousFocusObjectIdInUrl: string | null;
+    chrLocation: ChrLocation | null | undefined;
+    previousChrLocation: ChrLocation | null | undefined;
+  }) => {
+    return (
+      genomeId === previousGenomeId ||
+      focusObjectIdInUrl === previousFocusObjectIdInUrl ||
+      JSON.stringify(chrLocation) === JSON.stringify(previousChrLocation)
+    );
+  };
 
   const shouldUpdateRedux = useCallback(() => {
     return (
@@ -197,23 +219,34 @@ const useBrowserRouting = () => {
       */
       changeFocusObject(focusObjectId);
     } else if (focusObjectIdInUrl && chrLocation && genomeBrowser) {
-      const isSameLocationAsInRedux =
-        activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
-      const isFirstRender = firstRenderRef.current;
-      if (genomeId && genomeBrowser) {
-        if (!isSameLocationAsInRedux || isFirstRender) {
-          const { type, objectId } = parseFocusIdFromUrl(focusObjectIdInUrl);
-          changeBrowserLocation({
-            genomeId,
-            chrLocation,
-            focus: {
-              type,
-              id: objectId
-            }
-          });
+      const sameAsPrev = areSameParameters({
+        genomeId,
+        previousGenomeId,
+        focusObjectIdInUrl,
+        previousFocusObjectIdInUrl,
+        chrLocation,
+        previousChrLocation
+      });
 
-          firstRenderRef.current = false;
-        }
+      const isFirstRender = firstRenderRef.current;
+
+      if ((isFirstRender && genomeId) || (!sameAsPrev && genomeId)) {
+        const { type, objectId } = parseFocusIdFromUrl(focusObjectIdInUrl);
+        changeBrowserLocation({
+          genomeId,
+          chrLocation,
+          focus: {
+            type,
+            id: objectId
+          }
+        });
+      }
+      if (isFirstRender) {
+        firstRenderRef.current = false;
+        runAfterValidation(() => {
+          dispatch(setDataFromUrlAndSave(payload));
+        });
+        return;
       }
     }
 
@@ -224,6 +257,7 @@ const useBrowserRouting = () => {
     }
   }, [
     genomeId,
+    previousGenomeId,
     activeGenomeId,
     activeFocusObjectId,
     allChrLocations,
@@ -232,11 +266,13 @@ const useBrowserRouting = () => {
     changeFocusObject,
     changeGenomeId,
     chrLocation,
+    previousChrLocation,
     genomeIdForUrl,
     genomeIdInUrl,
     runAfterValidation,
     isFetchingGenomeId,
     focusObjectIdInUrl,
+    previousFocusObjectIdInUrl,
     focusObjectId,
     genomeBrowser,
     shouldUpdateRedux,
