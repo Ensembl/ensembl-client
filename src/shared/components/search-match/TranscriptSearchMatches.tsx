@@ -133,8 +133,8 @@ const Match = (props: MatchProps) => {
     <>
       <div className={styles.searchMatch}>
         <TextButton className={styles.searchMatchButton} onClick={onMatchClick}>
-          {symbolElement}
           {stableIdElement}
+          {symbolElement}
         </TextButton>
         <span className={searchMatchAnchorClass} ref={setAnchorElement} />
       </div>
