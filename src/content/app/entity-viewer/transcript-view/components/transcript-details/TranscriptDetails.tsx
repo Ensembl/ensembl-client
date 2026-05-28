@@ -16,11 +16,14 @@
 
 import classNames from 'classnames';
 
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFeatureLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import TranscriptInfoPanel from 'src/content/app/entity-viewer/transcript-view/components/transcript-details/transcript-info-panel/TranscriptInfoPanel';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import type { DefaultEntityViewerTranscriptQueryResult } from 'src/content/app/entity-viewer/state/api/queries/transcriptDefaultQuery';
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
@@ -32,6 +35,7 @@ type Transcript = DefaultEntityViewerTranscriptQueryResult['transcript'];
 
 export type Props = {
   genomeId: string;
+  genomeIdForUrl: string;
   transcript: Transcript;
   rulerTicks: TicksAndScale;
 };
@@ -46,6 +50,13 @@ const TranscriptDetails = (props: Props) => {
   } = props.transcript;
   const transcriptStartX = scale(relativeTranscriptStart) as number;
   const transcriptWidth = scale(transcriptLength) as number;
+  const genomeBrowserUrl = urlFor.browser({
+    genomeId: props.genomeIdForUrl,
+    focus: buildFocusIdForUrl({
+      type: 'transcript',
+      objectId: props.transcript.unversioned_stable_id
+    })
+  });
 
   return (
     <div className={styles.container}>
@@ -68,7 +79,15 @@ const TranscriptDetails = (props: Props) => {
               />
             </div>
           </div>
-          <div className={styles.columnRight}>{props.transcript.stable_id}</div>
+          <div className={styles.columnRight}>
+            <div>{props.transcript.stable_id}</div>
+            <div className={styles.viewInApp}>
+              <ViewInApp
+                links={{ genomeBrowser: { url: genomeBrowserUrl } }}
+                theme="dark"
+              />
+            </div>
+          </div>
         </div>
         <div className={classNames(commonStyles.gridColumns, styles.row)}>
           <TranscriptInfoPanel

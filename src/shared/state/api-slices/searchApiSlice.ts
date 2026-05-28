@@ -16,8 +16,13 @@
 
 import config from 'config';
 
+import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
+import {
+  transcriptSearchQuery,
+  type TranscriptSearchQueryResponse
+} from './queries/transcriptSearchQuery';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
 type SearchParams = {
@@ -50,5 +55,21 @@ const searchApiSlice = restApiSlice.injectEndpoints({
   })
 });
 
+const graphqlSearchApiSlice = graphqlApiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    searchTranscripts: builder.query<SearchResults, SearchParams>({
+      query: (params) => ({
+        url: config.coreApiUrl,
+        body: transcriptSearchQuery,
+        variables: params
+      }),
+      transformResponse(response: TranscriptSearchQueryResponse) {
+        return response.transcript_search;
+      }
+    })
+  })
+});
+
 export const { useLazySearchGenesQuery, useLazySearchVariantsQuery } =
   searchApiSlice;
+export const { useLazySearchTranscriptsQuery } = graphqlSearchApiSlice;

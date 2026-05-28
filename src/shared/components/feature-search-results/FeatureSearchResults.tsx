@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -25,10 +25,12 @@ import PointerBox, {
 } from 'src/shared/components/pointer-box/PointerBox';
 import ViewInApp from '../view-in-app/ViewInApp';
 import SpeciesName from '../species-name/SpeciesName';
+import TextButton from '../text-button/TextButton';
 
 import type {
   GeneSearchMatch,
   SearchMatch,
+  TranscriptSearchMatch,
   VariantSearchMatch
 } from 'src/shared/types/search-api/search-match';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
@@ -104,15 +106,13 @@ export const FeatureSearchResults = (props: {
               </span>
               species
             </th>
-            {
-              isGeneSearchMode && (
-                <>
-                  <th>Release date</th>
-                  <th>Release type</th>
-                  <th>Assembly accession</th>
-                </>
-              )
-            }
+            {isGeneSearchMode && (
+              <>
+                <th>Release date</th>
+                <th>Release type</th>
+                <th>Assembly accession</th>
+              </>
+            )}
             <th>{capitalizedFeatureSearchMode}</th>
           </tr>
         </thead>
@@ -132,12 +132,13 @@ export const FeatureSearchResults = (props: {
 
 const FeatureSearchTableRows = (props: {
   data: SearchMatchesWithSpecies;
-  featureSearchMode: string;
+  featureSearchMode: FeatureSearchMode;
 }) => {
   const { featureSearchMode, data } = props;
   const { speciesInfo, searchMatches } = data;
 
   const isGeneSearchMode = featureSearchMode === 'gene';
+  const isTranscriptSearchMode = featureSearchMode === 'transcript';
   const isVariantSearchMode = featureSearchMode === 'variant';
 
   return (
@@ -159,18 +160,101 @@ const FeatureSearchTableRows = (props: {
                   <>
                     <td rowSpan={rowSpan}>{speciesInfo.release.name}</td>
                     <td rowSpan={rowSpan}>{speciesInfo.release.type}</td>
-                    <td rowSpan={rowSpan}>{speciesInfo.assembly.accession_id}</td>
+                    <td rowSpan={rowSpan}>
+                      {speciesInfo.assembly.accession_id}
+                    </td>
                   </>
                 )}
               </>
             )}
             <td>
-              {isGeneSearchMode && <GeneRecord match={match} species={speciesInfo} />}
-              {isVariantSearchMode && <VariantSearchRecord match={match} species={speciesInfo} />}
+              {isGeneSearchMode && (
+                <GeneRecord match={match} species={speciesInfo} />
+              )}
+              {isTranscriptSearchMode && (
+                <TranscriptRecord match={match} species={speciesInfo} />
+              )}
+              {isVariantSearchMode && (
+                <VariantSearchRecord match={match} species={speciesInfo} />
+              )}
             </td>
           </tr>
-        )
+        );
       })}
+    </>
+  );
+};
+
+const TranscriptRecord = (props: {
+  match: SearchMatch;
+  species: CommittedItem;
+}) => {
+  const {
+    match,
+    species: { genome_tag, genome_id }
+  } = props as { match: TranscriptSearchMatch; species: CommittedItem };
+
+  const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
+  const [anchorElement, setAnchorElement] = useState<HTMLButtonElement | null>(
+    null
+  );
+
+  const genomeIdForUrl = genome_tag || genome_id;
+
+  const handleClick = () => {
+    setShouldShowTooltip(!shouldShowTooltip);
+  };
+
+  const urlForGenomeBrowser = urlFor.browser({
+    genomeId: genomeIdForUrl,
+    focus: buildFocusIdForUrl({
+      type: 'transcript',
+      objectId: match.unversioned_stable_id
+    })
+  });
+
+  const urlForEntityViewer = urlFor.entityViewer({
+    genomeId: genomeIdForUrl,
+    entityId: buildFocusIdForUrl({
+      type: 'transcript',
+      objectId: match.unversioned_stable_id
+    })
+  });
+
+  const links = {
+    genomeBrowser: {
+      url: urlForGenomeBrowser
+    },
+    entityViewer: {
+      url: urlForEntityViewer
+    }
+  };
+
+  return (
+    <>
+      <TextButton
+        className={styles.transcriptMatch}
+        ref={setAnchorElement}
+        onClick={handleClick}
+      >
+        <span className={styles.stableId}>{match.stable_id}</span>
+        {match.symbol && (
+          <span className={styles.transcriptSymbol}>{match.symbol}</span>
+        )}
+      </TextButton>
+      {shouldShowTooltip && anchorElement && (
+        <PointerBox
+          anchor={anchorElement}
+          className={classNames(
+            styles.tooltip,
+            pointerBoxStyles.pointerBoxShadow
+          )}
+          position={PointerBoxPosition.RIGHT_TOP}
+          onOutsideClick={handleClick}
+        >
+          <ViewInApp theme="dark" links={links} />
+        </PointerBox>
+      )}
     </>
   );
 };
@@ -185,7 +269,9 @@ const VariantSearchRecord = (props: {
   } = props as { match: VariantSearchMatch; species: CommittedItem };
 
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
-  const anchorRef = useRef<HTMLSpanElement>(null);
+  const [anchorElement, setAnchorElement] = useState<HTMLButtonElement | null>(
+    null
+  );
 
   const genomeIdForUrl = genome_tag || genome_id;
   const variantIdForUrl = `${match.region_name}:${match.start}:${match.variant_name}`;
@@ -220,16 +306,16 @@ const VariantSearchRecord = (props: {
 
   return (
     <div>
-      <span
+      <TextButton
         className={styles.variantMatch}
-        ref={anchorRef}
+        ref={setAnchorElement}
         onClick={handleClick}
       >
         {match.variant_name}
-      </span>
-      {shouldShowTooltip && anchorRef.current && (
+      </TextButton>
+      {shouldShowTooltip && anchorElement && (
         <PointerBox
-          anchor={anchorRef.current}
+          anchor={anchorElement}
           className={classNames(
             styles.tooltip,
             pointerBoxStyles.pointerBoxShadow
@@ -250,7 +336,9 @@ const GeneRecord = (props: { match: SearchMatch; species: CommittedItem }) => {
     species: { genome_tag, genome_id }
   } = props as { match: GeneSearchMatch; species: CommittedItem };
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
-  const anchorRef = useRef<HTMLSpanElement>(null);
+  const [anchorElement, setAnchorElement] = useState<HTMLButtonElement | null>(
+    null
+  );
 
   const genomeIdForUrl = genome_tag || genome_id;
 
@@ -287,13 +375,19 @@ const GeneRecord = (props: { match: SearchMatch; species: CommittedItem }) => {
 
   return (
     <>
-      <span className={styles.geneMatch} ref={anchorRef} onClick={handleClick}>
-        <span className={styles.geneSymbol}>{match.symbol}</span>
+      <TextButton
+        className={styles.geneMatch}
+        ref={setAnchorElement}
+        onClick={handleClick}
+      >
+        {match.symbol && (
+          <span className={styles.geneSymbol}>{match.symbol}</span>
+        )}
         <span className={styles.stableId}>{match.stable_id}</span>
-      </span>
-      {shouldShowTooltip && anchorRef.current && (
+      </TextButton>
+      {shouldShowTooltip && anchorElement && (
         <PointerBox
-          anchor={anchorRef.current}
+          anchor={anchorElement}
           className={classNames(
             styles.tooltip,
             pointerBoxStyles.pointerBoxShadow

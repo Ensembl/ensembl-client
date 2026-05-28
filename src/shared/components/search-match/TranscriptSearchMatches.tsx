@@ -15,26 +15,19 @@
  */
 
 import { useState } from 'react';
-
 import classNames from 'classnames';
-
-import { useAppDispatch } from 'src/store';
-import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-
-import analyticsTracking from 'src/services/analytics-service';
 
 import PointerBox, {
   Position as PointerBoxPosition
 } from 'src/shared/components/pointer-box/PointerBox';
 import TextButton from 'src/shared/components/text-button/TextButton';
-import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-import { SearchResults } from 'src/shared/types/search-api/search-results';
+import { ViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
 
-import type { VariantSearchMatch as VariantSearchMatchType } from 'src/shared/types/search-api/search-match';
-import type { AppName as AppNameForViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import type { TranscriptSearchMatch as TranscriptSearchMatchType } from 'src/shared/types/search-api/search-match';
 import type {
   FeatureSearchAppName,
   FeatureSearchMatchPosition
@@ -43,32 +36,31 @@ import type {
 import styles from './SearchMatch.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';
 
-type VariantSearchMatchesProps = {
+type TranscriptSearchMatchesProps = {
   app: FeatureSearchAppName;
   mode: FeatureSearchMatchPosition;
   results: SearchResults;
   genomeIdForUrl?: string;
-  onMatchNavigation?: () => void; // currently, there are no requirements for data to be passed in this callback
+  onMatchNavigation?: () => void;
 };
 
-const VariantSearchMatches = (props: VariantSearchMatchesProps) => {
+const TranscriptSearchMatches = (props: TranscriptSearchMatchesProps) => {
   const { results, app, mode, genomeIdForUrl, onMatchNavigation } = props;
   const { matches } = results;
 
   return (
     <div className={styles.searchMatches}>
-      {matches.map((match, index) => {
-        const variantMatch = match as VariantSearchMatchType;
-        const key = `${variantMatch.variant_name}:${variantMatch.region_name}:${variantMatch.start}`;
+      {matches.map((match) => {
+        const transcriptMatch = match as TranscriptSearchMatchType;
+        const key = transcriptMatch.stable_id;
 
         return (
           <Match
             key={key}
-            match={variantMatch}
+            match={transcriptMatch}
             app={app}
             mode={mode}
             genomeIdForUrl={genomeIdForUrl}
-            position={index + 1}
             onMatchNavigation={onMatchNavigation}
           />
         );
@@ -78,67 +70,46 @@ const VariantSearchMatches = (props: VariantSearchMatchesProps) => {
 };
 
 type MatchProps = {
-  match: VariantSearchMatchType;
+  match: TranscriptSearchMatchType;
   app: FeatureSearchAppName;
   mode: FeatureSearchMatchPosition;
-  position: number;
   genomeIdForUrl?: string;
   onMatchNavigation?: () => void;
 };
 
 const Match = (props: MatchProps) => {
-  const { app, mode, position, match, genomeIdForUrl } = props;
-  const { region_name, start, variant_name, genome_id } =
-    match as VariantSearchMatchType;
+  const { mode, match, genomeIdForUrl } = props;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
-  const dispatch = useAppDispatch();
   const [anchorElement, setAnchorElement] = useState<HTMLSpanElement | null>(
     null
   );
-  const variantIdForUrl = `${region_name}:${start}:${variant_name}`;
 
   const onMatchClick = () => {
     setShouldShowTooltip(!shouldShowTooltip);
-
-    if (app === 'entityViewer') {
-      analyticsTracking.trackEvent({
-        category: `${app}_${mode}_search`,
-        action: 'select_link',
-        label: variantIdForUrl,
-        value: position
-      });
-    }
   };
 
-  const onAppClick = (selectedAppName?: AppNameForViewInApp) => {
-    if (app === 'genomeBrowser') {
-      dispatch(changeHighlightedTrackId(''));
-    }
-
-    if (app === 'entityViewer') {
-      analyticsTracking.trackEvent({
-        category: `${app}_${mode}_search`,
-        action: 'select_app',
-        label: selectedAppName
-      });
-    }
-
+  const onAppClick = () => {
     setShouldShowTooltip(!shouldShowTooltip);
     props.onMatchNavigation?.();
   };
 
   const hideTooltip = () => setShouldShowTooltip(false);
+  const symbolElement = match.symbol ? <span>{match.symbol}</span> : null;
+  const stableIdElement = <span>{match.stable_id}</span>;
 
   const urlForGenomeBrowser = urlFor.browser({
-    genomeId: genomeIdForUrl ?? genome_id,
-    focus: buildFocusIdForUrl({ type: 'variant', objectId: variantIdForUrl })
+    genomeId: genomeIdForUrl ?? match.genome_id,
+    focus: buildFocusIdForUrl({
+      type: 'transcript',
+      objectId: match.unversioned_stable_id
+    })
   });
 
   const urlForEntityViewer = urlFor.entityViewer({
-    genomeId: genomeIdForUrl ?? genome_id,
+    genomeId: genomeIdForUrl ?? match.genome_id,
     entityId: buildFocusIdForUrl({
-      type: 'variant',
-      objectId: variantIdForUrl
+      type: 'transcript',
+      objectId: match.unversioned_stable_id
     })
   });
 
@@ -162,7 +133,8 @@ const Match = (props: MatchProps) => {
     <>
       <div className={styles.searchMatch}>
         <TextButton className={styles.searchMatchButton} onClick={onMatchClick}>
-          {variant_name}
+          {stableIdElement}
+          {symbolElement}
         </TextButton>
         <span className={searchMatchAnchorClass} ref={setAnchorElement} />
       </div>
@@ -189,4 +161,4 @@ const Match = (props: MatchProps) => {
   );
 };
 
-export default VariantSearchMatches;
+export default TranscriptSearchMatches;

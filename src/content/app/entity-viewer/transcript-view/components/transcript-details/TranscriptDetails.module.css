@@ -56,6 +56,10 @@
   grid-column: column-middle;
 }
 
+.viewInApp {
+  padding-top: 12px;
+}
+
 .transcriptImageWrapper {
   display: inline-block;
   fill: white;

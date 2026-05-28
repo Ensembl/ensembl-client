@@ -19,6 +19,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 type SpeciesSelectorFeatureSearchState = {
   queries: {
     gene: string;
+    transcript: string;
     variant: string;
   };
 };
@@ -26,6 +27,7 @@ type SpeciesSelectorFeatureSearchState = {
 const initialState: SpeciesSelectorFeatureSearchState = {
   queries: {
     gene: '',
+    transcript: '',
     variant: ''
   }
 };
@@ -37,17 +39,25 @@ const speciesSelectorFeatureSearchSlice = createSlice({
     setGeneQuery: (state, action: PayloadAction<string>) => {
       state.queries.gene = action.payload;
     },
+    setTranscriptQuery: (state, action: PayloadAction<string>) => {
+      state.queries.transcript = action.payload;
+    },
     setVariantQuery: (state, action: PayloadAction<string>) => {
       state.queries.variant = action.payload;
     },
     clearQueries: (state) => {
       state.queries.gene = '';
+      state.queries.transcript = '';
       state.queries.variant = '';
     }
-  },
+  }
 });
 
-export const { setGeneQuery, setVariantQuery, clearQueries } =
-  speciesSelectorFeatureSearchSlice.actions;
+export const {
+  setGeneQuery,
+  setTranscriptQuery,
+  setVariantQuery,
+  clearQueries
+} = speciesSelectorFeatureSearchSlice.actions;
 
 export default speciesSelectorFeatureSearchSlice.reducer;

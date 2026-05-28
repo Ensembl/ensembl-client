@@ -22,7 +22,7 @@ import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
-import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
+import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
 import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
 import PopularSpeciesList from 'src/content/app/species-selector/components/popular-species-list/PopularSpeciesList';
 import GenomeGroups from 'src/content/app/species-selector/components/genome-groups/GenomeGroups';
@@ -67,7 +67,7 @@ const SpeciesSelectorMainView = () => {
     <div className={styles.main}>
       <div className={styles.searchPanel}>
         <div className={styles.speciesSearchFieldWrapper}>
-          <SpeciesSearchField onSearchSubmit={onSearchSubmit} />
+          <SpeciesSearchFieldWithLinks onSearchSubmit={onSearchSubmit} />
         </div>
         <GenomeCounts variety="full" className={styles.genomeCounts} />
         <SpeciesSelectorTabs

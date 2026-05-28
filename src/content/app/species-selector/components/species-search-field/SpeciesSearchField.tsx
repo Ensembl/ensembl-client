@@ -28,12 +28,19 @@ export type Props = {
   query: string;
   onSearchSubmit: (query: string) => void | (() => void);
   canSubmit?: boolean;
+  label?: string | null;
   onInput?: ((event: InputEvent<HTMLInputElement>) => void) | (() => void);
   onClose?: () => void;
 };
 
 export const SpeciesSearchField = (props: Props) => {
-  const { query, onInput, canSubmit = true, onClose } = props;
+  const {
+    query,
+    onInput,
+    canSubmit = true,
+    label = 'Find a species',
+    onClose
+  } = props;
 
   const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -41,8 +48,11 @@ export const SpeciesSearchField = (props: Props) => {
   };
 
   return (
-    <form className={styles.grid} onSubmit={onSubmit}>
-      <label className={styles.label}>Find a species</label>
+    <form
+      className={classNames(styles.grid, { [styles.gridWithoutLabel]: !label })}
+      onSubmit={onSubmit}
+    >
+      {label && <label className={styles.label}>{label}</label>}
       <ShadedInput
         size="large"
         type="search"

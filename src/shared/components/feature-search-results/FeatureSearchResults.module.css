@@ -79,9 +79,18 @@
   cursor: pointer;
 }
 
+.transcriptMatch {
+  color: var(--color-blue);
+  cursor: pointer;
+}
+
 .geneSymbol {
   font-weight: var(--font-weight-bold);
   margin-right: 8px;
+}
+
+.transcriptSymbol {
+  margin-left: 8px;
 }
 
 .closeButton {

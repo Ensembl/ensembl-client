@@ -31,10 +31,12 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import { getFeatureSearchQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
 import {
   useLazySearchGenesQuery,
+  useLazySearchTranscriptsQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
 import {
   updateGeneQuery,
+  updateTranscriptQuery,
   updateVariantQuery
 } from 'src/shared/state/feature-search/featureSearchSlice';
 import {
@@ -46,6 +48,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
 import GeneSearchMatches from 'src/shared/components/search-match/GeneSearchMatches';
+import TranscriptSearchMatches from 'src/shared/components/search-match/TranscriptSearchMatches';
 import VariantSearchMatches from 'src/shared/components/search-match/VariantSearchMatches';
 import TextButton from '../text-button/TextButton';
 
@@ -74,9 +77,14 @@ const InterstitialSearch = (props: Props) => {
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
+  const [triggerTranscriptSearch, transcriptSearchResults] =
+    useLazySearchTranscriptsQuery();
+  const { currentData: currentTranscriptSearchResults } =
+    transcriptSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
   const resetGeneSearch = geneSearchResults.reset;
+  const resetTranscriptSearch = transcriptSearchResults.reset;
   const resetVariantSearch = variantSearchResults.reset;
   const {
     currentData: currentVariantSearchResults,
@@ -87,12 +95,14 @@ const InterstitialSearch = (props: Props) => {
   const query =
     featureSearchQueries[activeSearchMode as keyof typeof featureSearchQueries];
   const isGeneSearchMode = activeSearchMode === 'gene';
+  const isTranscriptSearchMode = activeSearchMode === 'transcript';
   const isVariantSearchMode = activeSearchMode === 'variant';
 
   useEffect(() => {
     resetGeneSearch();
+    resetTranscriptSearch();
     resetVariantSearch();
-  }, [genomeId, resetGeneSearch, resetVariantSearch]);
+  }, [genomeId, resetGeneSearch, resetTranscriptSearch, resetVariantSearch]);
 
   useEffect(() => {
     if (!query) {
@@ -110,15 +120,21 @@ const InterstitialSearch = (props: Props) => {
       triggerGeneSearch(searchParams);
     }
 
+    if (isTranscriptSearchMode) {
+      triggerTranscriptSearch(searchParams);
+    }
+
     if (isVariantSearchMode) {
       triggerVariantSearch(searchParams);
     }
   }, [
     query,
     isGeneSearchMode,
+    isTranscriptSearchMode,
     isVariantSearchMode,
     genomeId,
     triggerGeneSearch,
+    triggerTranscriptSearch,
     triggerVariantSearch
   ]);
 
@@ -136,6 +152,18 @@ const InterstitialSearch = (props: Props) => {
 
       if (isEmpty) {
         geneSearchResults.reset();
+      }
+    } else if (isTranscriptSearchMode) {
+      dispatch(
+        updateTranscriptQuery({
+          app,
+          genomeId,
+          query: input
+        })
+      );
+
+      if (isEmpty) {
+        transcriptSearchResults.reset();
       }
     } else if (isVariantSearchMode) {
       dispatch(
@@ -162,15 +190,23 @@ const InterstitialSearch = (props: Props) => {
 
   const isGeneSearchResultsDefined =
     isGeneSearchMode && currentGeneSearchResults;
+  const isTranscriptSearchResultsDefined =
+    isTranscriptSearchMode && currentTranscriptSearchResults;
   const isVariantSearchResultsDefined =
     isVariantSearchMode && currentVariantSearchResults;
   const isLoading =
     (isGeneSearchMode && geneSearchResults.isFetching) ||
+    (isTranscriptSearchMode && transcriptSearchResults.isFetching) ||
     (isVariantSearchMode && variantSearchResults.isFetching);
 
   const totalSearchHitsComponent = isGeneSearchResultsDefined ? (
     <TotalSearchHits
       results={currentGeneSearchResults}
+      featureSearchMode={activeSearchMode}
+    />
+  ) : isTranscriptSearchResultsDefined ? (
+    <TotalSearchHits
+      results={currentTranscriptSearchResults}
       featureSearchMode={activeSearchMode}
     />
   ) : isVariantSearchResultsDefined ? (
@@ -183,6 +219,13 @@ const InterstitialSearch = (props: Props) => {
   const matchesResultContent = isGeneSearchResultsDefined ? (
     <GeneSearchMatches
       results={currentGeneSearchResults}
+      app={app}
+      mode="interstitial"
+      genomeIdForUrl={genomeIdForUrl}
+    />
+  ) : isTranscriptSearchResultsDefined ? (
+    <TranscriptSearchMatches
+      results={currentTranscriptSearchResults}
       app={app}
       mode="interstitial"
       genomeIdForUrl={genomeIdForUrl}

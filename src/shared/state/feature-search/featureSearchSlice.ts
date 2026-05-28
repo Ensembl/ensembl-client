@@ -19,6 +19,7 @@ import { type FeatureSearchAppName } from 'src/shared/helpers/featureSearchHelpe
 
 type Queries = {
   gene: string;
+  transcript: string;
   variant: string;
 };
 
@@ -37,6 +38,7 @@ const initialState: State = {
 const getDefaultStateForGenome = () => ({
   queries: {
     gene: '',
+    transcript: '',
     variant: ''
   }
 });
@@ -65,6 +67,15 @@ const featureSearchSlice = createSlice({
       }
       state[app][genomeId].queries.gene = query;
     },
+    updateTranscriptQuery(state, action: PayloadAction<UpdateQueryPayload>) {
+      const {
+        payload: { app, genomeId, query }
+      } = action;
+      if (!state[app][genomeId]) {
+        state[app][genomeId] = getDefaultStateForGenome();
+      }
+      state[app][genomeId].queries.transcript = query;
+    },
     updateVariantQuery(state, action: PayloadAction<UpdateQueryPayload>) {
       const {
         payload: { app, genomeId, query }
@@ -81,7 +92,11 @@ const featureSearchSlice = createSlice({
   }
 });
 
-export const { updateGeneQuery, updateVariantQuery, clearSearch } =
-  featureSearchSlice.actions;
+export const {
+  updateGeneQuery,
+  updateTranscriptQuery,
+  updateVariantQuery,
+  clearSearch
+} = featureSearchSlice.actions;
 
 export default featureSearchSlice.reducer;

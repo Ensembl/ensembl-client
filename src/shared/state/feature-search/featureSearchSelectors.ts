@@ -27,6 +27,6 @@ export const getFeatureSearchQueries = createSelector(
     }
   ],
   (queries) => {
-    return queries ?? { gene: '', variant: '' };
+    return queries ?? { gene: '', transcript: '', variant: '' };
   }
 );

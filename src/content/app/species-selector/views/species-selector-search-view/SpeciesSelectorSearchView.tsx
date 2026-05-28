@@ -35,11 +35,13 @@ import {
 import { useAppDispatch, useAppSelector } from 'src/store';
 import {
   useLazySearchGenesQuery,
+  useLazySearchTranscriptsQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
 import { getCommittedSpecies } from '../../state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import {
   setGeneQuery,
+  setTranscriptQuery,
   setVariantQuery
 } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSlice';
 import { getFeatureQueries } from '../../state/species-selector-feature-search-slice/speciesSelectorFeatureSearchSelectors';
@@ -71,6 +73,10 @@ const SpeciesSelectorSearchView = () => {
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
+  const [triggerTranscriptSearch, transcriptSearchResults] =
+    useLazySearchTranscriptsQuery();
+  const { currentData: currentTranscriptSearchResults } =
+    transcriptSearchResults;
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
   const {
@@ -84,24 +90,31 @@ const SpeciesSelectorSearchView = () => {
     [committedSpecies]
   );
 
-  const queryFromParams = searchParams.get('query') || '';
+  const queryFromParams = searchParams.get('query');
+  const query = queryFromParams ?? featureQueries[activeSearchMode];
   const isGeneSearchMode = activeSearchMode === 'gene';
+  const isTranscriptSearchMode = activeSearchMode === 'transcript';
   const isVariantSearchMode = activeSearchMode === 'variant';
 
   useEffect(() => {
-    if (isGeneSearchMode) {
-      dispatch(setGeneQuery(queryFromParams));
-    } else if (isVariantSearchMode) {
-      dispatch(setVariantQuery(queryFromParams));
+    if (queryFromParams !== null) {
+      if (isGeneSearchMode) {
+        dispatch(setGeneQuery(queryFromParams));
+      } else if (isTranscriptSearchMode) {
+        dispatch(setTranscriptQuery(queryFromParams));
+      } else if (isVariantSearchMode) {
+        dispatch(setVariantQuery(queryFromParams));
+      }
     }
 
-    if (!queryFromParams) {
+    // no query in param or state, don't trigger search
+    if (!query || !genomeIds.length) {
       return;
     }
 
     const searchParams = {
       genome_ids: genomeIds,
-      query: queryFromParams,
+      query,
       page: 1,
       per_page: 50
     };
@@ -110,16 +123,23 @@ const SpeciesSelectorSearchView = () => {
       triggerGeneSearch(searchParams);
     }
 
+    if (isTranscriptSearchMode) {
+      triggerTranscriptSearch(searchParams);
+    }
+
     if (isVariantSearchMode) {
       triggerVariantSearch(searchParams);
     }
   }, [
+    query,
     queryFromParams,
     dispatch,
     isGeneSearchMode,
+    isTranscriptSearchMode,
     isVariantSearchMode,
     genomeIds,
     triggerGeneSearch,
+    triggerTranscriptSearch,
     triggerVariantSearch
   ]);
 
@@ -135,8 +155,13 @@ const SpeciesSelectorSearchView = () => {
   const onSearchClear = () => {
     if (isGeneSearchMode) {
       geneSearchResults.reset();
+      dispatch(setGeneQuery(''));
+    } else if (isTranscriptSearchMode) {
+      transcriptSearchResults.reset();
+      dispatch(setTranscriptQuery(''));
     } else if (isVariantSearchMode) {
       variantSearchResults.reset();
+      dispatch(setVariantQuery(''));
     }
     searchParams.delete('query');
     setSearchParams(searchParams, { replace: true });
@@ -166,8 +191,9 @@ const SpeciesSelectorSearchView = () => {
         {isFeatureSearchMode(activeSearchMode) && (
           <>
             <FeatureSearchForm
+              key={activeSearchMode}
               activeFeatureSearchMode={activeSearchMode as FeatureSearchMode}
-              query={queryFromParams}
+              query={query}
               onSearchSubmit={onFeatureSearchSubmit}
               onClear={onSearchClear}
             />
@@ -176,9 +202,15 @@ const SpeciesSelectorSearchView = () => {
         )}
 
         {isGeneSearchMode ? (
-          <GeneFeatureSearchResults
+          <FeatureSearchResultsWrapper
             featureSearchMode={activeSearchMode}
             searchResults={currentGeneSearchResults}
+            speciesList={committedSpecies}
+          />
+        ) : isTranscriptSearchMode ? (
+          <FeatureSearchResultsWrapper
+            featureSearchMode={activeSearchMode}
+            searchResults={currentTranscriptSearchResults}
             speciesList={committedSpecies}
           />
         ) : isVariantSearchMode ? (
@@ -228,7 +260,7 @@ const SearchTabs = (props: {
   );
 };
 
-const GeneFeatureSearchResults = (props: {
+const FeatureSearchResultsWrapper = (props: {
   featureSearchMode: FeatureSearchMode;
   searchResults: SearchResults | undefined;
   speciesList: CommittedItem[];

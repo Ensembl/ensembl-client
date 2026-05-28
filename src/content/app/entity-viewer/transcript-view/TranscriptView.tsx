@@ -42,7 +42,8 @@ import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/F
 import styles from './TranscriptView.module.css';
 
 const TranscriptView = () => {
-  const { activeGenomeId, transcriptId } = useTranscriptViewIds();
+  const { activeGenomeId, genomeIdForUrl, transcriptId } =
+    useTranscriptViewIds();
   const [rulerTicks, setRulerTicks] = useState<TicksAndScale | null>(null);
   const [searchParams] = useSearchParams();
   const { currentData } = useDefaultEntityViewerTranscriptQuery(
@@ -108,6 +109,7 @@ const TranscriptView = () => {
       {view === defaultView && rulerTicks ? (
         <TranscriptDetails
           genomeId={activeGenomeId}
+          genomeIdForUrl={genomeIdForUrl ?? activeGenomeId}
           transcript={currentData.transcript}
           rulerTicks={rulerTicks}
         />

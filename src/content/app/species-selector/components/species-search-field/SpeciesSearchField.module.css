@@ -15,11 +15,21 @@
     'input controls close';
 }
 
+.gridWithoutLabel {
+  grid-template-areas: 'input controls';
+}
+
 @container (width < 600px) {
   .grid {
     grid-template-columns: 1fr;
     grid-template-areas:
       'label'
+      'input'
+      'controls';
+  }
+
+  .gridWithoutLabel {
+    grid-template-areas:
       'input'
       'controls';
   }
@@ -55,4 +65,23 @@
 .close {
   grid-area: close;
   align-self: center;
+}
+
+.searchFieldWithLinks {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+
+.searchLinks {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  column-gap: 30px;
+  margin-left: 20px;
+}
+
+.featureSearchLink {
+  color: var(--color-blue);
+  text-decoration: none;
 }
