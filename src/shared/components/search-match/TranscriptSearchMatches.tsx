@@ -17,9 +17,6 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 
-import { useAppDispatch } from 'src/store';
-import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -81,9 +78,8 @@ type MatchProps = {
 };
 
 const Match = (props: MatchProps) => {
-  const { app, mode, match, genomeIdForUrl } = props;
+  const { mode, match, genomeIdForUrl } = props;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
-  const dispatch = useAppDispatch();
   const [anchorElement, setAnchorElement] = useState<HTMLSpanElement | null>(
     null
   );
@@ -93,10 +89,6 @@ const Match = (props: MatchProps) => {
   };
 
   const onAppClick = () => {
-    if (app === 'genomeBrowser') {
-      dispatch(changeHighlightedTrackId(''));
-    }
-
     setShouldShowTooltip(!shouldShowTooltip);
     props.onMatchNavigation?.();
   };
