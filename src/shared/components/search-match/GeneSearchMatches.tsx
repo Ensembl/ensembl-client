@@ -17,9 +17,6 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 
-import { useAppDispatch } from 'src/store';
-import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
@@ -89,7 +86,6 @@ const Match = (props: MatchProps) => {
   const { app, mode, position, match } = props;
   const { symbol, stable_id } = match as GeneSearchMatchType;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
-  const dispatch = useAppDispatch();
   const [anchorElement, setAnchorElement] = useState<HTMLSpanElement | null>(
     null
   );
@@ -108,10 +104,6 @@ const Match = (props: MatchProps) => {
   };
 
   const onAppClick = (selectedAppName?: AppNameForViewInApp) => {
-    if (app === 'genomeBrowser') {
-      dispatch(changeHighlightedTrackId(''));
-    }
-
     if (app === 'entityViewer') {
       analyticsTracking.trackEvent({
         category: `${app}_${mode}_search`,

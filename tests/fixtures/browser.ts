@@ -183,7 +183,6 @@ export const createMockBrowserState = () => {
         [fakeGenomeId]: {
           selectedTrackPanelTab: TrackSet.GENOMIC,
           isTrackPanelOpened: true,
-          highlightedTrackId: '',
           collapsedTrackIds: []
         }
       },
