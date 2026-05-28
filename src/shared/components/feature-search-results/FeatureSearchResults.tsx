@@ -237,10 +237,10 @@ const TranscriptRecord = (props: {
         ref={setAnchorElement}
         onClick={handleClick}
       >
+        <span className={styles.stableId}>{match.stable_id}</span>
         {match.symbol && (
           <span className={styles.transcriptSymbol}>{match.symbol}</span>
         )}
-        <span className={styles.stableId}>{match.stable_id}</span>
       </TextButton>
       {shouldShowTooltip && anchorElement && (
         <PointerBox
