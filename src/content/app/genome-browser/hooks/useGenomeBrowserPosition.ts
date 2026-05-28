@@ -31,7 +31,6 @@ import {
 
 import {
   updateActualChrLocation,
-  updateChrLocation,
   type ChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
@@ -84,11 +83,6 @@ const useGenomeBrowserPosition = () => {
       } else {
         const chrLocation = [chromosome, start, end] as ChrLocation;
 
-        dispatch(
-          updateChrLocation({
-            [activeGenomeId as string]: [chromosome, start, end]
-          })
-        );
         navigate(
           urlFor.browser({
             genomeId: genomeIdForUrl,
