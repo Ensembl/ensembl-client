@@ -67,64 +67,6 @@ export type Data = {
   downstreamFlankingSequence: string;
 };
 
-// type State = {
-//   isLoading: boolean;
-//   isError: boolean;
-//   queryParams: QueryParameters | null;
-//   data: Data | null;
-// };
-
-// type FetchStartAction = {
-//   type: 'fetch-start';
-//   payload: QueryParameters;
-// };
-
-// type SuccessAction = {
-//   type: 'success';
-//   payload: Data;
-// };
-
-// type ErrorAction = {
-//   type: 'error';
-// };
-
-// type Action =
-//   | FetchStartAction
-//   | SuccessAction
-//   | ErrorAction;
-
-// const initialState: State = {
-//   isLoading: false,
-//   isError: false,
-//   queryParams: null,
-//   data: null
-// };
-
-// const reducer = (state: State, action: Action): State => {
-//   switch (action.type) {
-//     case 'fetch-start':
-//       return {
-//         ...state,
-//         isLoading: true,
-//         isError: false,
-//         queryParams: action.payload
-//       };
-//     case 'success':
-//       return {
-//         ...state,
-//         isLoading: false,
-//         isError: false,
-//         data: action.payload
-//       };
-//     case 'error':
-//       return {
-//         ...state,
-//         isLoading: false,
-//         isError: true
-//       };
-//   }
-// };
-
 const fetchExonsData = async ({
   transcriptId,
   genomeId,
@@ -133,9 +75,6 @@ const fetchExonsData = async ({
   isError: boolean;
   data: Data | null;
 }> => {
-  // const sleep = new Promise(resolve => setTimeout(resolve, 5000));
-  // await sleep;
-
   const transcriptsQueryPromise = reduxDispatch(
     fetchDefaultEntityViewerTranscript.initiate(
       {

@@ -60,9 +60,11 @@ const PanelContent = ({
 }: {
   promise: NonNullable<ReturnType<typeof useExonsData>>;
 }) => {
-  const { data } = use(promise);
+  const { data, isError } = use(promise);
 
-  if (data) {
+  if (isError) {
+    return <p>An error occurred while fetching the data</p>;
+  } else if (data) {
     return <ExonsTable data={data} />;
   }
 };
