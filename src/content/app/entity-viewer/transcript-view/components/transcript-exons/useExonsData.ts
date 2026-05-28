@@ -172,8 +172,6 @@ const fetchExonsData = async ({
   };
 };
 
-// FIXME: RENAME THE FILE
-
 const useExonsData = ({ genomeId, transcriptId }: QueryParameters) => {
   const reduxDispatch = useAppDispatch();
   const [dataPromise, setDataPromise] = useState<ReturnType<
@@ -243,8 +241,6 @@ const getDownstreamGenomicSequenceQueryParams = ({
     strand: transcript.slice.strand.code
   };
 };
-
-// TODO: getCDSSequenceQueryParams
 
 const prepareExonsData = ({
   transcript,
