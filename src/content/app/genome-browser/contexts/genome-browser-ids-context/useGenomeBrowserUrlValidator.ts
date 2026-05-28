@@ -178,18 +178,21 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
     stateRef.current = currentState;
   }, [currentState]);
 
-  const runAfterValidation = (fn: () => unknown) => {
-    if (
-      !hasFocusObjectToValidate ||
-      (stateRef.current.doneValidating &&
-        !stateRef.current.isMissingFocusObject &&
-        !stateRef.current.isInvalidLocation)
-    ) {
-      fn();
-    } else {
-      postValidationQueueRef.current.push(fn);
-    }
-  };
+  const runAfterValidation = useCallback(
+    (fn: () => unknown) => {
+      if (
+        !hasFocusObjectToValidate ||
+        (stateRef.current.doneValidating &&
+          !stateRef.current.isMissingFocusObject &&
+          !stateRef.current.isInvalidLocation)
+      ) {
+        fn();
+      } else {
+        postValidationQueueRef.current.push(fn);
+      }
+    },
+    [hasFocusObjectToValidate]
+  );
 
   const resetValidator = () => {
     setValidationResultState({

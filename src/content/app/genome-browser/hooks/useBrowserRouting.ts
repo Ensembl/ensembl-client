@@ -93,6 +93,64 @@ const useBrowserRouting = () => {
 
   const chrLocation = location ? getParsedChromosomeLocation(location) : null;
 
+  const changeGenomeId = useCallback(
+    (genomeId: string) => {
+      const species = allCommittedSpecies.find(
+        (species) => species.genome_id === genomeId
+      ) as CommittedItem;
+      const genomeIdForUrl = species.genome_tag ?? species.genome_id;
+      const chrLocation = allChrLocations[genomeId];
+      const activeFocusObjectId = allActiveFocusObjectIds[genomeId];
+      const focusIdForUrl = activeFocusObjectId
+        ? buildFocusIdForUrl(activeFocusObjectId)
+        : null;
+
+      const nextUrlParams = {
+        genomeId: genomeIdForUrl,
+        focus: focusIdForUrl,
+        location: chrLocation ? getChrLocationStr(chrLocation) : null
+      };
+
+      dispatch(setActiveGenomeId(genomeId));
+      // Consider it as first render when we change genome
+      firstRenderRef.current = true;
+
+      // In case the url is simply /genome-browser, use the `replace` history method to redirect the user further.
+      // This will allow the user to return from the next page (genome browser with genome id selected)
+      // back to the page from which they have navigated to the current one. If the `push` method is used,
+      // the user will not be able to get back past this page, because the url without genome id will remain
+      // in the history, and the user will be forcefully redirected to the url with the genome id.
+      //
+      // NOTE: the logic will likely change in the future when /genome-browser without the selected genome id
+      // becomes a valid searchable page in its own right.
+
+      navigate(urlFor.browser(nextUrlParams), { replace: !genomeIdInUrl });
+    },
+    [
+      genomeIdInUrl,
+      allActiveFocusObjectIds,
+      allChrLocations,
+      allCommittedSpecies,
+      dispatch,
+      navigate
+    ]
+  );
+
+  const shouldUpdateRedux = useCallback(() => {
+    return (
+      genomeId !== activeGenomeId ||
+      focusObjectId !== activeFocusObjectId ||
+      !isEqual(chrLocation, allChrLocations[activeGenomeId])
+    );
+  }, [
+    genomeId,
+    activeGenomeId,
+    focusObjectId,
+    activeFocusObjectId,
+    chrLocation,
+    allChrLocations
+  ]);
+
   useEffect(() => {
     if (!genomeIdInUrl) {
       // handling navigation to /browser
@@ -159,15 +217,31 @@ const useBrowserRouting = () => {
       }
     }
 
-    runAfterValidation(() => {
-      dispatch(setDataFromUrlAndSave(payload));
-    });
+    if (shouldUpdateRedux()) {
+      runAfterValidation(() => {
+        dispatch(setDataFromUrlAndSave(payload));
+      });
+    }
   }, [
     genomeId,
+    activeGenomeId,
+    activeFocusObjectId,
+    allChrLocations,
+    allCommittedSpecies,
+    changeBrowserLocation,
+    changeFocusObject,
+    changeGenomeId,
+    chrLocation,
+    genomeIdForUrl,
+    genomeIdInUrl,
+    runAfterValidation,
     isFetchingGenomeId,
     focusObjectIdInUrl,
     focusObjectId,
     genomeBrowser,
+    shouldUpdateRedux,
+    dispatch,
+    navigate,
     location
   ]);
 
@@ -175,43 +249,7 @@ const useBrowserRouting = () => {
     if (!focusObject && activeFocusObjectId) {
       dispatch(fetchFocusObject(activeFocusObjectId));
     }
-  }, [focusObject, activeFocusObjectId]);
-
-  const changeGenomeId = useCallback(
-    (genomeId: string) => {
-      const species = allCommittedSpecies.find(
-        (species) => species.genome_id === genomeId
-      ) as CommittedItem;
-      const genomeIdForUrl = species.genome_tag ?? species.genome_id;
-      const chrLocation = allChrLocations[genomeId];
-      const activeFocusObjectId = allActiveFocusObjectIds[genomeId];
-      const focusIdForUrl = activeFocusObjectId
-        ? buildFocusIdForUrl(activeFocusObjectId)
-        : null;
-
-      const nextUrlParams = {
-        genomeId: genomeIdForUrl,
-        focus: focusIdForUrl,
-        location: chrLocation ? getChrLocationStr(chrLocation) : null
-      };
-
-      dispatch(setActiveGenomeId(genomeId));
-      // Consider it as first render when we change genome
-      firstRenderRef.current = true;
-
-      // In case the url is simply /genome-browser, use the `replace` history method to redirect the user further.
-      // This will allow the user to return from the next page (genome browser with genome id selected)
-      // back to the page from which they have navigated to the current one. If the `push` method is used,
-      // the user will not be able to get back past this page, because the url without genome id will remain
-      // in the history, and the user will be forcefully redirected to the url with the genome id.
-      //
-      // NOTE: the logic will likely change in the future when /genome-browser without the selected genome id
-      // becomes a valid searchable page in its own right.
-
-      navigate(urlFor.browser(nextUrlParams), { replace: !genomeIdInUrl });
-    },
-    [genomeIdInUrl]
-  );
+  }, [focusObject, activeFocusObjectId, dispatch]);
 
   return {
     changeGenomeId
