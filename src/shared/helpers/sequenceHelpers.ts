@@ -29,3 +29,35 @@ export const getReverseComplement = (sequence: string) =>
     .map((character) => forwardToReverseStrandMap.get(character) as string)
     .reverse()
     .join('');
+
+/**
+ * A function for taking slices of a sequence.
+ * Can be used either with coordinates from a longer sequence
+ * (e.g., here is a sequence that starts at position 10,000;
+ * give me its slice from position 10,010 to position 10,100),
+ * and with the coordinates of a slice relative to this sequence
+ * (e.g., here is a sequence; give me its slice that starts at position 10 and ends at position 100).
+ *
+ * The generated slice can be a reverse complement to the original sequence if desired
+ */
+export const getSequenceSlice = ({
+  sequence,
+  sequenceStart = 1,
+  sliceStart,
+  sliceEnd,
+  reverseComplement = false
+}: {
+  sequence: string; // 5' to 3'
+  sequenceStart?: number; // in Ensembl 1-based coordinates
+  // sequenceEnd?: number; // in Ensembl 1-based coordinates
+  sliceStart: number; // in Ensembl 1-based coordinates; relative to the 5' end of the sequence
+  sliceEnd: number; // in Ensembl 1-based coordinates; relative to the 5' end of the sequence
+  reverseComplement?: boolean;
+}) => {
+  const startIndex = sliceStart - sequenceStart;
+  const endIndex = sliceEnd - sequenceStart;
+
+  const slice = sequence.slice(startIndex, endIndex + 1);
+
+  return reverseComplement ? getReverseComplement(slice) : slice;
+};
