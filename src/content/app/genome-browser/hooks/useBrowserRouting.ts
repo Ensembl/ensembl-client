@@ -34,6 +34,7 @@ import {
   parseFocusIdFromUrl
 } from 'src/shared/helpers/focusObjectHelpers';
 
+import { setActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { setDataFromUrlAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
@@ -113,6 +114,7 @@ const useBrowserRouting = () => {
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
 
+      dispatch(setActiveGenomeId(genomeId));
       // Consider it as first render when we change genome
       firstRenderRef.current = true;
 
@@ -132,6 +134,7 @@ const useBrowserRouting = () => {
       allActiveFocusObjectIds,
       allChrLocations,
       allCommittedSpecies,
+      dispatch,
       navigate
     ]
   );
@@ -152,8 +155,8 @@ const useBrowserRouting = () => {
     previousChrLocation: ChrLocation | null | undefined;
   }) => {
     return (
-      genomeId === previousGenomeId ||
-      focusObjectIdInUrl === previousFocusObjectIdInUrl ||
+      genomeId === previousGenomeId &&
+      focusObjectIdInUrl === previousFocusObjectIdInUrl &&
       JSON.stringify(chrLocation) === JSON.stringify(previousChrLocation)
     );
   };
