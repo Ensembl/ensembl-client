@@ -132,7 +132,7 @@ const useFocusGene = (params: UseFocusGeneParams) => {
   const previousSeveralTranscriptsSetting = usePrevious(
     focusGeneTrackSettings?.settings.several
   );
-  const previousVisibleTranscriptIds = usePrevious(visibleTranscriptIds);
+  const previousVisibleTranscriptIdsRef = useRef<string[]>(null);
 
   const { currentData: fetchedFocusGeneData } = useGetTrackPanelGeneQuery(
     {
@@ -209,7 +209,7 @@ const useFocusGene = (params: UseFocusGeneParams) => {
           message.payload.summary
         );
         if (!focusGeneTrackInfo) {
-          return; // shouldn't happen
+          return;
         }
 
         const { gene_id, transcript_ids } = focusGeneTrackInfo;
@@ -254,7 +254,13 @@ const useFocusGene = (params: UseFocusGeneParams) => {
    * 2) if not, then what is the value of the 1/5 transcripts toggle in track settings panel
    */
   useEffect(() => {
-    if (!geneStableId || !fetchedFocusGeneData || !focusGene) {
+    // NOTE updateFocusGeneTranscripts requires genomeBrowser to be defined
+    if (
+      !genomeBrowser ||
+      !geneStableId ||
+      !fetchedFocusGeneData ||
+      !focusGene
+    ) {
       return;
     }
 
@@ -274,19 +280,22 @@ const useFocusGene = (params: UseFocusGeneParams) => {
         numberOfTranscriptsToShow
       );
       updateFocusGeneTranscripts(transcriptIds);
-    } else if (visibleTranscriptIds !== previousVisibleTranscriptIds) {
+      previousVisibleTranscriptIdsRef.current = visibleTranscriptIds;
+    } else if (
+      visibleTranscriptIds !== previousVisibleTranscriptIdsRef.current
+    ) {
       updateFocusGeneTranscripts(visibleTranscriptIds);
+      previousVisibleTranscriptIdsRef.current = visibleTranscriptIds;
     }
   }, [
-    genomeBrowser, // updateFocusGeneTranscripts requires genomeBrowser to be defined
+    genomeBrowser,
     geneStableId,
     focusGeneTrackSettings?.settings.several,
     fetchedFocusGeneData,
     previousSeveralTranscriptsSetting,
     updateFocusGeneTranscripts,
     focusGene,
-    visibleTranscriptIds,
-    previousVisibleTranscriptIds
+    visibleTranscriptIds
   ]);
 
   // apply track settings other than several transcripts
