@@ -129,7 +129,6 @@ const useFocusGene = (params: UseFocusGeneParams) => {
   const showSeveralTranscriptsRef = useRef(
     focusGeneTrackSettings?.settings.several
   );
-  const visibleTranscriptsReportedRef = useRef(false);
   const previousSeveralTranscriptsSetting = usePrevious(
     focusGeneTrackSettings?.settings.several
   );
@@ -209,7 +208,7 @@ const useFocusGene = (params: UseFocusGeneParams) => {
         const focusGeneTrackInfo = getFocusGeneTrackInfo(
           message.payload.summary
         );
-        if (!focusGeneTrackInfo || !visibleTranscriptsReportedRef.current) {
+        if (!focusGeneTrackInfo) {
           return;
         }
 
@@ -282,13 +281,11 @@ const useFocusGene = (params: UseFocusGeneParams) => {
       );
       updateFocusGeneTranscripts(transcriptIds);
       previousVisibleTranscriptIdsRef.current = visibleTranscriptIds;
-      visibleTranscriptsReportedRef.current = true;
     } else if (
       visibleTranscriptIds !== previousVisibleTranscriptIdsRef.current
     ) {
       updateFocusGeneTranscripts(visibleTranscriptIds);
       previousVisibleTranscriptIdsRef.current = visibleTranscriptIds;
-      visibleTranscriptsReportedRef.current = true;
     }
   }, [
     genomeBrowser,
