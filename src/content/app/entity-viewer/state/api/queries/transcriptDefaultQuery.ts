@@ -79,6 +79,9 @@ export const defaultTranscriptQuery = gql`
               start
               end
             }
+            strand {
+              code
+            }
           }
         }
       }
@@ -89,6 +92,9 @@ export const defaultTranscriptQuery = gql`
             start
             end
             length
+          }
+          strand {
+            code
           }
         }
         relative_location {
@@ -128,13 +134,15 @@ type SliceInTranscript = DefaultEntityViewerTranscript['slice'] &
   Pick3<Slice, 'region', 'sequence', 'checksum'>;
 type SplicedExon = DefaultEntityViewerTranscript['spliced_exons'][number] & {
   index: number;
-  exon: Pick3<Exon, 'slice', 'location', 'start' | 'end' | 'length'>;
+  exon: Pick3<Exon, 'slice', 'location', 'start' | 'end' | 'length'> &
+    Pick3<Exon, 'slice', 'strand', 'code'>;
 };
 type Intron = Pick<FullIntron, 'index' | 'relative_location'> &
-  Pick3<FullIntron, 'slice', 'location', 'start' | 'end' | 'length'>;
+  Pick3<FullIntron, 'slice', 'location', 'start' | 'end' | 'length'> &
+  Pick3<FullIntron, 'slice', 'strand', 'code'>;
 
 export type DefaultEntityViewerTranscriptQueryResult = {
-  transcript: DefaultEntityViewerTranscript & {
+  transcript: Omit<DefaultEntityViewerTranscript, 'slice' | 'spliced_exons'> & {
     slice: SliceInTranscript;
     spliced_exons: SplicedExon[];
     introns: Intron[];

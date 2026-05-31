@@ -28,6 +28,7 @@ type RowMap = {
   startPhase?: number | string;
   endPhase?: number | string;
   length?: number;
+  strand: string;
   sequence: string;
 };
 
@@ -45,13 +46,15 @@ export const prepareExportTSV = ({ data }: { data: Data }) => {
 
   const upstreamSequenceRow = prepareTableRow(
     prepareFlankingSequenceRowData({
-      sequence: data.upstreamFlankingSequence,
+      sequence: data.upstreamFlankingSequence.sequence,
+      strand: data.upstreamFlankingSequence.strand,
       flank: 'upstream'
     })
   );
   const downstreamSequenceRow = prepareTableRow(
     prepareFlankingSequenceRowData({
-      sequence: data.downstreamFlankingSequence,
+      sequence: data.downstreamFlankingSequence.sequence,
+      strand: data.downstreamFlankingSequence.strand,
       flank: 'downstream'
     })
   );
@@ -73,9 +76,11 @@ export const prepareExportTSV = ({ data }: { data: Data }) => {
 
 const prepareFlankingSequenceRowData = ({
   sequence,
+  strand,
   flank
 }: {
   sequence: string;
+  strand: string;
   flank: 'upstream' | 'downstream';
 }): RowMap => {
   sequence = flank === 'upstream' ? `...${sequence}` : `${sequence}...`;
@@ -84,6 +89,7 @@ const prepareFlankingSequenceRowData = ({
 
   return {
     name: title,
+    strand,
     sequence
   };
 };
@@ -97,6 +103,7 @@ const prepareExonRowData = ({ exon }: { exon: Exon }): RowMap => {
     startPhase: exon.startPhase ?? undefined,
     endPhase: exon.endPhase ?? undefined,
     length: exon.length,
+    strand: exon.strand,
     sequence: exon.sequence
   };
 };
@@ -109,6 +116,7 @@ const prepareIntronRowData = ({ intron }: { intron: Intron }): RowMap => {
     startPhase: '-',
     endPhase: '-',
     length: intron.length,
+    strand: intron.strand,
     sequence: intron.sequence
   };
 };
@@ -122,6 +130,7 @@ const prepareTableRow = (data: RowMap) => {
     data.startPhase ?? '',
     data.endPhase ?? '',
     data.length ?? '',
+    data.strand,
     data.sequence
   ];
 

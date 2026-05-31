@@ -18,10 +18,15 @@ import { useState } from 'react';
 
 import { AppDispatch, useAppDispatch } from 'src/store';
 
+import { getSequenceSlice } from 'src/shared/helpers/sequenceHelpers';
+
 import { fetchDefaultEntityViewerTranscript } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import { fetchRefgetSequence } from 'src/shared/state/api-slices/refgetSlice';
 
 import type { DefaultEntityViewerTranscriptQueryResult } from 'src/content/app/entity-viewer/state/api/queries/transcriptDefaultQuery';
+import type { Strand } from 'src/shared/types/core-api/strand';
+
+type Transcript = DefaultEntityViewerTranscriptQueryResult['transcript'];
 
 export type QueryParameters = {
   genomeId: string;
@@ -40,6 +45,7 @@ export type EnrichedExon = {
   start: number;
   end: number;
   length: number;
+  strand: Strand;
   relativeStart: number;
   relativeEnd: number;
   startPhase: number | null;
@@ -54,6 +60,7 @@ export type EnrichedIntron = {
   start: number;
   end: number;
   length: number;
+  strand: Strand;
   relativeStart: number;
   relativeEnd: number;
   sequence: string;
@@ -63,8 +70,14 @@ export type Data = {
   exons: EnrichedExon[];
   introns: EnrichedIntron[];
   exonsAndIntrons: (EnrichedExon | EnrichedIntron)[];
-  upstreamFlankingSequence: string;
-  downstreamFlankingSequence: string;
+  upstreamFlankingSequence: {
+    strand: Strand;
+    sequence: string;
+  };
+  downstreamFlankingSequence: {
+    strand: Strand;
+    sequence: string;
+  };
 };
 
 const fetchExonsData = async ({
@@ -165,8 +178,14 @@ const fetchExonsData = async ({
       exons,
       introns,
       exonsAndIntrons,
-      upstreamFlankingSequence,
-      downstreamFlankingSequence
+      upstreamFlankingSequence: {
+        sequence: upstreamFlankingSequence,
+        strand: upstreamSequenceQueryParams.strand
+      },
+      downstreamFlankingSequence: {
+        sequence: downstreamFlankingSequence,
+        strand: downstreamSequenceQueryParams.strand
+      }
     },
     isError: false
   };
@@ -201,29 +220,46 @@ const getTranscriptGenomicSequenceQueryParams = (
   return {
     checksum: transcript.slice.region.sequence.checksum,
     start: transcript.slice.location.start,
-    end: transcript.slice.location.end,
-    strand: transcript.slice.strand.code
+    end: transcript.slice.location.end
   };
 };
 
+/**
+ * Make sure that, even for edge cases, the upstream sequence
+ * is a continuation of the sequence of the first exon,
+ * accounting for the strand
+ */
 const getUpstreamGenomicSequenceQueryParams = ({
   transcript,
   length = 57
 }: {
-  transcript: DefaultEntityViewerTranscriptQueryResult['transcript'];
+  transcript: Transcript;
   length?: number;
 }) => {
-  const end = transcript.slice.location.start - 1;
+  // find the first 5' exon (i.e. exon with index 1),
+  // then check its strand, and calculate the coordinates of 5' upstream sequence
+  const firstSplicedExon = transcript.spliced_exons.toSorted(
+    (e1, e2) => e1.index - e2.index
+  )[0];
+  const firstExon = firstSplicedExon.exon;
+  const strand = firstExon.slice.strand.code;
+
+  const end = firstExon.slice.location.start - 1;
   const start = Math.max(end - length + 1, 1);
 
   return {
     checksum: transcript.slice.region.sequence.checksum,
     start,
     end,
-    strand: transcript.slice.strand.code
+    strand
   };
 };
 
+/**
+ * Make sure that, even for edge cases, the downstream sequence
+ * is a continuation of the sequence of the last exon,
+ * accounting for the strand
+ */
 const getDownstreamGenomicSequenceQueryParams = ({
   transcript,
   length = 57
@@ -231,14 +267,20 @@ const getDownstreamGenomicSequenceQueryParams = ({
   transcript: DefaultEntityViewerTranscriptQueryResult['transcript'];
   length?: number;
 }) => {
-  const start = transcript.slice.location.end + 1;
+  const lastSplicedExon = transcript.spliced_exons.toSorted(
+    (e1, e2) => e2.index - e1.index
+  )[0];
+  const lastExon = lastSplicedExon.exon;
+  const strand = lastExon.slice.strand.code;
+
+  const start = lastExon.slice.location.end + 1;
   const end = start + length - 1;
 
   return {
     checksum: transcript.slice.region.sequence.checksum,
     start,
     end,
-    strand: transcript.slice.strand.code
+    strand
   };
 };
 
@@ -260,12 +302,18 @@ const prepareExonsData = ({
       start: exon.exon.slice.location.start,
       end: exon.exon.slice.location.end,
       length: exon.exon.slice.location.length,
+      strand: exon.exon.slice.strand.code,
       relativeStart: exon.relative_location.start,
       relativeEnd: exon.relative_location.end,
       startPhase: null,
       endPhase: null,
       sequence: getFeatureSequence({
-        feature: exon,
+        feature: {
+          start: exon.exon.slice.location.start,
+          end: exon.exon.slice.location.end,
+          strand: exon.exon.slice.strand.code
+        },
+        transcript: { start: transcript.slice.location.start },
         transcriptSequence: sequence
       })
     };
@@ -298,7 +346,7 @@ const prepareIntrons = ({
   transcript,
   sequence
 }: {
-  transcript: DefaultEntityViewerTranscriptQueryResult['transcript'];
+  transcript: Transcript;
   sequence: string;
 }): EnrichedIntron[] => {
   const { introns } = transcript;
@@ -310,32 +358,47 @@ const prepareIntrons = ({
     start: intron.slice.location.start,
     end: intron.slice.location.end,
     length: intron.slice.location.length,
+    strand: intron.slice.strand.code,
     relativeStart: intron.relative_location.start,
     relativeEnd: intron.relative_location.end,
     sequence: getFeatureSequence({
-      feature: intron,
-      transcriptSequence: sequence
+      feature: {
+        start: intron.slice.location.start,
+        end: intron.slice.location.end,
+        strand: intron.slice.strand.code
+      },
+      transcriptSequence: sequence,
+      transcript: { start: transcript.slice.location.start }
     })
   }));
 };
 
-const generateIntronId = (
-  intron: DefaultEntityViewerTranscriptQueryResult['transcript']['introns'][number]
-) => {
+const generateIntronId = (intron: Transcript['introns'][number]) => {
   return `Intron ${intron.index}-${intron.index + 1}`;
 };
 
 const getFeatureSequence = ({
   feature,
-  transcriptSequence
+  transcriptSequence,
+  transcript
 }: {
-  feature: { relative_location: { start: number; end: number } };
+  feature: {
+    start: number;
+    end: number;
+    strand: Strand;
+  };
   transcriptSequence: string;
+  transcript: {
+    start: number;
+  };
 }) => {
-  const startIndex = feature.relative_location.start - 1;
-  const endIndex = feature.relative_location.end; // end-exclusive
-
-  return transcriptSequence.slice(startIndex, endIndex);
+  return getSequenceSlice({
+    sequence: transcriptSequence,
+    sequenceStart: transcript.start,
+    sliceStart: feature.start,
+    sliceEnd: feature.end,
+    reverseComplement: feature.strand === 'reverse'
+  });
 };
 
 const combineExonsAndIntrons = ({

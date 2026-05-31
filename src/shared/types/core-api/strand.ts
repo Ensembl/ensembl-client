@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export enum Strand {
-  FORWARD = 'forward',
-  REVERSE = 'reverse'
-}
+export type Strand = 'forward' | 'reverse';

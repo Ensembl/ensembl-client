@@ -98,14 +98,15 @@ const ExonsTable = ({ data }: Props) => {
               <ColumnHead>Start phase</ColumnHead>
               <ColumnHead>End phase</ColumnHead>
               <ColumnHead>Length</ColumnHead>
+              <ColumnHead>Strand</ColumnHead>
               <ColumnHead>Sequence</ColumnHead>
             </tr>
           </thead>
           <tbody>
             <FlankingSequenceRow
-              title={"5' upstream sequence"}
-              sequence={data.upstreamFlankingSequence}
-              position="start"
+              sequence={data.upstreamFlankingSequence.sequence}
+              strand={data.upstreamFlankingSequence.strand}
+              position="upstream"
             />
             {data.exonsAndIntrons.map((feature) => (
               <FeatureRow
@@ -118,9 +119,9 @@ const ExonsTable = ({ data }: Props) => {
               />
             ))}
             <FlankingSequenceRow
-              title={"3' downstream sequence"}
-              sequence={data.downstreamFlankingSequence}
-              position="end"
+              sequence={data.downstreamFlankingSequence.sequence}
+              strand={data.downstreamFlankingSequence.strand}
+              position="downstream"
             />
           </tbody>
         </Table>
@@ -184,15 +185,17 @@ const Controls = ({
 };
 
 const FlankingSequenceRow = ({
-  title,
   sequence,
+  strand,
   position
 }: {
-  title: string;
   sequence: string;
-  position: 'start' | 'end';
+  strand: string;
+  position: 'upstream' | 'downstream';
 }) => {
-  sequence = position === 'start' ? `...${sequence}` : `${sequence}...`;
+  const title =
+    position === 'upstream' ? "5' upstream sequence" : "3' downstream sequence";
+  sequence = position === 'upstream' ? `...${sequence}` : `${sequence}...`;
 
   return (
     <tr>
@@ -203,6 +206,7 @@ const FlankingSequenceRow = ({
       <td>{/* start phase column */}</td>
       <td>{/* end phase column */}</td>
       <td>{/* exon/intron length column */}</td>
+      <td>{strand}</td>
       <td>
         <span className={classNames(styles.sequence, styles.light)}>
           {sequence}
@@ -259,6 +263,7 @@ const ExonRow = ({
       <td>{exon.startPhase !== -1 ? exon.startPhase : '-'}</td>
       <td>{exon.endPhase !== -1 ? exon.endPhase : '-'}</td>
       <td>{formatNumber(exon.length)}</td>
+      <td>{exon.strand}</td>
       <td>
         <div className={styles.sequence}>{sequence}</div>
       </td>
@@ -283,9 +288,10 @@ const IntronRow = ({
       <td>{intron.id}</td>
       <td>{formatNumber(intron.start)}</td>
       <td>{formatNumber(intron.end)}</td>
-      <td>-</td>
-      <td>-</td>
+      <td>{/* empty cell for start phase */}</td>
+      <td>{/* empty cell for end phase */}</td>
       <td>{formatNumber(intron.length)}</td>
+      <td>{intron.strand}</td>
       <td>
         <div className={classNames(styles.sequence, styles.light)}>
           {sequence}
