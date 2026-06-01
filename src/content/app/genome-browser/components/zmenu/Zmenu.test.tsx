@@ -39,21 +39,6 @@ vi.mock('src/content/app/genome-browser/hooks/useGenomeBrowser', () => ({
   })
 }));
 
-vi.mock(
-  'src/content/app/genome-browser/state/track-panel/trackPanelSlice.ts',
-  async () => {
-    const originalModule = await vi.importActual(
-      'src/content/app/genome-browser/state/track-panel/trackPanelSlice.ts'
-    );
-    return {
-      ...originalModule,
-      changeHighlightedTrackId: vi.fn(() => ({
-        type: 'change-track-highlight'
-      }))
-    };
-  }
-);
-
 vi.mock('./ZmenuContent', () => ({
   default: () => <div data-test-id="zmenuContent">ZmenuContent</div>
 }));

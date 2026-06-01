@@ -18,11 +18,9 @@ import { useEffect, useCallback, type ReactNode, type RefObject } from 'react';
 import pickBy from 'lodash/pickBy';
 import usePrevious from 'src/shared/hooks/usePrevious';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
+import { useAppSelector } from 'src/store';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useDOMElement from 'src/shared/hooks/useDOMElement';
-
-import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
 import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
@@ -58,12 +56,9 @@ const Zmenu = (props: ZmenuProps) => {
   const chromosomeLocation = useAppSelector(getActualChrLocation);
   const previousChromosomeLocation = usePrevious(chromosomeLocation);
 
-  const dispatch = useAppDispatch();
-
   const destroyZmenu = useCallback(() => {
-    dispatch(changeHighlightedTrackId(''));
     setZmenus(pickBy(zmenus, (_, key) => key !== props.zmenuId));
-  }, [dispatch, props.zmenuId, setZmenus, zmenus]);
+  }, [props.zmenuId, setZmenus, zmenus]);
 
   useEffect(() => {
     if (

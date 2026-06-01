@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react';
-
-import { useAppDispatch } from 'src/store';
-
-import { changeHighlightedTrackId } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-
 import {
   ToolboxExpandableContent,
   ToggleButton as ToolboxToggleButton
@@ -43,7 +37,6 @@ type Props = {
 
 const GeneAndOneTranscriptZmenu = (props: Props) => {
   const { content } = props.payload;
-  const dispatch = useAppDispatch();
 
   let featureId = '',
     transcriptId = '',
@@ -72,12 +65,6 @@ const GeneAndOneTranscriptZmenu = (props: Props) => {
     transcriptId = transcript.metadata.versioned_id;
     featureId = `gene:${gene.metadata.unversioned_id}`;
   }
-
-  useEffect(() => {
-    if (gene) {
-      dispatch(changeHighlightedTrackId(gene.metadata.track));
-    }
-  }, []);
 
   const mainContent = (
     <>
