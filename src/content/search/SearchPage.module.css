@@ -1,0 +1,6 @@
+.grid {
+  display: grid;
+  grid-template-rows: max-content minmax(0, 1fr);
+  height: 100%;
+  overflow: hidden;
+}

@@ -26,26 +26,38 @@ import SpeciesSearchField, { type Props } from './SpeciesSearchField';
 
 import styles from './SpeciesSearchField.module.css';
 
-const SpeciesSearchFieldWithLinks = (props: Omit<Props, 'query' | 'label'>) => {
+const SpeciesSearchFieldWithLinks = (
+  props: Omit<Props, 'query' | 'label'> & {
+    title?: string;
+    showFeatureSearchLinks?: boolean;
+  }
+) => {
+  const {
+    title = 'Find a species',
+    showFeatureSearchLinks = true,
+    ...searchFieldProps
+  } = props;
+
   return (
     <div className={styles.searchFieldWithLinks}>
       <div className={styles.searchLinks}>
-        <span>Find a species</span>
-        {getFeatureSearchModes().map((mode) => {
-          const { label } = getFeatureSearchLabelsByMode(mode);
+        <span>{title}</span>
+        {showFeatureSearchLinks &&
+          getFeatureSearchModes().map((mode) => {
+            const { label } = getFeatureSearchLabelsByMode(mode);
 
-          return (
-            <Link
-              key={mode}
-              className={styles.featureSearchLink}
-              to={urlFor.speciesSelectorFeatureSearch(mode)}
-            >
-              {label}
-            </Link>
-          );
-        })}
+            return (
+              <Link
+                key={mode}
+                className={styles.featureSearchLink}
+                to={urlFor.speciesSelectorFeatureSearch(mode)}
+              >
+                {label}
+              </Link>
+            );
+          })}
       </div>
-      <SpeciesSearchField {...props} label={null} />
+      <SpeciesSearchField {...searchFieldProps} label={null} />
     </div>
   );
 };

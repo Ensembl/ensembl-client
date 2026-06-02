@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, type InputEvent, type SubmitEvent } from 'react';
+import { useEffect, useState, type InputEvent, type SubmitEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -28,7 +28,10 @@ export type Props = {
   query: string;
   onSearchSubmit: (query: string) => void | (() => void);
   canSubmit?: boolean;
+  disabled?: boolean;
   label?: string | null;
+  help?: string;
+  placeholder?: string;
   onInput?: ((event: InputEvent<HTMLInputElement>) => void) | (() => void);
   onClose?: () => void;
 };
@@ -38,7 +41,10 @@ export const SpeciesSearchField = (props: Props) => {
     query,
     onInput,
     canSubmit = true,
+    disabled = false,
     label = 'Find a species',
+    help = defaultHelpText,
+    placeholder = placeholderText,
     onClose
   } = props;
 
@@ -59,12 +65,13 @@ export const SpeciesSearchField = (props: Props) => {
         className={styles.input}
         value={query}
         onInput={onInput}
-        placeholder={placeholderText}
-        help={helpText}
+        disabled={disabled}
+        placeholder={placeholder}
+        help={help}
         minLength={3}
       />
       <PrimaryButton
-        disabled={!canSubmit || query.length < 3}
+        disabled={disabled || !canSubmit || query.length < 3}
         className={classNames(styles.controls, styles.submit)}
       >
         Find
@@ -78,7 +85,7 @@ export const SpeciesSearchField = (props: Props) => {
 
 const placeholderText = 'Common or scientific name...';
 
-const helpText = `
+const defaultHelpText = `
 Search for a species using a common name, scientific name, assembly ID or GCA.
 If no results are shown, please try a different spelling or attribute
 `;
@@ -87,9 +94,12 @@ If no results are shown, please try a different spelling or attribute
 // Can be used by default in Species Selector
 const WrappedSpeciesSearchField = (props: Omit<Props, 'query'>) => {
   const [searchParams] = useSearchParams();
-  const [searchInput, setSearchInput] = useState(
-    searchParams.get('query') || ''
-  );
+  const queryFromParams = searchParams.get('query') || '';
+  const [searchInput, setSearchInput] = useState(queryFromParams);
+
+  useEffect(() => {
+    setSearchInput(queryFromParams);
+  }, [queryFromParams]);
 
   const onInput = (event: InputEvent<HTMLInputElement>) => {
     setSearchInput(event.currentTarget.value);

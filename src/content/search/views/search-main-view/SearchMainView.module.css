@@ -30,30 +30,6 @@
   }
 }
 
-.tabs {
-  grid-column: 1 / -1;
-  align-self: end;
-  display: flex;
-  gap: 30px;
-  padding-bottom: 26px;
-}
-
-.activeTab {
-  --text-button-disabled-color: var(--color-black);
-}
-
-.genomeCounts {
-  justify-self: end;
-}
-
-@media (width > 1300px) {
-  .genomeCounts {
-    justify-self: start;
-    margin-left: 268px;
-  }
-}
-
-
 .tabPanel {
   height: 100%;
   padding-top: 26px;

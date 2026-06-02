@@ -27,18 +27,18 @@
 .resultsWrapper {
   height: 100%;
   width: 800px;
+  max-width: 100%;
   overflow-y: auto;
+}
+
+.resultsWrapperAutoHeight {
+  height: auto;
+  overflow-y: visible;
 }
 
 .resultsTable {
   width: 100%;
-  border-collapse: collapse;
-}
-
-.resultsTable thead tr {
-  position: sticky;
-  top: 0;
-  background-color: var(--color-light-grey);
+  --table-background: var(--color-light-grey);
 }
 
 .resultsTable th {
@@ -72,16 +72,19 @@
 .variantMatch {
   color: var(--color-blue);
   cursor: pointer;
+  text-decoration: none;
 }
 
 .geneMatch {
   color: var(--color-blue);
   cursor: pointer;
+  text-decoration: none;
 }
 
 .transcriptMatch {
   color: var(--color-blue);
   cursor: pointer;
+  text-decoration: none;
 }
 
 .geneSymbol {
@@ -91,6 +94,36 @@
 
 .transcriptSymbol {
   margin-left: 8px;
+}
+
+.featureCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.featureMatch {
+  min-width: 0;
+}
+
+.featureActionCell {
+  width: 1%;
+  white-space: nowrap;
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+  vertical-align: middle;
+  position: relative;
+}
+
+.featureActionCellContent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .closeButton {

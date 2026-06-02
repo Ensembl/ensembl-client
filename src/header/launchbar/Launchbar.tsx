@@ -20,6 +20,9 @@ import classNames from 'classnames';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import useHeaderAnalytics from '../hooks/useHeaderAnalytics';
 
+import { useAppSelector } from 'src/store';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+
 import {
   GenomeBrowserIcon,
   GlobalSearchIcon,
@@ -41,6 +44,8 @@ import styles from './Launchbar.module.css';
 const Launchbar = () => {
   const location = useLocation();
   const pathname = location.pathname;
+  const committedSpecies = useAppSelector(getCommittedSpecies);
+  const hasCommittedSpecies = committedSpecies.length > 0;
 
   const withBottomBorder = pathname !== urlFor.home();
 
@@ -54,10 +59,10 @@ const Launchbar = () => {
         <div className={styles.categories}>
           <div className={styles.category}>
             <LaunchbarButton
-              path="/global-search"
+              path="/search"
               description="Site search"
               icon={GlobalSearchIcon}
-              enabled={false}
+              enabled={hasCommittedSpecies}
             />
             <SpeciesSelectorLaunchbarButton />
           </div>

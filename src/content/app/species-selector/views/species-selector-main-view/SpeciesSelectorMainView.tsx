@@ -18,6 +18,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
+import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { isProductionEnvironment } from 'src/shared/helpers/environment';
@@ -28,13 +29,22 @@ import PopularSpeciesList from 'src/content/app/species-selector/components/popu
 import GenomeGroups from 'src/content/app/species-selector/components/genome-groups/GenomeGroups';
 import { useGenomeGroupCategoriesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import TextButton from 'src/shared/components/text-button/TextButton';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import styles from './SpeciesSelectorMainView.module.css';
 
 const popularSpeciesTab = '42 popular species';
 
+const featureSearchHelpText = `
+Search for a gene, transcript or variant using a stable identifier, symbol or rsID.
+`;
+
+const featureSearchPlaceholder = 'Gene, transcript or variant ID...';
+
 const SpeciesSelectorMainView = () => {
   const navigate = useNavigate();
+  const committedSpecies = useAppSelector(getCommittedSpecies);
+  const canSearchFeature = committedSpecies.length > 0;
   const { trackSpeciesSearchQuery } = useSpeciesSelectorAnalytics();
   const [activeTab, setActiveTab] = useState(popularSpeciesTab);
   const shouldShowGenomeGroupTabs = !isProductionEnvironment();
@@ -54,7 +64,7 @@ const SpeciesSelectorMainView = () => {
     (category) => category.display_name === activeTab
   );
 
-  const onSearchSubmit = (query: string) => {
+  const onSpeciesSearchSubmit = (query: string) => {
     trackSpeciesSearchQuery(query);
     navigate(
       urlFor.speciesSelectorSearch({
@@ -63,11 +73,31 @@ const SpeciesSelectorMainView = () => {
     );
   };
 
+  const onFeatureSearchSubmit = (query: string) => {
+    navigate(
+      urlFor.speciesSelectorSearchResults({
+        query
+      })
+    );
+  };
+
   return (
     <div className={styles.main}>
       <div className={styles.searchPanel}>
-        <div className={styles.speciesSearchFieldWrapper}>
-          <SpeciesSearchFieldWithLinks onSearchSubmit={onSearchSubmit} />
+        <div className={styles.searchFields}>
+          <SpeciesSearchFieldWithLinks
+            onSearchSubmit={onSpeciesSearchSubmit}
+            showFeatureSearchLinks={false}
+          />
+          <SpeciesSearchFieldWithLinks
+            title="Find a feature"
+            onSearchSubmit={onFeatureSearchSubmit}
+            showFeatureSearchLinks={false}
+            help={featureSearchHelpText}
+            placeholder={featureSearchPlaceholder}
+            canSubmit={canSearchFeature}
+            disabled={!canSearchFeature}
+          />
         </div>
         <GenomeCounts variety="full" className={styles.genomeCounts} />
         <SpeciesSelectorTabs

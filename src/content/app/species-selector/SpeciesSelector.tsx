@@ -22,6 +22,7 @@ import SpeciesManagerAppBar from './views/species-manager/species-manager-app-ba
 import SpeciesSelectorResultsView from './views/species-selector-results-view/SpeciesSelectorResultsView';
 import SpeciesSelectorMainView from './views/species-selector-main-view/SpeciesSelectorMainView';
 import SpeciesSelectorSearchView from './views/species-selector-search-view/SpeciesSelectorSearchView';
+import SpeciesSelectorSearchResultsView from './views/species-selector-search-results-view/SpeciesSelectorSearchResultsView';
 import SpeciesManager from './views/species-manager/SpeciesManager';
 
 import styles from './SpeciesSelector.module.css';
@@ -30,6 +31,7 @@ const SpeciesSelector = () => {
   const appBar = (
     <Routes>
       <Route index element={<SpeciesSelectorAppBar />} />
+      <Route path="/search/results" element={<SpeciesSearchResultsAppBar />} />
       <Route path="/search" element={<SpeciesSearchResultsAppBar />} />
       <Route
         path="/search/gene"
@@ -50,6 +52,10 @@ const SpeciesSelector = () => {
   const body = (
     <Routes>
       <Route index element={<SpeciesSelectorMainView />} />
+      <Route
+        path="/search/results"
+        element={<SpeciesSelectorSearchResultsView />}
+      />
       <Route path="/search" element={<SpeciesSelectorResultsView />} />
       <Route path="/search/gene" element={<SpeciesSelectorSearchView />} />
       <Route

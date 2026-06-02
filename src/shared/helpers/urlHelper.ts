@@ -52,6 +52,10 @@ type SpeciesSelectorSearchParams = {
   speciesTaxonomyId?: string | number;
 };
 
+type SpeciesSelectorSearchResultsParams = {
+  query?: string;
+};
+
 export const speciesPage = (params: SpeciesPageUrlParams) => {
   const speciesPageRootPath = '/species';
 
@@ -61,6 +65,24 @@ export const speciesPage = (params: SpeciesPageUrlParams) => {
 const speciesSelectorPath = '/species-selector';
 
 export const speciesSelector = () => speciesSelectorPath;
+
+export const search = () => '/search';
+
+type SearchResultsParams = {
+  query?: string;
+};
+
+export const searchResults = (params: SearchResultsParams) => {
+  const path = '/search/results';
+  const urlSearchParams = new URLSearchParams('');
+
+  if (params.query) {
+    urlSearchParams.append('query', params.query);
+  }
+
+  const query = decodeURIComponent(urlSearchParams.toString());
+  return query ? `${path}?${query}` : path;
+};
 
 export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
   const path = `${speciesSelectorPath}/search`;
@@ -75,6 +97,20 @@ export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
       'species_taxonomy_id',
       String(params.speciesTaxonomyId)
     );
+  }
+
+  const query = decodeURIComponent(urlSearchParams.toString());
+  return query ? `${path}?${query}` : path;
+};
+
+export const speciesSelectorSearchResults = (
+  params: SpeciesSelectorSearchResultsParams
+) => {
+  const path = `${speciesSelectorPath}/search/results`;
+  const urlSearchParams = new URLSearchParams('');
+
+  if (params.query) {
+    urlSearchParams.append('query', params.query);
   }
 
   const query = decodeURIComponent(urlSearchParams.toString());
