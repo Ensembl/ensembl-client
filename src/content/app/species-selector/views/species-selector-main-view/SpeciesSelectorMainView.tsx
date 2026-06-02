@@ -90,13 +90,21 @@ const SpeciesSelectorMainView = () => {
       <div className={styles.searchPanel}>
         <div className={styles.searchFields}>
           <SpeciesSearchFieldWithLinks
-            titleIcon={<SpeciesSelectorIcon />}
+            titleIcon={
+              <span role="img" aria-label="Find a species">
+                <SpeciesSelectorIcon />
+              </span>
+            }
             onSearchSubmit={onSpeciesSearchSubmit}
             showFeatureSearchLinks={false}
           />
           <SpeciesSearchFieldWithLinks
             title="Find a feature"
-            titleIcon={<FeatureSearchIcon />}
+            titleIcon={
+              <span role="img" aria-label="Find a feature">
+                <FeatureSearchIcon />
+              </span>
+            }
             isFeatureSearch={true}
             onSearchSubmit={onFeatureSearchSubmit}
             showFeatureSearchLinks={false}
