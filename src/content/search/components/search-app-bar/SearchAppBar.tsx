@@ -45,7 +45,9 @@ const SearchAppBar = () => {
         <SelectedSpecies
           key={species.genome_id}
           species={species}
-          onClick={() => showSpeciesPage(species.genome_id, species.genome_tag)}
+          onClick={() =>
+            showSpeciesPage(species.genome_id, species.genome_tag ?? undefined)
+          }
         />
       ))}
     </SpeciesTabsSlider>

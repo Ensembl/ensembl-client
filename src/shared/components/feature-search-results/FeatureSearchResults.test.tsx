@@ -26,6 +26,7 @@ import RouteChecker from 'tests/router/RouteChecker';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import createRootReducer from 'src/root/rootReducer';
+import { Strand } from 'src/shared/types/core-api/strand';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
@@ -56,7 +57,7 @@ const geneResults: SearchResults = {
   meta: {
     page: 1,
     per_page: 50,
-    total: 1
+    total_hits: 1
   },
   matches: [
     {
@@ -77,7 +78,7 @@ const geneResults: SearchResults = {
           name: '13'
         },
         strand: {
-          code: 1
+          code: Strand.FORWARD
         }
       }
     }
@@ -185,7 +186,7 @@ describe('<FeatureSearchResults />', () => {
               meta: {
                 page: 1,
                 per_page: 50,
-                total: 0
+                total_hits: 0
               },
               matches: []
             }}

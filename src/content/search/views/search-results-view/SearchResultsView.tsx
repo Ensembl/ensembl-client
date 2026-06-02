@@ -36,6 +36,7 @@ import {
   getErrorMessage
 } from 'src/shared/state/api-slices/restSlice';
 
+import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import type { SerializedError } from '@reduxjs/toolkit';
@@ -237,7 +238,7 @@ const Content = (props: { query: string }) => {
 
 const SearchResultsSection = (props: {
   title: string;
-  featureSearchMode: 'gene' | 'transcript';
+  featureSearchMode: FeatureSearchMode;
   searchResults: SearchResults | undefined;
   speciesList: CommittedItem[];
   scrollable?: boolean;

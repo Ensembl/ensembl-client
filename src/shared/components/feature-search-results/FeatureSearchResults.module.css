@@ -38,6 +38,7 @@
 
 .resultsTable {
   width: 100%;
+
   --table-background: var(--color-light-grey);
 }
 

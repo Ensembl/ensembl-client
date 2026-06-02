@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
-import { MemoryRouter, type Location } from 'react-router-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 
 import SearchResultsView from './SearchResultsView';
-import RouteChecker from 'tests/router/RouteChecker';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import { Strand } from 'src/shared/types/core-api/strand';
 
 const mockUseAppSelector = vi.fn();
+const mockNavigate = vi.fn();
+const mockSetSearchParams = vi.fn();
+const mockSearchParams = new URLSearchParams('');
 const useLazySearchGenesQuery = vi.fn();
 const useLazySearchTranscriptsQuery = vi.fn();
 const useLazySearchVariantsQuery = vi.fn();
+
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => mockNavigate,
+  useSearchParams: () => [mockSearchParams, mockSetSearchParams],
+  Link: (props: any) => <a href={props.to}>{props.children}</a>
+}));
 
 vi.mock('src/store', () => ({
   useAppSelector: (...args: unknown[]) => mockUseAppSelector(...args)
@@ -64,7 +72,7 @@ const geneResults: SearchResults = {
   meta: {
     page: 1,
     per_page: 50,
-    total: 1
+    total_hits: 1
   },
   matches: [
     {
@@ -85,7 +93,7 @@ const geneResults: SearchResults = {
           name: '17'
         },
         strand: {
-          code: 1
+          code: Strand.FORWARD
         }
       }
     }
@@ -96,33 +104,20 @@ const emptyResults: SearchResults = {
   meta: {
     page: 1,
     per_page: 50,
-    total: 0
+    total_hits: 0
   },
   matches: []
 };
 
-const renderComponent = (initialEntry: string) => {
-  const routerInfo: { location: Location | null } = {
-    location: null
-  };
-
-  render(
-    <MemoryRouter initialEntries={[initialEntry]}>
-      <SearchResultsView />
-      <RouteChecker
-        setLocation={(location) => {
-          routerInfo.location = location;
-        }}
-      />
-    </MemoryRouter>
-  );
-
-  return routerInfo;
-};
+const renderComponent = () => render(<SearchResultsView />);
 
 describe('<SearchResultsView />', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockNavigate.mockReset();
+    mockSetSearchParams.mockReset();
+    mockSearchParams.delete('query');
+    mockSearchParams.set('query', '');
     mockUseAppSelector.mockReturnValue(committedSpecies);
   });
 
@@ -131,10 +126,10 @@ describe('<SearchResultsView />', () => {
     useLazySearchTranscriptsQuery.mockReturnValue([vi.fn(), {}]);
     useLazySearchVariantsQuery.mockReturnValue([vi.fn(), {}]);
 
-    const routerInfo = renderComponent('/search/results');
+    renderComponent();
 
     await waitFor(() => {
-      expect(routerInfo.location?.pathname).toBe('/search');
+      expect(mockNavigate).toHaveBeenCalledWith('/search', { replace: true });
     });
   });
 
@@ -168,7 +163,8 @@ describe('<SearchResultsView />', () => {
       }
     ]);
 
-    renderComponent('/search/results?query=TP53');
+    mockSearchParams.set('query', 'TP53');
+    renderComponent();
 
     await waitFor(() => {
       expect(triggerGeneSearch).toHaveBeenCalledWith({
