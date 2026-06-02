@@ -81,6 +81,16 @@
   margin-left: 20px;
 }
 
+.searchFieldTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchFieldTitle svg {
+  fill: var(--color-black);
+}
+
 .featureSearchLink {
   color: var(--color-blue);
   text-decoration: none;

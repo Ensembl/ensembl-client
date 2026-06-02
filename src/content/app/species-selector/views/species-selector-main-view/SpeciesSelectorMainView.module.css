@@ -10,7 +10,7 @@
   grid-template-columns: 600px 1fr;
   grid-template-rows: 1fr auto;
   align-items: start;
-  height: 270px;
+  height: 300px;
   padding-left: var(--global-padding-left);
   padding-right: var(--standard-gutter);
   background-color: var(--color-light-grey);

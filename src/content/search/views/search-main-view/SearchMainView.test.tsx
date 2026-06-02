@@ -21,6 +21,36 @@ import userEvent from '@testing-library/user-event';
 import SearchMainView from './SearchMainView';
 import RouteChecker from 'tests/router/RouteChecker';
 
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+
+const mockUseAppSelector = vi.fn();
+
+vi.mock('src/store', () => ({
+  useAppSelector: (...args: unknown[]) => mockUseAppSelector(...args)
+}));
+
+const committedSpecies: CommittedItem[] = [
+  {
+    genome_id: 'homo_sapiens_GCA_000001405_29',
+    genome_tag: 'human',
+    common_name: 'Human',
+    scientific_name: 'Homo sapiens',
+    species_taxonomy_id: '9606',
+    type: null,
+    is_reference: true,
+    assembly: {
+      accession_id: 'GCA_000001405.29',
+      name: 'GRCh38'
+    },
+    release: {
+      name: 'Sep 2025',
+      type: 'integrated'
+    },
+    isEnabled: true,
+    addedAt: 1
+  }
+];
+
 const renderComponent = () => {
   const routerInfo: { location: Location | null } = {
     location: null
@@ -41,6 +71,11 @@ const renderComponent = () => {
 };
 
 describe('<SearchMainView />', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUseAppSelector.mockReturnValue(committedSpecies);
+  });
+
   it('navigates to search results on feature search submit', async () => {
     const routerInfo = renderComponent();
     const featureSearchInput = screen.getByPlaceholderText(

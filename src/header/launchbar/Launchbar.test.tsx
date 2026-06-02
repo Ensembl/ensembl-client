@@ -93,12 +93,16 @@ describe('<Launchbar />', () => {
     vi.clearAllMocks();
   });
 
-  it('does not render a link to site search when there are no committed species', () => {
+  it('renders a link to site search when there are no committed species', async () => {
     mockUseAppSelector.mockReturnValue([]);
 
     renderComponent();
 
-    expect(screen.queryByRole('link', { name: 'Site search' })).toBeNull();
+    const siteSearchLink = screen.getByRole('link', { name: 'Site search' });
+    expect(siteSearchLink.getAttribute('href')).toBe('/search');
+
+    await userEvent.click(siteSearchLink);
+    expect(trackLaunchbarAppChange).toHaveBeenCalledWith('Site search');
   });
 
   it('renders a link to site search when committed species exist', async () => {

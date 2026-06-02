@@ -15,6 +15,7 @@
  */
 
 import { Link } from 'react-router-dom';
+import type { ReactNode } from 'react';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
@@ -29,11 +30,13 @@ import styles from './SpeciesSearchField.module.css';
 const SpeciesSearchFieldWithLinks = (
   props: Omit<Props, 'query' | 'label'> & {
     title?: string;
+    titleIcon?: ReactNode;
     showFeatureSearchLinks?: boolean;
   }
 ) => {
   const {
     title = 'Find a species',
+    titleIcon,
     showFeatureSearchLinks = true,
     ...searchFieldProps
   } = props;
@@ -41,7 +44,10 @@ const SpeciesSearchFieldWithLinks = (
   return (
     <div className={styles.searchFieldWithLinks}>
       <div className={styles.searchLinks}>
-        <span>{title}</span>
+        <span className={styles.searchFieldTitle}>
+          {titleIcon}
+          {title}
+        </span>
         {showFeatureSearchLinks &&
           getFeatureSearchModes().map((mode) => {
             const { label } = getFeatureSearchLabelsByMode(mode);

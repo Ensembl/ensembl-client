@@ -1,0 +1,17 @@
+.topLeft {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+}
+
+.searchIcon {
+  display: inline-flex;
+  align-items: center;
+
+  --app-icon-color: var(--color-black);
+  --app-icon-size: 24px;
+}

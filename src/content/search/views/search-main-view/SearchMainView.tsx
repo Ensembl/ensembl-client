@@ -16,9 +16,16 @@
 
 import { useNavigate } from 'react-router-dom';
 
+import { useAppSelector } from 'src/store';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
+import {
+  GlobalSearchIcon,
+  SpeciesSelectorIcon
+} from 'src/shared/components/app-icon';
 
 import styles from './SearchMainView.module.css';
 
@@ -30,6 +37,16 @@ const featureSearchPlaceholder = 'Gene, transcript or variant ID...';
 
 const SearchMainView = () => {
   const navigate = useNavigate();
+  const committedSpecies = useAppSelector(getCommittedSpecies);
+  const canSearchFeature = committedSpecies.length > 0;
+
+  const onSpeciesSearchSubmit = (query: string) => {
+    navigate(
+      urlFor.speciesSelectorSearch({
+        query
+      })
+    );
+  };
 
   const onFeatureSearchSubmit = (query: string) => {
     navigate(
@@ -44,11 +61,19 @@ const SearchMainView = () => {
       <div className={styles.searchPanel}>
         <div className={styles.searchFields}>
           <SpeciesSearchFieldWithLinks
+            titleIcon={<SpeciesSelectorIcon />}
+            onSearchSubmit={onSpeciesSearchSubmit}
+            showFeatureSearchLinks={false}
+          />
+          <SpeciesSearchFieldWithLinks
             title="Find a feature"
+            titleIcon={<GlobalSearchIcon />}
             onSearchSubmit={onFeatureSearchSubmit}
             showFeatureSearchLinks={false}
             help={featureSearchHelpText}
             placeholder={featureSearchPlaceholder}
+            canSubmit={canSearchFeature}
+            disabled={!canSearchFeature}
           />
         </div>
       </div>
