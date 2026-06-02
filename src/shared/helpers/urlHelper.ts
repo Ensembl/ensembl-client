@@ -102,7 +102,7 @@ export const speciesManager = () => {
 
 export const browser = (params?: BrowserUrlParams) => {
   const browserRootPath = '/genome-browser';
-  if (params) {
+  if (params && params.genomeId) {
     const path = `${browserRootPath}/${params.genomeId}`;
     const urlSearchParams = new URLSearchParams('');
     if (params.focus) {
