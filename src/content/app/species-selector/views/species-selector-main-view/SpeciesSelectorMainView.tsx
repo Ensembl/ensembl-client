@@ -25,7 +25,7 @@ import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
 import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
 import {
-  GlobalSearchIcon,
+  FeatureSearchIcon,
   SpeciesSelectorIcon
 } from 'src/shared/components/app-icon';
 import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
@@ -96,7 +96,8 @@ const SpeciesSelectorMainView = () => {
           />
           <SpeciesSearchFieldWithLinks
             title="Find a feature"
-            titleIcon={<GlobalSearchIcon />}
+            titleIcon={<FeatureSearchIcon />}
+            isFeatureSearch={true}
             onSearchSubmit={onFeatureSearchSubmit}
             showFeatureSearchLinks={false}
             help={featureSearchHelpText}

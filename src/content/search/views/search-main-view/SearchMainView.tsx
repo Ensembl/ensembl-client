@@ -23,7 +23,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
 import {
-  GlobalSearchIcon,
+  FeatureSearchIcon,
   SpeciesSelectorIcon
 } from 'src/shared/components/app-icon';
 
@@ -67,7 +67,8 @@ const SearchMainView = () => {
           />
           <SpeciesSearchFieldWithLinks
             title="Find a feature"
-            titleIcon={<GlobalSearchIcon />}
+            titleIcon={<FeatureSearchIcon />}
+            isFeatureSearch={true}
             onSearchSubmit={onFeatureSearchSubmit}
             showFeatureSearchLinks={false}
             help={featureSearchHelpText}

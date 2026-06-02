@@ -85,10 +85,24 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  --app-icon-color: var(--color-black);
 }
 
 .searchFieldTitle svg {
   fill: var(--color-black);
+}
+
+.disabledSearchFieldTitle {
+  color: var(--color-medium-dark-grey);
+  --app-icon-color: var(--color-medium-dark-grey);
+}
+
+.disabledSearchFieldTitle svg {
+  fill: var(--color-medium-dark-grey);
+}
+
+.featureSearchTitle {
+  --app-icon-size: 16px;
 }
 
 .featureSearchLink {

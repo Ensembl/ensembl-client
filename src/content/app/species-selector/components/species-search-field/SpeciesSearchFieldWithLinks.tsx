@@ -31,12 +31,14 @@ const SpeciesSearchFieldWithLinks = (
   props: Omit<Props, 'query' | 'label'> & {
     title?: string;
     titleIcon?: ReactNode;
+    isFeatureSearch?: boolean;
     showFeatureSearchLinks?: boolean;
   }
 ) => {
   const {
     title = 'Find a species',
     titleIcon,
+    isFeatureSearch = false,
     showFeatureSearchLinks = true,
     ...searchFieldProps
   } = props;
@@ -44,7 +46,13 @@ const SpeciesSearchFieldWithLinks = (
   return (
     <div className={styles.searchFieldWithLinks}>
       <div className={styles.searchLinks}>
-        <span className={styles.searchFieldTitle}>
+        <span
+          className={[
+            styles.searchFieldTitle,
+            isFeatureSearch ? styles.featureSearchTitle : '',
+            searchFieldProps.disabled ? styles.disabledSearchFieldTitle : ''
+          ].join(' ')}
+        >
           {titleIcon}
           {title}
         </span>

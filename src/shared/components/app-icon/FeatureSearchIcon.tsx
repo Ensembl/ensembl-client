@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-export { default as ActivityViewerIcon } from './ActivityViewerIcon';
-export { default as AlignmentsViewerIcon } from './AlignmentsViewerIcon';
-export { default as BlastIcon } from './BlastIcon';
-export { default as HelpIcon } from './HelpIcon';
-export { default as GenomeBrowserIcon } from './GenomeBrowserIcon';
-export { default as GlobalSearchIcon } from './GlobalSearchIcon';
-export { default as EntityViewerIcon } from './EntityViewerIcon';
-export { default as FeatureSearchIcon } from './FeatureSearchIcon';
-export { default as SpeciesSelectorIcon } from './SpeciesSelectorIcon';
-export { default as VepIcon } from './VepIcon';
+import classNames from 'classnames';
+
+import SVGIcon from 'static/icons/icon_feature_search.svg';
+
+import styles from './AppIcon.module.css';
+
+type Props = {
+  className?: string;
+};
+
+const FeatureSearchIcon = (props: Props) => {
+  const elementClasses = classNames(styles.appIcon, props.className);
+
+  return (
+    <div className={elementClasses}>
+      <SVGIcon />
+    </div>
+  );
+};
+
+export default FeatureSearchIcon;
