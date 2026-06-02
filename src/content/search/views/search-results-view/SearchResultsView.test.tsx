@@ -177,6 +177,6 @@ describe('<SearchResultsView />', () => {
 
     expect(triggerTranscriptSearch).toHaveBeenCalled();
     expect(triggerVariantSearch).toHaveBeenCalled();
-    expect(screen.getByText('Search results for "TP53"')).toBeTruthy();
+    expect(screen.queryByText('Search results for "TP53"')).toBeNull();
   });
 });

@@ -64,6 +64,7 @@ const SearchResultsView = () => {
 };
 
 const ResultsSearchField = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const queryFromParams = searchParams.get('query') ?? '';
   const [searchInput, setSearchInput] = useState(queryFromParams);
@@ -85,6 +86,10 @@ const ResultsSearchField = () => {
     );
   };
 
+  const onClose = () => {
+    navigate(urlFor.search());
+  };
+
   return (
     <SpeciesSearchField
       query={searchInput}
@@ -93,6 +98,7 @@ const ResultsSearchField = () => {
       placeholder={featureSearchPlaceholder}
       onInput={onInput}
       onSearchSubmit={onSearchSubmit}
+      onClose={onClose}
     />
   );
 };
@@ -192,26 +198,14 @@ const Content = (props: { query: string }) => {
     }
   ];
 
-  const populatedResultsSections = resultsSections.filter(
-    (section) => section.searchResults?.matches.length
-  );
-  const emptyResultsSections = resultsSections.filter(
-    (section) => !section.searchResults?.matches.length
-  );
-  const orderedResultsSections = [
-    ...populatedResultsSections,
-    ...emptyResultsSections
-  ];
-
   return (
     <div className={styles.main}>
       <div className={styles.searchFieldWrapper}>
         <ResultsSearchField />
       </div>
-      <h1 className={styles.title}>Search results for "{query}"</h1>
       {isSearching && <p className={styles.status}>Searching...</p>}
       <div className={styles.resultsWrapper}>
-        {orderedResultsSections.map((section) =>
+        {resultsSections.map((section) =>
           section.key === 'variant' ? (
             <VariantSearchResultsSection
               key={section.key}
@@ -248,7 +242,7 @@ const SearchResultsSection = (props: {
 
   return (
     <section className={styles.section}>
-      <h2 className={styles.sectionTitle}>{title}</h2>
+      <div className={styles.sectionTitle}>{title}</div>
       <FeatureSearchResults
         featureSearchMode={featureSearchMode}
         speciesList={speciesList}
@@ -276,7 +270,7 @@ const VariantSearchResultsSection = (props: {
 
   return (
     <section className={styles.section}>
-      <h2 className={styles.sectionTitle}>{title}</h2>
+      <div className={styles.sectionTitle}>{title}</div>
       {isMissingResourceError(variantSearchError) ? (
         <p className={styles.warning}>{getErrorMessage(variantSearchError)}</p>
       ) : (

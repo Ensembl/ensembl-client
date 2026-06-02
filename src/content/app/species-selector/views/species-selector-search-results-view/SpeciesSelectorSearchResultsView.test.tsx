@@ -189,9 +189,11 @@ describe('<SpeciesSelectorSearchResultsView />', () => {
     expect(triggerTranscriptSearch).toHaveBeenCalled();
     expect(triggerVariantSearch).toHaveBeenCalled();
 
-    const sectionHeadings = screen
-      .getAllByRole('heading', { level: 2 })
-      .map((heading) => heading.textContent);
+    const sectionHeadings = [
+      screen.getByText('Gene search results'),
+      screen.getByText('Transcript search results'),
+      screen.getByText('Variant search results')
+    ].map((heading) => heading.textContent);
 
     expect(sectionHeadings).toEqual([
       'Gene search results',

@@ -85,6 +85,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+
   --app-icon-color: var(--color-black);
 }
 
@@ -94,6 +95,7 @@
 
 .disabledSearchFieldTitle {
   color: var(--color-medium-dark-grey);
+
   --app-icon-color: var(--color-medium-dark-grey);
 }
 
