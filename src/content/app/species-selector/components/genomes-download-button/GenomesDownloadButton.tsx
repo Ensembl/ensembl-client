@@ -19,7 +19,7 @@ import config from 'config';
 import DownloadLink from 'src/shared/components/download-button/DownloadLink';
 
 type SearchParam = {
-  name: 'query' | 'species_taxonomy_id';
+  name: 'query' | 'species_taxonomy_id' | 'genome_group_id';
   value: string;
 };
 

@@ -50,6 +50,7 @@ type SpeciesPageUrlParams = {
 type SpeciesSelectorSearchParams = {
   query?: string;
   speciesTaxonomyId?: string | number;
+  genomeGroupId?: string | number;
 };
 
 export const speciesPage = (params: SpeciesPageUrlParams) => {
@@ -75,6 +76,10 @@ export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
       'species_taxonomy_id',
       String(params.speciesTaxonomyId)
     );
+  }
+
+  if (params.genomeGroupId) {
+    urlSearchParams.append('genome_group_id', String(params.genomeGroupId));
   }
 
   const query = decodeURIComponent(urlSearchParams.toString());

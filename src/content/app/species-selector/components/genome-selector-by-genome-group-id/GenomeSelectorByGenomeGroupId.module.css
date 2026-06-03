@@ -1,0 +1,43 @@
+.main {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  row-gap: 10px;
+  padding-left: var(--double-standard-gutter);
+}
+
+.top {
+  display: grid;
+  align-items: center;
+  justify-self: start;
+  grid-template-columns: [genomes-count] auto [add-button] max-content [close-button] auto [filter] max-content;
+  column-gap: var(--standard-gutter);
+  white-space: nowrap;
+}
+
+.genomesCount {
+  grid-column: genomes-count;
+  display: flex;
+  column-gap: 1rem;
+}
+
+.addButton {
+  grid-column: add-button;
+}
+
+.closeButton {
+  grid-column: close-button;
+}
+
+.filterWrapper {
+  grid-column: filter;
+  margin-left: var(--double-standard-gutter);
+}
+
+.loader {
+  justify-self: center;
+}
+
+.downloadButton {
+  margin-left: var(--standard-gutter);
+}
