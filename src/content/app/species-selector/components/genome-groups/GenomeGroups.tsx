@@ -47,21 +47,21 @@ const GenomeGroup = (props: { group: GenomeGroupType }) => {
   const { group } = props;
 
   return (
-    <Link
-      className={styles.group}
-      to={urlFor.speciesSelectorSearch({
-        genomeGroupId: group.group_id
-      })}
-    >
+    <div className={styles.group}>
       <span className={styles.groupTitle}>{group.title}</span>
       {group.description && (
         <p className={styles.description}>{group.description}</p>
       )}
-      <div className={styles.genomesCount}>
+      <Link
+        className={styles.genomesCount}
+        to={urlFor.speciesSelectorSearch({
+          genomeGroupId: group.group_id
+        })}
+      >
         <Pill>{group.genomes_count}</Pill>
         <span>genomes</span>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 };
 
