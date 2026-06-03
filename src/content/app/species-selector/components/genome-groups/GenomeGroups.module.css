@@ -11,7 +11,10 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  align-self: flex-start;
   row-gap: 6px;
+  color: inherit;
+  text-decoration: none;
 }
 
 .groupTitle {
