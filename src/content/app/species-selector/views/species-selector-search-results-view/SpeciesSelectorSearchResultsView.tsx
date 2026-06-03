@@ -111,6 +111,7 @@ const featureSearchPlaceholder = 'Gene, transcript or variant ID...';
 
 const Content = (props: { query: string }) => {
   const { query } = props;
+  const navigate = useNavigate();
   const committedSpecies = useAppSelector(getCommittedSpecies);
 
   const genomeIds = useMemo(
@@ -140,6 +141,12 @@ const Content = (props: { query: string }) => {
     reset: resetVariantSearchResults,
     isFetching: isVariantSearchFetching
   } = variantSearchResults;
+
+  useEffect(() => {
+    if (!committedSpecies.length) {
+      navigate(urlFor.speciesSelector(), { replace: true });
+    }
+  }, [committedSpecies.length, navigate]);
 
   useEffect(() => {
     if (!genomeIds.length) {
@@ -197,6 +204,10 @@ const Content = (props: { query: string }) => {
       variantSearchError
     }
   ];
+
+  if (!committedSpecies.length) {
+    return null;
+  }
 
   return (
     <div className={styles.main}>

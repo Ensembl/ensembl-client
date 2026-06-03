@@ -28,7 +28,10 @@ import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { SpeciesSearchField } from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import {
+  getCommittedSpecies,
+  getHasLoadedStoredSpecies
+} from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import { FeatureSearchResults } from 'src/shared/components/feature-search-results/FeatureSearchResults';
 import {
@@ -111,7 +114,9 @@ const featureSearchPlaceholder = 'Gene, transcript or variant ID...';
 
 const Content = (props: { query: string }) => {
   const { query } = props;
+  const navigate = useNavigate();
   const committedSpecies = useAppSelector(getCommittedSpecies);
+  const hasLoadedStoredSpecies = useAppSelector(getHasLoadedStoredSpecies);
 
   const genomeIds = useMemo(
     () => committedSpecies.map(({ genome_id }) => genome_id),
@@ -140,6 +145,12 @@ const Content = (props: { query: string }) => {
     reset: resetVariantSearchResults,
     isFetching: isVariantSearchFetching
   } = variantSearchResults;
+
+  useEffect(() => {
+    if (hasLoadedStoredSpecies && !committedSpecies.length) {
+      navigate(urlFor.search(), { replace: true });
+    }
+  }, [committedSpecies.length, hasLoadedStoredSpecies, navigate]);
 
   useEffect(() => {
     if (!genomeIds.length) {
@@ -197,6 +208,10 @@ const Content = (props: { query: string }) => {
       variantSearchError
     }
   ];
+
+  if (!hasLoadedStoredSpecies || !committedSpecies.length) {
+    return null;
+  }
 
   return (
     <div className={styles.main}>

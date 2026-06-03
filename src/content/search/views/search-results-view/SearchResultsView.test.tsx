@@ -21,6 +21,10 @@ import SearchResultsView from './SearchResultsView';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import { Strand } from 'src/shared/types/core-api/strand';
+import {
+  getCommittedSpecies,
+  getHasLoadedStoredSpecies
+} from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 const mockUseAppSelector = vi.fn();
 const mockNavigate = vi.fn();
@@ -29,6 +33,8 @@ const mockSearchParams = new URLSearchParams('');
 const useLazySearchGenesQuery = vi.fn();
 const useLazySearchTranscriptsQuery = vi.fn();
 const useLazySearchVariantsQuery = vi.fn();
+let mockCommittedSpecies: CommittedItem[] = [];
+let mockHasLoadedStoredSpecies = true;
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
@@ -37,7 +43,17 @@ vi.mock('react-router-dom', () => ({
 }));
 
 vi.mock('src/store', () => ({
-  useAppSelector: (...args: unknown[]) => mockUseAppSelector(...args)
+  useAppSelector: (selector: unknown) => {
+    if (selector === getCommittedSpecies) {
+      return mockCommittedSpecies;
+    }
+
+    if (selector === getHasLoadedStoredSpecies) {
+      return mockHasLoadedStoredSpecies;
+    }
+
+    return mockUseAppSelector(selector);
+  }
 }));
 
 vi.mock('src/shared/state/api-slices/searchApiSlice', () => ({
@@ -118,7 +134,8 @@ describe('<SearchResultsView />', () => {
     mockSetSearchParams.mockReset();
     mockSearchParams.delete('query');
     mockSearchParams.set('query', '');
-    mockUseAppSelector.mockReturnValue(committedSpecies);
+    mockCommittedSpecies = committedSpecies;
+    mockHasLoadedStoredSpecies = true;
   });
 
   it('redirects back to search when query is missing', async () => {
@@ -130,6 +147,74 @@ describe('<SearchResultsView />', () => {
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/search', { replace: true });
+    });
+  });
+
+  it('redirects back to search when there are no committed species', async () => {
+    const triggerGeneSearch = vi.fn();
+    const triggerTranscriptSearch = vi.fn();
+    const triggerVariantSearch = vi.fn();
+
+    mockCommittedSpecies = [];
+    mockHasLoadedStoredSpecies = true;
+    useLazySearchGenesQuery.mockReturnValue([
+      triggerGeneSearch,
+      {
+        reset: vi.fn()
+      }
+    ]);
+    useLazySearchTranscriptsQuery.mockReturnValue([
+      triggerTranscriptSearch,
+      {
+        reset: vi.fn()
+      }
+    ]);
+    useLazySearchVariantsQuery.mockReturnValue([
+      triggerVariantSearch,
+      {
+        reset: vi.fn()
+      }
+    ]);
+
+    mockSearchParams.set('query', 'brca2');
+    renderComponent();
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/search', { replace: true });
+    });
+
+    expect(triggerGeneSearch).not.toHaveBeenCalled();
+    expect(triggerTranscriptSearch).not.toHaveBeenCalled();
+    expect(triggerVariantSearch).not.toHaveBeenCalled();
+  });
+
+  it('does not redirect before stored species have loaded', () => {
+    mockCommittedSpecies = [];
+    mockHasLoadedStoredSpecies = false;
+    useLazySearchGenesQuery.mockReturnValue([
+      vi.fn(),
+      {
+        reset: vi.fn()
+      }
+    ]);
+    useLazySearchTranscriptsQuery.mockReturnValue([
+      vi.fn(),
+      {
+        reset: vi.fn()
+      }
+    ]);
+    useLazySearchVariantsQuery.mockReturnValue([
+      vi.fn(),
+      {
+        reset: vi.fn()
+      }
+    ]);
+
+    mockSearchParams.set('query', 'brca2');
+    renderComponent();
+
+    expect(mockNavigate).not.toHaveBeenCalledWith('/search', {
+      replace: true
     });
   });
 

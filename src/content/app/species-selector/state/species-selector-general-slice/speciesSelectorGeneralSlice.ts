@@ -51,6 +51,7 @@ import type { SpeciesNameDisplayOption } from 'src/content/app/species-selector/
 
 export type SpeciesSelectorState = {
   committedItems: CommittedItem[];
+  hasLoadedStoredSpecies: boolean;
   speciesNameDisplayOption: SpeciesNameDisplayOption;
 };
 
@@ -106,6 +107,7 @@ export const deleteSpeciesAndSave =
 
 export const initialState: SpeciesSelectorState = {
   committedItems: [],
+  hasLoadedStoredSpecies: false,
   speciesNameDisplayOption: defaultSpeciesNameDisplayOption
 };
 
@@ -188,8 +190,15 @@ const speciesSelectorGeneralSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    builder.addCase(loadStoredSpecies.pending, (state) => {
+      state.hasLoadedStoredSpecies = false;
+    });
     builder.addCase(loadStoredSpecies.fulfilled, (state, action) => {
       state.committedItems = action.payload;
+      state.hasLoadedStoredSpecies = true;
+    });
+    builder.addCase(loadStoredSpecies.rejected, (state) => {
+      state.hasLoadedStoredSpecies = true;
     });
     builder.addCase(setSpeciesNameDisplayOption.fulfilled, (state, action) => {
       state.speciesNameDisplayOption = action.payload;

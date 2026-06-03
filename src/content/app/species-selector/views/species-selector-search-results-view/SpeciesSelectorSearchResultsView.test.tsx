@@ -139,6 +139,44 @@ describe('<SpeciesSelectorSearchResultsView />', () => {
     });
   });
 
+  it('redirects back to species selector when there are no committed species', async () => {
+    const triggerGeneSearch = vi.fn();
+    const triggerTranscriptSearch = vi.fn();
+    const triggerVariantSearch = vi.fn();
+
+    mockUseAppSelector.mockReturnValue([]);
+    useLazySearchGenesQuery.mockReturnValue([
+      triggerGeneSearch,
+      {
+        reset: vi.fn()
+      }
+    ]);
+    useLazySearchTranscriptsQuery.mockReturnValue([
+      triggerTranscriptSearch,
+      {
+        reset: vi.fn()
+      }
+    ]);
+    useLazySearchVariantsQuery.mockReturnValue([
+      triggerVariantSearch,
+      {
+        reset: vi.fn()
+      }
+    ]);
+
+    const routerInfo = renderComponent(
+      '/species-selector/search/results?query=brca'
+    );
+
+    await waitFor(() => {
+      expect(routerInfo.location?.pathname).toBe('/species-selector');
+    });
+
+    expect(triggerGeneSearch).not.toHaveBeenCalled();
+    expect(triggerTranscriptSearch).not.toHaveBeenCalled();
+    expect(triggerVariantSearch).not.toHaveBeenCalled();
+  });
+
   it('triggers all feature searches for committed species and shows populated sections first', async () => {
     const triggerGeneSearch = vi.fn();
     const triggerTranscriptSearch = vi.fn();
