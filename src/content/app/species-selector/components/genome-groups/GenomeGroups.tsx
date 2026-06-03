@@ -16,8 +16,9 @@
 
 import { Link } from 'react-router-dom';
 
-import Pill from 'src/shared/components/pill/Pill';
 import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import Pill from 'src/shared/components/pill/Pill';
 
 import type {
   GenomeGroup as GenomeGroupType,
