@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export type Strand = 'forward' | 'reverse';
+import type { Slice } from './slice';
+import type { LocationWithinRegion } from './location';
+
+export type Intron = {
+  index: number;
+  slice: Slice;
+  relative_location: LocationWithinRegion;
+};

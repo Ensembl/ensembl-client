@@ -17,7 +17,6 @@
 import { faker } from '@faker-js/faker';
 
 import type { Slice } from 'src/shared/types/core-api/slice';
-import { Strand } from 'src/shared/types/core-api/strand';
 
 export const createSlice = (): Slice => {
   const start = faker.number.int({ min: 1, max: 1000000 });
@@ -32,7 +31,7 @@ export const createSlice = (): Slice => {
       length
     },
     strand: {
-      code: Strand.FORWARD
+      code: 'forward'
     },
     region: {
       name: faker.lorem.word(),

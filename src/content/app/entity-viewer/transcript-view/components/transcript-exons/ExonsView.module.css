@@ -1,0 +1,23 @@
+.panel {
+  color: var(--color-black);
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+}
+
+.panelHead, .panelBody {
+  padding: 0 var(--standard-gutter);
+}
+
+.panelHeadTabActive {
+  font-weight: var(--font-weight-bold);
+}
+
+.loadingContainer {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

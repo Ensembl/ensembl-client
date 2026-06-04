@@ -40,7 +40,6 @@ import prepareVariantSummaryData, {
   type PreparedVariantSummaryData
 } from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/prepareVariantSummaryData';
 import { CADDScores } from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/VariantSummary';
-import { Strand } from 'src/shared/types/core-api/strand';
 
 import styles from './VariantOverview.module.css';
 
@@ -109,7 +108,7 @@ const MainAccordion = (props: Props) => {
             <div>
               <VariantLocation variant={variant} />
               <span className={styles.featureDetails}>
-                {getStrandDisplayName(Strand.FORWARD)}
+                {getStrandDisplayName('forward')}
               </span>
             </div>
 
