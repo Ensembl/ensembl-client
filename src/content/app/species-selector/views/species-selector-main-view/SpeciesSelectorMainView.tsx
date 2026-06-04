@@ -80,9 +80,10 @@ const SpeciesSelectorMainView = () => {
 
   const onFeatureSearchSubmit = (query: string) => {
     navigate(
-      urlFor.speciesSelectorSearchResults({
+      urlFor.searchResults({
         query
-      })
+      }),
+      { state: { returnTo: urlFor.speciesSelector() } }
     );
   };
 

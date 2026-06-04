@@ -52,7 +52,8 @@ const SearchMainView = () => {
     navigate(
       urlFor.searchResults({
         query
-      })
+      }),
+      { state: { returnTo: urlFor.search() } }
     );
   };
 

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from 'react';
+import { useState, type InputEvent, type ReactNode } from 'react';
 
-import SpeciesSearchField, { type Props } from './SpeciesSearchField';
+import { SpeciesSearchField, type Props } from './SpeciesSearchField';
 
 import styles from './SpeciesSearchField.module.css';
 
@@ -25,14 +25,22 @@ const SpeciesSearchFieldWithLinks = (
     title?: string;
     titleIcon?: ReactNode;
     isFeatureSearch?: boolean;
+    initialQuery?: string;
   }
 ) => {
   const {
     title = 'Find a species',
     titleIcon,
     isFeatureSearch = false,
+    initialQuery = '',
     ...searchFieldProps
   } = props;
+  const [searchInput, setSearchInput] = useState(initialQuery);
+
+  const onInput = (event: InputEvent<HTMLInputElement>) => {
+    setSearchInput(event.currentTarget.value);
+    searchFieldProps.onInput?.(event);
+  };
 
   return (
     <div className={styles.searchFieldWithTitle}>
@@ -50,6 +58,8 @@ const SpeciesSearchFieldWithLinks = (
       </div>
       <SpeciesSearchField
         {...searchFieldProps}
+        query={searchInput}
+        onInput={onInput}
         label={null}
         ariaLabel={title}
       />

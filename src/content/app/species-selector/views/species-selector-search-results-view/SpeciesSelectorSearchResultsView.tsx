@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type InputEvent } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { SpeciesSearchField } from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
+import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
+import { FeatureSearchIcon } from 'src/shared/components/app-icon';
 import FeatureSearchResultsView from 'src/shared/components/feature-search-results-view/FeatureSearchResultsView';
 
 const SpeciesSelectorSearchResultsView = () => {
@@ -49,15 +50,6 @@ const ResultsSearchField = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const queryFromParams = searchParams.get('query') ?? '';
-  const [searchInput, setSearchInput] = useState(queryFromParams);
-
-  useEffect(() => {
-    setSearchInput(queryFromParams);
-  }, [queryFromParams]);
-
-  const onInput = (event: InputEvent<HTMLInputElement>) => {
-    setSearchInput(event.currentTarget.value);
-  };
 
   const onSearchSubmit = (input: string) => {
     setSearchParams(
@@ -73,13 +65,14 @@ const ResultsSearchField = () => {
   };
 
   return (
-    <SpeciesSearchField
-      query={searchInput}
-      label={null}
-      ariaLabel="Find a feature"
+    <SpeciesSearchFieldWithLinks
+      key={queryFromParams}
+      title="Find a feature"
+      titleIcon={<FeatureSearchIcon />}
+      isFeatureSearch={true}
+      initialQuery={queryFromParams}
       help={featureSearchHelpText}
       placeholder={featureSearchPlaceholder}
-      onInput={onInput}
       onSearchSubmit={onSearchSubmit}
       onClose={onClose}
     />

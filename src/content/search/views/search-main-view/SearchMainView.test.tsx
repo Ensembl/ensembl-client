@@ -93,5 +93,8 @@ describe('<SearchMainView />', () => {
 
     expect(routerInfo.location?.pathname).toBe('/search/results');
     expect(routerInfo.location?.search).toBe('?query=TP53');
+    expect(routerInfo.location?.state).toEqual({
+      returnTo: '/search'
+    });
   });
 });

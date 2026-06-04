@@ -156,9 +156,10 @@ describe('<SpeciesSelectorMainView />', () => {
       })
     );
 
-    expect(routerInfo.location?.pathname).toBe(
-      '/species-selector/search/results'
-    );
+    expect(routerInfo.location?.pathname).toBe('/search/results');
     expect(routerInfo.location?.search).toBe('?query=BRCA2');
+    expect(routerInfo.location?.state).toEqual({
+      returnTo: '/species-selector'
+    });
   });
 });

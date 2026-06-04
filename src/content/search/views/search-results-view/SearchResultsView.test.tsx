@@ -15,6 +15,7 @@
  */
 
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import SearchResultsView from './SearchResultsView';
 
@@ -31,6 +32,7 @@ const mockUseAppSelector = vi.fn();
 const mockNavigate = vi.fn();
 const mockSetSearchParams = vi.fn();
 const mockSearchParams = new URLSearchParams('');
+let mockLocationState: unknown = null;
 const useLazySearchGenesQuery = vi.fn();
 const useLazySearchTranscriptsQuery = vi.fn();
 const useLazySearchVariantsQuery = vi.fn();
@@ -40,6 +42,7 @@ let mockHasLoadedStoredSpecies = true;
 vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
   useSearchParams: () => [mockSearchParams, mockSetSearchParams],
+  useLocation: () => ({ state: mockLocationState }),
   Link: (props: any) => <a href={props.to}>{props.children}</a>
 }));
 
@@ -131,6 +134,7 @@ describe('<SearchResultsView />', () => {
     mockSetSearchParams.mockReset();
     mockSearchParams.delete('query');
     mockSearchParams.set('query', '');
+    mockLocationState = null;
     mockCommittedSpecies = committedSpecies;
     mockHasLoadedStoredSpecies = true;
   });
@@ -260,5 +264,45 @@ describe('<SearchResultsView />', () => {
     expect(triggerTranscriptSearch).toHaveBeenCalled();
     expect(triggerVariantSearch).toHaveBeenCalled();
     expect(screen.queryByText('Search results for "TP53"')).toBeNull();
+  });
+
+  it('returns to the originating page when the close button is clicked', async () => {
+    mockLocationState = { returnTo: '/species-selector' };
+    mockSearchParams.set('query', 'TP53');
+
+    useLazySearchGenesQuery.mockReturnValue([
+      vi.fn(),
+      {
+        currentData: geneResults,
+        reset: vi.fn(),
+        isFetching: false
+      }
+    ]);
+    useLazySearchTranscriptsQuery.mockReturnValue([
+      vi.fn(),
+      {
+        currentData: emptyResults,
+        reset: vi.fn(),
+        isFetching: false
+      }
+    ]);
+    useLazySearchVariantsQuery.mockReturnValue([
+      vi.fn(),
+      {
+        currentData: emptyResults,
+        reset: vi.fn(),
+        isFetching: false
+      }
+    ]);
+
+    renderComponent();
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Close'
+      })
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith('/species-selector');
   });
 });

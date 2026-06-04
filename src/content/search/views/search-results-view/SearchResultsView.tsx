@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type InputEvent } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { SpeciesSearchField } from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
+import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
 
 import {
   getCommittedSpecies,
   getHasLoadedStoredSpecies
 } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
+import { FeatureSearchIcon } from 'src/shared/components/app-icon';
 import FeatureSearchResultsView from 'src/shared/components/feature-search-results-view/FeatureSearchResultsView';
 
 const SearchResultsView = () => {
@@ -49,40 +50,37 @@ const SearchResultsView = () => {
 };
 
 const ResultsSearchField = () => {
+  const location = useLocation();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const queryFromParams = searchParams.get('query') ?? '';
-  const [searchInput, setSearchInput] = useState(queryFromParams);
-
-  useEffect(() => {
-    setSearchInput(queryFromParams);
-  }, [queryFromParams]);
-
-  const onInput = (event: InputEvent<HTMLInputElement>) => {
-    setSearchInput(event.currentTarget.value);
-  };
+  const returnTo = getReturnPath(location.state);
 
   const onSearchSubmit = (input: string) => {
-    setSearchParams(
-      {
+    navigate(
+      urlFor.searchResults({
         query: input.trim()
-      },
-      { replace: true }
+      }),
+      {
+        replace: true,
+        state: location.state
+      }
     );
   };
 
   const onClose = () => {
-    navigate(urlFor.search());
+    navigate(returnTo);
   };
 
   return (
-    <SpeciesSearchField
-      query={searchInput}
-      label={null}
-      ariaLabel="Find a feature"
+    <SpeciesSearchFieldWithLinks
+      key={queryFromParams}
+      title="Find a feature"
+      titleIcon={<FeatureSearchIcon />}
+      isFeatureSearch={true}
+      initialQuery={queryFromParams}
       help={featureSearchHelpText}
       placeholder={featureSearchPlaceholder}
-      onInput={onInput}
       onSearchSubmit={onSearchSubmit}
       onClose={onClose}
     />
@@ -94,6 +92,19 @@ Search for a gene, transcript or variant using a stable identifier, symbol or rs
 `;
 
 const featureSearchPlaceholder = 'Gene, transcript or variant ID...';
+
+const getReturnPath = (state: unknown) => {
+  if (
+    typeof state === 'object' &&
+    state !== null &&
+    'returnTo' in state &&
+    typeof state.returnTo === 'string'
+  ) {
+    return state.returnTo;
+  }
+
+  return urlFor.search();
+};
 
 const Content = (props: { query: string }) => {
   const { query } = props;

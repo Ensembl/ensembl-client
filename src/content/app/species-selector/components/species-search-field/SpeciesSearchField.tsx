@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type InputEvent, type SubmitEvent } from 'react';
+import { type InputEvent, type SubmitEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -98,22 +98,12 @@ If no results are shown, please try a different spelling or attribute
 const WrappedSpeciesSearchField = (props: Omit<Props, 'query'>) => {
   const [searchParams] = useSearchParams();
   const queryFromParams = searchParams.get('query') || '';
-  const [searchInput, setSearchInput] = useState(queryFromParams);
-
-  useEffect(() => {
-    setSearchInput(queryFromParams);
-  }, [queryFromParams]);
-
-  const onInput = (event: InputEvent<HTMLInputElement>) => {
-    setSearchInput(event.currentTarget.value);
-    props.onInput?.(event);
-  };
 
   return (
     <SpeciesSearchField
       {...props}
-      onInput={onInput}
-      query={searchInput}
+      onInput={props.onInput}
+      query={queryFromParams}
       ariaLabel={props.label ?? undefined}
     />
   );
