@@ -30,6 +30,7 @@ export type Props = {
   canSubmit?: boolean;
   disabled?: boolean;
   label?: string | null;
+  ariaLabel?: string;
   help?: string;
   placeholder?: string;
   onInput?: ((event: InputEvent<HTMLInputElement>) => void) | (() => void);
@@ -43,6 +44,7 @@ export const SpeciesSearchField = (props: Props) => {
     canSubmit = true,
     disabled = false,
     label = 'Find a species',
+    ariaLabel,
     help = defaultHelpText,
     placeholder = placeholderText,
     onClose
@@ -69,6 +71,7 @@ export const SpeciesSearchField = (props: Props) => {
         placeholder={placeholder}
         help={help}
         minLength={3}
+        aria-label={ariaLabel}
       />
       <PrimaryButton
         disabled={disabled || !canSubmit || query.length < 3}
@@ -107,7 +110,12 @@ const WrappedSpeciesSearchField = (props: Omit<Props, 'query'>) => {
   };
 
   return (
-    <SpeciesSearchField {...props} onInput={onInput} query={searchInput} />
+    <SpeciesSearchField
+      {...props}
+      onInput={onInput}
+      query={searchInput}
+      ariaLabel={props.label ?? undefined}
+    />
   );
 };
 

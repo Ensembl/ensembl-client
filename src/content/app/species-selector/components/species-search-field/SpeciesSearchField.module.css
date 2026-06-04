@@ -67,17 +67,16 @@
   align-self: center;
 }
 
-.searchFieldWithLinks {
+.searchFieldWithTitle {
   display: flex;
   flex-direction: column;
   row-gap: 10px;
 }
 
-.searchLinks {
+.searchFieldHeader {
   display: flex;
   align-items: center;
   line-height: 1;
-  column-gap: 30px;
   margin-left: 20px;
 }
 
@@ -105,9 +104,4 @@
 
 .featureSearchTitle {
   --app-icon-size: 16px;
-}
-
-.featureSearchLink {
-  color: var(--color-blue);
-  text-decoration: none;
 }

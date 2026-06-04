@@ -20,14 +20,7 @@ import userEvent from '@testing-library/user-event';
 
 import Launchbar from './Launchbar';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-
-const mockUseAppSelector = vi.fn();
 const trackLaunchbarAppChange = vi.fn();
-
-vi.mock('src/store', () => ({
-  useAppSelector: (...args: unknown[]) => mockUseAppSelector(...args)
-}));
 
 vi.mock('../hooks/useHeaderAnalytics', () => ({
   default: () => ({
@@ -59,28 +52,6 @@ vi.mock('./VepLaunchbarButton', () => ({
   default: () => <div>VEP</div>
 }));
 
-const committedSpecies: CommittedItem[] = [
-  {
-    genome_id: 'homo_sapiens_GCA_000001405_29',
-    genome_tag: 'human',
-    common_name: 'Human',
-    scientific_name: 'Homo sapiens',
-    species_taxonomy_id: '9606',
-    type: null,
-    is_reference: true,
-    assembly: {
-      accession_id: 'GCA_000001405.29',
-      name: 'GRCh38'
-    },
-    release: {
-      name: 'Sep 2025',
-      type: 'integrated'
-    },
-    isEnabled: true,
-    addedAt: 1
-  }
-];
-
 const renderComponent = () =>
   render(
     <MemoryRouter initialEntries={['/']}>
@@ -93,21 +64,7 @@ describe('<Launchbar />', () => {
     vi.clearAllMocks();
   });
 
-  it('renders a link to site search when there are no committed species', async () => {
-    mockUseAppSelector.mockReturnValue([]);
-
-    renderComponent();
-
-    const siteSearchLink = screen.getByRole('link', { name: 'Site search' });
-    expect(siteSearchLink.getAttribute('href')).toBe('/search');
-
-    await userEvent.click(siteSearchLink);
-    expect(trackLaunchbarAppChange).toHaveBeenCalledWith('Site search');
-  });
-
-  it('renders a link to site search when committed species exist', async () => {
-    mockUseAppSelector.mockReturnValue(committedSpecies);
-
+  it('renders a link to site search', async () => {
     renderComponent();
 
     const siteSearchLink = screen.getByRole('link', { name: 'Site search' });

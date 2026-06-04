@@ -18,17 +18,8 @@
   overflow-y: auto;
 }
 
-.title {
-  margin: 0;
-  margin-bottom: 24px;
-  font-size: 20px;
-  font-weight: var(--font-weight-normal);
-}
-
 .status {
   margin: 8px 0 0;
-  font-size: 14px;
-  font-weight: var(--font-weight-light);
 }
 
 .section {

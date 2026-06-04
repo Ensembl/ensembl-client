@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import { Link } from 'react-router-dom';
 import type { ReactNode } from 'react';
-
-import * as urlFor from 'src/shared/helpers/urlHelper';
-import {
-  getFeatureSearchLabelsByMode,
-  getFeatureSearchModes
-} from 'src/shared/helpers/featureSearchHelpers';
 
 import SpeciesSearchField, { type Props } from './SpeciesSearchField';
 
@@ -32,20 +25,18 @@ const SpeciesSearchFieldWithLinks = (
     title?: string;
     titleIcon?: ReactNode;
     isFeatureSearch?: boolean;
-    showFeatureSearchLinks?: boolean;
   }
 ) => {
   const {
     title = 'Find a species',
     titleIcon,
     isFeatureSearch = false,
-    showFeatureSearchLinks = true,
     ...searchFieldProps
   } = props;
 
   return (
-    <div className={styles.searchFieldWithLinks}>
-      <div className={styles.searchLinks}>
+    <div className={styles.searchFieldWithTitle}>
+      <div className={styles.searchFieldHeader}>
         <span
           className={[
             styles.searchFieldTitle,
@@ -56,22 +47,12 @@ const SpeciesSearchFieldWithLinks = (
           {titleIcon}
           {title}
         </span>
-        {showFeatureSearchLinks &&
-          getFeatureSearchModes().map((mode) => {
-            const { label } = getFeatureSearchLabelsByMode(mode);
-
-            return (
-              <Link
-                key={mode}
-                className={styles.featureSearchLink}
-                to={urlFor.speciesSelectorFeatureSearch(mode)}
-              >
-                {label}
-              </Link>
-            );
-          })}
       </div>
-      <SpeciesSearchField {...searchFieldProps} label={null} />
+      <SpeciesSearchField
+        {...searchFieldProps}
+        label={null}
+        ariaLabel={title}
+      />
     </div>
   );
 };

@@ -67,7 +67,6 @@ const SearchMainView = () => {
               </span>
             }
             onSearchSubmit={onSpeciesSearchSubmit}
-            showFeatureSearchLinks={false}
           />
           <SpeciesSearchFieldWithLinks
             title="Find a feature"
@@ -78,7 +77,6 @@ const SearchMainView = () => {
             }
             isFeatureSearch={true}
             onSearchSubmit={onFeatureSearchSubmit}
-            showFeatureSearchLinks={false}
             help={featureSearchHelpText}
             placeholder={featureSearchPlaceholder}
             canSubmit={canSearchFeature}

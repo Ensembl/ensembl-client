@@ -21,10 +21,6 @@ import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
-import {
-  loadSpeciesNameDisplayOption,
-  loadStoredSpecies
-} from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import SearchAppBar from './components/search-app-bar/SearchAppBar';
 import SearchMainView from './views/search-main-view/SearchMainView';
@@ -34,8 +30,8 @@ import styles from './SearchPage.module.css';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
-const pageTitle = 'Search';
-const pageDescription = 'Search';
+const pageTitle = 'Search — Ensembl';
+const pageDescription = 'Search for genes, transcripts or variants in Ensembl';
 
 const SearchPage = () => {
   const hasMounted = useHasMounted();
@@ -48,8 +44,6 @@ const SearchPage = () => {
         description: pageDescription
       })
     );
-    dispatch(loadStoredSpecies());
-    dispatch(loadSpeciesNameDisplayOption());
   }, [dispatch]);
 
   if (!hasMounted) {

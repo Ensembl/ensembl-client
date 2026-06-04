@@ -23,17 +23,18 @@ import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { useGenomeGroupCategoriesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+
+import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
+import GenomeGroups from 'src/content/app/species-selector/components/genome-groups/GenomeGroups';
+import PopularSpeciesList from 'src/content/app/species-selector/components/popular-species-list/PopularSpeciesList';
 import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
+import TextButton from 'src/shared/components/text-button/TextButton';
 import {
   FeatureSearchIcon,
   SpeciesSelectorIcon
 } from 'src/shared/components/app-icon';
-import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
-import PopularSpeciesList from 'src/content/app/species-selector/components/popular-species-list/PopularSpeciesList';
-import GenomeGroups from 'src/content/app/species-selector/components/genome-groups/GenomeGroups';
-import { useGenomeGroupCategoriesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
-import TextButton from 'src/shared/components/text-button/TextButton';
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import styles from './SpeciesSelectorMainView.module.css';
 
@@ -90,24 +91,14 @@ const SpeciesSelectorMainView = () => {
       <div className={styles.searchPanel}>
         <div className={styles.searchFields}>
           <SpeciesSearchFieldWithLinks
-            titleIcon={
-              <span role="img" aria-label="Find a species">
-                <SpeciesSelectorIcon />
-              </span>
-            }
+            titleIcon={<SpeciesSelectorIcon />}
             onSearchSubmit={onSpeciesSearchSubmit}
-            showFeatureSearchLinks={false}
           />
           <SpeciesSearchFieldWithLinks
             title="Find a feature"
-            titleIcon={
-              <span role="img" aria-label="Find a feature">
-                <FeatureSearchIcon />
-              </span>
-            }
+            titleIcon={<FeatureSearchIcon />}
             isFeatureSearch={true}
             onSearchSubmit={onFeatureSearchSubmit}
-            showFeatureSearchLinks={false}
             help={featureSearchHelpText}
             placeholder={featureSearchPlaceholder}
             canSubmit={canSearchFeature}
