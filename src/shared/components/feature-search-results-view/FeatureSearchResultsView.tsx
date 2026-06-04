@@ -83,6 +83,13 @@ const FeatureSearchResultsView = (props: Props) => {
     reset: resetVariantSearchResults,
     isFetching: isVariantSearchFetching
   } = variantSearchResults;
+  const areSearchResultsLoading =
+    isGeneSearchFetching ||
+    isTranscriptSearchFetching ||
+    isVariantSearchFetching ||
+    !currentGeneSearchResults ||
+    !currentTranscriptSearchResults ||
+    (!currentVariantSearchResults && !variantSearchError);
 
   useEffect(() => {
     if (hasLoadedSpecies && !speciesList.length) {
@@ -128,29 +135,32 @@ const FeatureSearchResultsView = (props: Props) => {
     <div className={styles.main}>
       <div className={styles.searchFieldWrapper}>{searchField}</div>
       <div className={styles.resultsWrapper}>
-        <SearchResultsSection
-          title="Gene search results"
-          featureSearchMode="gene"
-          searchResults={currentGeneSearchResults}
-          speciesList={speciesList}
-          isFetching={isGeneSearchFetching}
-          scrollable={false}
-        />
-        <SearchResultsSection
-          title="Transcript search results"
-          featureSearchMode="transcript"
-          searchResults={currentTranscriptSearchResults}
-          speciesList={speciesList}
-          isFetching={isTranscriptSearchFetching}
-          scrollable={false}
-        />
-        <VariantSearchResultsSection
-          title="Variant search results"
-          variantSearchError={variantSearchError}
-          currentVariantSearchResults={currentVariantSearchResults}
-          speciesList={speciesList}
-          isFetching={isVariantSearchFetching}
-        />
+        {areSearchResultsLoading ? (
+          <LoadingStatus />
+        ) : (
+          <>
+            <SearchResultsSection
+              title="Gene search results"
+              featureSearchMode="gene"
+              searchResults={currentGeneSearchResults}
+              speciesList={speciesList}
+              scrollable={false}
+            />
+            <SearchResultsSection
+              title="Transcript search results"
+              featureSearchMode="transcript"
+              searchResults={currentTranscriptSearchResults}
+              speciesList={speciesList}
+              scrollable={false}
+            />
+            <VariantSearchResultsSection
+              title="Variant search results"
+              variantSearchError={variantSearchError}
+              currentVariantSearchResults={currentVariantSearchResults}
+              speciesList={speciesList}
+            />
+          </>
+        )}
       </div>
     </div>
   );
@@ -162,32 +172,21 @@ const SearchResultsSection = (props: {
   searchResults: SearchResults | undefined;
   speciesList: CommittedItem[];
   scrollable?: boolean;
-  isFetching: boolean;
 }) => {
-  const {
-    title,
-    featureSearchMode,
-    searchResults,
-    speciesList,
-    scrollable,
-    isFetching
-  } = props;
+  const { title, featureSearchMode, searchResults, speciesList, scrollable } =
+    props;
 
   return (
     <section className={styles.section}>
       <div className={styles.sectionTitle}>{title}</div>
-      {isFetching ? (
-        <LoadingStatus title={title} />
-      ) : (
-        <FeatureSearchResults
-          featureSearchMode={featureSearchMode}
-          speciesList={speciesList}
-          searchResults={searchResults}
-          scrollable={scrollable}
-          emptyResultsLabel={title}
-          showFeatureActions={true}
-        />
-      )}
+      <FeatureSearchResults
+        featureSearchMode={featureSearchMode}
+        speciesList={speciesList}
+        searchResults={searchResults}
+        scrollable={scrollable}
+        emptyResultsLabel={title}
+        showFeatureActions={true}
+      />
     </section>
   );
 };
@@ -197,22 +196,18 @@ const VariantSearchResultsSection = (props: {
   variantSearchError: FetchBaseQueryError | SerializedError | undefined;
   currentVariantSearchResults: SearchResults | undefined;
   speciesList: CommittedItem[];
-  isFetching: boolean;
 }) => {
   const {
     title,
     variantSearchError,
     currentVariantSearchResults,
-    speciesList,
-    isFetching
+    speciesList
   } = props;
 
   return (
     <section className={styles.section}>
       <div className={styles.sectionTitle}>{title}</div>
-      {isFetching ? (
-        <LoadingStatus title={title} />
-      ) : isMissingResourceError(variantSearchError) ? (
+      {isMissingResourceError(variantSearchError) ? (
         <p className={styles.warning}>{getErrorMessage(variantSearchError)}</p>
       ) : (
         <FeatureSearchResults
@@ -228,12 +223,8 @@ const VariantSearchResultsSection = (props: {
   );
 };
 
-const LoadingStatus = (props: { title: string }) => (
-  <div
-    className={styles.status}
-    role="status"
-    aria-label={`Searching ${props.title}`}
-  >
+const LoadingStatus = () => (
+  <div className={styles.status} role="status" aria-label="Searching features">
     <CircleLoader size="small" />
   </div>
 );

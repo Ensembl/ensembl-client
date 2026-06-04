@@ -29,9 +29,7 @@
 }
 
 .sectionTitle {
-  margin: 0;
   font-size: 14px;
-  font-weight: var(--font-weight-normal);
 }
 
 .warning {

@@ -266,6 +266,47 @@ describe('<SearchResultsView />', () => {
     expect(screen.queryByText('Search results for "TP53"')).toBeNull();
   });
 
+  it('shows one loading spinner instead of result sections while searches are fetching', () => {
+    mockSearchParams.set('query', 'TP53');
+
+    useLazySearchGenesQuery.mockReturnValue([
+      vi.fn(),
+      {
+        currentData: geneResults,
+        reset: vi.fn(),
+        isFetching: false
+      }
+    ]);
+    useLazySearchTranscriptsQuery.mockReturnValue([
+      vi.fn(),
+      {
+        currentData: emptyResults,
+        reset: vi.fn(),
+        isFetching: true
+      }
+    ]);
+    useLazySearchVariantsQuery.mockReturnValue([
+      vi.fn(),
+      {
+        currentData: emptyResults,
+        reset: vi.fn(),
+        isFetching: false
+      }
+    ]);
+
+    renderComponent();
+
+    expect(
+      screen.getByRole('status', {
+        name: 'Searching features'
+      })
+    ).toBeTruthy();
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.queryByText('Gene search results')).toBeNull();
+    expect(screen.queryByText('Transcript search results')).toBeNull();
+    expect(screen.queryByText('Variant search results')).toBeNull();
+  });
+
   it('returns to the originating page when the close button is clicked', async () => {
     mockLocationState = { returnTo: '/species-selector' };
     mockSearchParams.set('query', 'TP53');
