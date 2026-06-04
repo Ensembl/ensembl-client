@@ -41,6 +41,7 @@ export const prepareExportTSV = ({ data }: { data: Data }) => {
     'Start phase',
     'End phase',
     'Length',
+    'Strand',
     'Sequence'
   ].join('\t');
 
