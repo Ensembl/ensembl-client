@@ -24,7 +24,7 @@ type Props = {
   className?: string;
 };
 
-const FeatureSearchIcon = (props: Props) => {
+const SearchIcon = (props: Props) => {
   const elementClasses = classNames(styles.appIcon, props.className);
 
   return (
@@ -34,4 +34,4 @@ const FeatureSearchIcon = (props: Props) => {
   );
 };
 
-export default FeatureSearchIcon;
+export default SearchIcon;

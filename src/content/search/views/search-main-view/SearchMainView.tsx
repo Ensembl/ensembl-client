@@ -23,7 +23,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
 import {
-  FeatureSearchIcon,
+  SearchIcon,
   SpeciesSelectorIcon
 } from 'src/shared/components/app-icon';
 
@@ -73,7 +73,7 @@ const SearchMainView = () => {
             title="Find a feature"
             titleIcon={
               <span role="img" aria-label="Find a feature">
-                <FeatureSearchIcon />
+                <SearchIcon />
               </span>
             }
             isFeatureSearch={true}

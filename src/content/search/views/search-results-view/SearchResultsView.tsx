@@ -27,7 +27,7 @@ import {
   getHasLoadedStoredSpecies
 } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import { FeatureSearchIcon } from 'src/shared/components/app-icon';
+import { SearchIcon } from 'src/shared/components/app-icon';
 import FeatureSearchResultsView from 'src/shared/components/feature-search-results-view/FeatureSearchResultsView';
 
 const SearchResultsView = () => {
@@ -76,7 +76,7 @@ const ResultsSearchField = () => {
     <SpeciesSearchFieldWithLinks
       key={queryFromParams}
       title="Find a feature"
-      titleIcon={<FeatureSearchIcon />}
+      titleIcon={<SearchIcon />}
       isFeatureSearch={true}
       initialQuery={queryFromParams}
       help={featureSearchHelpText}

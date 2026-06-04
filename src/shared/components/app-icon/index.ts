@@ -21,6 +21,6 @@ export { default as HelpIcon } from './HelpIcon';
 export { default as GenomeBrowserIcon } from './GenomeBrowserIcon';
 export { default as GlobalSearchIcon } from './GlobalSearchIcon';
 export { default as EntityViewerIcon } from './EntityViewerIcon';
-export { default as FeatureSearchIcon } from './FeatureSearchIcon';
+export { default as SearchIcon } from './SearchIcon';
 export { default as SpeciesSelectorIcon } from './SpeciesSelectorIcon';
 export { default as VepIcon } from './VepIcon';

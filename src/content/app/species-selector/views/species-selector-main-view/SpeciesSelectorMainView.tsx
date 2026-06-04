@@ -32,7 +32,7 @@ import PopularSpeciesList from 'src/content/app/species-selector/components/popu
 import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import {
-  FeatureSearchIcon,
+  SearchIcon,
   SpeciesSelectorIcon
 } from 'src/shared/components/app-icon';
 
@@ -97,7 +97,7 @@ const SpeciesSelectorMainView = () => {
           />
           <SpeciesSearchFieldWithLinks
             title="Find a feature"
-            titleIcon={<FeatureSearchIcon />}
+            titleIcon={<SearchIcon />}
             isFeatureSearch={true}
             onSearchSubmit={onFeatureSearchSubmit}
             help={featureSearchHelpText}
