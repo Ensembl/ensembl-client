@@ -1,6 +1,5 @@
 .main {
   height: 100%;
-  overflow: hidden;
   padding: 26px var(--standard-gutter) var(--global-padding-bottom)
     var(--global-padding-left);
   display: flex;
