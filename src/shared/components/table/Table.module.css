@@ -4,12 +4,11 @@
   background-color: var(--_table-background);
 }
 
-.tableWithStickyHeader thead th {
+.tableWithStickyHeader thead tr {
   position: sticky;
   top: 0;
   background-color: var(--table-head-background, var(--_table-background));
-  z-index: 2;
-  background-clip: padding-box;
+  z-index: 1;
 }
 
 .table th {
