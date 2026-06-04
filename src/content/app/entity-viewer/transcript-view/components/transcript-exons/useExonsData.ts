@@ -244,8 +244,16 @@ const getUpstreamGenomicSequenceQueryParams = ({
   const firstExon = firstSplicedExon.exon;
   const strand = firstExon.slice.strand.code;
 
-  const end = firstExon.slice.location.start - 1;
-  const start = Math.max(end - length + 1, 1);
+  let start: number;
+  let end: number;
+
+  if (strand === 'reverse') {
+    start = firstExon.slice.location.end + 1;
+    end = start + length - 1;
+  } else {
+    end = firstExon.slice.location.start - 1;
+    start = Math.max(end - length + 1, 1);
+  }
 
   return {
     checksum: transcript.slice.region.sequence.checksum,
@@ -273,8 +281,16 @@ const getDownstreamGenomicSequenceQueryParams = ({
   const lastExon = lastSplicedExon.exon;
   const strand = lastExon.slice.strand.code;
 
-  const start = lastExon.slice.location.end + 1;
-  const end = start + length - 1;
+  let start: number;
+  let end: number;
+
+  if (strand === 'reverse') {
+    end = lastExon.slice.location.start - 1;
+    start = end - length + 1;
+  } else {
+    start = lastExon.slice.location.end + 1;
+    end = start + length - 1;
+  }
 
   return {
     checksum: transcript.slice.region.sequence.checksum,
