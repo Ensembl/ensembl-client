@@ -57,7 +57,7 @@ export const collapseSequence = (sequence: string) => {
 
     const leftSeq = sequence.slice(0, leftSeqLength);
     const rightSeq = sequence.slice(rightSeqStartIndex);
-    const middleDots = new Array(extraCharactersCount).fill('.');
+    const middleDots = new Array(extraCharactersCount).fill('.').join('');
     return `${leftSeq}${middleDots}${rightSeq}`;
   }
 };
