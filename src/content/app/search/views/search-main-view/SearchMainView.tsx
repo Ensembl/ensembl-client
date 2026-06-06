@@ -21,19 +21,11 @@ import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
-import {
-  SearchIcon,
-  SpeciesSelectorIcon
-} from 'src/shared/components/app-icon';
+
+import FeatureSearchField from 'src/content/app/search/components/feature-search-field/FeatureSearchField';
+import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 
 import styles from './SearchMainView.module.css';
-
-const featureSearchHelpText = `
-Search for a gene, transcript or variant using a stable identifier, symbol or rsID.
-`;
-
-const featureSearchPlaceholder = 'Gene, transcript or variant ID...';
 
 const SearchMainView = () => {
   const navigate = useNavigate();
@@ -61,27 +53,15 @@ const SearchMainView = () => {
     <div className={styles.main}>
       <div className={styles.searchPanel}>
         <div className={styles.searchFields}>
-          <SpeciesSearchFieldWithLinks
-            titleIcon={
-              <span role="img" aria-label="Find a species">
-                <SpeciesSelectorIcon />
-              </span>
-            }
+          <SpeciesSearchField
+            labelStyle="with-icon"
             onSearchSubmit={onSpeciesSearchSubmit}
           />
-          <SpeciesSearchFieldWithLinks
-            title="Find a feature"
-            titleIcon={
-              <span role="img" aria-label="Find a feature">
-                <SearchIcon />
-              </span>
-            }
-            isFeatureSearch={true}
+          <FeatureSearchField
             onSearchSubmit={onFeatureSearchSubmit}
-            help={featureSearchHelpText}
-            placeholder={featureSearchPlaceholder}
             canSubmit={canSearchFeature}
             disabled={!canSearchFeature}
+            labelStyle="with-icon"
           />
         </div>
       </div>

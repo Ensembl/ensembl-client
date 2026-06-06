@@ -29,20 +29,7 @@ const SpeciesSelector = () => {
   const appBar = (
     <Routes>
       <Route index element={<SpeciesSelectorAppBar />} />
-      <Route path="/search/results" element={<SpeciesSearchResultsAppBar />} />
       <Route path="/search" element={<SpeciesSearchResultsAppBar />} />
-      <Route
-        path="/search/gene"
-        element={<SpeciesSelectorAppBar isSearchMode={true} />}
-      />
-      <Route
-        path="/search/transcript"
-        element={<SpeciesSelectorAppBar isSearchMode={true} />}
-      />
-      <Route
-        path="/search/variant"
-        element={<SpeciesSelectorAppBar isSearchMode={true} />}
-      />
       <Route path="/manage" element={<SpeciesManagerAppBar />} />
     </Routes>
   );

@@ -24,7 +24,7 @@ import SpeciesSelectorPage, {
 } from 'src/content/app/species-selector/SpeciesSelectorPage';
 import SearchPage, {
   serverFetch as searchPageServerFetch
-} from 'src/content/search/SearchPage';
+} from 'src/content/app/search/SearchPage';
 import SpeciesPage, {
   serverFetch as speciesPageServerFetch
 } from 'src/content/app/species/SpeciesPage';

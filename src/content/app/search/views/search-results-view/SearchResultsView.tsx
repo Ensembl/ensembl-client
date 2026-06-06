@@ -20,15 +20,14 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
 
 import {
   getCommittedSpecies,
   getHasLoadedStoredSpecies
 } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import { SearchIcon } from 'src/shared/components/app-icon';
 import FeatureSearchResultsView from 'src/shared/components/feature-search-results-view/FeatureSearchResultsView';
+import FeatureSearchField from 'src/content/app/search/components/feature-search-field/FeatureSearchField';
 
 const SearchResultsView = () => {
   const navigate = useNavigate();
@@ -52,8 +51,6 @@ const SearchResultsView = () => {
 const ResultsSearchField = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const queryFromParams = searchParams.get('query') ?? '';
   const returnTo = getReturnPath(location.state);
 
   const onSearchSubmit = (input: string) => {
@@ -73,25 +70,9 @@ const ResultsSearchField = () => {
   };
 
   return (
-    <SpeciesSearchFieldWithLinks
-      key={queryFromParams}
-      title="Find a feature"
-      titleIcon={<SearchIcon />}
-      isFeatureSearch={true}
-      initialQuery={queryFromParams}
-      help={featureSearchHelpText}
-      placeholder={featureSearchPlaceholder}
-      onSearchSubmit={onSearchSubmit}
-      onClose={onClose}
-    />
+    <FeatureSearchField onSearchSubmit={onSearchSubmit} onClose={onClose} />
   );
 };
-
-const featureSearchHelpText = `
-Search for a gene, transcript or variant using a stable identifier, symbol or rsID.
-`;
-
-const featureSearchPlaceholder = 'Gene, transcript or variant ID...';
 
 const getReturnPath = (state: unknown) => {
   if (
