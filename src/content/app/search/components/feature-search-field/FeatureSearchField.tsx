@@ -16,6 +16,7 @@
 
 import { useState, type InputEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import classNames from 'classnames';
 
 import MainSearchField from 'src/shared/components/main-search-field/MainSearchField';
 
@@ -50,7 +51,11 @@ const FeatureSearchField = (props: Props) => {
     labelStyle === 'plain' ? (
       'Find a feature'
     ) : (
-      <span className={styles.label}>
+      <span
+        className={classNames(styles.label, {
+          [styles.labelDisabled]: props.disabled
+        })}
+      >
         <SearchIcon className={styles.searchIcon} />
         <span>Find a feature</span>
       </span>

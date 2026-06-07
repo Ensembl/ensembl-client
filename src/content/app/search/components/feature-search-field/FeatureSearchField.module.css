@@ -22,3 +22,11 @@
   position: absolute;
   left: 0;
 }
+
+.labelDisabled {
+  color: var(--color-medium-dark-grey);
+}
+
+.labelDisabled svg {
+  fill: var(--color-medium-dark-grey);
+}
