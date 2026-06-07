@@ -12,7 +12,6 @@
   align-items: start;
   row-gap: 18px;
   min-height: 300px;
-  padding-bottom: 16px;
   padding-left: var(--global-padding-left);
   padding-right: var(--standard-gutter);
   background-color: var(--color-light-grey);
