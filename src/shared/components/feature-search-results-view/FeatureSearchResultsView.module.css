@@ -1,6 +1,6 @@
 .main {
   height: 100%;
-  padding: 26px var(--standard-gutter) var(--global-padding-bottom)
+  padding: 26px var(--standard-gutter) 0
     var(--global-padding-left);
   display: flex;
   flex-direction: column;
@@ -15,6 +15,7 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  padding-bottom: var(--global-padding-bottom);
 }
 
 .status {
