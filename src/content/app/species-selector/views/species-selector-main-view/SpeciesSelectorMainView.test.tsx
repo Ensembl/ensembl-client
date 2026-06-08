@@ -21,6 +21,8 @@ import userEvent from '@testing-library/user-event';
 import SpeciesSelectorMainView from './SpeciesSelectorMainView';
 import RouteChecker from 'tests/router/RouteChecker';
 
+import { createSelectedSpecies } from 'tests/fixtures/selected-species';
+
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const mockUseAppSelector = vi.fn();
@@ -74,27 +76,7 @@ vi.mock(
   })
 );
 
-const committedSpecies: CommittedItem[] = [
-  {
-    genome_id: 'homo_sapiens_GCA_000001405_29',
-    genome_tag: 'human',
-    common_name: 'Human',
-    scientific_name: 'Homo sapiens',
-    species_taxonomy_id: '9606',
-    type: null,
-    is_reference: true,
-    assembly: {
-      accession_id: 'GCA_000001405.29',
-      name: 'GRCh38'
-    },
-    release: {
-      name: 'Sep 2025',
-      type: 'integrated'
-    },
-    isEnabled: true,
-    addedAt: 1
-  }
-];
+const committedSpecies: CommittedItem[] = [createSelectedSpecies()];
 
 const renderMainView = () => {
   const routerInfo: { location: Location | null } = {

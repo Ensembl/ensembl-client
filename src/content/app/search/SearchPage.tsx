@@ -26,9 +26,9 @@ import SearchAppBar from './components/search-app-bar/SearchAppBar';
 import SearchMainView from './views/search-main-view/SearchMainView';
 import SearchResultsView from './views/search-results-view/SearchResultsView';
 
-import styles from './SearchPage.module.css';
-
 import type { ServerFetch } from 'src/routes/routesConfig';
+
+import styles from './SearchPage.module.css';
 
 const pageTitle = 'Search — Ensembl';
 const pageDescription = 'Search for genes, transcripts or variants in Ensembl';

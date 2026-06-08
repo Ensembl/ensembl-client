@@ -57,7 +57,6 @@ const Launchbar = () => {
               path="/search"
               description="Site search"
               icon={GlobalSearchIcon}
-              enabled={true}
             />
             <SpeciesSelectorLaunchbarButton />
           </div>
@@ -66,7 +65,6 @@ const Launchbar = () => {
               path="/genome-browser"
               description="Genome browser"
               icon={GenomeBrowserIcon}
-              enabled={true}
             />
             <AlignmentsViewerLaunchbarButton />
           </div>
@@ -83,7 +81,6 @@ const Launchbar = () => {
               path="/help"
               description="Help & documentation"
               icon={HelpIcon}
-              enabled={true}
             />
           </div>
         </div>

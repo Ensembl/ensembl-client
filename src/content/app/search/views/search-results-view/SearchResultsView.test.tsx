@@ -19,14 +19,16 @@ import userEvent from '@testing-library/user-event';
 
 import SearchResultsView from './SearchResultsView';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import type { SearchResults } from 'src/shared/types/search-api/search-results';
-import { Strand } from 'src/shared/types/core-api/strand';
 import {
   getCommittedSpecies,
   getHasLoadedStoredSpecies
 } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
+
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import { Strand } from 'src/shared/types/core-api/strand';
 
 const mockUseAppSelector = vi.fn();
 const mockNavigate = vi.fn();
@@ -66,23 +68,7 @@ vi.mock('src/shared/state/api-slices/searchApiSlice', () => ({
   useLazySearchVariantsQuery: () => useLazySearchVariantsQuery()
 }));
 
-const committedSpecies: CommittedItem[] = [
-  createSelectedSpecies({
-    genome_id: 'homo_sapiens_GCA_000001405_29',
-    genome_tag: 'human',
-    common_name: 'Human',
-    scientific_name: 'Homo sapiens',
-    species_taxonomy_id: '9606',
-    assembly: {
-      accession_id: 'GCA_000001405.29',
-      name: 'GRCh38'
-    },
-    release: {
-      name: 'Sep 2025',
-      type: 'integrated'
-    }
-  })
-];
+const committedSpecies: CommittedItem[] = [createSelectedSpecies()];
 
 const geneResults: SearchResults = {
   meta: {

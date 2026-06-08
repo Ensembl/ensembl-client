@@ -149,19 +149,17 @@ const FeatureSearchTableRows = (props: {
               </>
             )}
             <td>
-              <div className={styles.featureMatch}>
-                {featureType === 'gene' && (
-                  <GeneRecord match={match} species={speciesInfo} />
-                )}
-                {featureType === 'transcript' && (
-                  <TranscriptRecord match={match} species={speciesInfo} />
-                )}
-                {featureType === 'variant' && (
-                  <VariantSearchRecord match={match} species={speciesInfo} />
-                )}
-              </div>
+              {featureType === 'gene' && (
+                <GeneRecord match={match} species={speciesInfo} />
+              )}
+              {featureType === 'transcript' && (
+                <TranscriptRecord match={match} species={speciesInfo} />
+              )}
+              {featureType === 'variant' && (
+                <VariantSearchRecord match={match} species={speciesInfo} />
+              )}
             </td>
-            <td className={styles.featureActionCell}>
+            <td>
               <FeatureSearchActionButton
                 featureType={featureType}
                 match={match}
@@ -169,7 +167,7 @@ const FeatureSearchTableRows = (props: {
                 appName="genomeBrowser"
               />
             </td>
-            <td className={styles.featureActionCell}>
+            <td>
               <FeatureSearchActionButton
                 featureType={featureType}
                 match={match}
@@ -279,8 +277,6 @@ const FeatureSearchActionButton = (props: {
       </Link>
     );
   }
-
-  // return <ViewInApp compact links={compactLinks} />;
 };
 
 const getFeatureSearchLinks = (

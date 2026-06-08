@@ -65,7 +65,6 @@ const SearchMainView = () => {
           />
         </div>
       </div>
-      <div className={styles.tabPanel} />
     </div>
   );
 };

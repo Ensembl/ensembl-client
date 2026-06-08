@@ -23,18 +23,3 @@
   padding-top: 38px;
   container-type: inline-size;
 }
-
-@media (width <= 1060px) {
-  .searchPanel {
-    grid-template-columns: 500px 1fr;
-  }
-}
-
-.tabPanel {
-  height: 100%;
-  padding-top: 26px;
-  padding-left: var(--global-padding-left);
-  padding-right: var(--standard-gutter);
-  padding-bottom: var(--global-padding-bottom);
-  overflow: auto;
-}
