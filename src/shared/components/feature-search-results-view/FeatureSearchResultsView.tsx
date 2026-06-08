@@ -25,15 +25,9 @@ import {
 
 import { CircleLoader } from 'src/shared/components/loader';
 import { FeatureSearchResults } from 'src/shared/components/feature-search-results/FeatureSearchResults';
-import {
-  isMissingResourceError,
-  getErrorMessage
-} from 'src/shared/state/api-slices/restSlice';
 
 import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import type { SerializedError } from '@reduxjs/toolkit';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './FeatureSearchResultsView.module.css';
@@ -136,27 +130,25 @@ const FeatureSearchResultsView = (props: Props) => {
       <div className={styles.searchFieldWrapper}>{searchField}</div>
       <div className={styles.resultsWrapper}>
         {areSearchResultsLoading ? (
-          <LoadingStatus />
+          <Loading />
         ) : (
           <>
             <SearchResultsSection
               title="Gene search results"
-              featureSearchMode="gene"
+              featureType="gene"
               searchResults={currentGeneSearchResults}
               speciesList={speciesList}
-              scrollable={false}
             />
             <SearchResultsSection
               title="Transcript search results"
-              featureSearchMode="transcript"
+              featureType="transcript"
               searchResults={currentTranscriptSearchResults}
               speciesList={speciesList}
-              scrollable={false}
             />
-            <VariantSearchResultsSection
+            <SearchResultsSection
               title="Variant search results"
-              variantSearchError={variantSearchError}
-              currentVariantSearchResults={currentVariantSearchResults}
+              featureType="variant"
+              searchResults={currentVariantSearchResults}
               speciesList={speciesList}
             />
           </>
@@ -168,62 +160,25 @@ const FeatureSearchResultsView = (props: Props) => {
 
 const SearchResultsSection = (props: {
   title: string;
-  featureSearchMode: FeatureSearchMode;
+  featureType: FeatureSearchMode;
   searchResults: SearchResults | undefined;
   speciesList: CommittedItem[];
-  scrollable?: boolean;
 }) => {
-  const { title, featureSearchMode, searchResults, speciesList, scrollable } =
-    props;
+  const { title, featureType, searchResults, speciesList } = props;
 
   return (
     <section className={styles.section}>
       <div className={styles.sectionTitle}>{title}</div>
       <FeatureSearchResults
-        featureSearchMode={featureSearchMode}
+        featureType={featureType}
         speciesList={speciesList}
         searchResults={searchResults}
-        scrollable={scrollable}
-        emptyResultsLabel={title}
-        showFeatureActions={true}
       />
     </section>
   );
 };
 
-const VariantSearchResultsSection = (props: {
-  title: string;
-  variantSearchError: FetchBaseQueryError | SerializedError | undefined;
-  currentVariantSearchResults: SearchResults | undefined;
-  speciesList: CommittedItem[];
-}) => {
-  const {
-    title,
-    variantSearchError,
-    currentVariantSearchResults,
-    speciesList
-  } = props;
-
-  return (
-    <section className={styles.section}>
-      <div className={styles.sectionTitle}>{title}</div>
-      {isMissingResourceError(variantSearchError) ? (
-        <p className={styles.warning}>{getErrorMessage(variantSearchError)}</p>
-      ) : (
-        <FeatureSearchResults
-          featureSearchMode="variant"
-          speciesList={speciesList}
-          searchResults={currentVariantSearchResults}
-          scrollable={false}
-          emptyResultsLabel={title}
-          showFeatureActions={true}
-        />
-      )}
-    </section>
-  );
-};
-
-const LoadingStatus = () => (
+const Loading = () => (
   <div className={styles.status} role="status" aria-label="Searching features">
     <CircleLoader size="small" />
   </div>

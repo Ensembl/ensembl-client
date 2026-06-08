@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
-import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import type { ReactNode } from 'react';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -69,32 +68,13 @@ const getGroupedSearchMatches = (
 
 export const FeatureSearchResults = (props: {
   speciesList: CommittedItem[];
-  featureSearchMode: FeatureSearchMode;
+  featureType: FeatureSearchMode;
   searchResults?: SearchResults;
-  scrollable?: boolean;
-  emptyResultsLabel?: string;
-  showFeatureActions?: boolean;
 }) => {
-  const {
-    featureSearchMode,
-    speciesList,
-    searchResults,
-    scrollable = true,
-    emptyResultsLabel,
-    showFeatureActions = false
-  } = props;
+  const { featureType, speciesList, searchResults } = props;
 
-  if (!searchResults) {
-    return;
-  }
-
-  if (searchResults?.matches.length === 0) {
-    return (
-      <NoResults
-        featureSearchMode={featureSearchMode}
-        emptyResultsLabel={emptyResultsLabel}
-      />
-    );
+  if (!searchResults || searchResults.matches.length === 0) {
+    return <NoResults />;
   }
 
   const groupedSearchMatches = getGroupedSearchMatches(
@@ -102,20 +82,12 @@ export const FeatureSearchResults = (props: {
     searchResults.matches
   );
 
-  const isGeneSearchMode = featureSearchMode === 'gene';
-  const isTranscriptSearchMode = featureSearchMode === 'transcript';
-  const isVariantSearchMode = featureSearchMode === 'variant';
-  const showReleaseColumns =
-    isGeneSearchMode || isTranscriptSearchMode || isVariantSearchMode;
+  // FIXME: this should be done with CSS
   const capitalizedFeatureSearchMode =
-    featureSearchMode.charAt(0).toUpperCase() + featureSearchMode.slice(1);
+    featureType.charAt(0).toUpperCase() + featureType.slice(1);
 
   return (
-    <div
-      className={classNames(styles.resultsWrapper, {
-        [styles.resultsWrapperAutoHeight]: !scrollable
-      })}
-    >
+    <div className={styles.resultsWrapper}>
       <Table stickyHeader={true} className={styles.resultsTable}>
         <thead>
           <tr>
@@ -126,16 +98,12 @@ export const FeatureSearchResults = (props: {
               </span>
               species
             </th>
-            {showReleaseColumns && (
-              <>
-                <th>Release date</th>
-                <th>Release type</th>
-                <th>Assembly accession</th>
-              </>
-            )}
+            <th>Release date</th>
+            <th>Release type</th>
+            <th>Assembly accession</th>
             <th>{capitalizedFeatureSearchMode}</th>
-            {showFeatureActions && <th>Genome Browser</th>}
-            {showFeatureActions && <th>Entity Viewer</th>}
+            <th>Genome Browser</th>
+            <th>Entity Viewer</th>
           </tr>
         </thead>
         <tbody>
@@ -143,8 +111,7 @@ export const FeatureSearchResults = (props: {
             <FeatureSearchTableRows
               key={match.speciesInfo.genome_id}
               data={match}
-              featureSearchMode={featureSearchMode}
-              showFeatureActions={showFeatureActions}
+              featureType={featureType}
             />
           ))}
         </tbody>
@@ -155,17 +122,10 @@ export const FeatureSearchResults = (props: {
 
 const FeatureSearchTableRows = (props: {
   data: SearchMatchesWithSpecies;
-  featureSearchMode: FeatureSearchMode;
-  showFeatureActions?: boolean;
+  featureType: FeatureSearchMode;
 }) => {
-  const { featureSearchMode, data, showFeatureActions = false } = props;
+  const { featureType, data } = props;
   const { speciesInfo, searchMatches } = data;
-
-  const isGeneSearchMode = featureSearchMode === 'gene';
-  const isTranscriptSearchMode = featureSearchMode === 'transcript';
-  const isVariantSearchMode = featureSearchMode === 'variant';
-  const showReleaseColumns =
-    isGeneSearchMode || isTranscriptSearchMode || isVariantSearchMode;
 
   return (
     <>
@@ -182,54 +142,44 @@ const FeatureSearchTableRows = (props: {
                     className={styles.speciesName}
                   />
                 </td>
-                {showReleaseColumns && (
-                  <>
-                    <td rowSpan={rowSpan}>{speciesInfo.release.name}</td>
-                    <td rowSpan={rowSpan}>{speciesInfo.release.type}</td>
-                    <td rowSpan={rowSpan}>
-                      {speciesInfo.assembly.accession_id}
-                    </td>
-                  </>
-                )}
+                <td rowSpan={rowSpan}>{speciesInfo.release.name}</td>
+                <td rowSpan={rowSpan}>{speciesInfo.release.type}</td>
+                <td rowSpan={rowSpan}>{speciesInfo.assembly.accession_id}</td>
               </>
             )}
             <td>
               <div className={styles.featureMatch}>
-                {isGeneSearchMode && (
+                {featureType === 'gene' && (
                   <GeneRecord match={match} species={speciesInfo} />
                 )}
-                {isTranscriptSearchMode && (
+                {featureType === 'transcript' && (
                   <TranscriptRecord match={match} species={speciesInfo} />
                 )}
-                {isVariantSearchMode && (
+                {featureType === 'variant' && (
                   <VariantSearchRecord match={match} species={speciesInfo} />
                 )}
               </div>
             </td>
-            {showFeatureActions && (
-              <>
-                <td className={styles.featureActionCell}>
-                  <div className={styles.featureActionCellContent}>
-                    <FeatureSearchActionButton
-                      featureSearchMode={featureSearchMode}
-                      match={match}
-                      species={speciesInfo}
-                      appName="genomeBrowser"
-                    />
-                  </div>
-                </td>
-                <td className={styles.featureActionCell}>
-                  <div className={styles.featureActionCellContent}>
-                    <FeatureSearchActionButton
-                      featureSearchMode={featureSearchMode}
-                      match={match}
-                      species={speciesInfo}
-                      appName="entityViewer"
-                    />
-                  </div>
-                </td>
-              </>
-            )}
+            <td className={styles.featureActionCell}>
+              <div className={styles.featureActionCellContent}>
+                <FeatureSearchActionButton
+                  featureType={featureType}
+                  match={match}
+                  species={speciesInfo}
+                  appName="genomeBrowser"
+                />
+              </div>
+            </td>
+            <td className={styles.featureActionCell}>
+              <div className={styles.featureActionCellContent}>
+                <FeatureSearchActionButton
+                  featureType={featureType}
+                  match={match}
+                  species={speciesInfo}
+                  appName="entityViewer"
+                />
+              </div>
+            </td>
           </tr>
         );
       })}
@@ -311,14 +261,16 @@ const SearchResultLabel = (props: {
 };
 
 const FeatureSearchActionButton = (props: {
-  featureSearchMode: FeatureSearchMode;
+  featureType: FeatureSearchMode;
   match: SearchMatch;
   species: CommittedItem;
   appName: 'genomeBrowser' | 'entityViewer';
 }) => {
-  const { featureSearchMode, match, species, appName } = props;
-  const links = getFeatureSearchLinks(featureSearchMode, match, species);
+  const { featureType, match, species, appName } = props;
+  const links = getFeatureSearchLinks(featureType, match, species);
   const link = links[appName];
+
+  // FIXME!
   const compactLinks =
     appName === 'genomeBrowser'
       ? { genomeBrowser: link }
@@ -407,30 +359,10 @@ const getFeatureSearchLinks = (
   };
 };
 
-export const NoResults = (props: {
-  featureSearchMode: string;
-  emptyResultsLabel?: string;
-}) => {
-  const { emptyResultsLabel } = props;
-
-  if (emptyResultsLabel) {
-    return (
-      <div className={styles.noResults}>
-        <p>No results found</p>
-      </div>
-    );
-  }
-
+export const NoResults = () => {
   return (
     <div className={styles.noResults}>
-      <p>
-        Found in <span className={styles.speciesCount}>0</span> species
-      </p>
-      <p className={styles.warning}>
-        Sorry, we can’t find this {props.featureSearchMode} in any of your
-        species in use
-      </p>
-      <p>Please use a different {props.featureSearchMode} identifier</p>
+      <p>No results found</p>
     </div>
   );
 };
