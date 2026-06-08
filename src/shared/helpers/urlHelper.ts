@@ -20,7 +20,6 @@ import {
   getGenomicLocationString,
   type GenomicLocation
 } from 'src/shared/helpers/genomicLocationHelpers';
-import type { FeatureSearchMode } from './featureSearchHelpers';
 
 export const home = () => '/';
 
@@ -52,10 +51,6 @@ type SpeciesSelectorSearchParams = {
   speciesTaxonomyId?: string | number;
 };
 
-type SpeciesSelectorSearchResultsParams = {
-  query?: string;
-};
-
 export const speciesPage = (params: SpeciesPageUrlParams) => {
   const speciesPageRootPath = '/species';
 
@@ -65,24 +60,6 @@ export const speciesPage = (params: SpeciesPageUrlParams) => {
 const speciesSelectorPath = '/species-selector';
 
 export const speciesSelector = () => speciesSelectorPath;
-
-export const search = () => '/search';
-
-type SearchResultsParams = {
-  query?: string;
-};
-
-export const searchResults = (params: SearchResultsParams) => {
-  const path = '/search/results';
-  const urlSearchParams = new URLSearchParams('');
-
-  if (params.query) {
-    urlSearchParams.append('query', params.query);
-  }
-
-  const query = decodeURIComponent(urlSearchParams.toString());
-  return query ? `${path}?${query}` : path;
-};
 
 export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
   const path = `${speciesSelectorPath}/search`;
@@ -103,30 +80,12 @@ export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
   return query ? `${path}?${query}` : path;
 };
 
-export const speciesSelectorSearchResults = (
-  params: SpeciesSelectorSearchResultsParams
-) => {
-  const path = `${speciesSelectorPath}/search/results`;
+export const search = () => '/search';
+
+export const searchResults = (params: { query: string }) => {
+  const path = '/search/results';
   const urlSearchParams = new URLSearchParams('');
-
-  if (params.query) {
-    urlSearchParams.append('query', params.query);
-  }
-
-  const query = decodeURIComponent(urlSearchParams.toString());
-  return query ? `${path}?${query}` : path;
-};
-
-export const speciesSelectorFeatureSearch = (
-  featureSearchMode: FeatureSearchMode,
-  searchInput?: string
-) => {
-  const path = `${speciesSelector()}/search/${featureSearchMode}`;
-  const urlSearchParams = new URLSearchParams('');
-
-  if (searchInput) {
-    urlSearchParams.append('query', searchInput);
-  }
+  urlSearchParams.append('query', params.query);
 
   const query = decodeURIComponent(urlSearchParams.toString());
   return query ? `${path}?${query}` : path;
