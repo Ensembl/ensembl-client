@@ -85,10 +85,6 @@ export const FeatureSearchResults = (props: {
     searchResults.matches
   );
 
-  // FIXME: this should be done with CSS
-  const capitalizedFeatureSearchMode =
-    featureType.charAt(0).toUpperCase() + featureType.slice(1);
-
   return (
     <div className={styles.resultsWrapper}>
       <Table stickyHeader={true} className={styles.resultsTable}>
@@ -104,7 +100,9 @@ export const FeatureSearchResults = (props: {
             <th>Release date</th>
             <th>Release type</th>
             <th>Assembly accession</th>
-            <th>{capitalizedFeatureSearchMode}</th>
+            <th>
+              <span className={styles.capitalized}>{featureType}</span>
+            </th>
             <th>Genome Browser</th>
             <th>Entity Viewer</th>
           </tr>
