@@ -7,10 +7,6 @@
   background-color: var(--color-light-grey);
 }
 
-.searchFieldWrapper {
-  margin-bottom: 24px;
-}
-
 .resultsWrapper {
   flex: 1;
   min-height: 0;

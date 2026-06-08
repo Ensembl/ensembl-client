@@ -22,7 +22,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { Table } from 'src/shared/components/table';
-import SpeciesName from '../species-name/SpeciesName';
+import SpeciesName from '../../../../../shared/components/species-name/SpeciesName';
 
 import type {
   GeneSearchMatch,

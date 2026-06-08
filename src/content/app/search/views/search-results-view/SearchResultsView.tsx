@@ -26,13 +26,20 @@ import {
   getHasLoadedStoredSpecies
 } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
-import FeatureSearchResultsView from 'src/shared/components/feature-search-results-view/FeatureSearchResultsView';
+import ModalView from 'src/shared/components/modal-view/ModalView';
 import FeatureSearchField from 'src/content/app/search/components/feature-search-field/FeatureSearchField';
+import CombinedFeatureSearchResults from 'src/content/app/search/components/combined-feature-search-results/CombinedFeatureSearchResults';
+
+import styles from './SearchResultsView.module.css';
 
 const SearchResultsView = () => {
+  const committedSpecies = useAppSelector(getCommittedSpecies);
+  const hasLoadedStoredSpecies = useAppSelector(getHasLoadedStoredSpecies);
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
+  const returnTo = getReturnPath(location.state);
   const query = searchParams.get('query') ?? '';
 
   useEffect(() => {
@@ -45,13 +52,9 @@ const SearchResultsView = () => {
     return null;
   }
 
-  return <Content query={query} />;
-};
-
-const ResultsSearchField = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const returnTo = getReturnPath(location.state);
+  const onClose = () => {
+    navigate(returnTo);
+  };
 
   const onSearchSubmit = (input: string) => {
     navigate(
@@ -65,12 +68,18 @@ const ResultsSearchField = () => {
     );
   };
 
-  const onClose = () => {
-    navigate(returnTo);
-  };
-
   return (
-    <FeatureSearchField onSearchSubmit={onSearchSubmit} onClose={onClose} />
+    <ModalView onClose={onClose}>
+      <div className={styles.grid}>
+        <FeatureSearchField onSearchSubmit={onSearchSubmit} onClose={onClose} />
+        <CombinedFeatureSearchResults
+          query={query}
+          speciesList={committedSpecies}
+          hasLoadedSpecies={hasLoadedStoredSpecies}
+          missingSpeciesRedirectPath={urlFor.search()}
+        />
+      </div>
+    </ModalView>
   );
 };
 
@@ -85,22 +94,6 @@ const getReturnPath = (state: unknown) => {
   }
 
   return urlFor.search();
-};
-
-const Content = (props: { query: string }) => {
-  const { query } = props;
-  const committedSpecies = useAppSelector(getCommittedSpecies);
-  const hasLoadedStoredSpecies = useAppSelector(getHasLoadedStoredSpecies);
-
-  return (
-    <FeatureSearchResultsView
-      query={query}
-      speciesList={committedSpecies}
-      hasLoadedSpecies={hasLoadedStoredSpecies}
-      missingSpeciesRedirectPath={urlFor.search()}
-      searchField={<ResultsSearchField />}
-    />
-  );
 };
 
 export default SearchResultsView;

@@ -7,6 +7,7 @@
       'label .'
       'input controls';
     grid-template-columns: minmax(0, var(--max-input-width)) max-content;
+    justify-content: start;
     row-gap: 10px;
     column-gap: 30px;
   }

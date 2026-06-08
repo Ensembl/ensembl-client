@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, type ReactNode } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -24,29 +24,27 @@ import {
 } from 'src/shared/state/api-slices/searchApiSlice';
 
 import { CircleLoader } from 'src/shared/components/loader';
-import { FeatureSearchResults } from 'src/shared/components/feature-search-results/FeatureSearchResults';
+import { FeatureSearchResults } from 'src/content/app/search/components/feature-search-results/FeatureSearchResults';
 
 import type { FeatureSearchMode } from 'src/shared/helpers/featureSearchHelpers';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-import styles from './FeatureSearchResultsView.module.css';
+import styles from './CombinedFeatureSearchResults.module.css';
 
 type Props = {
   query: string;
   speciesList: CommittedItem[];
   hasLoadedSpecies?: boolean;
   missingSpeciesRedirectPath: string;
-  searchField: ReactNode;
 };
 
-const FeatureSearchResultsView = (props: Props) => {
+const CombinedFeatureSearchResults = (props: Props) => {
   const {
     query,
     speciesList,
     hasLoadedSpecies = true,
-    missingSpeciesRedirectPath,
-    searchField
+    missingSpeciesRedirectPath
   } = props;
   const navigate = useNavigate();
 
@@ -126,34 +124,31 @@ const FeatureSearchResultsView = (props: Props) => {
   }
 
   return (
-    <div className={styles.main}>
-      <div className={styles.searchFieldWrapper}>{searchField}</div>
-      <div className={styles.resultsWrapper}>
-        {areSearchResultsLoading ? (
-          <Loading />
-        ) : (
-          <>
-            <SearchResultsSection
-              title="Gene search results"
-              featureType="gene"
-              searchResults={currentGeneSearchResults}
-              speciesList={speciesList}
-            />
-            <SearchResultsSection
-              title="Transcript search results"
-              featureType="transcript"
-              searchResults={currentTranscriptSearchResults}
-              speciesList={speciesList}
-            />
-            <SearchResultsSection
-              title="Variant search results"
-              featureType="variant"
-              searchResults={currentVariantSearchResults}
-              speciesList={speciesList}
-            />
-          </>
-        )}
-      </div>
+    <div className={styles.resultsWrapper}>
+      {areSearchResultsLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <SearchResultsSection
+            title="Gene search results"
+            featureType="gene"
+            searchResults={currentGeneSearchResults}
+            speciesList={speciesList}
+          />
+          <SearchResultsSection
+            title="Transcript search results"
+            featureType="transcript"
+            searchResults={currentTranscriptSearchResults}
+            speciesList={speciesList}
+          />
+          <SearchResultsSection
+            title="Variant search results"
+            featureType="variant"
+            searchResults={currentVariantSearchResults}
+            speciesList={speciesList}
+          />
+        </>
+      )}
     </div>
   );
 };
@@ -184,4 +179,4 @@ const Loading = () => (
   </div>
 );
 
-export default FeatureSearchResultsView;
+export default CombinedFeatureSearchResults;
