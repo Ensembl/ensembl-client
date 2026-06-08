@@ -19,10 +19,6 @@
   padding: 0 0.5ch;
 }
 
-.warning {
-  color: var(--color-red);
-}
-
 .resultsWrapper {
   height: 100%;
   width: 800px;
@@ -69,22 +65,8 @@
   font-weight: var(--font-weight-light);
 }
 
-.variantMatch {
-  color: var(--color-blue);
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.geneMatch {
-  color: var(--color-blue);
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.transcriptMatch {
-  color: var(--color-blue);
-  cursor: pointer;
-  text-decoration: none;
+.resultLabel {
+  white-space: nowrap;
 }
 
 .geneSymbol {
@@ -116,22 +98,10 @@
   position: relative;
 }
 
-.featureActionCellContent {
-  position: absolute;
-  inset: 0;
+.appIcon {
+  --app-icon-bg-color: var(--color-blue);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
-.closeButton {
-  position: absolute;
-  right: var(--standard-gutter);
-  top: var(--standard-gutter);
-}
-
-.tooltip {
-  --pointer-box-padding: 12px 20px;
+  width: 25px;
+  height: 25px;
+  margin: auto;
 }

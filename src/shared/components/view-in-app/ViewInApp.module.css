@@ -17,14 +17,6 @@
   color: var(--color-white);
 }
 
-.viewInAppCompact .label {
-  display: none;
-}
-
-.viewInAppCompact {
-  justify-content: center;
-}
-
 .viewInAppLink {
   --app-icon-size: 25px;
   --app-icon-bg-color: var(--color-blue);
@@ -37,8 +29,4 @@
 
 .viewInAppLink svg {
   fill: var(--color-white);
-}
-
-.viewInAppCompact .viewInAppLink {
-  margin-left: 0;
 }

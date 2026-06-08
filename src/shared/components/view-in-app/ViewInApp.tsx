@@ -98,12 +98,10 @@ export type ViewInAppProps = {
   onAnyAppClick?: (appName?: AppName) => void;
   theme?: Theme;
   className?: string;
-  compact?: boolean;
 };
 
 export const ViewInApp = (props: ViewInAppProps) => {
   const theme = props.theme ?? 'light';
-  const compact = props.compact ?? false;
 
   const navigate = useNavigate();
   if (Object.keys(props.links).length === 0) {
@@ -132,8 +130,7 @@ export const ViewInApp = (props: ViewInAppProps) => {
 
   const componentClasses = classNames(styles.viewInApp, props.className, {
     [styles.viewInAppLight]: theme === 'light',
-    [styles.viewInAppDark]: theme === 'dark',
-    [styles.viewInAppCompact]: compact
+    [styles.viewInAppDark]: theme === 'dark'
   });
 
   const enabledApps = Object.entries({
@@ -144,7 +141,7 @@ export const ViewInApp = (props: ViewInAppProps) => {
 
   return (
     <div className={componentClasses}>
-      {!compact && <span className={styles.label}>View in</span>}
+      <span className={styles.label}>View in</span>
 
       {enabledApps.map((appName, index) => {
         return (

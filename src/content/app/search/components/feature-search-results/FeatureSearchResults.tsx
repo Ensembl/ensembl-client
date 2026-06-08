@@ -20,9 +20,12 @@ import type { ReactNode } from 'react';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
-import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { Table } from 'src/shared/components/table';
-import SpeciesName from '../../../../../shared/components/species-name/SpeciesName';
+import SpeciesName from 'src/shared/components/species-name/SpeciesName';
+import {
+  GenomeBrowserIcon,
+  EntityViewerIcon
+} from 'src/shared/components/app-icon';
 
 import type {
   GeneSearchMatch,
@@ -161,24 +164,20 @@ const FeatureSearchTableRows = (props: {
               </div>
             </td>
             <td className={styles.featureActionCell}>
-              <div className={styles.featureActionCellContent}>
-                <FeatureSearchActionButton
-                  featureType={featureType}
-                  match={match}
-                  species={speciesInfo}
-                  appName="genomeBrowser"
-                />
-              </div>
+              <FeatureSearchActionButton
+                featureType={featureType}
+                match={match}
+                species={speciesInfo}
+                appName="genomeBrowser"
+              />
             </td>
             <td className={styles.featureActionCell}>
-              <div className={styles.featureActionCellContent}>
-                <FeatureSearchActionButton
-                  featureType={featureType}
-                  match={match}
-                  species={speciesInfo}
-                  appName="entityViewer"
-                />
-              </div>
+              <FeatureSearchActionButton
+                featureType={featureType}
+                match={match}
+                species={speciesInfo}
+                appName="entityViewer"
+              />
             </td>
           </tr>
         );
@@ -200,7 +199,7 @@ const TranscriptRecord = (props: {
 
   return (
     <SearchResultLabel className={styles.transcriptMatch} to={genomeBrowserUrl}>
-      <span className={styles.stableId}>{match.stable_id}</span>
+      <span className={styles.stableId}>{match.stable_id} </span>
       {match.symbol && (
         <span className={styles.transcriptSymbol}>{match.symbol}</span>
       )}
@@ -237,7 +236,7 @@ const GeneRecord = (props: { match: SearchMatch; species: CommittedItem }) => {
   return (
     <SearchResultLabel className={styles.geneMatch} to={genomeBrowserUrl}>
       {match.symbol && (
-        <span className={styles.geneSymbol}>{match.symbol}</span>
+        <span className={styles.geneSymbol}>{match.symbol} </span>
       )}
       <span className={styles.stableId}>{match.stable_id}</span>
     </SearchResultLabel>
@@ -251,7 +250,7 @@ const SearchResultLabel = (props: {
 }) => {
   if (props.to) {
     return (
-      <Link to={props.to} className={props.className}>
+      <Link to={props.to} className={styles.resultLabel}>
         {props.children}
       </Link>
     );
@@ -268,15 +267,22 @@ const FeatureSearchActionButton = (props: {
 }) => {
   const { featureType, match, species, appName } = props;
   const links = getFeatureSearchLinks(featureType, match, species);
-  const link = links[appName];
 
-  // FIXME!
-  const compactLinks =
-    appName === 'genomeBrowser'
-      ? { genomeBrowser: link }
-      : { entityViewer: link };
+  if (appName === 'genomeBrowser') {
+    return (
+      <Link to={links.genomeBrowser.url} aria-label="view in genome browser">
+        <GenomeBrowserIcon className={styles.appIcon} />
+      </Link>
+    );
+  } else if (appName === 'entityViewer') {
+    return (
+      <Link to={links.entityViewer.url} aria-label="view in entity viewer">
+        <EntityViewerIcon className={styles.appIcon} />
+      </Link>
+    );
+  }
 
-  return <ViewInApp compact links={compactLinks} />;
+  // return <ViewInApp compact links={compactLinks} />;
 };
 
 const getFeatureSearchLinks = (
