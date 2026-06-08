@@ -1,15 +1,4 @@
-.main {
-  height: 100%;
-  padding: 26px var(--standard-gutter) 0
-    var(--global-padding-left);
-  display: flex;
-  flex-direction: column;
-  background-color: var(--color-light-grey);
-}
-
 .resultsWrapper {
-  flex: 1;
-  min-height: 0;
   overflow-y: auto;
   padding-bottom: var(--global-padding-bottom);
 }
