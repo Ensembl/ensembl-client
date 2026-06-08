@@ -15,7 +15,6 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import {
   useLazySearchGenesQuery,
@@ -35,18 +34,10 @@ import styles from './CombinedFeatureSearchResults.module.css';
 type Props = {
   query: string;
   speciesList: CommittedItem[];
-  hasLoadedSpecies?: boolean;
-  missingSpeciesRedirectPath: string;
 };
 
 const CombinedFeatureSearchResults = (props: Props) => {
-  const {
-    query,
-    speciesList,
-    hasLoadedSpecies = true,
-    missingSpeciesRedirectPath
-  } = props;
-  const navigate = useNavigate();
+  const { query, speciesList } = props;
 
   const genomeIds = useMemo(
     () => speciesList.map(({ genome_id }) => genome_id),
@@ -84,12 +75,6 @@ const CombinedFeatureSearchResults = (props: Props) => {
     (!currentVariantSearchResults && !variantSearchError);
 
   useEffect(() => {
-    if (hasLoadedSpecies && !speciesList.length) {
-      navigate(missingSpeciesRedirectPath, { replace: true });
-    }
-  }, [hasLoadedSpecies, missingSpeciesRedirectPath, navigate, speciesList]);
-
-  useEffect(() => {
     if (!genomeIds.length) {
       return;
     }
@@ -118,10 +103,6 @@ const CombinedFeatureSearchResults = (props: Props) => {
     triggerTranscriptSearch,
     triggerVariantSearch
   ]);
-
-  if (!hasLoadedSpecies || !speciesList.length) {
-    return null;
-  }
 
   return (
     <div className={styles.resultsWrapper}>

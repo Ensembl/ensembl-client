@@ -33,22 +33,23 @@ import CombinedFeatureSearchResults from 'src/content/app/search/components/comb
 import styles from './SearchResultsView.module.css';
 
 const SearchResultsView = () => {
-  const committedSpecies = useAppSelector(getCommittedSpecies);
+  const speciesList = useAppSelector(getCommittedSpecies);
   const hasLoadedStoredSpecies = useAppSelector(getHasLoadedStoredSpecies);
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
+  const hasNoSelectedSpecies = hasLoadedStoredSpecies && !speciesList.length;
   const returnTo = getReturnPath(location.state);
   const query = searchParams.get('query') ?? '';
 
   useEffect(() => {
-    if (!query) {
+    if (!query || hasNoSelectedSpecies) {
       navigate(urlFor.search(), { replace: true });
     }
-  }, [navigate, query]);
+  }, [navigate, query, hasNoSelectedSpecies]);
 
-  if (!query) {
+  if (!query || hasNoSelectedSpecies) {
     return null;
   }
 
@@ -72,12 +73,7 @@ const SearchResultsView = () => {
     <ModalView onClose={onClose}>
       <div className={styles.grid}>
         <FeatureSearchField onSearchSubmit={onSearchSubmit} onClose={onClose} />
-        <CombinedFeatureSearchResults
-          query={query}
-          speciesList={committedSpecies}
-          hasLoadedSpecies={hasLoadedStoredSpecies}
-          missingSpeciesRedirectPath={urlFor.search()}
-        />
+        <CombinedFeatureSearchResults query={query} speciesList={speciesList} />
       </div>
     </ModalView>
   );

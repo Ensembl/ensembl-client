@@ -98,10 +98,9 @@ const renderComponent = (searchResults: SearchResults) => {
     <Provider store={store}>
       <MemoryRouter initialEntries={['/']}>
         <FeatureSearchResults
-          featureSearchMode="gene"
+          featureType="gene"
           speciesList={speciesList}
           searchResults={searchResults}
-          showFeatureActions={true}
         />
         <RouteChecker
           setLocation={(location) => {
@@ -180,7 +179,7 @@ describe('<FeatureSearchResults />', () => {
       >
         <MemoryRouter initialEntries={['/']}>
           <FeatureSearchResults
-            featureSearchMode="gene"
+            featureType="gene"
             speciesList={speciesList}
             searchResults={{
               meta: {
@@ -190,7 +189,6 @@ describe('<FeatureSearchResults />', () => {
               },
               matches: []
             }}
-            emptyResultsLabel="Gene search results"
           />
         </MemoryRouter>
       </Provider>
