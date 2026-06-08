@@ -134,11 +134,11 @@ describe('<FeatureSearchResults />', () => {
   });
 
   it('navigates via the genome browser action button', async () => {
-    const { container, routerInfo } = renderComponent(geneResults);
+    const { routerInfo, getByLabelText } = renderComponent(geneResults);
 
-    const genomeBrowserButton = container.querySelector(
-      '[data-test-id="genomeBrowser"] button'
-    ) as HTMLButtonElement;
+    const genomeBrowserButton = getByLabelText(
+      'view in genome browser'
+    ) as HTMLAnchorElement;
 
     await userEvent.click(genomeBrowserButton);
 
