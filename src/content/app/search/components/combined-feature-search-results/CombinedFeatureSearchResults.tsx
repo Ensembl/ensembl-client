@@ -62,17 +62,13 @@ const CombinedFeatureSearchResults = (props: Props) => {
   } = transcriptSearchResults;
   const {
     currentData: currentVariantSearchResults,
-    error: variantSearchError,
     reset: resetVariantSearchResults,
     isFetching: isVariantSearchFetching
   } = variantSearchResults;
   const areSearchResultsLoading =
     isGeneSearchFetching ||
     isTranscriptSearchFetching ||
-    isVariantSearchFetching ||
-    !currentGeneSearchResults ||
-    !currentTranscriptSearchResults ||
-    (!currentVariantSearchResults && !variantSearchError);
+    isVariantSearchFetching;
 
   useEffect(() => {
     if (!genomeIds.length) {
