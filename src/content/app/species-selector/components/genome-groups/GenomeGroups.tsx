@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { Link } from 'react-router-dom';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import Pill from 'src/shared/components/pill/Pill';
 
 import type {
@@ -48,10 +52,15 @@ const GenomeGroup = (props: { group: GenomeGroupType }) => {
       {group.description && (
         <p className={styles.description}>{group.description}</p>
       )}
-      <div className={styles.genomesCount}>
+      <Link
+        className={styles.genomesCount}
+        to={urlFor.speciesSelectorSearch({
+          genomeGroupId: group.group_id
+        })}
+      >
         <Pill>{group.genomes_count}</Pill>
         <span>genomes</span>
-      </div>
+      </Link>
     </div>
   );
 };

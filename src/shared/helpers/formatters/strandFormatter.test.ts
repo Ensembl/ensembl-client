@@ -15,11 +15,10 @@
  */
 
 import { getStrandDisplayName } from './strandFormatter';
-import { Strand } from 'src/shared/types/core-api/strand';
 
 describe('getStrandDisplayName', () => {
   it('returns the correct strand display name', () => {
-    expect(getStrandDisplayName(Strand.FORWARD)).toBe('forward strand');
-    expect(getStrandDisplayName(Strand.REVERSE)).toBe('reverse strand');
+    expect(getStrandDisplayName('forward')).toBe('forward strand');
+    expect(getStrandDisplayName('reverse')).toBe('reverse strand');
   });
 });

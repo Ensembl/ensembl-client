@@ -36,6 +36,7 @@ import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImag
 import TranscriptViewTabs from './components/transcript-view-tabs/TranscriptViewTabs';
 import TranscriptDetails from './components/transcript-details/TranscriptDetails';
 import TranscriptFunction from './components/transcript-function/TranscriptFunction';
+import ExonsView from './components/transcript-exons/ExonsView';
 
 import type { TicksAndScale } from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 
@@ -86,7 +87,7 @@ const TranscriptView = () => {
     viewInUrl
   });
 
-  if (!activeGenomeId || !currentData) {
+  if (!activeGenomeId || !transcriptId || !currentData) {
     return null; // FIXME: show a spinner?
   }
 
@@ -106,15 +107,19 @@ const TranscriptView = () => {
           <TranscriptViewTabs activeView={view} onViewChange={onViewChange} />
         </div>
       </div>
-      {view === defaultView && rulerTicks ? (
+      {view === defaultView && rulerTicks && (
         <TranscriptDetails
           genomeId={activeGenomeId}
           genomeIdForUrl={genomeIdForUrl ?? activeGenomeId}
           transcript={currentData.transcript}
           rulerTicks={rulerTicks}
         />
-      ) : (
+      )}
+      {view === 'protein' && (
         <TranscriptFunction transcript={currentData.transcript} />
+      )}
+      {view === 'exons' && (
+        <ExonsView genomeId={activeGenomeId} transcriptId={transcriptId} />
       )}
     </div>
   );

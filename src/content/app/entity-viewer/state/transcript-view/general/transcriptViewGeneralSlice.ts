@@ -16,7 +16,7 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-const viewNames = ['transcript', 'protein'] as const;
+const viewNames = ['transcript', 'protein', 'exons'] as const;
 
 export type ViewName = (typeof viewNames)[number];
 

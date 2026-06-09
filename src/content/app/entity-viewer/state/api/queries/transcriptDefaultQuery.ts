@@ -24,6 +24,9 @@ import {
 } from './defaultGeneQuery';
 
 import type { FullGene } from 'src/shared/types/core-api/gene';
+import type { Slice } from 'src/shared/types/core-api/slice';
+import type { Exon } from 'src/shared/types/core-api/exon';
+import type { Intron as FullIntron } from 'src/shared/types/core-api/intron';
 
 const geneFieldsFragment = gql`
   fragment geneFields on Gene {
@@ -61,6 +64,44 @@ export const defaultTranscriptQuery = gql`
   ) {
     transcript(by_id: { genome_id: $genomeId, stable_id: $transcriptId }) {
       ...transcriptFields
+      slice {
+        region {
+          sequence {
+            checksum
+          }
+        }
+      }
+      spliced_exons {
+        index
+        exon {
+          slice {
+            location {
+              start
+              end
+            }
+            strand {
+              code
+            }
+          }
+        }
+      }
+      introns {
+        index
+        slice {
+          location {
+            start
+            end
+            length
+          }
+          strand {
+            code
+          }
+        }
+        relative_location {
+          start
+          end
+        }
+      }
       gene {
         ...geneFields
       }
@@ -89,8 +130,22 @@ type GeneInDefaultTranscriptRequest = Pick<
     };
   };
 
+type SliceInTranscript = DefaultEntityViewerTranscript['slice'] &
+  Pick3<Slice, 'region', 'sequence', 'checksum'>;
+type SplicedExon = DefaultEntityViewerTranscript['spliced_exons'][number] & {
+  index: number;
+  exon: Pick3<Exon, 'slice', 'location', 'start' | 'end' | 'length'> &
+    Pick3<Exon, 'slice', 'strand', 'code'>;
+};
+type Intron = Pick<FullIntron, 'index' | 'relative_location'> &
+  Pick3<FullIntron, 'slice', 'location', 'start' | 'end' | 'length'> &
+  Pick3<FullIntron, 'slice', 'strand', 'code'>;
+
 export type DefaultEntityViewerTranscriptQueryResult = {
-  transcript: DefaultEntityViewerTranscript & {
+  transcript: Omit<DefaultEntityViewerTranscript, 'slice' | 'spliced_exons'> & {
+    slice: SliceInTranscript;
+    spliced_exons: SplicedExon[];
+    introns: Intron[];
     gene: GeneInDefaultTranscriptRequest;
   };
 };

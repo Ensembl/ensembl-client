@@ -37,7 +37,6 @@ import type { RootState } from 'src/store';
 export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelOpened: boolean;
   selectedTrackPanelTab: TrackSet;
-  highlightedTrackId: string;
   collapsedTrackIds: string[];
 }>;
 
@@ -48,7 +47,6 @@ export type TrackPanelState = Readonly<{
 export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   selectedTrackPanelTab: TrackSet.GENOMIC,
   isTrackPanelOpened: true,
-  highlightedTrackId: '',
   collapsedTrackIds: []
 };
 
@@ -123,31 +121,6 @@ export const updateTrackPanelTabForNewFocusObject = createAsyncThunk(
     };
   }
 );
-
-export const changeHighlightedTrackId =
-  (
-    highlightedTrackId: string
-  ): ThunkAction<void, RootState, void, Action<string>> =>
-  (dispatch, getState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-
-    if (!activeGenomeId) {
-      return;
-    }
-
-    const data = {
-      ...getActiveTrackPanel(state),
-      highlightedTrackId
-    };
-
-    dispatch(
-      updateTrackPanelForGenome({
-        activeGenomeId,
-        data
-      })
-    );
-  };
 
 export const getTrackPanelStateForGenome = (
   genomeId: string

@@ -396,5 +396,6 @@ export const {
   genePageMeta: fetchGenePageMeta,
   transcriptPageMeta: fetchTranscriptPageMeta,
   variantPageMeta: fetchVariantPageMeta,
+  defaultEntityViewerTranscript: fetchDefaultEntityViewerTranscript,
   defaultEntityViewerVariant: fetchDefaultEntityViewerVariant
 } = entityViewerThoasSlice.endpoints;

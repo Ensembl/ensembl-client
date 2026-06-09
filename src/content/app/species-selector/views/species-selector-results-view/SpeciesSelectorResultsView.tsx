@@ -29,6 +29,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import ModalView from 'src/shared/components/modal-view/ModalView';
 import GenomeSelectorBySearchQuery from 'src/content/app/species-selector/components/genome-selector-by-search-query/GenomeSelectorBySearchQuery';
 import GenomeSelectorBySpeciesTaxonomyId from 'src/content/app/species-selector/components/genome-selector-by-species-taxonomy-id/GenomeSelectorBySpeciesTaxonomyId';
+import GenomeSelectorByGenomeGroupId from 'src/content/app/species-selector/components/genome-selector-by-genome-group-id/GenomeSelectorByGenomeGroupId';
 
 import type { SpeciesSearchMatch } from 'src/content/app/species-selector/types/speciesSearchMatch';
 
@@ -58,7 +59,8 @@ const Content = (props: { onClose: () => void }) => {
   useEffect(() => {
     if (
       !searchParams.get('query') &&
-      !searchParams.get('species_taxonomy_id')
+      !searchParams.get('species_taxonomy_id') &&
+      !searchParams.get('genome_group_id')
     ) {
       navigate(urlFor.speciesSelector());
     }
@@ -87,6 +89,11 @@ const Content = (props: { onClose: () => void }) => {
     <GenomeSelectorBySpeciesTaxonomyId
       onSpeciesAdd={onSpeciesAdd}
       speciesTaxonomyId={searchParams.get('species_taxonomy_id') as string}
+    />
+  ) : searchParams.has('genome_group_id') ? (
+    <GenomeSelectorByGenomeGroupId
+      onSpeciesAdd={onSpeciesAdd}
+      genomeGroupId={searchParams.get('genome_group_id') as string}
     />
   ) : null; // this last option should never happen
 };

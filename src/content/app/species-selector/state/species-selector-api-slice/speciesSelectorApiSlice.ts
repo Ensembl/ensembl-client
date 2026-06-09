@@ -66,6 +66,14 @@ export type GenomesSearchBySpeciesTaxonomyIdRequestParams = {
   sortOrder?: string | null;
 };
 
+export type GenomesSearchByGenomeGroupIdRequestParams = {
+  genomeGroupId: string | number;
+  page: number;
+  perPage?: number;
+  sortBy?: string | null;
+  sortOrder?: string | null;
+};
+
 const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPopularSpecies: builder.query<PopularSpeciesResponse, void>({
@@ -96,6 +104,14 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       query: (params) => ({
         url: `${config.searchApiBaseUrl}/genomes/v2?${prepareGenomeSearchParams(params)}`
       })
+    }),
+    getGenomesByGenomeGroupId: builder.query<
+      SpeciesSearchResponse,
+      GenomesSearchByGenomeGroupIdRequestParams
+    >({
+      query: (params) => ({
+        url: `${config.searchApiBaseUrl}/genomes/v2?${prepareGenomeSearchParams(params)}`
+      })
     })
   })
 });
@@ -104,12 +120,15 @@ const prepareGenomeSearchParams = (
   params:
     | SpeciesSearchRequestParams
     | GenomesSearchBySpeciesTaxonomyIdRequestParams
+    | GenomesSearchByGenomeGroupIdRequestParams
 ) => {
   const searchParams = new URLSearchParams();
   if ('query' in params) {
     searchParams.set('query', params.query);
   } else if ('speciesTaxonomyId' in params) {
     searchParams.set('species_taxonomy_id', `${params.speciesTaxonomyId}`);
+  } else if ('genomeGroupId' in params) {
+    searchParams.set('genome_group_id', `${params.genomeGroupId}`);
   }
   searchParams.set('page', `${params.page}`);
 
@@ -141,6 +160,8 @@ export const useLazyGenomesQuery =
   speciesSelectorApiSlice.useLazyGetSpeciesSearchResultsQuery;
 export const useGenomesBySpeciesTaxonomyIdQuery =
   speciesSelectorApiSlice.useGetGenomesBySpeciesTaxonomyIdQuery;
+export const useGenomesByGenomeGroupIdQuery =
+  speciesSelectorApiSlice.useGetGenomesByGenomeGroupIdQuery;
 export const usePopularSpeciesQuery =
   speciesSelectorApiSlice.useGetPopularSpeciesQuery;
 export const useGenomeGroupCategoriesQuery =

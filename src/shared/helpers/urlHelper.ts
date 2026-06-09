@@ -49,6 +49,7 @@ type SpeciesPageUrlParams = {
 type SpeciesSelectorSearchParams = {
   query?: string;
   speciesTaxonomyId?: string | number;
+  genomeGroupId?: string | number;
 };
 
 export const speciesPage = (params: SpeciesPageUrlParams) => {
@@ -76,6 +77,10 @@ export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
     );
   }
 
+  if (params.genomeGroupId) {
+    urlSearchParams.append('genome_group_id', String(params.genomeGroupId));
+  }
+
   const query = decodeURIComponent(urlSearchParams.toString());
   return query ? `${path}?${query}` : path;
 };
@@ -97,7 +102,7 @@ export const speciesManager = () => {
 
 export const browser = (params?: BrowserUrlParams) => {
   const browserRootPath = '/genome-browser';
-  if (params) {
+  if (params && params.genomeId) {
     const path = `${browserRootPath}/${params.genomeId}`;
     const urlSearchParams = new URLSearchParams('');
     if (params.focus) {

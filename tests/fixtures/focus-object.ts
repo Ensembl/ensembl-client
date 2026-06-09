@@ -23,7 +23,8 @@ import {
   FocusTranscript,
   FocusObjectType
 } from 'src/shared/types/focus-object/focusObjectTypes';
-import { Strand } from 'src/shared/types/core-api/strand';
+
+import type { Strand } from 'src/shared/types/core-api/strand';
 
 export const createFocusObject = (
   objectType?: FocusObjectType
@@ -80,7 +81,7 @@ const commonFocusObjectFields = ({ genome_id }: { genome_id: string }) => {
     location: createLocation(),
     stable_id: faker.lorem.word(),
     versioned_stable_id: faker.lorem.word(),
-    strand: Strand.FORWARD
+    strand: 'forward' as Strand
   };
 };
 

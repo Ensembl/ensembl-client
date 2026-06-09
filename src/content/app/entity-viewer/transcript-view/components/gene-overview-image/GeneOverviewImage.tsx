@@ -44,11 +44,11 @@ import commonStyles from '../../TranscriptView.module.css';
 import styles from './GeneOverviewImage.module.css';
 
 type Gene = Pick<FullGene, 'stable_id'> &
-  Pick3<FullGene, 'slice', 'location', 'start' | 'end' | 'length'> &
-  Pick3<FullGene, 'slice', 'strand', 'code'>;
+  Pick3<FullGene, 'slice', 'location', 'start' | 'end' | 'length'>;
 
 type Transcript = UnsplicedTranscriptProps['transcript'] &
   Pick3<FullTranscript, 'slice', 'location', 'start' | 'end' | 'length'> &
+  Pick3<FullTranscript, 'slice', 'strand', 'code'> &
   Pick<FullTranscript, 'stable_id'>;
 
 export type GeneOverviewImageProps = {
@@ -132,7 +132,7 @@ const DirectionIndicator = () => {
 
 const StrandIndicator = (props: GeneOverviewImageProps) => {
   const {
-    gene: {
+    transcript: {
       slice: {
         strand: { code: strandCode }
       }

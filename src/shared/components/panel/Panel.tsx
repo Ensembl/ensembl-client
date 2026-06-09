@@ -56,9 +56,7 @@ const Panel = (props: PanelProps) => {
         <CloseButton className={closeButtonClassNames} onClick={onClose} />
       )}
       {props.header && <div className={headerClassNames}>{header}</div>}
-      <div className={bodyClassNames}>
-        <div>{props.children}</div>
-      </div>
+      <div className={bodyClassNames}>{props.children}</div>
     </div>
   );
 };

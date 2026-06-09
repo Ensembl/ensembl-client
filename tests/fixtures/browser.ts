@@ -26,7 +26,6 @@ import {
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { LocationValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
-import { Strand } from 'src/shared/types/core-api/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';
 import {
@@ -183,7 +182,6 @@ export const createMockBrowserState = () => {
         [fakeGenomeId]: {
           selectedTrackPanelTab: TrackSet.GENOMIC,
           isTrackPanelOpened: true,
-          highlightedTrackId: '',
           collapsedTrackIds: []
         }
       },
@@ -225,7 +223,7 @@ export const createMockBrowserState = () => {
             stable_id: 'fake_gene_stable_id_1',
             versioned_stable_id: 'fake_gene_stable_id.17',
             bio_type: 'Protein coding',
-            strand: Strand.FORWARD
+            strand: 'forward'
           },
           loadingStatus: LoadingState.SUCCESS
         }

@@ -40,13 +40,13 @@ const refgetApiSlice = restApiSlice.injectEndpoints({
         };
       },
       transformResponse: (sequence: string, _, params) => {
-        const { strand = Strand.FORWARD } = params;
-        return strand === Strand.REVERSE
-          ? getReverseComplement(sequence)
-          : sequence;
+        const { strand = 'forward' } = params;
+        return strand === 'reverse' ? getReverseComplement(sequence) : sequence;
       }
     })
   })
 });
+
+export const { refgetSequence: fetchRefgetSequence } = refgetApiSlice.endpoints;
 
 export const { useRefgetSequenceQuery } = refgetApiSlice;

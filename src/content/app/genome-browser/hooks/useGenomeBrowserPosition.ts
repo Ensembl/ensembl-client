@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,7 +31,6 @@ import {
 
 import {
   updateActualChrLocation,
-  updateChrLocation,
   type ChrLocation
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
@@ -66,6 +65,39 @@ const useGenomeBrowserPosition = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const onBrowserLocationChange = useCallback(
+    (message: CurrentPositionMessage | TargetPositionMessage) => {
+      const { activeGenomeId, genomeIdForUrl, focusObjectIdForUrl } =
+        idRef.current;
+      const { stick, start, end } = message.payload;
+      const [genomeId, chromosome] = stick.split(':');
+
+      if (genomeId !== activeGenomeId) {
+        // ignore the message, because it must be a delayed message for the previous species
+        // when the user has already switched to another one
+        return;
+      }
+
+      if (message.type === 'current_position') {
+        dispatch(updateActualChrLocation([chromosome, start, end]));
+      } else {
+        const chrLocation = [chromosome, start, end] as ChrLocation;
+
+        navigate(
+          urlFor.browser({
+            genomeId: genomeIdForUrl,
+            focus: focusObjectIdForUrl,
+            location: getChrLocationStr(chrLocation)
+          }),
+          {
+            replace: true
+          }
+        );
+      }
+    },
+    [dispatch, navigate]
+  );
+
   useEffect(() => {
     idRef.current = {
       activeGenomeId,
@@ -91,44 +123,7 @@ const useGenomeBrowserPosition = () => {
       subscriptionToActualPotitionMessages?.unsubscribe();
       subscriptionToTargetPotitionMessages?.unsubscribe();
     };
-  }, [genomeBrowserService]);
-
-  const onBrowserLocationChange = (
-    message: CurrentPositionMessage | TargetPositionMessage
-  ) => {
-    const { activeGenomeId, genomeIdForUrl, focusObjectIdForUrl } =
-      idRef.current;
-    const { stick, start, end } = message.payload;
-    const [genomeId, chromosome] = stick.split(':');
-
-    if (genomeId !== activeGenomeId) {
-      // ignore the message, because it must be a delayed message for the previous species
-      // when the user has already switched to another one
-      return;
-    }
-
-    if (message.type === 'current_position') {
-      dispatch(updateActualChrLocation([chromosome, start, end]));
-    } else {
-      const chrLocation = [chromosome, start, end] as ChrLocation;
-
-      dispatch(
-        updateChrLocation({
-          [activeGenomeId as string]: [chromosome, start, end]
-        })
-      );
-      navigate(
-        urlFor.browser({
-          genomeId: genomeIdForUrl,
-          focus: focusObjectIdForUrl,
-          location: getChrLocationStr(chrLocation)
-        }),
-        {
-          replace: true
-        }
-      );
-    }
-  };
+  }, [genomeBrowserService, onBrowserLocationChange]);
 };
 
 export default useGenomeBrowserPosition;
