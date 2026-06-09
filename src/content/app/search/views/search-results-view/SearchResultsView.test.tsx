@@ -28,7 +28,6 @@ import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
-import { Strand } from 'src/shared/types/core-api/strand';
 
 const mockUseAppSelector = vi.fn();
 const mockNavigate = vi.fn();
@@ -95,7 +94,7 @@ const geneResults: SearchResults = {
           name: '17'
         },
         strand: {
-          code: Strand.FORWARD
+          code: 'forward'
         }
       }
     }

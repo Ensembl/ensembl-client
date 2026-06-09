@@ -26,7 +26,6 @@ import RouteChecker from 'tests/router/RouteChecker';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import createRootReducer from 'src/root/rootReducer';
-import { Strand } from 'src/shared/types/core-api/strand';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
@@ -64,7 +63,7 @@ const geneResults: SearchResults = {
           name: '13'
         },
         strand: {
-          code: Strand.FORWARD
+          code: 'forward'
         }
       }
     }
