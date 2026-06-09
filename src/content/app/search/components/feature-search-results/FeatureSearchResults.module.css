@@ -43,10 +43,11 @@
 .resultsTable td {
   padding: 0.4rem 0.5rem 0.4rem 1rem;
   border-bottom: 1px solid var(--color-medium-light-grey);
+  vertical-align: top;
 }
 
-.resultsTable td:not(:last-child) {
-  vertical-align: top;
+.resultsTable .tableCellForButton {
+  vertical-align: middle;
 }
 
 .speciesName [data-part="common-name"],

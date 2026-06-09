@@ -159,7 +159,7 @@ const FeatureSearchTableRows = (props: {
                 <VariantSearchRecord match={match} species={speciesInfo} />
               )}
             </td>
-            <td>
+            <td className={styles.tableCellForButton}>
               <FeatureSearchActionButton
                 featureType={featureType}
                 match={match}
@@ -167,7 +167,7 @@ const FeatureSearchTableRows = (props: {
                 appName="genomeBrowser"
               />
             </td>
-            <td>
+            <td className={styles.tableCellForButton}>
               <FeatureSearchActionButton
                 featureType={featureType}
                 match={match}
