@@ -20,7 +20,7 @@ import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 
-import styles from './SpeciesSearchField.module.css';
+import styles from 'src/shared/components/main-search-field/MainSearchField.module.css';
 
 export type Props = {
   query: string;

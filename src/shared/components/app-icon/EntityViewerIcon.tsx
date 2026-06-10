@@ -20,8 +20,12 @@ import SVGIcon from 'static/icons/icon_launchbar_entity_viewer.svg';
 
 import styles from './AppIcon.module.css';
 
-const EntityViewerIcon = () => {
-  const elementClasses = classNames(styles.appIcon, styles.entityViewer);
+const EntityViewerIcon = (props: { className?: string }) => {
+  const elementClasses = classNames(
+    styles.appIcon,
+    styles.entityViewer,
+    props.className
+  );
 
   return (
     <div className={elementClasses}>

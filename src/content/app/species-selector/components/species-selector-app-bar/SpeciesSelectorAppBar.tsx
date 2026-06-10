@@ -42,16 +42,16 @@ export const PlaceholderMessage = () => (
 
 export const SpeciesSelectorAppBar = (props: { isSearchMode?: boolean }) => {
   const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
+  const hasEnabledSpecies = enabledCommittedSpecies.length > 0;
 
-  const mainContent =
-    enabledCommittedSpecies.length > 0 ? (
-      <AppBarMainContent
-        selectedSpecies={enabledCommittedSpecies}
-        isSearchMode={props.isSearchMode}
-      />
-    ) : (
-      <PlaceholderMessage />
-    );
+  const mainContent = hasEnabledSpecies ? (
+    <AppBarMainContent
+      selectedSpecies={enabledCommittedSpecies}
+      isSearchMode={props.isSearchMode}
+    />
+  ) : (
+    <PlaceholderMessage />
+  );
 
   return (
     <AppBar

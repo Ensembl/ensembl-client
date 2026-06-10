@@ -18,15 +18,19 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
+import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
-import SpeciesSearchFieldWithLinks from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchFieldWithLinks';
-import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
-import PopularSpeciesList from 'src/content/app/species-selector/components/popular-species-list/PopularSpeciesList';
-import GenomeGroups from 'src/content/app/species-selector/components/genome-groups/GenomeGroups';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { useGenomeGroupCategoriesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
+
+import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
+import GenomeGroups from 'src/content/app/species-selector/components/genome-groups/GenomeGroups';
+import PopularSpeciesList from 'src/content/app/species-selector/components/popular-species-list/PopularSpeciesList';
+import FeatureSearchField from 'src/content/app/search/components/feature-search-field/FeatureSearchField';
+import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import TextButton from 'src/shared/components/text-button/TextButton';
 
 import styles from './SpeciesSelectorMainView.module.css';
@@ -35,6 +39,8 @@ const popularSpeciesTab = '42 popular species';
 
 const SpeciesSelectorMainView = () => {
   const navigate = useNavigate();
+  const committedSpecies = useAppSelector(getCommittedSpecies);
+  const canSearchFeature = committedSpecies.length > 0;
   const { trackSpeciesSearchQuery } = useSpeciesSelectorAnalytics();
   const [activeTab, setActiveTab] = useState(popularSpeciesTab);
   const shouldShowGenomeGroupTabs = !isProductionEnvironment();
@@ -54,7 +60,7 @@ const SpeciesSelectorMainView = () => {
     (category) => category.display_name === activeTab
   );
 
-  const onSearchSubmit = (query: string) => {
+  const onSpeciesSearchSubmit = (query: string) => {
     trackSpeciesSearchQuery(query);
     navigate(
       urlFor.speciesSelectorSearch({
@@ -63,11 +69,29 @@ const SpeciesSelectorMainView = () => {
     );
   };
 
+  const onFeatureSearchSubmit = (query: string) => {
+    navigate(
+      urlFor.searchResults({
+        query
+      }),
+      { state: { returnTo: urlFor.speciesSelector() } }
+    );
+  };
+
   return (
     <div className={styles.main}>
       <div className={styles.searchPanel}>
-        <div className={styles.speciesSearchFieldWrapper}>
-          <SpeciesSearchFieldWithLinks onSearchSubmit={onSearchSubmit} />
+        <div className={styles.searchFields}>
+          <SpeciesSearchField
+            labelStyle="with-icon"
+            onSearchSubmit={onSpeciesSearchSubmit}
+          />
+          <FeatureSearchField
+            onSearchSubmit={onFeatureSearchSubmit}
+            canSubmit={canSearchFeature}
+            disabled={!canSearchFeature}
+            labelStyle="with-icon"
+          />
         </div>
         <GenomeCounts variety="full" className={styles.genomeCounts} />
         <SpeciesSelectorTabs

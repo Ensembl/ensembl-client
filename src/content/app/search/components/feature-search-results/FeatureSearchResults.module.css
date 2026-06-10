@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   row-gap: 20px;
-  margin-left: var(--inner-block-offset-left);
 }
 
 .noResults p {
@@ -20,25 +19,17 @@
   padding: 0 0.5ch;
 }
 
-.warning {
-  color: var(--color-red);
-}
-
 .resultsWrapper {
   height: 100%;
   width: 800px;
+  max-width: 100%;
   overflow-y: auto;
 }
 
 .resultsTable {
   width: 100%;
-  border-collapse: collapse;
-}
 
-.resultsTable thead tr {
-  position: sticky;
-  top: 0;
-  background-color: var(--color-light-grey);
+  --table-background: var(--color-light-grey);
 }
 
 .resultsTable th {
@@ -52,10 +43,20 @@
 .resultsTable td {
   padding: 0.4rem 0.5rem 0.4rem 1rem;
   border-bottom: 1px solid var(--color-medium-light-grey);
+  vertical-align: top;
 }
 
-.resultsTable td:not(:last-child) {
-  vertical-align: top;
+.resultsTable .tableHeaderForButton {
+  text-align: center;
+}
+
+.resultsTable .tableCellForButton {
+  vertical-align: middle;
+}
+
+.resultsTable .tableHeaderForButton,
+.resultsTable .tableCellForButton {
+  padding-left: 0;
 }
 
 .speciesName [data-part="common-name"],
@@ -69,19 +70,8 @@
   font-weight: var(--font-weight-light);
 }
 
-.variantMatch {
-  color: var(--color-blue);
-  cursor: pointer;
-}
-
-.geneMatch {
-  color: var(--color-blue);
-  cursor: pointer;
-}
-
-.transcriptMatch {
-  color: var(--color-blue);
-  cursor: pointer;
+.resultLabel {
+  white-space: nowrap;
 }
 
 .geneSymbol {
@@ -93,12 +83,14 @@
   margin-left: 8px;
 }
 
-.closeButton {
-  position: absolute;
-  right: var(--standard-gutter);
-  top: var(--standard-gutter);
+.appIcon {
+  --app-icon-bg-color: var(--color-blue);
+  display: flex;
+  width: 25px;
+  height: 25px;
+  margin: auto;
 }
 
-.tooltip {
-  --pointer-box-padding: 12px 20px;
+.capitalized {
+  text-transform: capitalize;
 }

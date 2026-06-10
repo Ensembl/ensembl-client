@@ -1,0 +1,25 @@
+.main {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: auto;
+  background-color: var(--color-light-grey);
+}
+
+.searchPanel {
+  display: grid;
+  grid-template-columns: 600px 1fr;
+  grid-template-rows: 1fr auto;
+  align-items: start;
+  height: 270px;
+  padding-left: var(--global-padding-left);
+  padding-right: var(--standard-gutter);
+}
+
+.searchFields {
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+  padding-top: 38px;
+  container-type: inline-size;
+}

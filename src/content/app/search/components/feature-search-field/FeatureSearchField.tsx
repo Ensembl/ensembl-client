@@ -16,38 +16,57 @@
 
 import { useState, type InputEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import classNames from 'classnames';
 
 import MainSearchField from 'src/shared/components/main-search-field/MainSearchField';
 
-import SpeciesSelectorIcon from 'static/icons/icon_launchbar_species_selector.svg';
+import SearchIcon from 'static/icons/icon_search.svg';
 
-import styles from './SpeciesSearchField.module.css';
+import styles from './FeatureSearchField.module.css';
 
 export type Props = {
-  query: string;
   onSearchSubmit: (query: string) => void | (() => void);
   canSubmit?: boolean;
   onInput?: ((event: InputEvent<HTMLInputElement>) => void) | (() => void);
   onClose?: () => void;
   labelStyle?: 'plain' | 'with-icon';
+  disabled?: boolean;
 };
 
-export const SpeciesSearchField = (props: Props) => {
-  const { labelStyle = 'plain', ...otherProps } = props;
+const FeatureSearchField = (props: Props) => {
+  const {
+    labelStyle = 'plain',
+    onInput: inputHandlerFromProps,
+    ...otherProps
+  } = props;
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get('query') || '');
+
+  const onInput = (event: InputEvent<HTMLInputElement>) => {
+    setQuery(event.currentTarget.value);
+    inputHandlerFromProps?.(event);
+  };
+
   const label =
     labelStyle === 'plain' ? (
-      'Find a species'
+      'Find a feature'
     ) : (
-      <span className={styles.label}>
-        <SpeciesSelectorIcon className={styles.icon} />
-        <span>Find a species</span>
+      <span
+        className={classNames(styles.label, {
+          [styles.labelDisabled]: props.disabled
+        })}
+      >
+        <SearchIcon className={styles.searchIcon} />
+        <span>Find a feature</span>
       </span>
     );
 
   return (
     <MainSearchField
       {...otherProps}
+      query={query}
       label={label}
+      onInput={onInput}
       placeholder={placeholderText}
       help={helpText}
       className={styles.grid}
@@ -55,29 +74,10 @@ export const SpeciesSearchField = (props: Props) => {
   );
 };
 
-const placeholderText = 'Common or scientific name...';
+const placeholderText = 'Gene, transcript or variant ID...';
 
 const helpText = `
-Search for a species using a common name, scientific name, assembly ID or GCA.
-If no results are shown, please try a different spelling or attribute
+Search for a gene, transcript or variant using a stable identifier, symbol or rsID.
 `;
 
-// Species search field, but wrapped in a component that reads a query parameter from the url.
-// Can be used by default in Species Selector
-const WrappedSpeciesSearchField = (props: Omit<Props, 'query'>) => {
-  const [searchParams] = useSearchParams();
-  const [searchInput, setSearchInput] = useState(
-    searchParams.get('query') || ''
-  );
-
-  const onInput = (event: InputEvent<HTMLInputElement>) => {
-    setSearchInput(event.currentTarget.value);
-    props.onInput?.(event);
-  };
-
-  return (
-    <SpeciesSearchField {...props} onInput={onInput} query={searchInput} />
-  );
-};
-
-export default WrappedSpeciesSearchField;
+export default FeatureSearchField;

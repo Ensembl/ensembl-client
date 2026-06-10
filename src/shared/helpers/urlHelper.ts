@@ -20,7 +20,6 @@ import {
   getGenomicLocationString,
   type GenomicLocation
 } from 'src/shared/helpers/genomicLocationHelpers';
-import type { FeatureSearchMode } from './featureSearchHelpers';
 
 export const home = () => '/';
 
@@ -86,16 +85,12 @@ export const speciesSelectorSearch = (params: SpeciesSelectorSearchParams) => {
   return query ? `${path}?${query}` : path;
 };
 
-export const speciesSelectorFeatureSearch = (
-  featureSearchMode: FeatureSearchMode,
-  searchInput?: string
-) => {
-  const path = `${speciesSelector()}/search/${featureSearchMode}`;
-  const urlSearchParams = new URLSearchParams('');
+export const search = () => '/search';
 
-  if (searchInput) {
-    urlSearchParams.append('query', searchInput);
-  }
+export const searchResults = (params: { query: string }) => {
+  const path = '/search/results';
+  const urlSearchParams = new URLSearchParams('');
+  urlSearchParams.append('query', params.query);
 
   const query = decodeURIComponent(urlSearchParams.toString());
   return query ? `${path}?${query}` : path;

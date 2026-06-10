@@ -22,6 +22,9 @@ import HomePage, {
 import SpeciesSelectorPage, {
   serverFetch as speciesSelectorServerFetch
 } from 'src/content/app/species-selector/SpeciesSelectorPage';
+import SearchPage, {
+  serverFetch as searchPageServerFetch
+} from 'src/content/app/search/SearchPage';
 import SpeciesPage, {
   serverFetch as speciesPageServerFetch
 } from 'src/content/app/species/SpeciesPage';
@@ -79,6 +82,11 @@ const routes: RouteConfig[] = [
     path: '/species-selector/*',
     element: <SpeciesSelectorPage />,
     serverFetch: speciesSelectorServerFetch
+  },
+  {
+    path: '/search/*',
+    element: <SearchPage />,
+    serverFetch: searchPageServerFetch
   },
   {
     path: '/species/:genomeId',

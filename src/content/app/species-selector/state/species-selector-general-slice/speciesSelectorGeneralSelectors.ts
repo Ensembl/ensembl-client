@@ -35,6 +35,10 @@ export const getSpeciesNameDisplayOption = (
   return state.speciesSelector.general.speciesNameDisplayOption;
 };
 
+export const getHasLoadedStoredSpecies = (state: RootState): boolean => {
+  return state.speciesSelector.general.hasLoadedStoredSpecies;
+};
+
 export const getCommittedSpeciesById = (
   state: RootState,
   genomeId: string | null

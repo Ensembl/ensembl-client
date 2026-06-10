@@ -15,10 +15,18 @@
   position: relative;
 }
 
-.icon {
+.searchIcon {
   fill: var(--color-black);
   width: var(--icon-width);
   aspect-ratio: 1;
   position: absolute;
   left: 0;
+}
+
+.labelDisabled {
+  color: var(--color-medium-dark-grey);
+}
+
+.labelDisabled svg {
+  fill: var(--color-medium-dark-grey);
 }

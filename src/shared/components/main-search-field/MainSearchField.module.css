@@ -1,0 +1,96 @@
+@layer components {
+
+  .grid {
+    --max-input-width: 486px;
+    display: grid;
+    grid-template-areas:
+      'label .'
+      'input controls';
+    grid-template-columns: minmax(0, var(--max-input-width)) max-content;
+    justify-content: start;
+    row-gap: 10px;
+    column-gap: 30px;
+  }
+
+  .grid:has(.close) {
+    grid-template-areas:
+      'label . .'
+      'input controls close';
+  }
+
+  .grid:not(:has(.label)) {
+    grid-template-areas: 'input controls';
+  }
+
+  .label {
+    grid-area: label;
+    margin-left: 20px;
+  }
+
+  .input {
+    grid-area: input;
+    max-width: var(--max-input-width);
+  }
+
+  .controls {
+    grid-area: controls;
+    align-self: center;
+    justify-self: start;
+    margin-left: 15px;
+  }
+
+  .submit {
+    --primary-button-color: var(--color-blue);
+  }
+
+  .addSpeciesControls {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .close {
+    grid-area: close;
+    align-self: center;
+  }
+
+  .searchFieldWithTitle {
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+  }
+
+  .searchFieldHeader {
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    margin-left: 20px;
+  }
+
+  .searchFieldTitle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    --app-icon-color: var(--color-black);
+  }
+
+  .searchFieldTitle svg {
+    fill: var(--color-black);
+  }
+
+  .disabledSearchFieldTitle {
+    color: var(--color-medium-dark-grey);
+
+    --app-icon-color: var(--color-medium-dark-grey);
+  }
+
+  .disabledSearchFieldTitle svg {
+    fill: var(--color-medium-dark-grey);
+  }
+
+  .featureSearchTitle {
+    --app-icon-size: 16px;
+  }
+
+}

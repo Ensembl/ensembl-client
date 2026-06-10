@@ -17,9 +17,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
 import speciesSelectorGeneralReducer from './species-selector-general-slice/speciesSelectorGeneralSlice';
-import speciesSelectorFeatureSearchReducer from './species-selector-feature-search-slice/speciesSelectorFeatureSearchSlice';
 
 export default combineReducers({
-  general: speciesSelectorGeneralReducer,
-  featureSearch: speciesSelectorFeatureSearchReducer
+  general: speciesSelectorGeneralReducer
 });

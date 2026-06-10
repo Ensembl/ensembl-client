@@ -10,10 +10,19 @@
   grid-template-columns: 600px 1fr;
   grid-template-rows: 1fr auto;
   align-items: start;
-  height: 270px;
+  row-gap: 18px;
+  min-height: 300px;
   padding-left: var(--global-padding-left);
   padding-right: var(--standard-gutter);
   background-color: var(--color-light-grey);
+}
+
+.searchFields {
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+  padding-top: 38px;
+  container-type: inline-size;
 }
 
 @media (width <= 1060px) {
@@ -32,11 +41,6 @@
 
 .activeTab {
   --text-button-disabled-color: var(--color-black);
-}
-
-.speciesSearchFieldWrapper {
-  padding-top: 38px;
-  container-type: inline-size;
 }
 
 .genomeCounts {

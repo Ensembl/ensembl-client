@@ -1,0 +1,7 @@
+.grid {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  row-gap: 24px;
+  height: 100%;
+  padding-left: var(--global-padding-left);
+}

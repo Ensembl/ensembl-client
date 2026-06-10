@@ -51,10 +51,9 @@ const Launchbar = () => {
         <div className={styles.categories}>
           <div className={styles.category}>
             <LaunchbarButton
-              path="/global-search"
+              path="/search"
               description="Site search"
               icon={GlobalSearchIcon}
-              enabled={false}
             />
             <SpeciesSelectorLaunchbarButton />
           </div>
@@ -75,7 +74,6 @@ const Launchbar = () => {
               path="/help"
               description="Help & documentation"
               icon={HelpIcon}
-              enabled={true}
             />
           </div>
         </div>

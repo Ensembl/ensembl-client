@@ -6,7 +6,6 @@
 
 .header {
   border-bottom: 1px solid var(--color-orange);
-  padding: 0;
   position: sticky;
   top: -5px;
   background-color: var(--color-black);
