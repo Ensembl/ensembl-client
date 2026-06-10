@@ -46,8 +46,17 @@
   vertical-align: top;
 }
 
+.resultsTable .tableHeaderForButton {
+  text-align: center;
+}
+
 .resultsTable .tableCellForButton {
   vertical-align: middle;
+}
+
+.resultsTable .tableHeaderForButton,
+.resultsTable .tableCellForButton {
+  padding-left: 0;
 }
 
 .speciesName [data-part="common-name"],
