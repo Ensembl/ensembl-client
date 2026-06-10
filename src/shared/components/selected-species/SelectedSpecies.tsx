@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
+import classNames from 'classnames';
+import type { MouseEvent } from 'react';
+
+import CloseIcon from 'static/icons/icon_close.svg';
+
 import SpeciesLozenge from './SpeciesLozenge';
+import { getDisplayName } from './selectedSpeciesHelpers';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+
+import styles from './SelectedSpecies.module.css';
 
 export type Props = {
   species: CommittedItem;
@@ -24,6 +32,7 @@ export type Props = {
   disabled?: boolean;
   withReleaseInfo?: boolean;
   onClick?: (species: CommittedItem) => void;
+  onRemove?: (species: CommittedItem) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   className?: string;
@@ -34,14 +43,41 @@ const SelectedSpecies = (props: Props) => {
     props.onClick?.(props.species);
   };
 
-  return (
+  const onRemove = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    props.onRemove?.(props.species);
+  };
+
+  const lozengeClasses = classNames(props.className, {
+    [styles.lozengeWithRemoveButton]: props.onRemove
+  });
+
+  const speciesLozenge = (
     <SpeciesLozenge
       species={props.species}
-      className={props.className}
+      className={lozengeClasses}
       withReleaseInfo={props.withReleaseInfo}
       onClick={onClick}
       {...getSpeciesLozengeProps(props)}
     />
+  );
+
+  if (!props.onRemove) {
+    return speciesLozenge;
+  }
+
+  return (
+    <span className={styles.selectedSpecies}>
+      {speciesLozenge}
+      <button
+        type="button"
+        className={styles.removeButton}
+        onClick={onRemove}
+        aria-label={`Remove ${getDisplayName(props.species)} from selected species`}
+      >
+        <CloseIcon />
+      </button>
+    </span>
   );
 };
 

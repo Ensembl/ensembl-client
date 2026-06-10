@@ -3,7 +3,8 @@
   display: inline-flex;
   align-items: center;
   height: 28px;
-  padding: 0 20px;
+  padding: 0 var(--species-lozenge-padding-right, 20px) 0
+    var(--species-lozenge-padding-left, 20px);
   border-width: 1px;
   border-radius: 20px;
   border-style: solid;
@@ -48,17 +49,16 @@
   line-height: 1;
 }
 
-.inner [data-part="common-name"],
-.inner [data-part="scientific-name"] {
+.inner [data-part='common-name'],
+.inner [data-part='scientific-name'] {
   font-size: 16px;
-  font-weight: var(--font-weight-bold);  
+  font-weight: var(--font-weight-bold);
 }
 
-.inner [data-part="assembly-name"],
-.inner [data-part="assembly-id"] {
+.inner [data-part='assembly-name'],
+.inner [data-part='assembly-id'] {
   font-size: 11px;
 }
-
 
 .releasePill {
   position: absolute;
@@ -70,6 +70,6 @@
   font-size: 9px;
   font-weight: var(--font-weight-bold);
   top: 0;
-  right: 12px;
+  right: var(--species-lozenge-release-pill-right, 12px);
   transform: translate(0, -65%);
 }

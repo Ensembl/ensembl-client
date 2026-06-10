@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
@@ -25,7 +26,12 @@ import { SelectedSpecies } from 'src/shared/components/selected-species';
 import { PlaceholderMessage } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
 
 const SpeciesSearchResultsAppBar = () => {
+  const dispatch = useAppDispatch();
   const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
+
+  const removeSpecies = (genomeId: string) => {
+    dispatch(deleteSpeciesAndSave(genomeId));
+  };
 
   const mainContent = enabledCommittedSpecies.length ? (
     <SpeciesTabsSlider>
@@ -34,6 +40,7 @@ const SpeciesSearchResultsAppBar = () => {
           key={species.genome_id}
           species={species}
           disabled={true}
+          onRemove={() => removeSpecies(species.genome_id)}
         />
       ))}
     </SpeciesTabsSlider>

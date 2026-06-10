@@ -16,11 +16,12 @@
 
 import { useNavigate } from 'react-router-dom';
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -95,6 +96,7 @@ const SelectedSpeciesList = (props: {
   selectedSpecies: CommittedItem[];
   isSearchMode?: boolean;
 }) => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const showSpeciesPage = (species: CommittedItem) => {
@@ -106,6 +108,10 @@ const SelectedSpeciesList = (props: {
     navigate(speciesPageUrl);
   };
 
+  const removeSpecies = (species: CommittedItem) => {
+    dispatch(deleteSpeciesAndSave(species.genome_id));
+  };
+
   const conditionalSpeciesProps = !props.isSearchMode
     ? ({ theme: 'blue' } as const)
     : ({ theme: 'grey', disabled: true } as const);
@@ -115,6 +121,7 @@ const SelectedSpeciesList = (props: {
       key={species.genome_id}
       species={species}
       onClick={() => showSpeciesPage(species)}
+      onRemove={removeSpecies}
       {...conditionalSpeciesProps}
     />
   ));

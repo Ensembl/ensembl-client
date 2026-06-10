@@ -100,5 +100,23 @@ describe('<SelectedSpecies />', () => {
 
       expect(minimalProps.onClick).not.toHaveBeenCalled();
     });
+
+    it('can remove species without selecting it', async () => {
+      const props = {
+        ...set('isActive', false, minimalProps),
+        onClick: vi.fn(),
+        onRemove: vi.fn()
+      };
+
+      const { getByRole } = renderSelectedSpecies(props);
+      const removeButton = getByRole('button', {
+        name: 'Remove Human from selected species'
+      });
+
+      await userEvent.click(removeButton);
+
+      expect(props.onRemove).toHaveBeenCalledWith(speciesData);
+      expect(props.onClick).not.toHaveBeenCalled();
+    });
   });
 });
