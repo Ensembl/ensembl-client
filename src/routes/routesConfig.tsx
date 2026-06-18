@@ -94,7 +94,7 @@ const routes: RouteConfig[] = [
     serverFetch: speciesPageServerFetch
   },
   {
-    path: '/entity-viewer/*',
+    path: '/feature-explorer/*',
     element: <EntityViewerPage />,
     serverFetch: entityViewerServerFetch
   },

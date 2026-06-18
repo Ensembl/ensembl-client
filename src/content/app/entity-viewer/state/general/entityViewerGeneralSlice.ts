@@ -45,7 +45,7 @@ type EntityViewerParams = {
 };
 
 export const initialState: EntityViewerGeneralState = {
-  activeGenomeId: null, // FIXME add entity viewer storage service
+  activeGenomeId: null, // FIXME add feature explorer storage service
   activeEntityIds: {}
 };
 

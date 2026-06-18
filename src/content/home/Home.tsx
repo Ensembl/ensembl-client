@@ -114,11 +114,11 @@ const Home = () => {
             <div className={styles.appListItem}>
               <div className={styles.buttonsContainer}>
                 <Link
-                  to="/entity-viewer"
+                  to="/feature-explorer"
                   className={styles.button}
                   onClick={() => handleButtonClick('entity-viewer')}
                 >
-                  <span>Entity viewer</span>
+                  <span>Feature Explorer</span>
                   <div className={styles.appIconWrapper}>
                     <EntityViewerIcon />
                   </div>

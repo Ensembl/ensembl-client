@@ -68,10 +68,10 @@ const EntityViewerLaunchbarButton = () => {
   return (
     <LaunchbarButton
       path={entityViewerPath}
-      description="Entity Viewer"
+      description="Feature Explorer"
       icon={EntityViewerIcon}
       enabled={true}
-      isActive={location.pathname.startsWith('/entity-viewer')}
+      isActive={location.pathname.startsWith('/feature-explorer')}
     />
   );
 };

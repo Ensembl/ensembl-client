@@ -51,7 +51,7 @@ const useRestoredReduxState = () => {
     dispatch(loadBrowserGeneralState());
     dispatch(loadPreviouslyViewedGenomeBrowserObjects());
 
-    // Entity Viewer
+    // Feature Explorer
     dispatch(loadPreviouslyViewedEntities());
     dispatch(loadEntityViewerGeneralState());
     dispatch(restoreGeneViewTranscripts());

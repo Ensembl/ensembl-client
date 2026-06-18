@@ -151,7 +151,7 @@ describe('<ViewInApp />', () => {
   describe('onClick behaviour', () => {
     it('calls a click handler associated with a single app', async () => {
       const links = {
-        entityViewer: { url: '/entity-viewer' },
+        entityViewer: { url: '/feature-explorer' },
         genomeBrowser: { url: '/genome-browser' }
       };
       const clickHandlerMock = vi.fn();
@@ -177,7 +177,7 @@ describe('<ViewInApp />', () => {
 
     it('calls a click handler associated with any app', async () => {
       const links = {
-        entityViewer: { url: '/entity-viewer' },
+        entityViewer: { url: '/feature-explorer' },
         genomeBrowser: { url: '/genome-browser' }
       };
       const clickHandlerMock = vi.fn();

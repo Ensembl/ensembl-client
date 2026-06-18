@@ -46,9 +46,9 @@ export const serverFetch: ServerFetch = async (params) => {
   const dispatch: AppDispatch = store.dispatch;
   const { genomeId: genomeIdFromUrl, entityId } = getPathParameters<
     'genomeId' | 'entityId'
-  >(['/entity-viewer/:genomeId', '/entity-viewer/:genomeId/:entityId'], path);
+  >(['/feature-explorer/:genomeId', '/feature-explorer/:genomeId/:entityId'], path);
 
-  // If the url is just /entity-viewer, update page meta and exit
+  // If the url is just /feature-explorer, update page meta and exit
   if (!genomeIdFromUrl) {
     dispatch(updatePageMeta(buildPageMeta()));
     return;
