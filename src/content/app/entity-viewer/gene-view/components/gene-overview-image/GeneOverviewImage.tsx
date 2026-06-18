@@ -112,7 +112,11 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
   const viewBox = `0 0 ${GENE_IMAGE_WIDTH} ${GENE_IMAGE_HEIGHT}`;
 
   return (
-    <svg className={styles.containerSVG} viewBox={viewBox}>
+    <svg
+      className={styles.containerSVG}
+      viewBox={viewBox}
+      width={GENE_IMAGE_WIDTH}
+    >
       {renderedTranscripts}
     </svg>
   );
