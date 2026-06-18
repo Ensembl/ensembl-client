@@ -24,9 +24,7 @@ import CommunicationPanelButton from 'src/shared/components/communication-framew
 import {
   GenomeBrowserIcon,
   SpeciesSelectorIcon,
-  EntityViewerIcon,
-  BlastIcon,
-  VepIcon
+  EntityViewerIcon
 } from 'src/shared/components/app-icon';
 import SocialMediaLinks from 'src/shared/components/social-media-links/SocialMediaLinks';
 
@@ -129,27 +127,6 @@ const Home = () => {
                   Get gene & transcript information
                 </div>
               </div>
-            </div>
-          </div>
-          <div className={styles.toolsList}>
-            <div className={styles.toolsListItem}>
-              <span className={styles.toolsListItemLabel}>Blast</span>
-              <Link
-                to="/blast"
-                onClick={() => handleButtonClick('blast')}
-                className={styles.toolsButton}
-              >
-                <BlastIcon />
-              </Link>
-            </div>
-            <div className={styles.toolsListItem}>
-              <Link
-                to="/vep"
-                onClick={() => handleButtonClick('vep')}
-                className={styles.toolsButton}
-              >
-                <VepIcon />
-              </Link>
             </div>
           </div>
         </div>

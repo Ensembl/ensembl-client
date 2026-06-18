@@ -134,11 +134,6 @@ export const TranscriptsListItemInfo = (
     ['gencode_basic', 'tsl', 'appris'] as const
   ).some((key) => transcript.metadata[key]);
 
-  const focusIdForUrl = buildFocusIdForUrl({
-    type: 'gene',
-    objectId: props.gene.unversioned_stable_id
-  });
-
   const getLinkToProteinView = (proteinStableId: string) => {
     const proteinViewUrl = urlFor.entityViewer({
       genomeId: genomeIdInUrl,
@@ -151,7 +146,23 @@ export const TranscriptsListItemInfo = (
   };
 
   const getBrowserLink = () => {
-    return urlFor.browser({ genomeId: genomeIdInUrl, focus: focusIdForUrl });
+    return urlFor.browser({
+      genomeId: genomeIdInUrl,
+      focus: buildFocusIdForUrl({
+        type: 'transcript',
+        objectId: transcript.unversioned_stable_id
+      })
+    });
+  };
+
+  const getEntityViewerLink = () => {
+    return urlFor.entityViewer({
+      genomeId: genomeIdInUrl,
+      entityId: buildFocusIdForUrl({
+        type: 'transcript',
+        objectId: transcript.unversioned_stable_id
+      })
+    });
   };
 
   const handleDownloadLinkClick = () => {
@@ -282,7 +293,10 @@ export const TranscriptsListItemInfo = (
         <div className={styles.viewInApp}>
           <ViewInApp
             theme="dark"
-            links={{ genomeBrowser: { url: getBrowserLink() } }}
+            links={{
+              genomeBrowser: { url: getBrowserLink() },
+              entityViewer: { url: getEntityViewerLink() }
+            }}
           />
         </div>
       </div>
