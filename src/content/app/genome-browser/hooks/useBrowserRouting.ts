@@ -34,7 +34,6 @@ import {
   parseFocusIdFromUrl
 } from 'src/shared/helpers/focusObjectHelpers';
 
-import { setActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { setDataFromUrlAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
@@ -117,7 +116,6 @@ const useBrowserRouting = () => {
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
 
-      dispatch(setActiveGenomeId(genomeId));
       // Consider it as first render when we change genome
       firstRenderRef.current = true;
 
@@ -137,7 +135,6 @@ const useBrowserRouting = () => {
       allActiveFocusObjectIds,
       allChrLocations,
       allCommittedSpecies,
-      dispatch,
       navigate
     ]
   );
@@ -237,19 +234,18 @@ const useBrowserRouting = () => {
       const isFirstRender = firstRenderRef.current;
 
       if ((isFirstRender && genomeId) || (!sameAsPrev && genomeId)) {
-        if (navigationType === 'REPLACE' && isUrlUpdatedByGenomeBrowser) {
-          // ignore url updates triggered by messages from the genome browser
-          return;
+        // ignore url updates triggered by messages from the genome browser
+        if (!(navigationType === 'REPLACE' && isUrlUpdatedByGenomeBrowser)) {
+          const { type, objectId } = parseFocusIdFromUrl(focusObjectIdInUrl);
+          changeBrowserLocation({
+            genomeId,
+            chrLocation,
+            focus: {
+              type,
+              id: objectId
+            }
+          });
         }
-        const { type, objectId } = parseFocusIdFromUrl(focusObjectIdInUrl);
-        changeBrowserLocation({
-          genomeId,
-          chrLocation,
-          focus: {
-            type,
-            id: objectId
-          }
-        });
       }
       if (isFirstRender) {
         firstRenderRef.current = false;
