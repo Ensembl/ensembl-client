@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
 import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
@@ -78,12 +78,15 @@ const useBrowserRouting = () => {
   );
   const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
     useGenomeBrowser();
-  const { search } = useLocation(); // from document.location provided by the router
+  const { search, state: locationState } = useLocation(); // from document.location provided by the router
   const navigate = useNavigate();
+  const navigationType = useNavigationType();
   const dispatch = useAppDispatch();
 
   const urlSearchParams = new URLSearchParams(search);
   const location = urlSearchParams.get('location') || null;
+  const isUrlUpdatedByGenomeBrowser =
+    locationState?.updateSource === 'genome-browser'; // State set in useGenomeBrowserPosition hook
 
   const allCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
   const allChrLocations = useAppSelector(getAllChrLocations);
@@ -234,6 +237,10 @@ const useBrowserRouting = () => {
       const isFirstRender = firstRenderRef.current;
 
       if ((isFirstRender && genomeId) || (!sameAsPrev && genomeId)) {
+        if (navigationType === 'REPLACE' && isUrlUpdatedByGenomeBrowser) {
+          // ignore url updates triggered by messages from the genome browser
+          return;
+        }
         const { type, objectId } = parseFocusIdFromUrl(focusObjectIdInUrl);
         changeBrowserLocation({
           genomeId,
@@ -281,7 +288,9 @@ const useBrowserRouting = () => {
     shouldUpdateRedux,
     dispatch,
     navigate,
-    location
+    location,
+    navigationType,
+    isUrlUpdatedByGenomeBrowser
   ]);
 
   useEffect(() => {

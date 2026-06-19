@@ -82,7 +82,6 @@ const useGenomeBrowserPosition = () => {
         dispatch(updateActualChrLocation([chromosome, start, end]));
       } else {
         const chrLocation = [chromosome, start, end] as ChrLocation;
-
         navigate(
           urlFor.browser({
             genomeId: genomeIdForUrl,
@@ -90,7 +89,8 @@ const useGenomeBrowserPosition = () => {
             location: getChrLocationStr(chrLocation)
           }),
           {
-            replace: true
+            replace: true,
+            state: { updateSource: 'genome-browser' } // this will be checked in useBrowserRouting hook
           }
         );
       }
