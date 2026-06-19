@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
@@ -38,16 +38,20 @@ type BrowserAppBarProps = {
 };
 
 const BrowserAppBar = (props: BrowserAppBarProps) => {
+  const { onSpeciesSelect: speciesSelectHandlerFromProps } = props;
   const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
   const { trackGenomeChanged } = useGenomeBrowserAnalytics();
 
-  const onSpeciesSelect = (species: CommittedItem) => {
-    props.onSpeciesSelect(species.genome_id);
+  const onSpeciesSelect = useCallback(
+    (species: CommittedItem) => {
+      speciesSelectHandlerFromProps(species.genome_id);
 
-    trackGenomeChanged();
-  };
+      trackGenomeChanged();
+    },
+    [speciesSelectHandlerFromProps, trackGenomeChanged]
+  );
 
   const speciesTabs = useMemo(() => {
     return enabledCommittedSpecies.map((species, index) => (
@@ -58,7 +62,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
         onClick={() => onSpeciesSelect(species)}
       />
     ));
-  }, [enabledCommittedSpecies.length, activeGenomeId]);
+  }, [enabledCommittedSpecies, activeGenomeId, onSpeciesSelect]);
 
   const tabsSlider = <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>;
 

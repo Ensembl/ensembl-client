@@ -72,9 +72,13 @@ const useGenomeBrowserPosition = () => {
       const { stick, start, end } = message.payload;
       const [genomeId, chromosome] = stick.split(':');
 
-      if (genomeId !== activeGenomeId) {
-        // ignore the message, because it must be a delayed message for the previous species
-        // when the user has already switched to another one
+      if (genomeId !== activeGenomeId || start < 1) {
+        // It is a defect of the genome browser that it can sometimes, during a zoom-out gesture near the region start,
+        // report a negative start value. It should be fixed in the genome browser; but meanwhile, it is easy
+        // to guard against in the client.
+
+        // Also, if the message happened to be delayed such that user has switched to a different genome,
+        // just ignore it.
         return;
       }
 
