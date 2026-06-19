@@ -17,9 +17,11 @@
 import { useSelector } from 'react-redux';
 
 import { AppName as AppNameText } from 'src/global/globalConfig';
+import { useAppDispatch } from 'src/store';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -34,8 +36,13 @@ type SpeciesAppBarProps = {
 };
 
 const SpeciesAppBar = (props: SpeciesAppBarProps) => {
+  const dispatch = useAppDispatch();
   const activeGenomeId = useSelector(getActiveGenomeId);
   const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
+
+  const removeSpecies = (species: CommittedItem) => {
+    dispatch(deleteSpeciesAndSave(species.genome_id));
+  };
 
   const speciesTabs = enabledCommittedSpecies.map((species, index) => (
     <SelectedSpecies
@@ -43,6 +50,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
       species={species}
       isActive={species.genome_id === activeGenomeId}
       onClick={props.onSpeciesSelect}
+      onRemove={removeSpecies}
     />
   ));
 

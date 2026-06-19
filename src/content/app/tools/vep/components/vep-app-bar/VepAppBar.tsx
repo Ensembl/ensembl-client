@@ -24,6 +24,7 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 import { getSelectedSpecies as getSelectedSpeciesForVep } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
 import { setSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
+import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -59,11 +60,16 @@ const SpeciesTabs = () => {
     dispatch(setSelectedSpecies({ species }));
   };
 
+  const removeSpecies = (species: CommittedItem) => {
+    dispatch(deleteSpeciesAndSave(species.genome_id));
+  };
+
   const speciesTabs = speciesList.map((species) => (
     <SelectedSpecies
       key={species.genome_id}
       species={species}
       onClick={onSpeciesSelect}
+      onRemove={shouldEnableSpeciesTabs ? removeSpecies : undefined}
       disabled={!shouldEnableSpeciesTabs}
     />
   ));

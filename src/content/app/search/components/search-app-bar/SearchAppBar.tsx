@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 import { useNavigate } from 'react-router-dom';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -27,7 +28,10 @@ import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/Species
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import { PlaceholderMessage } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
 
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+
 const SearchAppBar = () => {
+  const dispatch = useAppDispatch();
   const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
   const navigate = useNavigate();
 
@@ -39,6 +43,10 @@ const SearchAppBar = () => {
     );
   };
 
+  const removeSpecies = (species: CommittedItem) => {
+    dispatch(deleteSpeciesAndSave(species.genome_id));
+  };
+
   const mainContent = enabledCommittedSpecies.length ? (
     <SpeciesTabsSlider>
       {enabledCommittedSpecies.map((species) => (
@@ -48,6 +56,7 @@ const SearchAppBar = () => {
           onClick={() =>
             showSpeciesPage(species.genome_id, species.genome_tag ?? undefined)
           }
+          onRemove={removeSpecies}
         />
       ))}
     </SpeciesTabsSlider>

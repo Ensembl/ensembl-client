@@ -121,7 +121,7 @@ const SelectedSpeciesList = (props: {
       key={species.genome_id}
       species={species}
       onClick={() => showSpeciesPage(species)}
-      onRemove={removeSpecies}
+      onRemove={!props.isSearchMode ? removeSpecies : undefined}
       {...conditionalSpeciesProps}
     />
   ));

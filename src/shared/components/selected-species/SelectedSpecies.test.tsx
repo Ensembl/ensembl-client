@@ -15,7 +15,7 @@
  */
 
 import { faker } from '@faker-js/faker';
-import { render } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import set from 'lodash/fp/set';
 import createRootReducer from 'src/root/rootReducer';
@@ -25,6 +25,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import SelectedSpecies, {
   type Props as SelectedSpeciesProps
 } from './SelectedSpecies';
+import { TOOLTIP_TIMEOUT } from 'src/shared/components/tooltip/tooltip-constants';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const speciesData = {
@@ -79,6 +80,7 @@ describe('<SelectedSpecies />', () => {
   describe('behaviour', () => {
     afterEach(() => {
       vi.resetAllMocks();
+      vi.useRealTimers();
     });
 
     it('responds to clicks when inactive', async () => {
@@ -117,6 +119,57 @@ describe('<SelectedSpecies />', () => {
 
       expect(props.onRemove).toHaveBeenCalledWith(speciesData);
       expect(props.onClick).not.toHaveBeenCalled();
+    });
+
+    it('shows delete tooltip when hovering over the remove button', async () => {
+      vi.useFakeTimers();
+      const props = {
+        ...set('isActive', false, minimalProps),
+        onRemove: vi.fn()
+      };
+
+      const { getByRole } = renderSelectedSpecies(props);
+      const removeButton = getByRole('button', {
+        name: 'Remove Human from selected species'
+      });
+
+      fireEvent.mouseEnter(removeButton);
+      act(() => {
+        vi.advanceTimersByTime(TOOLTIP_TIMEOUT);
+      });
+
+      expect(screen.getByText('Delete genome')).toBeTruthy();
+    });
+
+    it('does not show remove button when active', () => {
+      const props = {
+        ...minimalProps,
+        onRemove: vi.fn()
+      };
+
+      const { queryByRole } = renderSelectedSpecies(props);
+
+      expect(
+        queryByRole('button', {
+          name: 'Remove Human from selected species'
+        })
+      ).toBeNull();
+    });
+
+    it('does not show remove button when disabled', () => {
+      const props = {
+        ...set('isActive', false, minimalProps),
+        disabled: true,
+        onRemove: vi.fn()
+      };
+
+      const { queryByRole } = renderSelectedSpecies(props);
+
+      expect(
+        queryByRole('button', {
+          name: 'Remove Human from selected species'
+        })
+      ).toBeNull();
     });
   });
 });

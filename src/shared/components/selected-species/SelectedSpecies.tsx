@@ -15,9 +15,12 @@
  */
 
 import classNames from 'classnames';
+import { useState } from 'react';
 import type { MouseEvent } from 'react';
 
 import CloseIcon from 'static/icons/icon_close.svg';
+
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import SpeciesLozenge from './SpeciesLozenge';
 import { getDisplayName } from './selectedSpeciesHelpers';
@@ -39,17 +42,24 @@ export type Props = {
 };
 
 const SelectedSpecies = (props: Props) => {
+  const [removeButtonElement, setRemoveButtonElement] =
+    useState<HTMLButtonElement | null>(null);
+  const [isRemoveButtonHovered, setIsRemoveButtonHovered] = useState(false);
+
   const onClick = () => {
     props.onClick?.(props.species);
   };
 
   const onRemove = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    setIsRemoveButtonHovered(false);
     props.onRemove?.(props.species);
   };
 
+  const canRemove = !!props.onRemove && !props.isActive && !props.disabled;
+
   const lozengeClasses = classNames(props.className, {
-    [styles.lozengeWithRemoveButton]: props.onRemove
+    [styles.lozengeWithRemoveButton]: canRemove
   });
 
   const speciesLozenge = (
@@ -62,7 +72,7 @@ const SelectedSpecies = (props: Props) => {
     />
   );
 
-  if (!props.onRemove) {
+  if (!canRemove) {
     return speciesLozenge;
   }
 
@@ -70,13 +80,21 @@ const SelectedSpecies = (props: Props) => {
     <span className={styles.selectedSpecies}>
       {speciesLozenge}
       <button
+        ref={setRemoveButtonElement}
         type="button"
         className={styles.removeButton}
         onClick={onRemove}
+        onMouseEnter={() => setIsRemoveButtonHovered(true)}
+        onMouseLeave={() => setIsRemoveButtonHovered(false)}
         aria-label={`Remove ${getDisplayName(props.species)} from selected species`}
       >
         <CloseIcon />
       </button>
+      {isRemoveButtonHovered && removeButtonElement && (
+        <Tooltip anchor={removeButtonElement} autoAdjust={true}>
+          Delete genome
+        </Tooltip>
+      )}
     </span>
   );
 };

@@ -17,13 +17,14 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { AppName as AppNameText } from 'src/global/globalConfig';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSelectors';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
@@ -34,6 +35,7 @@ import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/Species
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const ActivityViewerAppBar = () => {
+  const dispatch = useAppDispatch();
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const navigate = useNavigate();
@@ -46,12 +48,17 @@ const ActivityViewerAppBar = () => {
     navigate(url);
   };
 
+  const removeSpecies = (species: CommittedItem) => {
+    dispatch(deleteSpeciesAndSave(species.genome_id));
+  };
+
   const speciesTabs = speciesList.map((species, index) => (
     <SelectedSpecies
       key={index}
       species={species}
       isActive={species.genome_id === activeGenomeId}
       onClick={onSpeciesTabClick}
+      onRemove={removeSpecies}
     />
   ));
 
