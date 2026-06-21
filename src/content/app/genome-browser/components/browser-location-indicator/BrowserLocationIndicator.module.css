@@ -1,55 +1,14 @@
-.browserLocationIndicator {
+.container {
   display: flex;
   align-items: center;
-  white-space: nowrap;
-  flex-wrap: nowrap;
-  font-size: 14px;
+  column-gap: 1rem;
 }
 
-.circularIndicator {
-  background: var(--color-grey);
-  display: inline-block;
-  margin: 0 0.5em;
-  padding: 5px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
+/* As of summer 2026, Firefox is still lacking support */
+@supports (field-sizing: content) {
+  .input [data-part="input"] {
+    field-sizing: content;
+    max-width: 55ch;
+  }
 }
 
-.chrLocationView {
-  display: flex;
-  align-items: center;
-}
-
-.regionNameContainer {
-  display: inline-block;
-  position: relative;
-  margin-right: 0.5em;
-}
-
-.regionName {
-  color: var(--color-medium-dark-grey);
-}
-
-.chrSeparator {
-  margin: 0 2px;
-}
-
-.chrRegion {
-  display: inline-block;
-}
-
-.probeAnchor {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: calc(14px * 1.5); /* font size of the element times the line height */
-}
-
-.probe {
-  position: absolute;
-  top: 0;
-  right: 0;
-  color: red;
-  visibility: hidden;
-}

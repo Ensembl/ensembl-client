@@ -93,6 +93,7 @@ const FlatInput = (props: Props) => {
     <div className={wrapperClasses}>
       <Input
         ref={callbackInputRef}
+        data-part="input"
         disabled={disabled}
         type={type === 'search' ? undefined : props.type}
         placeholder={placeholder}

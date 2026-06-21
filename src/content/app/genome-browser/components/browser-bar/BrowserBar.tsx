@@ -48,11 +48,7 @@ export const BrowserBar = () => {
           className={styles.featureSummaryStrip}
         />
       )}
-      <BrowserLocationIndicator
-        className={styles.browserLocationIndicator}
-        containerRef={browserBarRef}
-        nonOverlapElementRef={featureSummaryRef}
-      />
+      <BrowserLocationIndicator className={styles.browserLocationIndicator} />
     </div>
   );
 };
