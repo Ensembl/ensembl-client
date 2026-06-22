@@ -48,7 +48,7 @@ export const defaultApiUrls: BaseApiUrls = {
   toolsApiBaseUrl: '/api/tools',
   searchApiBaseUrl: '/api/search',
   variationApiUrl: '/api/graphql/variation',
-  regulationApiBaseUrl: 'https://dev-2020.ensembl.org/api/regulation', // <-- use full url with hostname for the time being
+  regulationApiBaseUrl: 'https://regulation.ensembl.org/api', // <-- calling the api deployed on the regulation site
   structuralVariantsApiBaseUrl: '/api/sv-alignments'
 };
 
