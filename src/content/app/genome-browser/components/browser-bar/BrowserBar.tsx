@@ -21,6 +21,7 @@ import { useAppSelector } from 'src/store';
 import BrowserReset from '../browser-reset/BrowserReset';
 import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
+import GenomeBrowserNavigationButtons from '../browser-nav-buttons/GenomeBrowserNavigationButtons';
 
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
@@ -47,6 +48,7 @@ export const BrowserBar = () => {
           variety="minimal"
         />
       )}
+      <GenomeBrowserNavigationButtons />
       <BrowserLocationIndicator className={styles.browserLocationIndicator} />
     </div>
   );
