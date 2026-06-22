@@ -60,7 +60,7 @@ const EntityViewerAppBar = () => {
       ? buildFocusIdForUrl(parsedEntityId)
       : null;
     const geneView = activeEntityId
-      ? allGeneViews?.[genomeId]?.[activeEntityId]?.current ?? null
+      ? (allGeneViews?.[genomeId]?.[activeEntityId]?.current ?? null)
       : null;
 
     const url = urlFor.entityViewer({
@@ -93,7 +93,7 @@ const EntityViewerAppBar = () => {
       topLeft={<AppName>{AppNameText.ENTITY_VIEWER}</AppName>}
       topRight={<SpeciesManagerIndicator />}
       mainContent={mainContent}
-      aside={<HelpPopupButton slug="entity-viewer" />}
+      aside={<HelpPopupButton slug="feature-explorer" />}
     />
   );
 };

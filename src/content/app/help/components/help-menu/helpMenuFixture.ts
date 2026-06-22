@@ -65,7 +65,7 @@ const menu: MenuType = {
                 {
                   name: 'What is the Feature Explorer?',
                   type: 'article',
-                  url: '/help/articles/what-is-the-entity-viewer'
+                  url: '/help/articles/what-is-the-feature-explorer'
                 },
                 {
                   name: 'What’s in the Transcripts view?',
