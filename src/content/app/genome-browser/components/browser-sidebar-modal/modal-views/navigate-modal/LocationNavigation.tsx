@@ -16,7 +16,6 @@
 
 import { useRef, useState, type InputEvent, type KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import classNames from 'classnames';
 
 import { useAppSelector } from 'src/store';
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
@@ -72,11 +71,6 @@ const LocationNavigation = () => {
     setSingleInputActive(false);
   };
 
-  const onSingleInputFocus = () => {
-    setsegmentedInputActive(false);
-    setSingleInputActive(true);
-  };
-
   const onLocationStartChange = (event: InputEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationStartInput(value);
@@ -86,12 +80,6 @@ const LocationNavigation = () => {
   const onLocationEndChange = (event: InputEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setLocationEndInput(value);
-    setShowErrorMessage(false);
-  };
-
-  const onLocationInputChange = (event: InputEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value;
-    setLocationInput(value);
     setShowErrorMessage(false);
   };
 
@@ -183,10 +171,6 @@ const LocationNavigation = () => {
     );
   };
 
-  const segmentedInputClasses = classNames(styles.segmentedInput, {
-    [styles.segmentedInputDisabled]: singleInputActive
-  });
-
   return (
     <section className={styles.navigateModal}>
       <div className={styles.helpText}>
@@ -194,10 +178,10 @@ const LocationNavigation = () => {
         or region
       </div>
       <div className={styles.navigateSection}>
-        <div className={segmentedInputClasses}>
+        <div className={styles.segmentedInput}>
           <div className={styles.inputField}>
             <label>
-              <span>Chr</span>
+              <span>Region</span>
               <SimpleSelect
                 onInput={updateRegionNameInput}
                 onKeyUp={handleKeyPress}
@@ -242,34 +226,7 @@ const LocationNavigation = () => {
             <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
           )}
         </div>
-        <div className={styles.singleInput}>
-          <div className={styles.inputField}>
-            <label>
-              <span>Go to</span>
-              <FlatInput
-                type="text"
-                onFocus={onSingleInputFocus}
-                onInput={onLocationInputChange}
-                onKeyUp={handleKeyPress}
-                disabled={segmentedInputActive}
-                value={locationInput}
-                placeholder="Add location co-ordinates..."
-              />
-            </label>
-          </div>
-          {singleInputActive && shouldShowErrorMessage && (
-            <div className={styles.errorMessage}>{ERROR_MESSAGE}</div>
-          )}
-        </div>
-        <div className={styles.formButtons}>
-          {(segmentedInputActive || singleInputActive) && (
-            <span
-              className={classNames(styles.cancel, styles.clickableText)}
-              onClick={resetForm}
-            >
-              Cancel
-            </span>
-          )}
+        <div className={styles.formSubmit}>
           <PrimaryButton
             onClick={handleSubmit}
             disabled={shouldDisableSubmission}

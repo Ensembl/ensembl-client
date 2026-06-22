@@ -16,43 +16,16 @@
 
 import { memo } from 'react';
 
-import {
-  Accordion,
-  AccordionItem,
-  AccordionItemButton,
-  AccordionItemHeading,
-  AccordionItemPanel
-} from 'src/shared/components/accordion';
-import NavigateRegionModal from './navigate-modal/RegionNavigation';
 import NavigateLocationModal from './navigate-modal/LocationNavigation';
 
 import styles from './navigate-modal/NavigateModal.module.css';
 
 const NavigateModal = () => {
+  return <NavigateLocationModal />;
+
   return (
     <div className={styles.accordionContainer}>
-      <Accordion className={styles.navigateAccordion} preExpanded={['region']}>
-        <AccordionItem className={styles.navigateAccordionItem} uuid="region">
-          <AccordionItemHeading>
-            <AccordionItemButton className={styles.navigateAccordionItemButton}>
-              Navigate this region
-            </AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel className={styles.navigateAccordionPanel}>
-            <NavigateRegionModal />
-          </AccordionItemPanel>
-        </AccordionItem>
-        <AccordionItem className={styles.navigateAccordionItem} uuid="location">
-          <AccordionItemHeading>
-            <AccordionItemButton className={styles.navigateAccordionItemButton}>
-              Go to new location
-            </AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel className={styles.navigateAccordionPanel}>
-            <NavigateLocationModal />
-          </AccordionItemPanel>
-        </AccordionItem>
-      </Accordion>
+      <NavigateLocationModal />
     </div>
   );
 };

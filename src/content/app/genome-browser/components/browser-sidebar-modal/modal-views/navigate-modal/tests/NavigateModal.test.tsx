@@ -22,9 +22,6 @@ import NavigateModal from '../../NavigateModal';
 vi.mock('../LocationNavigation', () => ({
   default: () => <div data-test-id="location-nav">LocationNavigation</div>
 }));
-vi.mock('../RegionNavigation', () => ({
-  default: () => <div data-test-id="region-nav">RegionNavigation</div>
-}));
 
 describe('<NavigateModal />', () => {
   afterEach(() => {
