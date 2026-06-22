@@ -15,7 +15,7 @@
  */
 
 import classNames from 'classnames';
-import type { ComponentProps, RefObject } from 'react';
+import type { ComponentProps } from 'react';
 
 import VariantConsequence from 'src/content/app/genome-browser/components/drawer/drawer-views/variant-summary/variant-consequence/VariantConsequence';
 import VariantAllelesSequences from 'src/shared/components/variant-alleles-sequences/VariantAllelesSequences';
@@ -24,6 +24,7 @@ import VariantLocation from 'src/content/app/genome-browser/components/drawer/dr
 import { useGbVariantQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import type { FocusVariant } from 'src/shared/types/focus-object/focusObjectTypes';
+import type { Variety } from './types';
 
 import styles from './VariantSummaryStrip.module.css';
 import featureStripStyles from './FeatureSummaryStrip.module.css';
@@ -42,9 +43,9 @@ export type VariantForSummaryStrip = ComponentProps<
 const VariantSummaryStrip = (props: {
   variant: FocusVariant;
   className?: string;
-  ref?: RefObject<HTMLDivElement | null>;
+  variety?: Variety;
 }) => {
-  const { variant } = props;
+  const { variant, variety = 'default' } = props;
   const { genome_id: genomeId, variant_id: variantId } = variant;
   const { currentData: variantData } = useGbVariantQuery({
     genomeId,
@@ -60,10 +61,31 @@ const VariantSummaryStrip = (props: {
     props.className
   );
 
+  if (variety === 'minimal') {
+    return (
+      <div className={stripClasses}>
+        <MinimalContent variant={variantData.variant} />
+      </div>
+    );
+  }
+
   return (
-    <div className={stripClasses} ref={props.ref}>
-      <FullContent variant={variantData?.variant} />
+    <div className={stripClasses}>
+      <FullContent variant={variantData.variant} />
     </div>
+  );
+};
+
+const MinimalContent = ({ variant }: { variant: VariantForSummaryStrip }) => {
+  return (
+    <>
+      <span className={featureStripStyles.featureSummaryStripLabel}>
+        Variant
+      </span>
+      <span className={featureStripStyles.featureNameEmphasized}>
+        {variant.name}
+      </span>
+    </>
   );
 };
 

@@ -30,7 +30,6 @@ export const BrowserBar = () => {
   const focusObject = useAppSelector(getBrowserActiveFocusObject);
 
   const browserBarRef = useRef<HTMLDivElement>(null);
-  const featureSummaryRef = useRef<HTMLDivElement>(null);
 
   // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
   // always contains a child DOM element
@@ -44,8 +43,8 @@ export const BrowserBar = () => {
       {focusObject && (
         <FeatureSummaryStrip
           focusObject={focusObject}
-          ref={featureSummaryRef}
           className={styles.featureSummaryStrip}
+          variety="minimal"
         />
       )}
       <BrowserLocationIndicator className={styles.browserLocationIndicator} />
