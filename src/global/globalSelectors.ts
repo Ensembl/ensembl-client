@@ -28,3 +28,6 @@ export const getScrollPosition = (state: RootState): ScrollPosition =>
 
 export const getCurrentApp = (state: RootState): string =>
   state.global.currentApp;
+
+export const getPreviousApp = (state: RootState): string =>
+  state.global.previousApp;

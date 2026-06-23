@@ -35,13 +35,15 @@ export type GlobalState = Readonly<{
   breakpointWidth: BreakpointWidth;
   scrollPosition: ScrollPosition;
   currentApp: string;
+  previousApp: string;
 }>;
 
 export const defaultState: GlobalState = {
   browserTabId: null,
   breakpointWidth: BreakpointWidth.DESKTOP,
   scrollPosition: {},
-  currentApp: ''
+  currentApp: '',
+  previousApp: ''
 };
 
 export const updateBreakpointWidth: ActionCreator<
@@ -83,6 +85,10 @@ const globalSlice = createSlice({
       state.scrollPosition = { ...state.scrollPosition, ...action.payload };
     },
     changeCurrentApp(state, action: PayloadAction<string>) {
+      if (!action.payload || action.payload === state.currentApp) {
+        return;
+      }
+      state.previousApp = state.currentApp;
       state.currentApp = action.payload;
     }
   },
