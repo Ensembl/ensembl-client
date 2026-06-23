@@ -43,6 +43,7 @@ import {
   AccordionItemPanel
 } from 'src/shared/components/accordion';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+import TrackPanelLocationNavigation from './track-panel-items/TrackPanelLocationNavigation';
 import TrackPanelVariantGroupLegend from './track-panel-items/TrackPanelVariantGroupLegend';
 import TrackPanelRegulationLegend from './track-panel-items/TrackPanelRegulationLegend';
 import SearchButton from 'src/shared/components/search-button/SearchButton';
@@ -103,11 +104,16 @@ export const TrackPanelList = () => {
           className={styles.trackPanelAccordion}
           allowMultipleExpanded={true}
           preExpanded={[
+            'genomic_location',
             ...trackCategoryIds,
             'variant_legend',
             'regulation_legend'
           ]}
         >
+          {selectedTrackPanelTab === TrackSet.GENOMIC && (
+            <TrackPanelLocationNavigation />
+          )}
+
           {selectedTrackPanelTab === TrackSet.VARIATION && (
             <TrackPanelVariantGroupLegend
               disabled={trackCategoryIds.length === 0}
