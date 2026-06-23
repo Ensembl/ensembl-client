@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
-
 import { useAppDispatch, useAppSelector } from 'src/store';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
@@ -37,7 +35,6 @@ import { clearSearch } from 'src/shared/state/feature-search/featureSearchSlice'
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import SearchIcon from 'static/icons/icon_search.svg';
-import NavigateIcon from 'static/icons/icon_reset.svg';
 import BookmarkIcon from 'static/icons/icon_bookmark.svg';
 import ShareIcon from 'static/icons/icon_share.svg';
 import DownloadIcon from 'static/icons/icon_download.svg';
@@ -117,16 +114,6 @@ const BrowserSidebarToolstrip = () => {
         description="Download"
         onClick={() => toggleModalView(BrowserSidebarModalView.DOWNLOAD)}
         image={DownloadIcon}
-      />
-      <ImageButton
-        className={classNames(
-          layoutStyles.sidebarIcon,
-          layoutStyles.navigateIcon
-        )}
-        status={getViewIconStatus(BrowserSidebarModalView.NAVIGATE)}
-        description="Navigate browser image"
-        onClick={() => toggleModalView(BrowserSidebarModalView.NAVIGATE)}
-        image={NavigateIcon}
       />
     </>
   );

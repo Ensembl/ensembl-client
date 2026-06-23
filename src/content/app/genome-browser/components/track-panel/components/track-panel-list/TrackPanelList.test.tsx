@@ -152,18 +152,9 @@ describe('<TrackPanelList />', () => {
 
       await userEvent.click(geneSearchLink);
 
-      let state = store.getState();
+      const state = store.getState();
       expect(getBrowserSidebarModalView(state)).toBe(
         BrowserSidebarModalView.SEARCH
-      );
-
-      const navigateLocationLink = getByText('Change location');
-
-      await userEvent.click(navigateLocationLink);
-
-      state = store.getState();
-      expect(getBrowserSidebarModalView(state)).toBe(
-        BrowserSidebarModalView.NAVIGATE
       );
     });
   });

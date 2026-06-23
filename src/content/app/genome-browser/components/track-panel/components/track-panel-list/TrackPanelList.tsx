@@ -48,8 +48,6 @@ import TrackPanelVariantGroupLegend from './track-panel-items/TrackPanelVariantG
 import TrackPanelRegulationLegend from './track-panel-items/TrackPanelRegulationLegend';
 import SearchButton from 'src/shared/components/search-button/SearchButton';
 
-import ResetIcon from 'static/icons/icon_reset.svg';
-
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type {
   FocusObject as FocusObjectType,
@@ -75,10 +73,6 @@ export const TrackPanelList = () => {
     dispatch(openBrowserSidebarModal(BrowserSidebarModalView.SEARCH));
   };
 
-  const openNavigateModal = () => {
-    dispatch(openBrowserSidebarModal(BrowserSidebarModalView.NAVIGATE));
-  };
-
   const currentTrackCategories = genomeTrackCategories?.filter(
     (category: GenomeTrackCategory) => category.type === selectedTrackPanelTab
   );
@@ -93,10 +87,6 @@ export const TrackPanelList = () => {
       <FocusObject focusObject={activeFocusObject} />
       <div className={styles.modalLinksWrapper}>
         <SearchButton onClick={openSearch} label="Find" />
-        <button className={styles.modalLink} onClick={openNavigateModal}>
-          <span>Change location</span>
-          <ResetIcon />
-        </button>
       </div>
 
       <div className={styles.accordionContainer}>

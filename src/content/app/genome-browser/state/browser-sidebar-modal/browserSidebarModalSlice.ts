@@ -29,8 +29,7 @@ export enum BrowserSidebarModalView {
   SEARCH = 'search',
   BOOKMARKS = 'Previously viewed',
   SHARE = 'Share',
-  DOWNLOAD = 'Download',
-  NAVIGATE = 'Navigate'
+  DOWNLOAD = 'Download'
 }
 
 export type BrowserSidebarModalStateForGenome = Readonly<{
