@@ -22,7 +22,12 @@ import type { NavButtons } from '@ensembl/ensembl-elements-common/components/nav
 type NavButtonsProps = DetailedHTMLProps<
   HTMLAttributes<NavButtons>,
   NavButtons
->;
+> & {
+  isMoveLeftDisabled?: boolean;
+  isMoveRightDisabled?: boolean;
+  isZoomInDisabled?: boolean;
+  isZoomOutDisabled?: boolean;
+};
 
 type LocationInCallback = {
   start: number;
@@ -89,6 +94,10 @@ const RegionNavigationButtons = (props: Props) => {
   return (
     <ens-nav-buttons
       className={className}
+      isMoveLeftDisabled={start === 1}
+      isMoveRightDisabled={end === regionLength}
+      isZoomInDisabled={end - start < 30}
+      isZoomOutDisabled={start === 1 && end === regionLength}
       onmove-left={onMoveLeft}
       onmove-right={onMoveRight}
       onzoom-in={onZoomIn}

@@ -15,11 +15,11 @@
  */
 
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-
-import { getGenomicLocationString } from 'src/shared/helpers/genomicLocationHelpers';
 
 import { useAppSelector } from 'src/store';
+
+import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
+import { useGbRegionQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import {
   getBrowserActiveGenomeId,
@@ -28,45 +28,48 @@ import {
 
 import RegionNavigationButtons from 'src/shared/components/region-navigation-buttons/RegionNavigationButtons';
 
-/**
- * TODO:
- * - Fetch region to get access to its length
- * - Remove browser-nav-button component
- * - Remove modal components
- */
-
 const GenomeBrowserNavigationButtons = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const browserLocation = useAppSelector(getActualChrLocation);
-  const urlLocation = useLocation();
-  const navigate = useNavigate();
 
-  const [regionNameFromParams] = browserLocation ?? [];
+  const { changeBrowserLocation } = useGenomeBrowser();
 
-  // Initialise component with an internal copy of the browser location.
-  // This will enable the component to respond to clicks without having to wait
+  const [regionName] = browserLocation ?? [];
+
+  const { currentData: regionData } = useGbRegionQuery(
+    {
+      genomeId: activeGenomeId ?? '',
+      regionName: regionName ?? ''
+    },
+    {
+      skip: !activeGenomeId || !regionName
+    }
+  );
+
+  // Keep and modify an internal copy of the browser location.
+  // This enables the component to respond to clicks without having to wait
   // for the genome browser to arrive to the location defined in a previous click.
   const [internalLocation, setInternalLocation] = useState(browserLocation);
 
   // Store the parameters that define when the internal copy of the browser location
   // needs updating.
   const [prevParams, setPrevParams] = useState({
-    regionName: regionNameFromParams,
+    regionName,
     activeGenomeId
   });
 
   if (
     activeGenomeId !== prevParams.activeGenomeId ||
-    (regionNameFromParams && regionNameFromParams !== prevParams.regionName)
+    (regionName && regionName !== prevParams.regionName)
   ) {
     setInternalLocation(browserLocation);
     setPrevParams({
       activeGenomeId,
-      regionName: regionNameFromParams
+      regionName
     });
   }
 
-  const [regionName, start, end] = internalLocation ?? [];
+  const [, start, end] = internalLocation ?? [];
 
   if (!activeGenomeId || !regionName || !start || !end) {
     return null;
@@ -74,20 +77,11 @@ const GenomeBrowserNavigationButtons = () => {
 
   const onChange = (newLocation: { start: number; end: number }) => {
     const { start: newStart, end: newEnd } = newLocation;
-    const newLocationParam = getGenomicLocationString({
-      regionName,
-      start: newStart,
-      end: newEnd
-    });
-
-    const { pathname, search } = urlLocation;
-    const newSearchParams = new URLSearchParams(search);
-    newSearchParams.set('location', newLocationParam);
-    const searchString = decodeURIComponent(newSearchParams.toString());
-    const url = `${pathname}?${searchString}`;
-
     setInternalLocation([regionName, newStart, newEnd]);
-    navigate(url);
+    changeBrowserLocation({
+      genomeId: activeGenomeId,
+      chrLocation: [regionName, newStart, newEnd]
+    });
   };
 
   return (
@@ -95,7 +89,7 @@ const GenomeBrowserNavigationButtons = () => {
       onChange={onChange}
       viewportStart={start}
       viewportEnd={end}
-      regionLength={Infinity}
+      regionLength={regionData?.region.length || Infinity}
     />
   );
 };
