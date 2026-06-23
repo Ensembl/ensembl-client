@@ -1,7 +1,9 @@
 .container {
   display: grid;
-  grid-template-columns: max-content;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(60px, auto) 1fr;
+  box-sizing: border-box;
+  width: calc(100vw - 90px);
   height: 100%;
   padding-left: var(--double-standard-gutter);
 }
@@ -9,26 +11,111 @@
 .mainContentTop {
   display: flex;
   align-items: flex-start;
-  column-gap: 90px;
+  flex-wrap: wrap;
+  row-gap: 14px;
+  column-gap: clamp(40px, 7vw, 90px);
 }
 
 .addSpeciesButton {
   --add-button-icon-color: var(--color-green);
   --add-button-label-color: var(--color-black);
-  position: sticky;
-  right: calc(16px + 45px); /* 16px is the diameter of the close button; and 45px is minimum allowed distance between add button and close button */
+  height: 30px;
 }
 
 .mainContentTopRight {
   display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  row-gap: 14px;
   column-gap: var(--double-standard-gutter);
   justify-content: space-between;
-  flex-grow: 1;
+  flex: 1 1 640px;
+  min-width: 0;
+}
+
+.tableActions {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  row-gap: 10px;
+  column-gap: clamp(28px, 4vw, 50px);
+  min-width: 0;
 }
 
 .filterFieldWrapper {
   display: flex;
+  align-items: flex-start;
+}
+
+.removeGenomesControls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-right: 10px;
+  align-self: flex-start;
+}
+
+.removeGenomesControlsTop {
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+  align-items: flex-start;
+}
+
+.removeGenomesAction {
+  display: flex;
+  align-items: flex-start;
+  column-gap: 10px;
+}
+
+.removeGenomesLabel {
+  display: flex;
   align-items: center;
+  height: 30px;
+}
+
+.removeGenomesIcon {
+  width: 18px;
+  aspect-ratio: 1;
+  fill: var(--color-blue);
+}
+
+.removeGenomesIconDisabled {
+  fill: var(--color-grey);
+}
+
+.removeGenomesButton {
+  --primary-button-color: var(--color-red);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 122px;
+  height: 30px;
+  padding: 0;
+}
+
+.removeGenomesButton:not(:disabled) {
+  --button-border: 1px solid var(--color-red);
+}
+
+.removeGenomesWarning {
+  margin-top: 4px;
+  max-width: min(420px, calc(100vw - 80px));
+  color: var(--color-red);
+  white-space: normal;
+}
+
+.removeGenomesWarningHidden {
+  visibility: hidden;
+}
+
+@media (width >= 1200px) {
+  .removeGenomesWarning {
+    max-width: none;
+    white-space: nowrap;
+  }
 }
 
 /* A vertically scrollable container, with a right padding
