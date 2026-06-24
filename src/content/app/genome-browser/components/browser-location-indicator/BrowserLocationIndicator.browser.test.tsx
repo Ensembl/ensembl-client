@@ -121,7 +121,8 @@ beforeAll(() =>
     onUnhandledRequest(req) {
       const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
       throw new Error(errorMessage);
-    }
+    },
+    quiet: true // Don't print diagnostic messages to the console
   })
 );
 afterAll(() => worker.stop());

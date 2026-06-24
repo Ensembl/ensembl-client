@@ -214,6 +214,8 @@ const LocationNavigation = () => {
 };
 
 const TrackPanelLocationNavigation = () => {
+  const { activeGenomeId } = useGenomeBrowserIds();
+
   return (
     <AccordionItem
       className={trackPanelStyles.trackPanelAccordionItem}
@@ -231,7 +233,8 @@ const TrackPanelLocationNavigation = () => {
       <AccordionItemPanel
         className={trackPanelStyles.trackPanelAccordionItemContent}
       >
-        <LocationNavigation />
+        {/* reset LocationNavigation component when the genome id changes */}
+        <LocationNavigation key={activeGenomeId} />
       </AccordionItemPanel>
     </AccordionItem>
   );
