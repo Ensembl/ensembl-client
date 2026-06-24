@@ -59,11 +59,11 @@ const menu: MenuType = {
               ]
             },
             {
-              name: 'Feature Explorer',
+              name: 'Feature explorer',
               type: 'collection',
               items: [
                 {
-                  name: 'What is the Feature Explorer?',
+                  name: 'What is the Feature explorer?',
                   type: 'article',
                   url: '/help/articles/what-is-the-feature-explorer'
                 },

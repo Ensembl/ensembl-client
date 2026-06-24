@@ -26,7 +26,7 @@ const preview: Preview = {
           'Components',
           [
             'Genome Browser',
-            'Feature Explorer',
+            'Feature explorer',
             'Species',
             'Blast',
             'Shared Components'

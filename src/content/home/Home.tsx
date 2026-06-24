@@ -118,7 +118,7 @@ const Home = () => {
                   className={styles.button}
                   onClick={() => handleButtonClick('entity-viewer')}
                 >
-                  <span>Feature Explorer</span>
+                  <span>Feature explorer</span>
                   <div className={styles.appIconWrapper}>
                     <EntityViewerIcon />
                   </div>

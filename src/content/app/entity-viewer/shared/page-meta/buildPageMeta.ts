@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export const defaultEntityViewerPageTitle = 'Feature Explorer — Ensembl';
+export const defaultEntityViewerPageTitle = 'Feature explorer — Ensembl';
 
 /**
  * NOTE: for the time being, this function for building page metadata

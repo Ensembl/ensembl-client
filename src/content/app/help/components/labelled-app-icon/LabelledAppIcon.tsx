@@ -46,7 +46,7 @@ const appNameToIcon: Record<AppName, FunctionComponent> = {
 const appNameToLabel: Record<AppName, string> = {
   speciesSelector: 'Species selector',
   genomeBrowser: 'Genome browser',
-  entityViewer: 'Feature Explorer',
+  entityViewer: 'Feature explorer',
   blast: 'Blast'
 };
 

@@ -104,7 +104,7 @@ export const FeatureSearchResults = (props: {
               <span className={styles.capitalized}>{featureType}</span>
             </th>
             <th className={styles.tableHeaderForButton}>Genome Browser</th>
-            <th className={styles.tableHeaderForButton}>Feature Explorer</th>
+            <th className={styles.tableHeaderForButton}>Feature explorer</th>
           </tr>
         </thead>
         <tbody>

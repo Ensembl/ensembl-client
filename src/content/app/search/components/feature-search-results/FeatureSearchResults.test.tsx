@@ -113,7 +113,7 @@ describe('<FeatureSearchResults />', () => {
       screen.getByRole('columnheader', { name: 'Genome Browser' })
     ).toBeTruthy();
     expect(
-      screen.getByRole('columnheader', { name: 'Feature Explorer' })
+      screen.getByRole('columnheader', { name: 'Feature explorer' })
     ).toBeTruthy();
 
     const geneLink = screen
