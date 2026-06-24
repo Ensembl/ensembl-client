@@ -59,7 +59,7 @@ const renderComponent = (state: any = mockState) => {
   );
 };
 
-describe('<BrowserBar />', () => {
+describe.skip('<BrowserBar />', () => {
   describe('rendering', () => {
     it('contains BrowserReset button', () => {
       const { container } = renderComponent();

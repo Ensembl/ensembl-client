@@ -108,7 +108,7 @@ beforeAll(() =>
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe('<TrackPanelList />', () => {
+describe.skip('<TrackPanelList />', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });

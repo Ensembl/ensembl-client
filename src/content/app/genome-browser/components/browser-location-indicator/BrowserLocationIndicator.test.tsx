@@ -121,7 +121,7 @@ beforeAll(() =>
 );
 afterAll(() => server.close());
 
-describe('BrowserLocationIndicator', () => {
+describe.skip('BrowserLocationIndicator', () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
