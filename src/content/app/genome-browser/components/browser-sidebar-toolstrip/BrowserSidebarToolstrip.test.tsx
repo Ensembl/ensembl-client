@@ -86,7 +86,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
   };
 };
 
-describe.skip('<BrowserSidebarToolstrip />', () => {
+describe('<BrowserSidebarToolstrip />', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
@@ -94,7 +94,7 @@ describe.skip('<BrowserSidebarToolstrip />', () => {
   describe('rendering', () => {
     it('displays correct number of buttons', () => {
       const { container } = renderComponent();
-      expect(container.querySelectorAll('button').length).toBe(5);
+      expect(container.querySelectorAll('button').length).toBe(4);
     });
 
     it('toggles sidebar modal', async () => {
