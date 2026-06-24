@@ -8,11 +8,16 @@
   column-gap: 10px;
   row-gap: 1.5rem;
   align-items: center;
+  justify-items: start;
 }
 
 .grid label {
   font-weight: var(--font-weight-light);
   text-align: right;
+}
+
+.select {
+  --select-max-width: 100%;
 }
 
 .locationInputWrapper {

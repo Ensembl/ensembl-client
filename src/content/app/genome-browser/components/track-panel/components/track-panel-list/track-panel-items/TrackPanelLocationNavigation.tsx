@@ -63,15 +63,12 @@ const LocationNavigation = () => {
     activeGenomeId as string
   );
 
-  const [prevRegionNameFromRedux, setPrevRegionNameFromRedux] =
-    useState(regionNameFromRedux);
   const [regionNameInput, setRegionNameInput] = useState(
     regionNameFromRedux ?? ''
   );
   const [locationInput, setLocationInput] = useState('');
 
-  if (regionNameFromRedux && regionNameFromRedux !== prevRegionNameFromRedux) {
-    setPrevRegionNameFromRedux(regionNameFromRedux);
+  if (regionNameFromRedux && !regionNameInput) {
     setRegionNameInput(regionNameFromRedux);
   }
 
@@ -124,6 +121,8 @@ const LocationNavigation = () => {
     );
 
     if (selectedKaryotypeItem) {
+      setRegionNameInput(value);
+
       const newRegionName = selectedKaryotypeItem.name;
       const newRegionLength = selectedKaryotypeItem.length;
       const newGenomicLocation = getGenomicLocationString({
@@ -184,7 +183,7 @@ const LocationNavigation = () => {
           options={getKaryotypeOptions()}
           value={regionNameInput}
           disabled={!genomeKaryotype.length}
-          className={styles.rangeNameSelect}
+          className={styles.select}
           placeholder="Select"
         />
         <label htmlFor={locationInputId}>
