@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  useRef,
-  useState,
-  useId,
-  type InputEvent,
-  type KeyboardEvent
-} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useId, type InputEvent, type KeyboardEvent } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+import { useAppSelector } from 'src/store';
+
+import { getGenomicLocationString } from 'src/shared/helpers/genomicLocationHelpers';
+
+import { getChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
@@ -32,11 +32,9 @@ import {
   type LocationValidationResponse
 } from 'src/content/app/genome-browser/helpers/browserHelper';
 
-import FlatInput from 'src/shared/components/input/FlatInput';
+import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
-import SimpleSelect, {
-  type SimpleSelectMethods
-} from 'src/shared/components/simple-select/SimpleSelect';
+import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import {
   AccordionItem,
   AccordionItemHeading,
@@ -51,19 +49,31 @@ const ERROR_MESSAGE =
   'Sorry, we do not recognise this location in this genome.';
 
 const LocationNavigation = () => {
+  const chrLocation = useAppSelector(getChrLocation);
   const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
   const regionSelectId = useId();
   const locationInputId = useId();
-  const selectRef = useRef<SimpleSelectMethods | null>(null);
 
+  const urlLocation = useLocation();
   const navigate = useNavigate();
+
+  const [regionNameFromRedux] = chrLocation ?? [];
 
   const { data: genomeKaryotype = [] } = useGenomeKaryotypeQuery(
     activeGenomeId as string
   );
 
-  const [regionNameInput, setRegionNameInput] = useState('');
+  const [prevRegionNameFromRedux, setPrevRegionNameFromRedux] =
+    useState(regionNameFromRedux);
+  const [regionNameInput, setRegionNameInput] = useState(
+    regionNameFromRedux ?? ''
+  );
   const [locationInput, setLocationInput] = useState('');
+
+  if (regionNameFromRedux && regionNameFromRedux !== prevRegionNameFromRedux) {
+    setPrevRegionNameFromRedux(regionNameFromRedux);
+    setRegionNameInput(regionNameFromRedux);
+  }
 
   const [shouldShowErrorMessage, setShowErrorMessage] =
     useState<boolean>(false);
@@ -107,14 +117,27 @@ const LocationNavigation = () => {
       label: name
     }));
 
-  const updateRegionName = (event: InputEvent<HTMLSelectElement>) => {
+  const onRegionNameChange = (event: InputEvent<HTMLSelectElement>) => {
     const value = event.currentTarget.value;
     const selectedKaryotypeItem = genomeKaryotype.find(
       ({ name }) => name === value
     );
 
     if (selectedKaryotypeItem) {
-      setRegionNameInput(value);
+      const newRegionName = selectedKaryotypeItem.name;
+      const newRegionLength = selectedKaryotypeItem.length;
+      const newGenomicLocation = getGenomicLocationString({
+        regionName: newRegionName,
+        start: 1,
+        end: newRegionLength
+      });
+
+      const { pathname } = urlLocation;
+      const newSearchParams = new URLSearchParams();
+      newSearchParams.set('focus', `location:${newGenomicLocation}`);
+      const newQueryString = decodeURIComponent(newSearchParams.toString());
+      const url = `${pathname}?${newQueryString}`;
+      navigate(url);
     }
   };
 
@@ -129,7 +152,6 @@ const LocationNavigation = () => {
   };
 
   const resetForm = () => {
-    selectRef.current?.clear();
     setLocationInput('');
     setShowErrorMessage(false);
   };
@@ -157,20 +179,19 @@ const LocationNavigation = () => {
         <label htmlFor={regionSelectId}>Region</label>
         <SimpleSelect
           id={regionSelectId}
-          onInput={updateRegionName}
+          onInput={onRegionNameChange}
           onKeyUp={handleKeyPress}
           options={getKaryotypeOptions()}
           value={regionNameInput}
           disabled={!genomeKaryotype.length}
           className={styles.rangeNameSelect}
           placeholder="Select"
-          ref={selectRef}
         />
         <label htmlFor={locationInputId}>
           <span>Go to</span>
         </label>
         <div className={styles.locationInputWrapper}>
-          <FlatInput
+          <ShadedInput
             id={locationInputId}
             type="text"
             onInput={onLocationInputChange}
