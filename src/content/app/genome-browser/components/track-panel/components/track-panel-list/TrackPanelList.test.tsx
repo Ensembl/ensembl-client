@@ -51,6 +51,10 @@ vi.mock('./track-panel-items/TrackPanelRegularItem', () => ({
   default: () => <div className="trackPanelRegularItem" />
 }));
 
+vi.mock('./track-panel-items/TrackPanelLocationNavigation', () => ({
+  default: () => <div className="trackPanelLocationNavigation" />
+}));
+
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => ({
@@ -108,7 +112,7 @@ beforeAll(() =>
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe.skip('<TrackPanelList />', () => {
+describe('<TrackPanelList />', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
