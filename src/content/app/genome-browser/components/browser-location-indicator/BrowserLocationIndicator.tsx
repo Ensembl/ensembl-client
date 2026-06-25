@@ -99,11 +99,9 @@ export const BrowserLocationIndicator = (props: Props) => {
     navigate(
       urlFor.browser({
         genomeId: genomeIdForUrl,
-        focus: `location:${locationString}`
-      }),
-      {
-        replace: true
-      }
+        focus: `location:${locationString}`,
+        location: locationString
+      })
     );
   };
 
@@ -115,6 +113,16 @@ export const BrowserLocationIndicator = (props: Props) => {
 
   const componentClasses = classNames(styles.container, props.className);
 
+  const onWarningTooltipClose = () => {
+    removeWarning();
+  };
+
+  const removeWarning = () => {
+    if (isInputError) {
+      setIsInputError(false);
+    }
+  };
+
   return (
     <form className={componentClasses} onSubmit={onSubmit}>
       <div>
@@ -123,9 +131,14 @@ export const BrowserLocationIndicator = (props: Props) => {
           className={styles.input}
           value={inputValue}
           onInput={onInputChange}
+          onBlur={removeWarning}
         />
         {isInputError && (
-          <Tooltip anchor={inputRef.current} delay={0}>
+          <Tooltip
+            anchor={inputRef.current}
+            delay={0}
+            onClose={onWarningTooltipClose}
+          >
             Invalid location
           </Tooltip>
         )}

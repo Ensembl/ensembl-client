@@ -164,7 +164,8 @@ const LocationNavigation = () => {
     navigate(
       urlFor.browser({
         genomeId: genomeIdForUrl,
-        focus: `location:${location}`
+        focus: `location:${location}`,
+        location
       }),
       {
         replace: true
