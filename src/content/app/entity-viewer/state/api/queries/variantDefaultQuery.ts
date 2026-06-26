@@ -15,7 +15,7 @@
  */
 
 import { gql } from 'graphql-request';
-import { Pick2, Pick3 } from 'ts-multipick';
+import type { Pick2, Pick3 } from 'ts-multipick';
 
 import type { Variant } from 'src/shared/types/variation-api/variant';
 import type { VariantAllele } from 'src/shared/types/variation-api/variantAllele';

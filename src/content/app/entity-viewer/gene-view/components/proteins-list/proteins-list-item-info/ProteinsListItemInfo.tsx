@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Pick2 } from 'ts-multipick';
+import type { Pick2 } from 'ts-multipick';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 import { useProteinDomainsQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';

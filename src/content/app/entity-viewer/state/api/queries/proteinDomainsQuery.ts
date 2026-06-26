@@ -15,7 +15,7 @@
  */
 
 import { gql } from 'graphql-request';
-import { Pick2, Pick3 } from 'ts-multipick';
+import type { Pick2, Pick3 } from 'ts-multipick';
 
 import type {
   FamilyMatch,

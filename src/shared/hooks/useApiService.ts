@@ -81,7 +81,7 @@ const initialState: StateBeforeRequest = {
   error: null
 };
 
-const reducer = <T>(state: State<T>, action: Action<T>): State<T> => {
+const reducer = <T,>(state: State<T>, action: Action<T>): State<T> => {
   switch (action.type) {
     case 'loading':
       return {
@@ -105,7 +105,7 @@ const reducer = <T>(state: State<T>, action: Action<T>): State<T> => {
   }
 };
 
-const useApiService = <T>(params: Params): State<T> => {
+const useApiService = <T,>(params: Params): State<T> => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {

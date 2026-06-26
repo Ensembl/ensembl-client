@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Pick3 } from 'ts-multipick';
+import type { Pick3 } from 'ts-multipick';
 
 import { gql } from 'graphql-request';
 
