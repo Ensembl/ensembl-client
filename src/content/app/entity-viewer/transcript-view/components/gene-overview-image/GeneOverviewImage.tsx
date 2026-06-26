@@ -15,7 +15,7 @@
  */
 
 import { scaleLinear } from 'd3';
-import { Pick3 } from 'ts-multipick';
+import type { Pick3 } from 'ts-multipick';
 
 import {
   getFeatureCoordinates,

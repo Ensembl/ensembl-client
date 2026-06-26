@@ -15,7 +15,7 @@
  */
 
 import { gql } from 'graphql-request';
-import { Pick2 } from 'ts-multipick';
+import type { Pick2 } from 'ts-multipick';
 
 import type { FullTranscript } from 'src/shared/types/core-api/transcript';
 import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
