@@ -23,7 +23,7 @@ import { getGenomicLocationString } from 'src/shared/helpers/genomicLocationHelp
 
 import { getChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
-import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
+import { useGenomeTopLevelRegionsQuery } from 'src/shared/state/genome/genomeApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -59,7 +59,7 @@ const LocationNavigation = () => {
 
   const [regionNameFromRedux] = chrLocation ?? [];
 
-  const { data: genomeKaryotype = [] } = useGenomeKaryotypeQuery(
+  const { data: genomeTopLevelRegions = [] } = useGenomeTopLevelRegionsQuery(
     activeGenomeId as string
   );
 
@@ -108,23 +108,23 @@ const LocationNavigation = () => {
     }
   };
 
-  const getKaryotypeOptions = () =>
-    genomeKaryotype.map(({ name }) => ({
+  const getTopLevelRegionsOptions = () =>
+    genomeTopLevelRegions.map(({ name }) => ({
       value: name,
       label: name
     }));
 
   const onRegionNameChange = (event: InputEvent<HTMLSelectElement>) => {
     const value = event.currentTarget.value;
-    const selectedKaryotypeItem = genomeKaryotype.find(
+    const selectedTopLevelRegion = genomeTopLevelRegions.find(
       ({ name }) => name === value
     );
 
-    if (selectedKaryotypeItem) {
+    if (selectedTopLevelRegion) {
       setRegionNameInput(value);
 
-      const newRegionName = selectedKaryotypeItem.name;
-      const newRegionLength = selectedKaryotypeItem.length;
+      const newRegionName = selectedTopLevelRegion.name;
+      const newRegionLength = selectedTopLevelRegion.length;
       const newGenomicLocation = getGenomicLocationString({
         regionName: newRegionName,
         start: 1,
@@ -181,9 +181,9 @@ const LocationNavigation = () => {
           id={regionSelectId}
           onInput={onRegionNameChange}
           onKeyUp={handleKeyPress}
-          options={getKaryotypeOptions()}
+          options={getTopLevelRegionsOptions()}
           value={regionNameInput}
-          disabled={!genomeKaryotype.length}
+          disabled={!genomeTopLevelRegions.length}
           className={styles.select}
           placeholder="Select"
         />
