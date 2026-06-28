@@ -2,13 +2,21 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 28px;
-  padding: 0 var(--species-lozenge-padding-right, 20px) 0
-    var(--species-lozenge-padding-left, 20px);
   border-width: 1px;
   border-radius: 20px;
   border-style: solid;
   user-select: none;
+}
+
+.speciesButton {
+  height: 28px;
+  padding-left: 20px;
+  padding-right: 20px;
+  color: inherit;
+}
+
+.species:has(.deleteButton) .speciesButton {
+  padding-left: 32px;
 }
 
 .themeBlue {
@@ -72,4 +80,21 @@
   top: 0;
   right: var(--species-lozenge-release-pill-right, 12px);
   transform: translate(0, -65%);
+}
+
+.deleteButton {
+  --close-button-background-color: var(--color-white);
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+}
+
+.themeBlue .deleteButton {
+  --close-button-cross-color: var(--color-blue);
+}
+
+
+.themeRed {
+  --close-button-cross-color: var(--color-red);
 }

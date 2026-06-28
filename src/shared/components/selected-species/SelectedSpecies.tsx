@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
-import { useState } from 'react';
-import type { MouseEvent } from 'react';
-
-import CloseIcon from 'static/icons/icon_close.svg';
-
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
-
 import SpeciesLozenge from './SpeciesLozenge';
-import { getDisplayName } from './selectedSpeciesHelpers';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-
-import styles from './SelectedSpecies.module.css';
 
 export type Props = {
   species: CommittedItem;
@@ -42,64 +31,26 @@ export type Props = {
 };
 
 const SelectedSpecies = (props: Props) => {
-  const [removeButtonElement, setRemoveButtonElement] =
-    useState<HTMLButtonElement | null>(null);
-  const [isRemoveButtonHovered, setIsRemoveButtonHovered] = useState(false);
-
   const onClick = () => {
     props.onClick?.(props.species);
   };
 
-  const onRemove = (event: MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    setIsRemoveButtonHovered(false);
+  const onRemove = () => {
     props.onRemove?.(props.species);
   };
 
-  const canRemove = !!props.onRemove && !props.isActive && !props.disabled;
-
-  const lozengeClasses = classNames(props.className, {
-    [styles.lozengeWithRemoveButton]: canRemove
-  });
-
-  const speciesLozenge = (
+  return (
     <SpeciesLozenge
       species={props.species}
-      className={lozengeClasses}
+      className={props.className}
       withReleaseInfo={props.withReleaseInfo}
       onClick={onClick}
-      {...getSpeciesLozengeProps(props)}
+      {...getSpeciesLozengeProps({ ...props, onRemove })}
     />
-  );
-
-  if (!canRemove) {
-    return speciesLozenge;
-  }
-
-  return (
-    <span className={styles.selectedSpecies}>
-      {speciesLozenge}
-      <button
-        ref={setRemoveButtonElement}
-        type="button"
-        className={styles.removeButton}
-        onClick={onRemove}
-        onMouseEnter={() => setIsRemoveButtonHovered(true)}
-        onMouseLeave={() => setIsRemoveButtonHovered(false)}
-        aria-label={`Remove ${getDisplayName(props.species)} from selected species`}
-      >
-        <CloseIcon />
-      </button>
-      {isRemoveButtonHovered && removeButtonElement && (
-        <Tooltip anchor={removeButtonElement} autoAdjust={true}>
-          Delete genome
-        </Tooltip>
-      )}
-    </span>
   );
 };
 
-const getSpeciesLozengeProps = (props: Props) => {
+const getSpeciesLozengeProps = (props: Props & { onRemove: () => void }) => {
   const { isActive = false, disabled } = props;
 
   // TODO: add invalid (red) species when we start having them
@@ -120,7 +71,8 @@ const getSpeciesLozengeProps = (props: Props) => {
     } as const;
   } else {
     return {
-      theme: 'blue'
+      theme: 'blue',
+      onRemove: props.onRemove
     } as const;
   }
 };
