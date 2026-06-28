@@ -26,77 +26,6 @@ import { useEffect, type RefObject } from 'react';
 
 const useVisibleActiveSpecies = (ref: RefObject<HTMLDivElement | null>) => {
   useEffect(() => {
-    const scrollToActiveSpeciesTab = (
-      scrollOptions: ScrollIntoViewOptions = {}
-    ) => {
-      const container = ref.current;
-      const activeSpeciesLozenge = container?.querySelector(
-        'button[data-active="true"]'
-      ) as HTMLElement | null;
-
-      if (!container || !activeSpeciesLozenge) {
-        return;
-      }
-
-      const activeSpeciesTab =
-        ([...container.children].find((child) =>
-          child.contains(activeSpeciesLozenge)
-        ) as HTMLElement | undefined) ?? activeSpeciesLozenge;
-
-      const elementBoundingClientRect =
-        activeSpeciesTab.getBoundingClientRect();
-      const containerBoundingClientRect = container.getBoundingClientRect();
-      const { x: elementX, width: elementWidth } = elementBoundingClientRect;
-      const { x: containerX, width: containerWidth } =
-        containerBoundingClientRect;
-
-      if (
-        elementX >= containerX &&
-        elementX + elementWidth <= containerX + containerWidth
-      ) {
-        // species lozenge is visible inside of the container
-        return;
-      }
-      let scrollTo: number;
-
-      if (elementX < containerX) {
-        // species lozenge is at least partly hidden behind the left corner
-        // of the container
-        scrollTo = Math.floor(
-          activeSpeciesTab.offsetLeft - container.offsetLeft
-        );
-      } else {
-        // species lozenge is at least partly hidden behind the right corner
-        // of the container
-        scrollTo = Math.ceil(
-          activeSpeciesTab.offsetLeft +
-            activeSpeciesTab.offsetWidth -
-            container.offsetWidth -
-            container.offsetLeft
-        );
-      }
-      container.scrollTo({ ...scrollOptions, left: scrollTo });
-    };
-
-    const mutationObserverCallback: MutationCallback = (mutationList) => {
-      const attributeChangeMutation = mutationList.find((mutation) => {
-        return (
-          mutation.type === 'attributes' &&
-          mutation.attributeName === 'data-active' &&
-          (mutation.target as HTMLElement).dataset.active
-        );
-      });
-      if (attributeChangeMutation) {
-        scrollToActiveSpeciesTab({ behavior: 'smooth' });
-      }
-    };
-
-    // for proper calculation of tab positions, wait until fonts are ready
-    const updatePositionWhenFontsAreReady = async () => {
-      await document.fonts.ready;
-      scrollToActiveSpeciesTab();
-    };
-
     if (!ref.current) {
       return;
     }
@@ -112,7 +41,73 @@ const useVisibleActiveSpecies = (ref: RefObject<HTMLDivElement | null>) => {
     return () => {
       mutationObserver.disconnect();
     };
-  }, [ref]);
+  }, []);
+
+  const mutationObserverCallback: MutationCallback = (mutationList) => {
+    const attributeChangeMutation = mutationList.find((mutation) => {
+      return (
+        mutation.type === 'attributes' &&
+        mutation.attributeName === 'data-active' &&
+        (mutation.target as HTMLElement).dataset.active
+      );
+    });
+    if (attributeChangeMutation) {
+      scrollToActiveSpeciesTab({ behavior: 'smooth' });
+    }
+  };
+
+  // for proper calculation of tab positions, wait until fonts are ready
+  const updatePositionWhenFontsAreReady = async () => {
+    await document.fonts.ready;
+    scrollToActiveSpeciesTab();
+  };
+
+  const scrollToActiveSpeciesTab = (
+    scrollOptions: ScrollIntoViewOptions = {}
+  ) => {
+    const container = ref.current;
+    const activeSpeciesLozenge = container?.querySelector(
+      'button[data-active="true"]'
+    ) as HTMLElement | null;
+
+    if (!container || !activeSpeciesLozenge) {
+      return;
+    }
+
+    const elementBoundingClientRect =
+      activeSpeciesLozenge.getBoundingClientRect();
+    const containerBoundingClientRect = container.getBoundingClientRect();
+    const { x: elementX, width: elementWidth } = elementBoundingClientRect;
+    const { x: containerX, width: containerWidth } =
+      containerBoundingClientRect;
+
+    if (
+      elementX >= containerX &&
+      elementX + elementWidth <= containerX + containerWidth
+    ) {
+      // species lozenge is visible inside of the container
+      return;
+    }
+    let scrollTo: number;
+
+    if (elementX < containerX) {
+      // species lozenge is at least partly hidden behind the left corner
+      // of the container
+      scrollTo = Math.floor(
+        activeSpeciesLozenge.offsetLeft - container.offsetLeft
+      );
+    } else {
+      // species lozenge is at least partly hidden behind the right corner
+      // of the container
+      scrollTo = Math.ceil(
+        activeSpeciesLozenge.offsetLeft +
+          activeSpeciesLozenge.offsetWidth -
+          container.offsetWidth -
+          container.offsetLeft
+      );
+    }
+    container.scrollTo({ ...scrollOptions, left: scrollTo });
+  };
 };
 
 export default useVisibleActiveSpecies;
