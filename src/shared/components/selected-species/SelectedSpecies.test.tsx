@@ -86,8 +86,8 @@ describe('<SelectedSpecies />', () => {
     it('responds to clicks when inactive', async () => {
       const props = set('isActive', false, minimalProps);
 
-      const { container } = renderSelectedSpecies(props);
-      const lozenge = container.firstChild as HTMLElement;
+      const { getByText } = renderSelectedSpecies(props);
+      const lozenge = getByText('Human');
 
       await userEvent.click(lozenge);
 
@@ -112,7 +112,7 @@ describe('<SelectedSpecies />', () => {
 
       const { getByRole } = renderSelectedSpecies(props);
       const removeButton = getByRole('button', {
-        name: 'Remove Human from selected species'
+        name: 'Remove this genome from selected genomes'
       });
 
       await userEvent.click(removeButton);
@@ -130,7 +130,7 @@ describe('<SelectedSpecies />', () => {
 
       const { getByRole } = renderSelectedSpecies(props);
       const removeButton = getByRole('button', {
-        name: 'Remove Human from selected species'
+        name: 'Remove this genome from selected genomes'
       });
 
       fireEvent.mouseEnter(removeButton);
@@ -138,7 +138,7 @@ describe('<SelectedSpecies />', () => {
         vi.advanceTimersByTime(TOOLTIP_TIMEOUT);
       });
 
-      expect(screen.getByText('Delete genome')).toBeTruthy();
+      expect(screen.getByText('Delete this genome')).toBeTruthy();
     });
 
     it('does not show remove button when active', () => {
@@ -151,7 +151,7 @@ describe('<SelectedSpecies />', () => {
 
       expect(
         queryByRole('button', {
-          name: 'Remove Human from selected species'
+          name: 'Remove this genome from selected genomes'
         })
       ).toBeNull();
     });
@@ -167,7 +167,7 @@ describe('<SelectedSpecies />', () => {
 
       expect(
         queryByRole('button', {
-          name: 'Remove Human from selected species'
+          name: 'Remove this genome from selected genomes'
         })
       ).toBeNull();
     });
