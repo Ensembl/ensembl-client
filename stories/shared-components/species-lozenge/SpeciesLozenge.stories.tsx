@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import noop from 'lodash/noop';
+
 import SpeciesLozenge from 'src/shared/components/selected-species/SpeciesLozenge';
 import WrapInRedux from './SpeciesLozengeReduxWrapper';
 
@@ -184,6 +186,36 @@ const SpeciesLozengeRelease = () => {
   );
 };
 
+const SpeciesLozengeDelete = () => {
+  return (
+    <div className={styles.wrapper}>
+      <p>
+        If a species lozenge receives an onRemove property, it will display a
+        delete button
+      </p>
+
+      <div className={styles.innerWrapper}>
+        <WrapInRedux speciesNameDisplayOption="common-name_assembly-name">
+          <SpeciesLozenge
+            theme="blue"
+            species={humanGenome}
+            withReleaseInfo={true}
+            onRemove={noop}
+          />
+        </WrapInRedux>
+        <WrapInRedux speciesNameDisplayOption="common-name_assembly-name">
+          <SpeciesLozenge
+            theme="red"
+            species={humanGenome}
+            withReleaseInfo={true}
+            onRemove={noop}
+          />
+        </WrapInRedux>
+      </div>
+    </div>
+  );
+};
+
 export const SpeciesLozengeThemesStory = {
   name: 'Themes',
   render: () => <SpeciesLozengeThemes />
@@ -197,4 +229,9 @@ export const SpeciesLozengeContentFormattingStory = {
 export const SpeciesLozengeReleaseStory = {
   name: 'Release info',
   render: () => <SpeciesLozengeRelease />
+};
+
+export const SpeciesLozengeDeleteStory = {
+  name: 'With delete button',
+  render: () => <SpeciesLozengeDelete />
 };

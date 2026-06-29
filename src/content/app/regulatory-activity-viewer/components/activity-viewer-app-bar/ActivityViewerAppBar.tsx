@@ -23,6 +23,8 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { AppName as AppNameText } from 'src/global/globalConfig';
 
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
+
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getActiveGenomeId } from 'src/content/app/regulatory-activity-viewer/state/general/generalSelectors';
 
@@ -37,6 +39,7 @@ const ActivityViewerAppBar = () => {
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const navigate = useNavigate();
+  const { removeGenome } = useGenomeRemoval();
 
   const onSpeciesTabClick = (species: CommittedItem) => {
     const genomeIdForUrl = species.genome_tag ?? species.genome_id;
@@ -52,6 +55,7 @@ const ActivityViewerAppBar = () => {
       species={species}
       isActive={species.genome_id === activeGenomeId}
       onClick={onSpeciesTabClick}
+      onRemove={removeGenome}
     />
   ));
 

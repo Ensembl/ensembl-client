@@ -21,6 +21,7 @@ import isEqual from 'lodash/isEqual';
 import { AppName as AppNameText } from 'src/global/globalConfig';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
@@ -41,6 +42,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
   const { onSpeciesSelect: speciesSelectHandlerFromProps } = props;
   const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const { removeGenome } = useGenomeRemoval();
 
   const { trackGenomeChanged } = useGenomeBrowserAnalytics();
 
@@ -60,9 +62,10 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
         species={species}
         isActive={species.genome_id === activeGenomeId}
         onClick={() => onSpeciesSelect(species)}
+        onRemove={removeGenome}
       />
     ));
-  }, [enabledCommittedSpecies, activeGenomeId, onSpeciesSelect]);
+  }, [enabledCommittedSpecies, activeGenomeId, onSpeciesSelect, removeGenome]);
 
   const tabsSlider = <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>;
 

@@ -20,6 +20,8 @@ import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
+
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
@@ -96,6 +98,7 @@ const SelectedSpeciesList = (props: {
   isSearchMode?: boolean;
 }) => {
   const navigate = useNavigate();
+  const { removeGenome } = useGenomeRemoval();
 
   const showSpeciesPage = (species: CommittedItem) => {
     const genomeIdForUrl = species.genome_tag ?? species.genome_id;
@@ -115,6 +118,7 @@ const SelectedSpeciesList = (props: {
       key={species.genome_id}
       species={species}
       onClick={() => showSpeciesPage(species)}
+      onRemove={!props.isSearchMode ? removeGenome : undefined}
       {...conditionalSpeciesProps}
     />
   ));
