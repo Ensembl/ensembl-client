@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
 import { useAppSelector, useAppDispatch, type RootState } from 'src/store';
@@ -34,7 +34,6 @@ import {
   parseFocusIdFromUrl
 } from 'src/shared/helpers/focusObjectHelpers';
 
-import { setActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { setDataFromUrlAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { fetchFocusObject } from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 
@@ -78,12 +77,15 @@ const useBrowserRouting = () => {
   );
   const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
     useGenomeBrowser();
-  const { search } = useLocation(); // from document.location provided by the router
+  const { search, state: locationState } = useLocation(); // from document.location provided by the router
   const navigate = useNavigate();
+  const navigationType = useNavigationType();
   const dispatch = useAppDispatch();
 
   const urlSearchParams = new URLSearchParams(search);
   const location = urlSearchParams.get('location') || null;
+  const isUrlUpdatedByGenomeBrowser =
+    locationState?.updateSource === 'genome-browser'; // State set in useGenomeBrowserPosition hook
 
   const allCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
   const allChrLocations = useAppSelector(getAllChrLocations);
@@ -114,7 +116,6 @@ const useBrowserRouting = () => {
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
 
-      dispatch(setActiveGenomeId(genomeId));
       // Consider it as first render when we change genome
       firstRenderRef.current = true;
 
@@ -134,7 +135,6 @@ const useBrowserRouting = () => {
       allActiveFocusObjectIds,
       allChrLocations,
       allCommittedSpecies,
-      dispatch,
       navigate
     ]
   );
@@ -234,15 +234,18 @@ const useBrowserRouting = () => {
       const isFirstRender = firstRenderRef.current;
 
       if ((isFirstRender && genomeId) || (!sameAsPrev && genomeId)) {
-        const { type, objectId } = parseFocusIdFromUrl(focusObjectIdInUrl);
-        changeBrowserLocation({
-          genomeId,
-          chrLocation,
-          focus: {
-            type,
-            id: objectId
-          }
-        });
+        // ignore url updates triggered by messages from the genome browser
+        if (!(navigationType === 'REPLACE' && isUrlUpdatedByGenomeBrowser)) {
+          const { type, objectId } = parseFocusIdFromUrl(focusObjectIdInUrl);
+          changeBrowserLocation({
+            genomeId,
+            chrLocation,
+            focus: {
+              type,
+              id: objectId
+            }
+          });
+        }
       }
       if (isFirstRender) {
         firstRenderRef.current = false;
@@ -281,7 +284,9 @@ const useBrowserRouting = () => {
     shouldUpdateRedux,
     dispatch,
     navigate,
-    location
+    location,
+    navigationType,
+    isUrlUpdatedByGenomeBrowser
   ]);
 
   useEffect(() => {

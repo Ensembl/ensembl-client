@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { memo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
@@ -39,27 +39,33 @@ type BrowserAppBarProps = {
 };
 
 const BrowserAppBar = (props: BrowserAppBarProps) => {
+  const { onSpeciesSelect: speciesSelectHandlerFromProps } = props;
   const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const { removeGenome } = useGenomeRemoval();
 
   const { trackGenomeChanged } = useGenomeBrowserAnalytics();
 
-  const onSpeciesSelect = (species: CommittedItem) => {
-    props.onSpeciesSelect(species.genome_id);
+  const onSpeciesSelect = useCallback(
+    (species: CommittedItem) => {
+      speciesSelectHandlerFromProps(species.genome_id);
 
-    trackGenomeChanged();
-  };
+      trackGenomeChanged();
+    },
+    [speciesSelectHandlerFromProps, trackGenomeChanged]
+  );
 
-  const speciesTabs = enabledCommittedSpecies.map((species, index) => (
-    <SelectedSpecies
-      key={index}
-      species={species}
-      isActive={species.genome_id === activeGenomeId}
-      onClick={() => onSpeciesSelect(species)}
-      onRemove={removeGenome}
-    />
-  ));
+  const speciesTabs = useMemo(() => {
+    return enabledCommittedSpecies.map((species, index) => (
+      <SelectedSpecies
+        key={index}
+        species={species}
+        isActive={species.genome_id === activeGenomeId}
+        onClick={() => onSpeciesSelect(species)}
+        onRemove={removeGenome}
+      />
+    ));
+  }, [enabledCommittedSpecies, activeGenomeId, onSpeciesSelect, removeGenome]);
 
   const tabsSlider = <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>;
 

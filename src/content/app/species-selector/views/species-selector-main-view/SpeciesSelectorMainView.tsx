@@ -35,7 +35,7 @@ import TextButton from 'src/shared/components/text-button/TextButton';
 
 import styles from './SpeciesSelectorMainView.module.css';
 
-const popularSpeciesTab = '42 popular species';
+const popularSpeciesTab = 'Popular species';
 
 const SpeciesSelectorMainView = () => {
   const navigate = useNavigate();
