@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { useAppSelector } from 'src/store';
 
@@ -36,6 +36,25 @@ const GenomeBrowserNavigationButtons = () => {
 
   const [regionName] = browserLocation ?? [];
 
+  // Keep and modify an internal copy of the browser location.
+  // This enables the component to respond to clicks without having to wait
+  // for the genome browser to arrive to the location defined in a previous click.
+  const [internalLocation, setInternalLocation] = useState(browserLocation);
+  const [prevGenomeId, setPrevGenomeId] = useState(activeGenomeId);
+  const [prevBrowserLocation, setPrevBrowserLocation] =
+    useState(browserLocation);
+  const [canUpdateFromOutside, setCanUpdateFromOutside] = useState(true);
+
+  const updatesTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (updatesTimeoutRef.current) {
+        clearTimeout(updatesTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const { currentData: regionData } = useGbRegionQuery(
     {
       genomeId: activeGenomeId ?? '',
@@ -46,27 +65,15 @@ const GenomeBrowserNavigationButtons = () => {
     }
   );
 
-  // Keep and modify an internal copy of the browser location.
-  // This enables the component to respond to clicks without having to wait
-  // for the genome browser to arrive to the location defined in a previous click.
-  const [internalLocation, setInternalLocation] = useState(browserLocation);
-
-  // Store the parameters that define when the internal copy of the browser location
-  // needs updating.
-  const [prevParams, setPrevParams] = useState({
-    regionName,
-    activeGenomeId
-  });
-
   if (
-    activeGenomeId !== prevParams.activeGenomeId ||
-    (regionName && regionName !== prevParams.regionName)
+    canUpdateFromOutside &&
+    ((browserLocation &&
+      browserLocation.join('') !== prevBrowserLocation?.join('')) ||
+      activeGenomeId !== prevGenomeId)
   ) {
     setInternalLocation(browserLocation);
-    setPrevParams({
-      activeGenomeId,
-      regionName
-    });
+    setPrevBrowserLocation(browserLocation);
+    setPrevGenomeId(activeGenomeId);
   }
 
   const [, start, end] = internalLocation ?? [];
@@ -82,6 +89,22 @@ const GenomeBrowserNavigationButtons = () => {
       genomeId: activeGenomeId,
       chrLocation: [regionName, newStart, newEnd]
     });
+
+    setGuardFromOutsideUpdates();
+  };
+
+  const setGuardFromOutsideUpdates = () => {
+    if (canUpdateFromOutside) {
+      setCanUpdateFromOutside(false);
+    }
+    if (updatesTimeoutRef.current) {
+      clearTimeout(updatesTimeoutRef.current);
+    }
+    updatesTimeoutRef.current = setTimeout(resetUpdateFromOutside, 1000);
+  };
+
+  const resetUpdateFromOutside = () => {
+    setCanUpdateFromOutside(true);
   };
 
   return (
