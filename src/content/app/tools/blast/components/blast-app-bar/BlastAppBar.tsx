@@ -16,6 +16,7 @@
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
 
 import { smallViewportMediaQuery } from 'src/content/app/tools/blast/views/blast-form/blastFormConstants';
 
@@ -29,7 +30,6 @@ import { addSelectedSpecies } from 'src/content/app/tools/blast/state/blast-form
 import { getSelectedSpeciesIds } from 'src/content/app/tools/blast/state/blast-form/blastFormSelectors';
 import { placeholderMessage } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
 import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGeneralSelectors';
-import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -46,6 +46,7 @@ const BlastAppBar = () => {
   const blastView = useAppSelector(getBlastView);
   const modalView = useAppSelector(getModalView);
   const blastFormStep = useAppSelector(getBlastFormStep);
+  const { removeGenome } = useGenomeRemoval();
 
   const dispatch = useAppDispatch();
 
@@ -66,10 +67,6 @@ const BlastAppBar = () => {
     }
   };
 
-  const removeSpecies = (species: CommittedItem) => {
-    dispatch(deleteSpeciesAndSave(species.genome_id));
-  };
-
   const areSpeciesEnabled = shouldEnableSpecies({
     blastView,
     blastFormStep,
@@ -83,7 +80,7 @@ const BlastAppBar = () => {
           key={index}
           species={species}
           onClick={() => speciesLozengeClick(species)}
-          onRemove={removeSpecies}
+          onRemove={removeGenome}
         />
       ))
     : speciesList.map((species, index) => (

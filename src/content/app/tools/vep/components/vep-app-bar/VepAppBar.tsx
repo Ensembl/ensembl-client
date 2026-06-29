@@ -20,11 +20,12 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
+
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { getSelectedSpecies as getSelectedSpeciesForVep } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
 import { setSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
-import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -51,6 +52,7 @@ const SpeciesTabs = () => {
   const isVepFormView = useMatch({ path: vepFormPath, end: true });
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
   const speciesSelectedForVep = useAppSelector(getSelectedSpeciesForVep);
+  const { removeGenome } = useGenomeRemoval();
   const dispatch = useAppDispatch();
 
   const hasSelectedSpeciesForVep = !!speciesSelectedForVep;
@@ -60,16 +62,12 @@ const SpeciesTabs = () => {
     dispatch(setSelectedSpecies({ species }));
   };
 
-  const removeSpecies = (species: CommittedItem) => {
-    dispatch(deleteSpeciesAndSave(species.genome_id));
-  };
-
   const speciesTabs = speciesList.map((species) => (
     <SelectedSpecies
       key={species.genome_id}
       species={species}
       onClick={onSpeciesSelect}
-      onRemove={shouldEnableSpeciesTabs ? removeSpecies : undefined}
+      onRemove={shouldEnableSpeciesTabs ? removeGenome : undefined}
       disabled={!shouldEnableSpeciesTabs}
     />
   ));

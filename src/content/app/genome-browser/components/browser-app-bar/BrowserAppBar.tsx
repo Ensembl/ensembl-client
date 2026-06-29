@@ -19,13 +19,12 @@ import { useSelector } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
 import { AppName as AppNameText } from 'src/global/globalConfig';
-import { useAppDispatch } from 'src/store';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -40,9 +39,9 @@ type BrowserAppBarProps = {
 };
 
 const BrowserAppBar = (props: BrowserAppBarProps) => {
-  const dispatch = useAppDispatch();
   const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const { removeGenome } = useGenomeRemoval();
 
   const { trackGenomeChanged } = useGenomeBrowserAnalytics();
 
@@ -52,17 +51,13 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     trackGenomeChanged();
   };
 
-  const removeSpecies = (species: CommittedItem) => {
-    dispatch(deleteSpeciesAndSave(species.genome_id));
-  };
-
   const speciesTabs = enabledCommittedSpecies.map((species, index) => (
     <SelectedSpecies
       key={index}
       species={species}
       isActive={species.genome_id === activeGenomeId}
       onClick={() => onSpeciesSelect(species)}
-      onRemove={removeSpecies}
+      onRemove={removeGenome}
     />
   ));
 

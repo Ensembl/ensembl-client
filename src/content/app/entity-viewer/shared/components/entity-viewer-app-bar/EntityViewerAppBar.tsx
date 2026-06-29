@@ -18,7 +18,8 @@ import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
+import { useAppSelector } from 'src/store';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { AppName as AppNameText } from 'src/global/globalConfig';
 import {
@@ -26,12 +27,13 @@ import {
   buildFocusIdForUrl
 } from 'src/shared/helpers/focusObjectHelpers';
 
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
+
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEntityIds
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 import { getAllGeneViews } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
@@ -43,12 +45,12 @@ import { HelpPopupButton } from 'src/shared/components/help-popup';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const EntityViewerAppBar = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useAppSelector(getEntityViewerActiveGenomeId);
   const allActiveEntityIds = useAppSelector(getEntityViewerActiveEntityIds);
   const allGeneViews = useAppSelector(getAllGeneViews) ?? {};
+  const { removeGenome } = useGenomeRemoval();
 
   const onSpeciesTabClick = (species: CommittedItem) => {
     const genomeId = species.genome_id;
@@ -73,17 +75,13 @@ const EntityViewerAppBar = () => {
     navigate(url);
   };
 
-  const removeSpecies = (species: CommittedItem) => {
-    dispatch(deleteSpeciesAndSave(species.genome_id));
-  };
-
   const speciesTabs = speciesList.map((species, index) => (
     <SelectedSpecies
       key={index}
       species={species}
       isActive={species.genome_id === activeGenomeId}
       onClick={onSpeciesTabClick}
-      onRemove={removeSpecies}
+      onRemove={removeGenome}
     />
   ));
 

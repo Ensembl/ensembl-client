@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { useAppDispatch, useAppSelector } from 'src/store';
 import { useNavigate } from 'react-router-dom';
 
+import { useAppSelector } from 'src/store';
+
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -28,12 +30,10 @@ import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/Species
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import { PlaceholderMessage } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
 
-import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-
 const SearchAppBar = () => {
-  const dispatch = useAppDispatch();
   const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
   const navigate = useNavigate();
+  const { removeGenome } = useGenomeRemoval();
 
   const showSpeciesPage = (genomeId: string, genomeTag?: string) => {
     navigate(
@@ -41,10 +41,6 @@ const SearchAppBar = () => {
         genomeId: genomeTag ?? genomeId
       })
     );
-  };
-
-  const removeSpecies = (species: CommittedItem) => {
-    dispatch(deleteSpeciesAndSave(species.genome_id));
   };
 
   const mainContent = enabledCommittedSpecies.length ? (
@@ -56,7 +52,7 @@ const SearchAppBar = () => {
           onClick={() =>
             showSpeciesPage(species.genome_id, species.genome_tag ?? undefined)
           }
-          onRemove={removeSpecies}
+          onRemove={removeGenome}
         />
       ))}
     </SpeciesTabsSlider>
