@@ -32,12 +32,6 @@ export const BrowserBar = () => {
 
   const browserBarRef = useRef<HTMLDivElement>(null);
 
-  // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
-  // always contains a child DOM element
-  if (!focusObject) {
-    return <div />;
-  }
-
   return (
     <div className={styles.browserBar} ref={browserBarRef}>
       <BrowserReset />
