@@ -17,13 +17,14 @@
 import { useState, useId, type InputEvent, type KeyboardEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import { useAppSelector } from 'src/store';
+import { useAppDispatch, useAppSelector, type AppDispatch } from 'src/store';
 
 import { getGenomicLocationString } from 'src/shared/helpers/genomicLocationHelpers';
 
 import { getChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { useGenomeTopLevelRegionsQuery } from 'src/shared/state/genome/genomeApiSlice';
+import { getGBRegion } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -53,6 +54,7 @@ const LocationNavigation = () => {
   const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
   const regionSelectId = useId();
   const locationInputId = useId();
+  const dispatch = useAppDispatch();
 
   const urlLocation = useLocation();
   const navigate = useNavigate();
@@ -80,8 +82,32 @@ const LocationNavigation = () => {
   const handleSubmit = async () => {
     setShowErrorMessage(false);
 
-    // add regionNameInput if user only entered start:end
-    const newLocation = locationInput;
+    const parsedInput = parseUserInput(locationInput);
+
+    if (parsedInput.type === 'region_name') {
+      const { location: newLocation } = await getLocationFromRegionName({
+        genomeId: activeGenomeId as string,
+        regionName: parsedInput.regionName,
+        dispatch
+      });
+      if (newLocation) {
+        onValidationSuccess({ location: newLocation });
+      } else {
+        onValidationError();
+      }
+      return;
+    }
+
+    let newLocation = locationInput;
+
+    if (parsedInput.type === 'start_end') {
+      // add regionNameInput if user only entered start:end
+      newLocation = getGenomicLocationString({
+        regionName: regionNameInput,
+        start: parsedInput.start,
+        end: parsedInput.end
+      });
+    }
 
     try {
       const validatedLocation = await validateGenomicLocation({
@@ -239,6 +265,95 @@ const TrackPanelLocationNavigation = () => {
       </AccordionItemPanel>
     </AccordionItem>
   );
+};
+
+/**
+ * Support the following use cases for the input string:
+ * - Full location format (regionName:start-end)
+ * - Only start and end, with the region implicitly being the current one (start-end)
+ * - Only the region name (random string, no colons or hyphens)
+ */
+
+const parseUserInput = (input: string) => {
+  const startEndLikeRegex = /^[\d.,]+-[\d.,]+$/;
+
+  // Step 1: guess whether user's input is a full location string,
+  // a partial location (start-end) string, or just a region name
+  const [firstPart, secondPart = ''] = input.split(':');
+
+  let regionNameString = '';
+  let startEndString = '';
+
+  if (secondPart && startEndLikeRegex.test(secondPart)) {
+    // full location string
+    regionNameString = firstPart;
+    startEndString = secondPart;
+  } else if (!secondPart && startEndLikeRegex.test(firstPart)) {
+    // partial location string (just start-end)
+    startEndString = firstPart;
+  } else {
+    // bail; assume the complete input string is a region name
+    regionNameString = input;
+  }
+
+  // Step 2: clean up the start/end string
+  if (startEndString) {
+    startEndString = startEndString
+      .replace(/[.,]/g, '') // remove dots and commas
+      .replace(/\p{Pd}/gu, '-'); // replace all unicode dash punctuation characters with a single hyphen
+  }
+
+  // Step 3: Parse the result
+  const startEndRegex = /(?<start>\d+)-(?<end>\d+)/;
+  const startEndMatch = startEndString.match(startEndRegex);
+
+  if (regionNameString && startEndMatch) {
+    return {
+      type: 'full_location',
+      regionName: regionNameString,
+      start: parseInt(startEndMatch.groups!.start, 10),
+      end: parseInt(startEndMatch.groups!.end, 10)
+    } as const;
+  } else if (startEndMatch) {
+    return {
+      type: 'start_end',
+      start: parseInt(startEndMatch.groups!.start, 10),
+      end: parseInt(startEndMatch.groups!.end, 10)
+    } as const;
+  } else {
+    return {
+      type: 'region_name',
+      regionName: input
+    } as const;
+  }
+};
+
+const getLocationFromRegionName = async ({
+  genomeId,
+  regionName,
+  dispatch
+}: {
+  genomeId: string;
+  regionName: string;
+  dispatch: AppDispatch;
+}) => {
+  const { data } = await dispatch(
+    getGBRegion.initiate({ genomeId, regionName }, { subscribe: false })
+  );
+  const { region } = data ?? {};
+  if (!region) {
+    return {
+      location: null
+    };
+  }
+  const genomicLocation = getGenomicLocationString({
+    regionName,
+    start: 1,
+    end: region.length
+  });
+  return {
+    location: genomicLocation
+  };
 };
 
 export default TrackPanelLocationNavigation;
