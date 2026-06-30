@@ -103,6 +103,7 @@ export const BrowserLocationIndicator = (props: Props) => {
         location: locationString
       })
     );
+    inputRef.current?.blur();
   };
 
   const [regionName, start, end] = chrLocation || [];
