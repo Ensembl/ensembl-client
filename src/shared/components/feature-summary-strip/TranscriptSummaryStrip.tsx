@@ -15,13 +15,13 @@
  */
 
 import classNames from 'classnames';
-import type { RefObject } from 'react';
 
 import { getDisplayStableId } from 'src/shared/helpers/focusObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
 import type { FocusTranscript } from 'src/shared/types/focus-object/focusObjectTypes';
+import type { Variety } from './types';
 
 import styles from './FeatureSummaryStrip.module.css';
 
@@ -37,16 +37,25 @@ type Transcript = Pick<FocusTranscript, TranscriptFields>;
 type Props = {
   transcript: Transcript;
   className?: string;
-  elementRef?: RefObject<HTMLDivElement | null>;
+  variety?: Variety;
 };
 
 const TranscriptSummaryStrip = (props: Props) => {
-  const { transcript, className, elementRef } = props;
+  const { transcript, className, variety = 'default' } = props;
   const stableId = getDisplayStableId(transcript);
   const stripClasses = classNames(styles.featureSummaryStrip, className);
 
+  if (variety === 'minimal') {
+    return (
+      <div className={stripClasses}>
+        <span className={styles.featureSummaryStripLabel}>Transcript</span>
+        <span className={styles.featureNameEmphasized}>{stableId}</span>
+      </div>
+    );
+  }
+
   return (
-    <div className={stripClasses} ref={elementRef}>
+    <div className={stripClasses}>
       <div className={styles.section}>
         <span className={styles.featureSummaryStripLabel}>Transcript</span>
         <span className={styles.featureNameEmphasized}>{stableId}</span>

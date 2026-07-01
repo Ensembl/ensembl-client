@@ -16,7 +16,7 @@
 
 import { useState } from 'react';
 
-import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
+import { useGenomeTopLevelRegionsQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import BlastGenomicRegionHeatmap from './BlastGenomicRegionHeatmap';
 import RegionWithoutMatches from './BlastGenomicRegionWithoutMatches';
@@ -41,9 +41,10 @@ type Props = {
 const BlastGenomicHitsDiagram = (props: Props) => {
   const { genomeId, hits, topMatches, width } = props;
   const [isExpanded, setIsExpanded] = useState(false);
-  const { currentData: genomeKaryotype } = useGenomeKaryotypeQuery(genomeId); // the karyotype data has properly sorted top-level sequences
+  const { currentData: genomeTopLevelRegions } =
+    useGenomeTopLevelRegionsQuery(genomeId); // the karyotype data has properly sorted top-level sequences
 
-  if (!genomeKaryotype) {
+  if (!genomeTopLevelRegions) {
     return null;
   }
 
@@ -51,12 +52,12 @@ const BlastGenomicHitsDiagram = (props: Props) => {
   const regionNamesForCompactView = new Set(
     topMatches.map(({ regionName }) => regionName)
   );
-  const sortedRegionNamesForCompactView = genomeKaryotype
+  const sortedRegionNamesForCompactView = genomeTopLevelRegions
     .map(({ name }) => name)
     .filter((name) => regionNamesForCompactView.has(name));
 
   const regionNamesForExpandedView = new Set(hits.map((hit) => hit.hit_acc));
-  const sortedRegionNamesForExpandedView = genomeKaryotype
+  const sortedRegionNamesForExpandedView = genomeTopLevelRegions
     .map(({ name }) => name)
     .filter((name) => regionNamesForExpandedView.has(name));
 

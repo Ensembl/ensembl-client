@@ -34,9 +34,9 @@ const genomeApiSlice = restApiSlice.injectEndpoints({
         url: `${config.metadataApiBaseUrl}/genome/${slug}/explain`
       })
     }),
-    genomeKaryotype: builder.query<GenomeKaryotypeItem[], string>({
+    genomeTopLevelRegions: builder.query<GenomeKaryotypeItem[], string>({
       query: (genomeId) => ({
-        url: `${config.metadataApiBaseUrl}/genome/${genomeId}/karyotype`
+        url: `${config.metadataApiBaseUrl}/genome/${genomeId}/top-regions`
       })
     }),
     exampleObjectsForGenome: builder.query<ExampleFocusObject[], string>({
@@ -49,7 +49,7 @@ const genomeApiSlice = restApiSlice.injectEndpoints({
 
 export const {
   useGenomeSummaryByGenomeSlugQuery,
-  useGenomeKaryotypeQuery,
+  useGenomeTopLevelRegionsQuery,
   useExampleObjectsForGenomeQuery
 } = genomeApiSlice;
 

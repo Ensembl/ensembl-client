@@ -21,6 +21,7 @@ import { useAppSelector } from 'src/store';
 import BrowserReset from '../browser-reset/BrowserReset';
 import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
+import GenomeBrowserNavigationButtons from '../browser-nav-buttons/GenomeBrowserNavigationButtons';
 
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
@@ -30,13 +31,6 @@ export const BrowserBar = () => {
   const focusObject = useAppSelector(getBrowserActiveFocusObject);
 
   const browserBarRef = useRef<HTMLDivElement>(null);
-  const featureSummaryRef = useRef<HTMLDivElement>(null);
-
-  // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
-  // always contains a child DOM element
-  if (!focusObject) {
-    return <div />;
-  }
 
   return (
     <div className={styles.browserBar} ref={browserBarRef}>
@@ -44,15 +38,12 @@ export const BrowserBar = () => {
       {focusObject && (
         <FeatureSummaryStrip
           focusObject={focusObject}
-          ref={featureSummaryRef}
           className={styles.featureSummaryStrip}
+          variety="minimal"
         />
       )}
-      <BrowserLocationIndicator
-        className={styles.browserLocationIndicator}
-        containerRef={browserBarRef}
-        nonOverlapElementRef={featureSummaryRef}
-      />
+      <GenomeBrowserNavigationButtons />
+      <BrowserLocationIndicator className={styles.browserLocationIndicator} />
     </div>
   );
 };
