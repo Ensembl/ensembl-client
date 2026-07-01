@@ -34,7 +34,7 @@
     "test-coverage-browser": "vitest run --config ./vitest.config.browser.mts --coverage"
   },
   "dependencies": {
-    "@ensembl/ensembl-elements-common": "0.0.4",
+    "@ensembl/ensembl-elements-common": "0.0.5",
     "@ensembl/ensembl-genome-browser": "0.6.12",
     "@ensembl/ensembl-structural-variants": "0.0.11",
     "@reduxjs/toolkit": "2.12.0",
