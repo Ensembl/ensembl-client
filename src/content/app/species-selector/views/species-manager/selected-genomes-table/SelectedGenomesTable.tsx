@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { Fragment, useReducer, type FormEvent } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAppDispatch } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSlice';
 
 import {
@@ -30,12 +29,8 @@ import {
   VerticallyCenteredCellContent
 } from 'src/shared/components/table';
 
-import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
-
-import { PrimaryButton } from 'src/shared/components/button/Button';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
-import TextButton from 'src/shared/components/text-button/TextButton';
 import {
   CommonName,
   ScientificName,
@@ -52,98 +47,21 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/commi
 
 import styles from './SelectedGenomesTable.module.css';
 
-/**
- * TODO:
- * - Respond to screen width (show more / show less)
- * - When the last species is deleted, navigate (where? just one step back?)
- *
- * Qs:
- * - What to do if there are no selected species?
- *   Example: delete species, get transported to the species selector home page,
- *   then go back one page in browser history?
- */
-
-type DeletionModeSettings = {
-  initialGenomeId: string; // id of the genome whose row in the table contains the delete button that triggered the deletion mode
-  genomeIds: string[]; // the list of genome ids marked for deletion
-};
-
-type TableState = {
-  isShowingAllColumns: boolean;
-  deletionModeSettings: DeletionModeSettings | null;
-};
-
-type EnterDeletionModeAction = {
-  type: 'enter-deletion-mode';
-  genomeId: string;
-};
-
-type ExitDeletionModeAction = {
-  type: 'exit-deletion-mode';
-};
-
-type UpdateDeletionListAction = {
-  type: 'update-deletion-list';
-  genomeIds: string[];
-};
-
-type DispatchedTableAction =
-  | EnterDeletionModeAction
-  | ExitDeletionModeAction
-  | UpdateDeletionListAction;
-
-// The function accepts id of the genome in the table row where the delete button was clicked
-const getNewDeleteModeSettings = (genomeId: string): DeletionModeSettings => {
-  return {
-    initialGenomeId: genomeId,
-    genomeIds: [genomeId]
-  };
-};
-
-const initialState: TableState = {
-  isShowingAllColumns: true,
-  deletionModeSettings: null
-};
-
-const reducer = (
-  state: TableState,
-  action: DispatchedTableAction
-): TableState => {
-  switch (action.type) {
-    case 'enter-deletion-mode':
-      return {
-        ...state,
-        deletionModeSettings: getNewDeleteModeSettings(action.genomeId)
-      };
-    case 'exit-deletion-mode':
-      return {
-        ...state,
-        deletionModeSettings: null
-      };
-    case 'update-deletion-list':
-      return {
-        ...state,
-        deletionModeSettings: {
-          ...state.deletionModeSettings,
-          genomeIds: action.genomeIds
-        } as DeletionModeSettings
-      };
-    default:
-      return state;
-  }
-};
-
 const SelectedGenomesTable = (props: {
   allSelectedGenomes: CommittedItem[];
   filteredGenomes: CommittedItem[];
+  selectedGenomeIds: string[];
+  onSelectedGenomeIdsChange: (genomeIds: string[]) => void;
 }) => {
   const { allSelectedGenomes, filteredGenomes } = props;
-  const [tableState, tableDispatch] = useReducer(reducer, initialState);
   const reduxDispatch = useAppDispatch();
 
-  const isInDeletionMode = Boolean(tableState.deletionModeSettings);
-  const genomeIdsForDeletion = new Set<string>(
-    tableState.deletionModeSettings?.genomeIds ?? []
+  const selectedGenomeIds = new Set<string>(props.selectedGenomeIds);
+  const allVisibleGenomesSelected =
+    !!filteredGenomes.length &&
+    filteredGenomes.every((genome) => selectedGenomeIds.has(genome.genome_id));
+  const someVisibleGenomesSelected = filteredGenomes.some((genome) =>
+    selectedGenomeIds.has(genome.genome_id)
   );
 
   if (!allSelectedGenomes.length) {
@@ -161,79 +79,56 @@ const SelectedGenomesTable = (props: {
     return `Home page for ${scientific_name}, ${assembly.name}`;
   };
 
-  const enterDeletionMode = (species: CommittedItem) => {
-    tableDispatch({
-      type: 'enter-deletion-mode',
-      genomeId: species.genome_id
-    });
-  };
-
-  const exitDeletionMode = () => {
-    tableDispatch({
-      type: 'exit-deletion-mode'
-    });
-  };
-
-  const addGenomeToDeleteList = (genome: CommittedItem) => {
-    const currentGenomeIdsList =
-      tableState.deletionModeSettings?.genomeIds ?? [];
-    const updatedList = [...currentGenomeIdsList, genome.genome_id];
-    tableDispatch({
-      type: 'update-deletion-list',
-      genomeIds: updatedList
-    });
-  };
-
-  const addAllGenomesToDeleteList = () => {
-    const allGenomeIds = filteredGenomes.map((genome) => genome.genome_id);
-    tableDispatch({
-      type: 'update-deletion-list',
-      genomeIds: allGenomeIds
-    });
-  };
-
-  const removeGenomeFromDeleteList = (genome: CommittedItem) => {
-    const currentGenomeIdsList =
-      tableState.deletionModeSettings?.genomeIds ?? [];
-    const updatedList = currentGenomeIdsList.filter(
-      (genomeId) => genomeId !== genome.genome_id
-    );
-    tableDispatch({
-      type: 'update-deletion-list',
-      genomeIds: updatedList
-    });
-    if (!updatedList.length) {
-      tableDispatch({
-        type: 'exit-deletion-mode'
-      });
-    }
-  };
-
-  const removeAllGenomesFromDeleteList = () => {
-    tableDispatch({
-      type: 'update-deletion-list',
-      genomeIds: []
-    });
-  };
-
-  const deleteGenomes = () => {
-    const genomeIdsForDeletion =
-      tableState.deletionModeSettings?.genomeIds ?? [];
-
-    for (const genomeId of genomeIdsForDeletion) {
-      reduxDispatch(deleteSpeciesAndSave(genomeId));
-    }
-    exitDeletionMode();
-  };
-
   const toggleGenomeUse = (genome: CommittedItem) => {
     reduxDispatch(toggleSpeciesUseAndSave(genome.genome_id));
+  };
+
+  const toggleGenomeSelection = (genome: CommittedItem) => {
+    const updatedSelectedGenomeIds = selectedGenomeIds.has(genome.genome_id)
+      ? props.selectedGenomeIds.filter(
+          (genomeId) => genomeId !== genome.genome_id
+        )
+      : [...props.selectedGenomeIds, genome.genome_id];
+
+    props.onSelectedGenomeIdsChange(updatedSelectedGenomeIds);
+  };
+
+  const toggleAllVisibleGenomesSelection = () => {
+    const visibleGenomeIds = new Set(
+      filteredGenomes.map((genome) => genome.genome_id)
+    );
+
+    const updatedSelectedGenomeIds = allVisibleGenomesSelected
+      ? props.selectedGenomeIds.filter(
+          (genomeId) => !visibleGenomeIds.has(genomeId)
+        )
+      : [
+          ...props.selectedGenomeIds,
+          ...filteredGenomes
+            .map((genome) => genome.genome_id)
+            .filter((genomeId) => !selectedGenomeIds.has(genomeId))
+        ];
+
+    props.onSelectedGenomeIdsChange(updatedSelectedGenomeIds);
   };
 
   return (
     <Table stickyHeader={true} className={styles.table}>
       <thead>
         <tr>
+          <ColumnHead>
+            <span className={styles.selectionColumnHeader}>
+              <span>Select</span>
+              <SelectAllGenomesCheckbox
+                checked={allVisibleGenomesSelected}
+                indeterminate={
+                  someVisibleGenomesSelected && !allVisibleGenomesSelected
+                }
+                disabled={!filteredGenomes.length}
+                onChange={toggleAllVisibleGenomesSelection}
+              />
+            </span>
+          </ColumnHead>
           <ColumnHead>Species home page</ColumnHead>
           <ColumnHead>Common name</ColumnHead>
           <ColumnHead>Scientific name</ColumnHead>
@@ -242,174 +137,99 @@ const SelectedGenomesTable = (props: {
           <ColumnHead>Release</ColumnHead>
           <ColumnHead>Release type</ColumnHead>
           <ColumnHead>Assembly accession</ColumnHead>
-          <ColumnHead>Remove from list</ColumnHead>
           <ColumnHead>Use in apps</ColumnHead>
         </tr>
       </thead>
       <tbody>
         {filteredGenomes.map((genome) => (
-          <Fragment key={genome.genome_id}>
-            <tr
-              key={genome.genome_id}
-              className={isInDeletionMode ? styles.disabledRow : undefined}
-            >
-              <td className={styles.alignCenter}>
-                <VerticallyCenteredCellContent>
-                  <Link
-                    to={getLinkToSpeciesPage(genome)}
-                    className={styles.speciesHomeLink}
-                  >
-                    <SpeciesSelectorIcon
-                      className={styles.speciesHomeIcon}
-                      role="img"
-                      aria-label={getSpeciesLinkAriaLabel(genome)}
-                    />
-                  </Link>
-                </VerticallyCenteredCellContent>
-              </td>
-              <td>
-                <CommonName {...genome} />
-              </td>
-              <td>
-                <ScientificName {...genome} />
-              </td>
-              <td>
-                <SpeciesType {...genome} />
-              </td>
-              <td>
-                <AssemblyName {...genome} />
-              </td>
-              <td>
-                <GenomeRelease release={genome.release} />
-              </td>
-              <td>
-                <GenomeReleaseType release={genome.release} />
-              </td>
-              <td>
-                <AssemblyAccessionId {...genome} />
-              </td>
-              <td className={styles.alignCenter}>
-                <VerticallyCenteredCellContent>
-                  <DeleteButtonOrCheckbox
-                    species={genome}
-                    isInDeletionMode={isInDeletionMode}
-                    enterDeletionMode={enterDeletionMode}
-                    addGenomeToDeleteList={addGenomeToDeleteList}
-                    removeGenomeFromDeleteList={removeGenomeFromDeleteList}
-                    isMarkedForDeletion={genomeIdsForDeletion.has(
-                      genome.genome_id
-                    )}
-                  />
-                </VerticallyCenteredCellContent>
-              </td>
-              <td className={styles.alignCenter}>
-                <VerticallyCenteredCellContent>
-                  <SlideToggle
-                    className={styles.toggle}
-                    isOn={genome.isEnabled}
-                    onChange={() => toggleGenomeUse(genome)}
-                    disabled={isInDeletionMode}
-                  />
-                </VerticallyCenteredCellContent>
-              </td>
-            </tr>
-            {isInDeletionMode &&
-              tableState.deletionModeSettings?.initialGenomeId ===
-                genome.genome_id && (
-                <ConfirmDeletion
-                  species={genome}
-                  onDelete={deleteGenomes}
-                  onSelectAll={addAllGenomesToDeleteList}
-                  onDeselectAll={removeAllGenomesFromDeleteList}
-                  onCancel={exitDeletionMode}
+          <tr key={genome.genome_id}>
+            <td className={styles.selectionColumnCell}>
+              <VerticallyCenteredCellContent>
+                <Checkbox
+                  checked={selectedGenomeIds.has(genome.genome_id)}
+                  onChange={() => toggleGenomeSelection(genome)}
+                  aria-label={`Select ${getGenomeLabel(genome)}`}
                 />
-              )}
-          </Fragment>
+              </VerticallyCenteredCellContent>
+            </td>
+            <td className={styles.alignCenter}>
+              <VerticallyCenteredCellContent>
+                <Link
+                  to={getLinkToSpeciesPage(genome)}
+                  className={styles.speciesHomeLink}
+                >
+                  <SpeciesSelectorIcon
+                    className={styles.speciesHomeIcon}
+                    role="img"
+                    aria-label={getSpeciesLinkAriaLabel(genome)}
+                  />
+                </Link>
+              </VerticallyCenteredCellContent>
+            </td>
+            <td>
+              <CommonName {...genome} />
+            </td>
+            <td>
+              <ScientificName {...genome} />
+            </td>
+            <td>
+              <SpeciesType {...genome} />
+            </td>
+            <td>
+              <AssemblyName {...genome} />
+            </td>
+            <td>
+              <GenomeRelease release={genome.release} />
+            </td>
+            <td>
+              <GenomeReleaseType release={genome.release} />
+            </td>
+            <td>
+              <AssemblyAccessionId {...genome} />
+            </td>
+            <td className={styles.alignCenter}>
+              <VerticallyCenteredCellContent>
+                <SlideToggle
+                  className={styles.toggle}
+                  isOn={genome.isEnabled}
+                  onChange={() => toggleGenomeUse(genome)}
+                />
+              </VerticallyCenteredCellContent>
+            </td>
+          </tr>
         ))}
       </tbody>
     </Table>
   );
 };
 
-const DeleteButtonOrCheckbox = ({
-  species,
-  isInDeletionMode,
-  isMarkedForDeletion,
-  enterDeletionMode,
-  addGenomeToDeleteList,
-  removeGenomeFromDeleteList
-}: {
-  species: CommittedItem;
-  isInDeletionMode: boolean;
-  isMarkedForDeletion?: boolean;
-  enterDeletionMode: (species: CommittedItem) => void;
-  addGenomeToDeleteList: (species: CommittedItem) => void;
-  removeGenomeFromDeleteList: (species: CommittedItem) => void;
+const SelectAllGenomesCheckbox = (props: {
+  checked: boolean;
+  indeterminate: boolean;
+  disabled: boolean;
+  onChange: () => void;
 }) => {
-  const onCheckboxChange = (event: FormEvent<HTMLInputElement>) => {
-    const isChecked = event.currentTarget.checked;
-    if (isChecked) {
-      addGenomeToDeleteList(species);
-    } else {
-      removeGenomeFromDeleteList(species);
+  const checkboxRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (checkboxRef.current) {
+      checkboxRef.current.indeterminate = props.indeterminate;
     }
-  };
-
-  if (!isInDeletionMode) {
-    return <DeleteButton onClick={() => enterDeletionMode(species)} />;
-  } else {
-    const genomeLabel = `${species.common_name ?? species.scientific_name} (${species.assembly.name})`;
-    const ariaLabel = `Mark ${genomeLabel} for deletion`;
-    return (
-      <Checkbox
-        checked={!!isMarkedForDeletion}
-        onChange={onCheckboxChange}
-        aria-label={ariaLabel}
-      />
-    );
-  }
-};
-
-/**
- * This is visually represented as a table row, which always has two columns
- * (the start of the second column aligns with the second to last column of the table)
- */
-const ConfirmDeletion = (props: {
-  species: CommittedItem;
-  onDelete: (species: CommittedItem) => void;
-  onSelectAll: () => void;
-  onDeselectAll: () => void;
-  onCancel: () => void;
-}) => {
-  // this row will use the two rightmost columns of the table,
-  // but will merge all the columns to the left
-  const tableColumnsCount = 10;
-  const spanColumnsCount = tableColumnsCount - 2;
-
-  const onDelete = () => {
-    props.onDelete(props.species);
-  };
+  }, [props.indeterminate]);
 
   return (
-    <tr className={styles.removalRow}>
-      <td colSpan={spanColumnsCount}>
-        <div className={styles.removalRowContent}>
-          <TextButton onClick={props.onSelectAll}>Select all</TextButton>
-          <TextButton onClick={props.onDeselectAll}>Deselect all</TextButton>
-          <span className={styles.removalWarning}>{removalWarning}</span>
-          <PrimaryButton onClick={onDelete}>Remove</PrimaryButton>
-        </div>
-      </td>
-      <td colSpan={2}>
-        <button className={styles.cancelGenomeRemoval} onClick={props.onCancel}>
-          Do not remove
-        </button>
-      </td>
-    </tr>
+    <Checkbox
+      ref={checkboxRef}
+      checked={props.checked}
+      disabled={props.disabled}
+      onChange={props.onChange}
+      aria-label="Select all species in this table"
+    />
   );
 };
 
-const removalWarning =
-  'Any configuration of views for this species will be lost if you remove it - do you wish to continue?';
+const getGenomeLabel = (genome: CommittedItem) => {
+  return `${genome.common_name ?? genome.scientific_name} (${genome.assembly.name})`;
+};
 
 export default SelectedGenomesTable;
