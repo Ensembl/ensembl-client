@@ -36,7 +36,7 @@ export enum AppName {
   GENOME_BROWSER = 'Genome browser',
   SPECIES_SELECTOR = 'Species selector',
   SPECIES_PAGE = 'Species page',
-  ENTITY_VIEWER = 'Entity viewer',
+  ENTITY_VIEWER = 'Feature explorer',
   REGULATORY_ACTIVITY_VIEWER = 'Regulatory activity viewer',
   ALIGNMENTS_VIEWER = 'Alignments viewer',
   TOOLS = 'Tools' // this is the name of a group of apps

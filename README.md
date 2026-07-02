@@ -34,7 +34,7 @@ The new genome browser uses Rust, WASM and WebGL to provide a fast, smooth inter
 
 Since we aim to include all the current Ensembl species in the finished site, easy selection of genomes is of paramount importance. Our Species Selector home page displays icons for our 42 most popular genomes, or you can search for any species by common or scientific name. 
 
-### Entity Viewer
+### Feature Explorer
 
 View detailed information about annotation features: genes, transcripts and proteins.
 

@@ -53,7 +53,7 @@ const EntityViewerInterstitialInstructions = () => {
           <Step count={2} label="Return to this app">
             <div className={styles.description}>
               <EntityViewerIcon />
-              <div className={styles.iconLabel}>Entity Viewer</div>
+              <div className={styles.iconLabel}>Feature explorer</div>
             </div>
           </Step>
         </div>

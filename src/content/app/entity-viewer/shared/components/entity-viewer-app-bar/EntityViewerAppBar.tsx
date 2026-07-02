@@ -98,7 +98,7 @@ const EntityViewerAppBar = () => {
       topLeft={<AppName>{AppNameText.ENTITY_VIEWER}</AppName>}
       topRight={<SpeciesManagerIndicator />}
       mainContent={mainContent}
-      aside={<HelpPopupButton slug="entity-viewer" />}
+      aside={<HelpPopupButton slug="feature-explorer" />}
     />
   );
 };

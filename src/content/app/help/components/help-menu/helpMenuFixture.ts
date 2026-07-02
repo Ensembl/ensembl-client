@@ -59,13 +59,13 @@ const menu: MenuType = {
               ]
             },
             {
-              name: 'Entity viewer',
+              name: 'Feature explorer',
               type: 'collection',
               items: [
                 {
-                  name: 'What is the Entity viewer?',
+                  name: 'What is the Feature explorer?',
                   type: 'article',
-                  url: '/help/articles/what-is-the-entity-viewer'
+                  url: '/help/articles/what-is-the-feature-explorer'
                 },
                 {
                   name: 'What’s in the Transcripts view?',

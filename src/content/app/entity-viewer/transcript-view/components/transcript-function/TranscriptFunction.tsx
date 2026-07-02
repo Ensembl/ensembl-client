@@ -87,7 +87,7 @@ const ProteinInfo = ({
   const { product } = transcript.product_generating_contexts[0];
   const proteinLength = getProductAminoAcidLength(transcript);
 
-  // ProteinsListItemInfo component was developed for Entity Viewer gene view;
+  // ProteinsListItemInfo component was developed for Feature Explorer gene view;
   // which is why it has "list" in its name, and also why it receives a "track length"
   // property (in gene view, proteins are drawn relative to the longest protein in a gene)
   return (
