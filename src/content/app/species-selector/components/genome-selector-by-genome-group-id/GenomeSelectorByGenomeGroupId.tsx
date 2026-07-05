@@ -123,6 +123,7 @@ const GenomeSelectorByGenomeGroupId = (props: Props) => {
           <TopSection
             {...props}
             genomes={genomes}
+            totalGenomesCount={data.meta.total_hits}
             stagedGenomes={stagedGenomes}
           />
           <SpeciesSearchResultsTableWrapper>
@@ -164,11 +165,12 @@ const GenomeSelectorByGenomeGroupId = (props: Props) => {
 
 type TopSectionProps = Props & {
   genomes: ReturnType<typeof useSelectableGenomesTable>['genomes'];
+  totalGenomesCount: number;
   stagedGenomes: ReturnType<typeof useSelectableGenomesTable>['stagedGenomes'];
 };
 
 const TopSection = (props: TopSectionProps) => {
-  const { genomes, stagedGenomes } = props;
+  const { genomes, stagedGenomes, totalGenomesCount } = props;
   const navigate = useNavigate();
 
   const onSpeciesAdd = () => {
@@ -182,7 +184,6 @@ const TopSection = (props: TopSectionProps) => {
   const selectedGenomesCount = genomes.filter(
     (genome) => genome.isSelected
   ).length;
-  const totalGenomesCount = genomes.length;
 
   return (
     <section className={styles.top}>
