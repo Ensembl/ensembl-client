@@ -20,12 +20,11 @@ import {
   from,
   merge,
   concat,
-  switchMap,
+  defer,
+  switchScan,
   map,
-  scan,
   catchError,
   startWith,
-  takeUntil,
   shareReplay,
   type Observable
 } from 'rxjs';
@@ -37,10 +36,14 @@ import {
   getGBTranscriptSummary,
   getTrackPanelGene
 } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
-import { fetchGenomeSummary } from 'src/shared/state/genome/genomeApiSlice';
+import {
+  fetchGenomeSummary,
+  isGenomeNotFoundError
+} from 'src/shared/state/genome/genomeApiSlice';
 
 import type { AppDispatch } from 'src/store';
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type { RegionInResponse } from 'src/content/app/genome-browser/state/api/queries/regionQuery';
 import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 import type {
   FocusObjectIdConstituents,
@@ -83,6 +86,9 @@ type State = {
   isMissingFocusObject: boolean;
 
   // Location in url
+  locationStringInUrl: string | null;
+  parsedLocation: ChrLocation | null;
+  locationRegion: RegionInResponse | null;
   isInvalidLocation: boolean;
   isMalformedLocation: boolean;
 };
@@ -103,6 +109,9 @@ const initialState: State = {
   isMissingFocusObject: false,
 
   // Location in url
+  locationStringInUrl: null,
+  parsedLocation: null,
+  locationRegion: null,
   isInvalidLocation: false,
   isMalformedLocation: false
 };
@@ -140,11 +149,18 @@ type ResetAction = {
   type: 'reset';
 };
 
+type InputEvent = {
+  type: 'input';
+  payload: ParsedInputParams;
+};
+
 type Action =
   | StartValidatingAction
   | ValidationCompleteAction
   | ValidationFailedAction
   | ResetAction;
+
+type Event = InputEvent | ResetAction;
 
 const input$ = new Subject<InputParams>();
 const resetAction$ = new Subject<ResetAction>();
@@ -194,6 +210,8 @@ const getBaseState = (input: ParsedInputParams): State => {
     ...initialState,
     genomeIdInUrl: input.genomeSlug,
     focusObjectIdInUrl: input.focusObjectUrlString,
+    locationStringInUrl: input.locationUrlString,
+    parsedLocation: input.parsedLocation,
     isMalformedFocusObjectId: input.isMalformedFocusObjectId,
     isMalformedLocation: input.isMalformedLocation
   });
@@ -221,7 +239,8 @@ const getStateWithComputedValidity = (state: State): State => {
 };
 
 const runValidation = async (
-  input: ParsedInputParams
+  input: ParsedInputParams,
+  previousState: State
 ): Promise<ValidationCompleteAction> => {
   const state = getBaseState(input);
 
@@ -229,12 +248,14 @@ const runValidation = async (
     return completeValidation(state);
   }
 
-  const genome = await fetchGenome({
+  const genomeValidationResult = await validateGenome({
     genomeSlug: input.genomeSlug,
-    reduxDispatch: input.reduxDispatch
+    reduxDispatch: input.reduxDispatch,
+    previousState
   });
+  const { genome, isMissingGenomeId } = genomeValidationResult;
 
-  if (!genome) {
+  if (isMissingGenomeId) {
     return completeValidation({
       ...state,
       isMissingGenomeId: true
@@ -255,25 +276,29 @@ const runValidation = async (
 
   const [focusValidationResult, locationValidationResult] = await Promise.all([
     nextState.parsedFocusObjectId
-      ? checkFocusObject({
+      ? validateFocusObject({
           genomeId: genome.genome_id,
           parsedFocusObjectId: nextState.parsedFocusObjectId,
-          reduxDispatch: input.reduxDispatch
+          focusObjectUrlString: input.focusObjectUrlString,
+          reduxDispatch: input.reduxDispatch,
+          previousState
         })
       : Promise.resolve({ isMissingFocusObject: false }),
     input.parsedLocation && !input.isMalformedLocation
       ? checkLocationFromUrl({
           genomeId: genome.genome_id,
           location: input.parsedLocation,
-          reduxDispatch: input.reduxDispatch
+          reduxDispatch: input.reduxDispatch,
+          previousState
         })
-      : Promise.resolve({ isInvalidLocation: false })
+      : Promise.resolve({ isInvalidLocation: false, locationRegion: null })
   ]);
 
   return completeValidation({
     ...nextState,
     isMissingFocusObject: focusValidationResult.isMissingFocusObject,
-    isInvalidLocation: locationValidationResult.isInvalidLocation
+    isInvalidLocation: locationValidationResult.isInvalidLocation,
+    locationRegion: locationValidationResult.locationRegion
   });
 };
 
@@ -287,6 +312,81 @@ const completeValidation = (state: State): ValidationCompleteAction => {
   };
 };
 
+type GenomeValidationResult =
+  | {
+      genome: BriefGenomeSummary;
+      isMissingGenomeId: false;
+    }
+  | {
+      genome: null;
+      isMissingGenomeId: true;
+    };
+
+const validateGenome = async ({
+  genomeSlug,
+  reduxDispatch,
+  previousState
+}: {
+  genomeSlug: string;
+  reduxDispatch: AppDispatch;
+  previousState: State;
+}): Promise<GenomeValidationResult> => {
+  const reusableResult = getReusableGenomeValidationResult({
+    genomeSlug,
+    previousState
+  });
+
+  if (reusableResult) {
+    return reusableResult;
+  }
+
+  const genome = await fetchGenome({
+    genomeSlug,
+    reduxDispatch
+  });
+
+  return genome
+    ? {
+        genome,
+        isMissingGenomeId: false
+      }
+    : {
+        genome: null,
+        isMissingGenomeId: true
+      };
+};
+
+const getReusableGenomeValidationResult = ({
+  genomeSlug,
+  previousState
+}: {
+  genomeSlug: string;
+  previousState: State;
+}): GenomeValidationResult | null => {
+  if (
+    previousState.isValidating ||
+    previousState.genomeIdInUrl !== genomeSlug
+  ) {
+    return null;
+  }
+
+  if (previousState.genome) {
+    return {
+      genome: previousState.genome,
+      isMissingGenomeId: false
+    };
+  }
+
+  if (previousState.isMissingGenomeId) {
+    return {
+      genome: null,
+      isMissingGenomeId: true
+    };
+  }
+
+  return null;
+};
+
 const fetchGenome = async ({
   genomeSlug,
   reduxDispatch
@@ -298,7 +398,16 @@ const fetchGenome = async ({
     fetchGenomeSummary.initiate(genomeSlug, { subscribe: false })
   );
   const result = await promise;
-  return result.data;
+
+  if (result.data) {
+    return result.data;
+  }
+
+  if (isGenomeNotFoundError(result.error)) {
+    return null;
+  }
+
+  throw new Error(`Failed to fetch genome summary for "${genomeSlug}"`);
 };
 
 type CheckFocusObjectParams = {
@@ -323,6 +432,54 @@ const checkFocusObject = async (
   }
 
   return { isMissingFocusObject: true };
+};
+
+const validateFocusObject = async (
+  params: CheckFocusObjectParams & {
+    focusObjectUrlString: string | null;
+    previousState: State;
+  }
+) => {
+  const reusableResult = getReusableFocusObjectValidationResult(params);
+
+  if (reusableResult) {
+    return reusableResult;
+  }
+
+  return checkFocusObject(params);
+};
+
+const getReusableFocusObjectValidationResult = ({
+  genomeId,
+  parsedFocusObjectId,
+  focusObjectUrlString,
+  previousState
+}: CheckFocusObjectParams & {
+  focusObjectUrlString: string | null;
+  previousState: State;
+}): { isMissingFocusObject: boolean } | null => {
+  const previousParsedFocusObjectId = previousState.parsedFocusObjectId;
+
+  if (
+    previousState.isValidating ||
+    previousState.genome?.genome_id !== genomeId ||
+    previousState.focusObjectIdInUrl !== focusObjectUrlString ||
+    !previousParsedFocusObjectId
+  ) {
+    return null;
+  }
+
+  if (
+    previousParsedFocusObjectId.genomeId !== parsedFocusObjectId.genomeId ||
+    previousParsedFocusObjectId.type !== parsedFocusObjectId.type ||
+    previousParsedFocusObjectId.objectId !== parsedFocusObjectId.objectId
+  ) {
+    return null;
+  }
+
+  return {
+    isMissingFocusObject: previousState.isMissingFocusObject
+  };
 };
 
 const checkFocusGene = async (params: CheckFocusObjectParams) => {
@@ -438,18 +595,28 @@ const checkFocusVariant = async (params: CheckFocusObjectParams) => {
 const checkLocationFromUrl = async ({
   genomeId,
   location,
-  reduxDispatch
+  reduxDispatch,
+  previousState
 }: {
   genomeId: string;
   location: ChrLocation;
   reduxDispatch: AppDispatch;
+  previousState?: State;
 }) => {
   const [regionName, start, end] = location;
-  const region = await fetchRegion({
+  const reusableRegion = getReusableLocationRegion({
     genomeId,
     regionName,
-    reduxDispatch
+    previousState
   });
+  const region =
+    reusableRegion === undefined
+      ? await fetchRegion({
+          genomeId,
+          regionName,
+          reduxDispatch
+        })
+      : reusableRegion;
 
   return {
     isInvalidLocation:
@@ -458,8 +625,31 @@ const checkLocationFromUrl = async ({
       end < 1 ||
       start >= end ||
       start > region.length ||
-      end > region.length
+      end > region.length,
+    locationRegion: region
   };
+};
+
+const getReusableLocationRegion = ({
+  genomeId,
+  regionName,
+  previousState
+}: {
+  genomeId: string;
+  regionName: string;
+  previousState?: State;
+}): RegionInResponse | null | undefined => {
+  if (
+    !previousState ||
+    previousState.isValidating ||
+    previousState.genome?.genome_id !== genomeId ||
+    previousState.isMalformedLocation ||
+    previousState.parsedLocation?.[0] !== regionName
+  ) {
+    return undefined;
+  }
+
+  return previousState.locationRegion;
 };
 
 const fetchRegion = async ({
@@ -507,33 +697,48 @@ const stateReducer = (state: State, action: Action): State => {
   }
 };
 
-const validationAction$: Observable<Action> = input$.pipe(
-  map(parseInputParams),
-  switchMap((input) => {
-    const startValidatingAction = {
-      type: 'start-validating',
-      payload: input
-    } as StartValidatingAction;
-
-    return concat(
-      of(startValidatingAction),
-      from(runValidation(input)).pipe(
-        catchError(() =>
-          of({
-            type: 'validation-failed',
-            payload: input
-          } as ValidationFailedAction)
-        )
-      )
-    ).pipe(takeUntil(resetAction$));
-  })
+const event$: Observable<Event> = merge(
+  input$.pipe(
+    map(parseInputParams),
+    map(
+      (payload) =>
+        ({
+          type: 'input',
+          payload
+        }) as InputEvent
+    )
+  ),
+  resetAction$
 );
 
-const action$: Observable<Action> = merge(validationAction$, resetAction$);
-
-const state$ = action$.pipe(
+const state$ = event$.pipe(
   startWith({ type: 'reset' } as const),
-  scan(stateReducer, initialState),
+  switchScan((state, event) => {
+    if (event.type === 'reset') {
+      return of(stateReducer(state, event));
+    }
+
+    const startValidatingAction = {
+      type: 'start-validating',
+      payload: event.payload
+    } as StartValidatingAction;
+    const validatingState = stateReducer(state, startValidatingAction);
+
+    return concat(
+      of(validatingState),
+      defer(() => from(runValidation(event.payload, state))).pipe(
+        map((action) => stateReducer(validatingState, action)),
+        catchError(() =>
+          of(
+            stateReducer(validatingState, {
+              type: 'validation-failed',
+              payload: event.payload
+            } as ValidationFailedAction)
+          )
+        )
+      )
+    );
+  }, initialState),
   shareReplay(1)
 );
 
