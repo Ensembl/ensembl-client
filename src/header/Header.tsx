@@ -28,6 +28,8 @@ import HomeIcon from 'static/icons/icon_home.svg';
 
 import styles from './Header.module.css';
 
+const linkToHelpArticleAboutArchives = '/help/articles/archives';
+
 export const Copyright = () => (
   <div className={styles.copyright}>
     <a href="https://www.ebi.ac.uk" target="_blank" rel="noopener noreferrer">
@@ -60,6 +62,9 @@ export const Topbar = () => (
     </div>
     <div className={styles.topbarRight}>
       <span>Genome data & annotation</span>
+      <Link to={linkToHelpArticleAboutArchives} className={styles.contactUs}>
+        Archives
+      </Link>
       <Link to={urlFor.contactUs()} className={styles.contactUs}>
         Contact us
       </Link>
