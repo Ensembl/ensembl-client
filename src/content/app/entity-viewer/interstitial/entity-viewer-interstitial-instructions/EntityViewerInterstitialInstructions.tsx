@@ -44,7 +44,7 @@ const EntityViewerInterstitialInstructions = () => {
           <Step count={1} label="Find and add a genome">
             <div className={styles.description}>
               <SpeciesSelectorIcon />
-              <div className={styles.iconLabel}>Genome Selector</div>
+              <div className={styles.iconLabel}>Genome selector</div>
             </div>
           </Step>
         </div>
@@ -74,7 +74,7 @@ const EntityViewerInterstitialInstructions = () => {
           className={styles.speciesSelectorButton}
           onClick={goToSpeciesSelector}
         >
-          Go to Genome Selector
+          Go to Genome selector
         </PrimaryButton>
       </div>
     </section>

@@ -48,7 +48,7 @@ const BrowserInterstitialInstructions = () => {
           <Step count={1} label="Find and add a genome">
             <div className={styles.description}>
               <SpeciesSelectorIcon />
-              <div className={styles.iconLabel}>Genome Selector</div>
+              <div className={styles.iconLabel}>Genome selector</div>
             </div>
           </Step>
         </div>
@@ -57,7 +57,7 @@ const BrowserInterstitialInstructions = () => {
           <Step count={2} label="Return to this app">
             <div className={styles.description}>
               <GenomeBrowserIcon />
-              <div className={styles.iconLabel}>Genome Browser</div>
+              <div className={styles.iconLabel}>Genome browser</div>
             </div>
           </Step>
         </div>
@@ -79,7 +79,7 @@ const BrowserInterstitialInstructions = () => {
           className={styles.speciesSelectorButton}
           onClick={goToSpeciesSelector}
         >
-          Go to Genome Selector
+          Go to Genome selector
         </PrimaryButton>
       </div>
     </section>
