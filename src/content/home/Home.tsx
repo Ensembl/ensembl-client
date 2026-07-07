@@ -78,7 +78,7 @@ const Home = () => {
                   className={styles.button}
                   onClick={() => handleButtonClick('species-selector')}
                 >
-                  <span>Species selector</span>
+                  <span>Genome selector</span>
                   <div className={styles.appIconWrapper}>
                     <SpeciesSelectorIcon />
                   </div>

@@ -68,8 +68,8 @@ const SearchHelp = () => {
         suggest
       </p>
       <ul>
-        <li>only search for a species</li>
-        <li>use a full name where possible</li>
+        <li>only search for a genome</li>
+        <li>use the full name of a species where possible</li>
         <li>try a different name or identifier</li>
       </ul>
     </div>

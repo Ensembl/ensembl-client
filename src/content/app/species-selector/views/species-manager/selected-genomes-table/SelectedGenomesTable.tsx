@@ -147,7 +147,7 @@ const SelectedGenomesTable = (props: {
   );
 
   if (!allSelectedGenomes.length) {
-    return <div>You have not selected any species</div>;
+    return <div>You have not selected any genomes</div>;
   }
 
   const getLinkToSpeciesPage = (species: CommittedItem) => {
@@ -234,7 +234,7 @@ const SelectedGenomesTable = (props: {
     <Table stickyHeader={true} className={styles.table}>
       <thead>
         <tr>
-          <ColumnHead>Species home page</ColumnHead>
+          <ColumnHead>Genome home page</ColumnHead>
           <ColumnHead>Common name</ColumnHead>
           <ColumnHead>Scientific name</ColumnHead>
           <ColumnHead>Type</ColumnHead>
@@ -410,6 +410,6 @@ const ConfirmDeletion = (props: {
 };
 
 const removalWarning =
-  'Any configuration of views for this species will be lost if you remove it - do you wish to continue?';
+  'Any configuration of views for this genome will be lost if you remove it - do you wish to continue?';
 
 export default SelectedGenomesTable;

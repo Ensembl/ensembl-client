@@ -43,7 +43,7 @@ const SpeciesSearchResultsAppBar = () => {
 
   return (
     <AppBar
-      topLeft={<AppName>Species Selector</AppName>}
+      topLeft={<AppName>Genome selector</AppName>}
       mainContent={mainContent}
       aside={<HelpPopupButton slug="species-selector-intro" />}
     />

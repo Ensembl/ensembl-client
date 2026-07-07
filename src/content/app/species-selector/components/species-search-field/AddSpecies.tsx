@@ -34,7 +34,7 @@ const AddSpecies = (props: Props) => {
 
   return (
     <div className={styles.grid}>
-      <label className={styles.label}>Find a species</label>
+      <label className={styles.label}>Find a genome</label>
       <ShadedInput
         size="large"
         className={styles.input}

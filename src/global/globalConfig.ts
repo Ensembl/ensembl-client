@@ -34,8 +34,8 @@ export type ScrollPosition = {
 
 export enum AppName {
   GENOME_BROWSER = 'Genome browser',
-  SPECIES_SELECTOR = 'Species selector',
-  SPECIES_PAGE = 'Species page',
+  SPECIES_SELECTOR = 'Genome selector',
+  SPECIES_PAGE = 'Genome page',
   ENTITY_VIEWER = 'Feature explorer',
   REGULATORY_ACTIVITY_VIEWER = 'Regulatory activity viewer',
   ALIGNMENTS_VIEWER = 'Alignments viewer',

@@ -84,7 +84,7 @@ const renderMainView = () => {
   };
 
   render(
-    <MemoryRouter initialEntries={['/species-selector']}>
+    <MemoryRouter initialEntries={['/genome-selector']}>
       <SpeciesSelectorMainView />
       <RouteChecker
         setLocation={(location) => {

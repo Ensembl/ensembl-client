@@ -74,7 +74,7 @@ const EntityViewerInterstitialInstructions = () => {
           className={styles.speciesSelectorButton}
           onClick={goToSpeciesSelector}
         >
-          Go to Species Selector
+          Go to Genome Selector
         </PrimaryButton>
       </div>
     </section>
