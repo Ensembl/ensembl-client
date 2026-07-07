@@ -43,7 +43,7 @@ const browserSidebarModals: Record<string, ReturnType<typeof lazy>> = {
 };
 
 export const browserSidebarModalTitles: { [key: string]: string } = {
-  [BrowserSidebarModalView.SEARCH]: 'Search this species',
+  [BrowserSidebarModalView.SEARCH]: 'Search this genome',
   [BrowserSidebarModalView.BOOKMARKS]: 'Previously viewed',
   [BrowserSidebarModalView.SHARE]: 'Share',
   [BrowserSidebarModalView.DOWNLOAD]: 'Download'

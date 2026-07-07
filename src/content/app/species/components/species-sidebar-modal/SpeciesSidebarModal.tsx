@@ -38,7 +38,7 @@ const speciesSidebarModals: Record<string, ReturnType<typeof lazy>> = {
 };
 
 export const speciesSidebarModalTitles: { [key: string]: string } = {
-  [SpeciesSidebarModalView.SEARCH]: 'Search this species',
+  [SpeciesSidebarModalView.SEARCH]: 'Search this genome',
   [SpeciesSidebarModalView.BOOKMARKS]: 'Previously viewed',
   [SpeciesSidebarModalView.SHARE]: 'Share',
   [SpeciesSidebarModalView.DOWNLOAD]: 'Download'

@@ -53,12 +53,12 @@ type SpeciesSelectorSearchParams = {
 };
 
 export const speciesPage = (params: SpeciesPageUrlParams) => {
-  const speciesPageRootPath = '/species';
+  const speciesPageRootPath = '/genome';
 
   return `${speciesPageRootPath}/${params.genomeId}`;
 };
 
-const speciesSelectorPath = '/species-selector';
+const speciesSelectorPath = '/genome-selector';
 
 export const speciesSelector = () => speciesSelectorPath;
 
@@ -260,7 +260,7 @@ export const blastSubmission = (submissionId: string) =>
 
 export const vepForm = () => '/vep';
 
-export const vepSpeciesSelector = () => '/vep/species-selector';
+export const vepSpeciesSelector = () => '/vep/genome-selector';
 
 export const vepUnviewedSubmissionsList = () => '/vep/unviewed-submissions';
 

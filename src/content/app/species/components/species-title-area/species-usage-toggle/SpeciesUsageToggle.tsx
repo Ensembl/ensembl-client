@@ -77,7 +77,7 @@ const SpeciesUsageToggle = () => {
   );
 };
 
-const helpMessage = `When 'Use' is selected, this species will appear in the species list in all apps.
-'Don't use' will disable this species in other apps, but will not remove it from your list in Species selector.`;
+const helpMessage = `When 'Use' is selected, this genome will appear in the genomes list in all apps.
+'Don't use' will disable this genome in other apps, but will not remove it from your list in Genome selector.`;
 
 export default SpeciesUsageToggle;

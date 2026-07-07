@@ -41,10 +41,10 @@ const EntityViewerInterstitialInstructions = () => {
     <section className={styles.instructionsPanel}>
       <div className={styles.instructionsWrapper}>
         <div className={styles.stepWrapper}>
-          <Step count={1} label="Find and add a species">
+          <Step count={1} label="Find and add a genome">
             <div className={styles.description}>
               <SpeciesSelectorIcon />
-              <div className={styles.iconLabel}>Species Selector</div>
+              <div className={styles.iconLabel}>Genome Selector</div>
             </div>
           </Step>
         </div>

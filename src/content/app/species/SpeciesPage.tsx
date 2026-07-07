@@ -40,8 +40,8 @@ const LazylyLoadedSpeciesPageContent = lazy(
   () => import('./SpeciesPageContent')
 );
 
-const defaultTitle = 'Species page — Ensembl';
-const defaultDescription = 'Species home page';
+const defaultTitle = 'Genome page — Ensembl';
+const defaultDescription = 'Genome home page';
 
 const buildPageTitle = (genomeInfo: BriefGenomeSummary) => {
   const speciesName = getDisplayName(genomeInfo);
@@ -68,7 +68,7 @@ const buildPageDescription = (genomeInfo: BriefGenomeSummary) => {
 
 const SpeciesPage = () => {
   const hasMounted = useHasMounted();
-  const params = useUrlParams<'genomeId'>(['/species/:genomeId']);
+  const params = useUrlParams<'genomeId'>(['/genome/:genomeId']);
   const dispatch = useAppDispatch();
   const { genomeId: genomeIdInUrl } = params;
 
@@ -101,7 +101,7 @@ export const serverFetch: ServerFetch = async (params) => {
   const { path, store } = params;
   const dispatch: AppDispatch = store.dispatch;
   const { genomeId: genomeIdFromUrl } = getPathParameters<'genomeId'>(
-    '/species/:genomeId/',
+    '/genome/:genomeId/',
     path
   ) as { genomeId: string };
 

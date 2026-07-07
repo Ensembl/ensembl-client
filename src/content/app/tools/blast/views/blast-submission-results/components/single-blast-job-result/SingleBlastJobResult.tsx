@@ -138,7 +138,7 @@ const hitsTableColumns: DataTableColumns = [
   {
     columnId: 'genomic_location',
     title: 'Genomic location',
-    helpText: <span>Location of the hit in this species</span>,
+    helpText: <span>Location of the hit in this genome</span>,
     isSortable: true,
     renderer: (params) => {
       const cellData = params.cellData as TableCellStructuredData;
@@ -542,7 +542,7 @@ const HitsTable = (props: HitsTableProps) => {
         tableColumns[genomicLocationColumnIndex].downloadRenderer,
       sortFn: tableColumns[genomicLocationColumnIndex].sortFn,
       helpText: (
-        <span>Proteins in this species that contain sequence similarity</span>
+        <span>Proteins in this genome that contain sequence similarity</span>
       )
     };
   } else if (blastDatabase === 'cdna') {
@@ -556,7 +556,7 @@ const HitsTable = (props: HitsTableProps) => {
       sortFn: tableColumns[genomicLocationColumnIndex].sortFn,
       helpText: (
         <span>
-          Transcripts in this species that contain sequence similarity
+          Transcripts in this genome that contain sequence similarity
         </span>
       )
     };

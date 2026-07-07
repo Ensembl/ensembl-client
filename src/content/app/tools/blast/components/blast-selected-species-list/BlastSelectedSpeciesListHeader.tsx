@@ -53,7 +53,7 @@ const BlastSelectedSpeciesListHeader = (props: Props) => {
         <span className={styles.title}>Blast against</span>
         <span className={styles.speciesCounter}>{selectedSpeciesCount}</span>
         <span className={styles.maxSpecies}>
-          of {maxSpeciesCount} species (max)
+          of {maxSpeciesCount} genomes (max)
         </span>
       </div>
       <AddButton
@@ -61,7 +61,7 @@ const BlastSelectedSpeciesListHeader = (props: Props) => {
         className={styles.addButton}
         onClick={onSpeciesAdd}
       >
-        Add a species
+        Add a genome
       </AddButton>
     </div>
   );

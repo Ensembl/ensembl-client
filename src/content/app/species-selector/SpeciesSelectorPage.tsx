@@ -26,8 +26,8 @@ import type { ServerFetch } from 'src/routes/routesConfig';
 
 const LazilyLoadedSpeciesSelector = lazy(() => import('./SpeciesSelector'));
 
-const pageTitle = 'Species selector — Ensembl';
-const pageDescription = 'Select one or more species to start using Ensembl';
+const pageTitle = 'Genome selector — Ensembl';
+const pageDescription = 'Select one or more genomes to start using Ensembl';
 
 const SpeciesSelectorPage = () => {
   const hasMounted = useHasMounted();
@@ -40,7 +40,7 @@ const SpeciesSelectorPage = () => {
         description: pageDescription
       })
     );
-  }, []);
+  }, [dispatch]);
 
   return hasMounted ? <LazilyLoadedSpeciesSelector /> : null;
 };

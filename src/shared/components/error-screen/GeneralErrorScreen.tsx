@@ -84,7 +84,7 @@ const GeneralErrorScreen = () => {
             <div className={styles.resetOption}>
               <div>Unfortunately we need to reset everything</div>
               <div>
-                All your species, configuration of views &amp; history will be
+                All your genomes, configuration of views &amp; history will be
                 lost
               </div>
               <PrimaryButton onClick={resetSite}>Reset the site</PrimaryButton>

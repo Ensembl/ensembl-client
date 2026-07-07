@@ -168,7 +168,7 @@ const TopBar = (props: { isSidebarOpen: boolean }) => {
           onClick={returnToSpeciesSelector}
           className={styles.addSpeciesButton}
         >
-          Add a species
+          Add a genome
         </AddButton>
         <CloseButtonWithLabel
           className={styles.closeButton}

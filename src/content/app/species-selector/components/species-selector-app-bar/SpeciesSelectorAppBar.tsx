@@ -36,7 +36,7 @@ import type { CommittedItem } from 'src/content/app/species-selector/types/commi
 import styles from './SpeciesSelectorAppBar.module.css';
 
 export const placeholderMessage =
-  'Find and add your favourite species to use them across the site';
+  'Find and add your favourite genomes to use them across the site';
 
 export const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
@@ -57,7 +57,7 @@ export const SpeciesSelectorAppBar = (props: { isSearchMode?: boolean }) => {
 
   return (
     <AppBar
-      topLeft={<AppName>Species Selector</AppName>}
+      topLeft={<AppName>Genome Selector</AppName>}
       topRight={<SpeciesManagerIndicator />}
       mainContent={mainContent}
       aside={<HelpPopupButton slug="species-selector-intro" />}
@@ -85,7 +85,7 @@ const AppBarMainContent = (props: {
         {props.isSearchMode && <CloseButtonWithLabel onClick={onSearchClose} />}
         {!props.isSearchMode && (
           <span className={styles.selectTabMessage}>
-            Select a tab to see a Species home page
+            Select a tab to see a Genome home page
           </span>
         )}
       </div>
