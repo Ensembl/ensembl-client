@@ -18,6 +18,8 @@ import { MemoryRouter, type Location } from 'react-router-dom';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import SpeciesSelectorMainView from './SpeciesSelectorMainView';
 import RouteChecker from 'tests/router/RouteChecker';
 
@@ -141,7 +143,7 @@ describe('<SpeciesSelectorMainView />', () => {
     expect(routerInfo.location?.pathname).toBe('/search/results');
     expect(routerInfo.location?.search).toBe('?query=BRCA2');
     expect(routerInfo.location?.state).toEqual({
-      returnTo: '/species-selector'
+      returnTo: urlFor.speciesSelector()
     });
   });
 });
