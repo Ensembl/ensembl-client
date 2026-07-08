@@ -57,7 +57,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
       topLeft={<AppName>{AppNameText.SPECIES_SELECTOR}</AppName>}
       topRight={<SpeciesManagerIndicator />}
       mainContent={tabsSlider}
-      aside={<HelpPopupButton slug="species-homepage" />}
+      aside={<HelpPopupButton slug="genome-homepage" />}
     />
   );
 };

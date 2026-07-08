@@ -60,7 +60,7 @@ export const SpeciesSelectorAppBar = (props: { isSearchMode?: boolean }) => {
       topLeft={<AppName>Genome selector</AppName>}
       topRight={<SpeciesManagerIndicator />}
       mainContent={mainContent}
-      aside={<HelpPopupButton slug="species-selector-intro" />}
+      aside={<HelpPopupButton slug="genome-selector-intro" />}
     />
   );
 };

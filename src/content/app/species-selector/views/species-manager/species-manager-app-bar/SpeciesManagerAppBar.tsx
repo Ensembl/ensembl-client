@@ -43,7 +43,7 @@ export const SpeciesManagerAppBar = () => {
       topLeft={appName}
       topRight={<SpeciesManagerIndicator mode="close" onClose={onClose} />}
       mainContent={mainContent}
-      aside={<HelpPopupButton slug="species-selector-intro" />}
+      aside={<HelpPopupButton slug="genome-selector-intro" />}
     />
   );
 };
