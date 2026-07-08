@@ -56,11 +56,11 @@ const BlastForm = () => {
 
   useEffect(() => {
     dispatch(setBlastView('blast-form'));
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(setBlastView('blast-form'));
-  }, [modalView]);
+  }, [dispatch, modalView]);
 
   if (!config) {
     return null;
@@ -174,7 +174,7 @@ const BlastFormStepToggle = () => {
         className={speciesButtonClass}
         onClick={onSwitchToSpecies}
       >
-        Select species
+        Select genomes
       </SecondaryButton>
     </div>
   );

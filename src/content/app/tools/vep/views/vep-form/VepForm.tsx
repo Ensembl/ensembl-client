@@ -45,7 +45,7 @@ const VepForm = () => {
     }
     dispatch(initialiseVepForm());
     isInitialisedRef.current = true;
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className={styles.outerContainer}>
@@ -57,7 +57,7 @@ const VepForm = () => {
 
         <FormSection>
           <div className={styles.topFormSectionRegularGrid}>
-            <div className={styles.topFormSectionName}>Species</div>
+            <div className={styles.topFormSectionName}>Genome</div>
             <VepFormSpecies className={styles.topFormSectionMain} />
             <VepSpeciesSelectorNavButton
               className={styles.topFormSectionToggle}

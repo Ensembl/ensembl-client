@@ -27,7 +27,7 @@ import SidebarSearch from 'src/shared/components/sidebar-search/SidebarSearch';
 const SpeciesSidebarSearch = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const { genomeId: genomeIdForUrl } =
-    useUrlParams<'genomeId'>('/species/:genomeId');
+    useUrlParams<'genomeId'>('/genome/:genomeId');
   const dispatch = useAppDispatch();
 
   const onSearchMatchNavigation = () => {
