@@ -58,7 +58,7 @@ export const SpeciesSearchField = (props: Props) => {
 const placeholderText = 'Common or scientific name...';
 
 const helpText = `
-Search for a genome using species common name, scientific name, assembly ID or GCA.
+Search for a genome using species common name, scientific name, taxon id, or assembly id.
 If no results are shown, please try a different spelling or attribute
 `;
 
