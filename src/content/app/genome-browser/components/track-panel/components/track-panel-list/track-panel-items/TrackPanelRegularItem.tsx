@@ -39,12 +39,10 @@ import styles from './TrackPanelItem.module.css';
 
 type Props = GenomicTrack & {
   genomeId: string;
-  category: string;
 };
 
 const TrackPanelRegularItem = (props: Props) => {
   const { genomeId, track_id } = props;
-  const showColourMarker = props.category === 'genes-transcripts';
   const isTrackVisible = useAppSelector((state: RootState) =>
     getTrackVisibility(state, track_id)
   );
@@ -80,13 +78,6 @@ const TrackPanelRegularItem = (props: Props) => {
     );
   };
 
-  const colourMarker = (
-    <span
-      className={styles.colourMarker}
-      style={{ backgroundColor: '#0099FF' }}
-    />
-  );
-
   return (
     <SimpleTrackPanelItemLayout
       visibilityStatus={isTrackVisible ? Status.SELECTED : Status.UNSELECTED}
@@ -94,7 +85,6 @@ const TrackPanelRegularItem = (props: Props) => {
       onShowMore={onShowMore}
     >
       <div className={styles.label}>
-        {showColourMarker ? colourMarker : null}
         <span className={styles.labelText}>{props.label}</span>
         {props.additional_info ? (
           <span className={styles.labelTextSecondary}>

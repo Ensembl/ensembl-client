@@ -39,12 +39,6 @@
   font-size: 11px;
 }
 
-.colourMarker {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-}
-
 .itemsCount {
   margin-right: 0.4rem;
 }

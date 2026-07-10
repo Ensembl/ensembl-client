@@ -88,10 +88,6 @@ const TrackPanelTranscript = (props: Props) => {
       onShowMore={onShowMore}
     >
       <div className={styles.label}>
-        <span
-          className={styles.colourMarker}
-          style={{ backgroundColor: '#0099FF' }}
-        />
         <span className={styles.labelText}>{currentTranscriptId}</span>
         {secondaryLabel}
       </div>
