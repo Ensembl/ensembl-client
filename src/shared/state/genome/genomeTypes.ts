@@ -66,11 +66,11 @@ export type BriefGenomeSummary = Pick<
   | 'type'
   | 'release'
   | 'is_reference'
-  | 'number_of_genomes_in_group'
 > & {
   is_suppressed: boolean;
   suppression_details: string | null;
   assembly: Pick<GenomeInfo['assembly'], 'name' | 'accession_id'>;
+  latest_genome: Omit<BriefGenomeSummary, 'latest_genome'> | null;
 };
 
 export enum GenomeKaryotypeItemType {

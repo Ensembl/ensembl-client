@@ -14,62 +14,26 @@
  * limitations under the License.
  */
 
+<<<<<<< HEAD
 import { StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router';
+=======
+import { isUnsupportedBrowser } from 'src/shared/helpers/browserSupport';
+import { checkGenomes } from './checkGenomes';
+>>>>>>> 978280bf (Check locally stored genomes when the app initialises, and update them if needed)
 
-import ensureBrowserSupport from 'src/shared/helpers/browserSupport';
-import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
+const main = async () => {
+  if (isUnsupportedBrowser()) {
+    window.location.replace('/unsupported-browser');
+    return;
+  }
 
-import { Provider as IndexedDBProvider } from 'src/shared/contexts/IndexedDBContext';
-import configureStore from './store';
+  // run checks for genomes
+  await checkGenomes();
 
-// NOTE: importing global CSS before any of the components here is actually significant,
-// because the bundler (at least webpack in dev mode) will load modules in the order they are declared,
-// and since the global styles define the order of CSS layers (see main.css),
-// they have to be registered in the browser before any other CSS
-import './styles/globalStyles';
+  await import('./initialiseClient');
+};
 
-import Html from 'src/content/html/Html';
-import Root from './root/Root';
-
-import { registerSW } from './registerServiceWorker';
-
-import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
-
-ensureBrowserSupport();
-
-const store = configureStore();
-
-const assetManifest = (globalThis as any).assetManifest || {};
-const serverSideReduxState = (globalThis as any).__PRELOADED_STATE__ ?? {};
-const serverSideConfig: Partial<TransferredClientConfig> =
-  (globalThis as any)[CONFIG_FIELD_ON_WINDOW] ?? {};
-
-hydrateRoot(
-  document,
-  <StrictMode>
-    <IndexedDBProvider>
-      <Provider store={store}>
-        <BrowserRouter>
-          <Html
-            assets={assetManifest}
-            serverSideReduxState={serverSideReduxState}
-            serverSideConfig={serverSideConfig}
-          >
-            <Root />
-          </Html>
-        </BrowserRouter>
-      </Provider>
-    </IndexedDBProvider>
-  </StrictMode>
-);
-
-if (serverSideConfig.environment?.buildEnvironment === 'production') {
-  registerSW();
-}
-
-// TODO: investigate react-refresh with react-refresh-webpack-plugin
-// (see https://github.com/pmmmwh/react-refresh-webpack-plugin
-// and this StackOverflow discussion: https://stackoverflow.com/a/71914061/3925302)
+main();
