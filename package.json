@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@ensembl/ensembl-elements-common": "0.0.5",
-    "@ensembl/ensembl-genome-browser": "0.6.12",
+    "@ensembl/ensembl-genome-browser": "0.6.13",
     "@ensembl/ensembl-structural-variants": "0.0.11",
     "@reduxjs/toolkit": "2.12.0",
     "@sentry/browser": "10.58.0",
