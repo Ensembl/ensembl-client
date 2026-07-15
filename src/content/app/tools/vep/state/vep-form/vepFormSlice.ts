@@ -29,6 +29,8 @@ import {
   changeVepSubmissionId
 } from 'src/content/app/tools/vep/services/vepStorageService';
 
+import { cloneFileRestoredFromIndexedDb } from 'src/shared/helpers/indexedDbHelpers';
+
 import { getBrowserTabId } from 'src/global/globalSelectors';
 import {
   getTemporaryVepSubmissionId,
@@ -298,7 +300,9 @@ const prepareRequestPayload = async ({
         `Submission with id ${submissionId} does not exist in browser storage`
       );
     }
-    inputFile = storedSubmission.inputFile as File;
+    inputFile = await cloneFileRestoredFromIndexedDb(
+      storedSubmission.inputFile as File
+    );
   }
 
   return {
