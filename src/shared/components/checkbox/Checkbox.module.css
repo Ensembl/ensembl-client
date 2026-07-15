@@ -6,14 +6,31 @@
     cursor: pointer;
     height: var(--checkbox-side-size, 13px);
     width: var(--checkbox-side-size, 13px);
-    transition: background-color 0.1s ease-in-out;
+    /* transition: background-color 0.1s ease-in-out; */
   }
   
   .checkbox:checked:not(:disabled) {
     background-color: var(--checkbox-checked-background-color, var(--color-green));
   }
+
+  .checkbox:indeterminate:not(:disabled) {
+    --_bg-color: var(--checkbox-background-color, var(--color-white));
+    --_color: var(--checkbox-checked-background-color, var(--color-green));
+    background: linear-gradient(
+      to bottom,
+      var(--_bg-color),
+      var(--_bg-color) 35%,
+      var(--_color) 35%,
+      var(--_color) 65%,
+      var(--_bg-color) 65%,
+      var(--_bg-color)
+    );
+    background-repeat: no-repeat;
+    background-size: calc(100% - 4px) 100%;
+    background-position: center;
+  }
   
-  .checkbox:not(:checked) {
+  .checkbox:not(:checked, :indeterminate, :disabled) {
     background-color: var(--checkbox-unchecked-background-color, var(--color-white));
   }
   

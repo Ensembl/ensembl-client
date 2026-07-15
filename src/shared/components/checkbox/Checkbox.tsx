@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { useLayoutEffect, useRef, type ComponentProps } from 'react';
 import classNames from 'classnames';
-import type { ComponentProps } from 'react';
 
 import styles from './Checkbox.module.css';
 
@@ -27,14 +27,57 @@ import styles from './Checkbox.module.css';
  * please use the CheckboxWithLabel component.
  */
 
-type Props = Omit<ComponentProps<'input'>, 'type'>; // the type of the input used in this comoponent is always 'checkbox'
+type CheckedState = boolean | 'indeterminate';
+
+// The type of the input used in this comoponent is always 'checkbox';
+// so the parent should have no reason to pass the "type" property to the component
+type Props = Omit<ComponentProps<'input'>, 'type' | 'checked'> & {
+  checked?: CheckedState;
+};
 
 const Checkbox = (props: Props) => {
-  const { className: classNameFromProps, ...otherProps } = props;
+  const {
+    className: classNameFromProps,
+    checked,
+    ref: refFromProps,
+    ...otherProps
+  } = props;
+
+  const localRef = useRef<HTMLInputElement>(null);
+
+  const setRef = (element: HTMLInputElement) => {
+    localRef.current = element;
+    let parentCleanup: void | (() => void);
+    if (typeof refFromProps === 'function') {
+      parentCleanup = refFromProps(element);
+    } else if (refFromProps) {
+      refFromProps.current = element;
+    }
+    return () => {
+      localRef.current = null;
+      parentCleanup?.();
+    };
+  };
+
+  useLayoutEffect(() => {
+    if (localRef.current) {
+      localRef.current.indeterminate = checked === 'indeterminate';
+    }
+  }, [checked]);
 
   const checkboxClasses = classNames(styles.checkbox, classNameFromProps);
 
-  return <input {...otherProps} type="checkbox" className={checkboxClasses} />;
+  const isChecked = checked === undefined ? undefined : checked === true;
+
+  return (
+    <input
+      {...otherProps}
+      type="checkbox"
+      className={checkboxClasses}
+      ref={setRef}
+      checked={isChecked}
+    />
+  );
 };
 
 export default Checkbox;

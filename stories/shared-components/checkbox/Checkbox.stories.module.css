@@ -17,6 +17,22 @@
   background-color: var(--color-black);
 }
 
+.indeterminateCheckboxStory {
+  label {
+    display: inline-flex;
+    column-gap: 1rem;
+    align-items: center;
+  }
+
+  .subordinateCheckboxes {
+    padding-left: 1rem;
+    padding-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+
 .controlledCheckboxesStory {
   display: flex;
   flex-direction: column;

@@ -30,6 +30,58 @@ const CheckboxesWithoutLabel = () => (
   </div>
 );
 
+const IndeterminateCheckbox = () => {
+  const [firstCheckboxChecked, setFirstCheckboxChecked] = useState(false);
+  const [secondCheckboxChecked, setSecondCheckboxChecked] = useState(false);
+
+  const masterCheckboxCheckedState =
+    firstCheckboxChecked && secondCheckboxChecked
+      ? true
+      : [firstCheckboxChecked, secondCheckboxChecked].some(
+            (isChecked) => isChecked
+          )
+        ? 'indeterminate'
+        : false;
+
+  const onMasterCheckboxChange = () => {
+    if (firstCheckboxChecked && secondCheckboxChecked) {
+      setFirstCheckboxChecked(false);
+      setSecondCheckboxChecked(false);
+    } else {
+      setFirstCheckboxChecked(true);
+      setSecondCheckboxChecked(true);
+    }
+  };
+
+  return (
+    <div className={styles.indeterminateCheckboxStory}>
+      <label>
+        <Checkbox
+          onChange={onMasterCheckboxChange}
+          checked={masterCheckboxCheckedState}
+        />
+        Select all
+      </label>
+      <div className={styles.subordinateCheckboxes}>
+        <label>
+          First
+          <Checkbox
+            checked={firstCheckboxChecked}
+            onChange={() => setFirstCheckboxChecked(!firstCheckboxChecked)}
+          />
+        </label>
+        <label>
+          Second
+          <Checkbox
+            checked={secondCheckboxChecked}
+            onChange={() => setSecondCheckboxChecked(!secondCheckboxChecked)}
+          />
+        </label>
+      </div>
+    </div>
+  );
+};
+
 const ControlledCheckboxes = () => {
   const [firstChecked, setFirtsChecked] = useState(false);
   const [secondChecked, setSecondChecked] = useState(false);
@@ -67,6 +119,11 @@ const ControlledCheckboxes = () => {
 export const DefaultCheckboxStory = {
   name: 'default',
   render: () => <CheckboxesWithoutLabel />
+};
+
+export const IndeterminateCheckboxStory = {
+  name: 'indeterminate checkbox',
+  render: () => <IndeterminateCheckbox />
 };
 
 export const ControlledCheckboxesStory = {
