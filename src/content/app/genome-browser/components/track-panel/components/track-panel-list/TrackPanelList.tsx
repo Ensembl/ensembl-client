@@ -43,11 +43,10 @@ import {
   AccordionItemPanel
 } from 'src/shared/components/accordion';
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+import TrackPanelLocationNavigation from './track-panel-items/TrackPanelLocationNavigation';
 import TrackPanelVariantGroupLegend from './track-panel-items/TrackPanelVariantGroupLegend';
 import TrackPanelRegulationLegend from './track-panel-items/TrackPanelRegulationLegend';
 import SearchButton from 'src/shared/components/search-button/SearchButton';
-
-import ResetIcon from 'static/icons/icon_reset.svg';
 
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type {
@@ -74,10 +73,6 @@ export const TrackPanelList = () => {
     dispatch(openBrowserSidebarModal(BrowserSidebarModalView.SEARCH));
   };
 
-  const openNavigateModal = () => {
-    dispatch(openBrowserSidebarModal(BrowserSidebarModalView.NAVIGATE));
-  };
-
   const currentTrackCategories = genomeTrackCategories?.filter(
     (category: GenomeTrackCategory) => category.type === selectedTrackPanelTab
   );
@@ -92,10 +87,6 @@ export const TrackPanelList = () => {
       <FocusObject focusObject={activeFocusObject} />
       <div className={styles.modalLinksWrapper}>
         <SearchButton onClick={openSearch} label="Find" />
-        <button className={styles.modalLink} onClick={openNavigateModal}>
-          <span>Change location</span>
-          <ResetIcon />
-        </button>
       </div>
 
       <div className={styles.accordionContainer}>
@@ -103,11 +94,16 @@ export const TrackPanelList = () => {
           className={styles.trackPanelAccordion}
           allowMultipleExpanded={true}
           preExpanded={[
+            'genomic_location',
             ...trackCategoryIds,
             'variant_legend',
             'regulation_legend'
           ]}
         >
+          {selectedTrackPanelTab === TrackSet.GENOMIC && (
+            <TrackPanelLocationNavigation />
+          )}
+
           {selectedTrackPanelTab === TrackSet.VARIATION && (
             <TrackPanelVariantGroupLegend
               disabled={trackCategoryIds.length === 0}

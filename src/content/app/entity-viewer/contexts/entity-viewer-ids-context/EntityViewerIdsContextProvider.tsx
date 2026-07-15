@@ -53,8 +53,8 @@ const EntityViewerIdsContextProvider = (props: { children: ReactNode }) => {
   const previousActiveGenomeId = usePrevious(activeGenomeId);
   const previousActiveEntityId = usePrevious(activeEntityId);
   const params = useUrlParams<'genomeId' | 'entityId'>([
-    '/entity-viewer/:genomeId',
-    '/entity-viewer/:genomeId/:entityId'
+    '/feature-explorer/:genomeId',
+    '/feature-explorer/:genomeId/:entityId'
   ]);
   const { genomeId: genomeIdInUrl, entityId: entityIdInUrl } = params;
 

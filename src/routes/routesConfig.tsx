@@ -79,7 +79,7 @@ const routes: RouteConfig[] = [
     serverFetch: genomeBrowserPageServerFetch
   },
   {
-    path: '/species-selector/*',
+    path: '/genome-selector/*',
     element: <SpeciesSelectorPage />,
     serverFetch: speciesSelectorServerFetch
   },
@@ -89,12 +89,12 @@ const routes: RouteConfig[] = [
     serverFetch: searchPageServerFetch
   },
   {
-    path: '/species/:genomeId',
+    path: '/genome/:genomeId',
     element: <SpeciesPage />,
     serverFetch: speciesPageServerFetch
   },
   {
-    path: '/entity-viewer/*',
+    path: '/feature-explorer/*',
     element: <EntityViewerPage />,
     serverFetch: entityViewerServerFetch
   },

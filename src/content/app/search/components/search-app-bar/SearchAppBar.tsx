@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
 import { useNavigate } from 'react-router-dom';
+
+import { useAppSelector } from 'src/store';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -30,6 +33,7 @@ import { PlaceholderMessage } from 'src/content/app/species-selector/components/
 const SearchAppBar = () => {
   const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
   const navigate = useNavigate();
+  const { removeGenome } = useGenomeRemoval();
 
   const showSpeciesPage = (genomeId: string, genomeTag?: string) => {
     navigate(
@@ -48,6 +52,7 @@ const SearchAppBar = () => {
           onClick={() =>
             showSpeciesPage(species.genome_id, species.genome_tag ?? undefined)
           }
+          onRemove={removeGenome}
         />
       ))}
     </SpeciesTabsSlider>

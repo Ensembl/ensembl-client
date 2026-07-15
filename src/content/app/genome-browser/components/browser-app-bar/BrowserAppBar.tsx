@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
 import { AppName as AppNameText } from 'src/global/globalConfig';
 
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
@@ -38,16 +39,21 @@ type BrowserAppBarProps = {
 };
 
 const BrowserAppBar = (props: BrowserAppBarProps) => {
+  const { onSpeciesSelect: speciesSelectHandlerFromProps } = props;
   const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const { removeGenome } = useGenomeRemoval();
 
   const { trackGenomeChanged } = useGenomeBrowserAnalytics();
 
-  const onSpeciesSelect = (species: CommittedItem) => {
-    props.onSpeciesSelect(species.genome_id);
+  const onSpeciesSelect = useCallback(
+    (species: CommittedItem) => {
+      speciesSelectHandlerFromProps(species.genome_id);
 
-    trackGenomeChanged();
-  };
+      trackGenomeChanged();
+    },
+    [speciesSelectHandlerFromProps, trackGenomeChanged]
+  );
 
   const speciesTabs = useMemo(() => {
     return enabledCommittedSpecies.map((species, index) => (
@@ -56,9 +62,10 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
         species={species}
         isActive={species.genome_id === activeGenomeId}
         onClick={() => onSpeciesSelect(species)}
+        onRemove={removeGenome}
       />
     ));
-  }, [enabledCommittedSpecies.length, activeGenomeId]);
+  }, [enabledCommittedSpecies, activeGenomeId, onSpeciesSelect, removeGenome]);
 
   const tabsSlider = <SpeciesTabsSlider>{speciesTabs}</SpeciesTabsSlider>;
 

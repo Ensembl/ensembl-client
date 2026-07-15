@@ -1,6 +1,6 @@
 .browserBar {
   display: grid;
-  grid-template-columns: [browser-reset] auto [feature-summary] 1fr [empty] 20px [location-indicator] auto; /* "empty" column plus two gaps around it should produce 60px of white space */
+  grid-template-columns: [browser-reset] auto [feature-summary] 1fr [nav-buttons] auto [location-indicator] auto;
   column-gap: 20px;
   width: 100%;
   align-items: center;

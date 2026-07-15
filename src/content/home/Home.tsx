@@ -16,6 +16,8 @@
 
 import { Link } from 'react-router-dom';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import useHomeAnalytics from 'src/content/home/hooks/useHomeAnalytics';
 
 import GenomeCounts from 'src/shared/components/genome-counts/GenomeCounts';
@@ -72,11 +74,11 @@ const Home = () => {
             <div className={styles.appListItem}>
               <div className={styles.buttonsContainer}>
                 <Link
-                  to="/species-selector"
+                  to={urlFor.speciesSelector()}
                   className={styles.button}
                   onClick={() => handleButtonClick('species-selector')}
                 >
-                  <span>Species selector</span>
+                  <span>Genome selector</span>
                   <div className={styles.appIconWrapper}>
                     <SpeciesSelectorIcon />
                   </div>
@@ -84,7 +86,7 @@ const Home = () => {
               </div>
               <div className={styles.bottomTextContainer}>
                 <div className={styles.bottomText}>
-                  Create & manage your own species list
+                  Create & manage your own genomes list
                 </div>
               </div>
             </div>
@@ -92,7 +94,7 @@ const Home = () => {
             <div className={styles.appListItem}>
               <div className={styles.buttonsContainer}>
                 <Link
-                  to="/genome-browser"
+                  to={urlFor.browser()}
                   className={styles.button}
                   onClick={() => handleButtonClick('genome-browser')}
                 >
@@ -112,11 +114,11 @@ const Home = () => {
             <div className={styles.appListItem}>
               <div className={styles.buttonsContainer}>
                 <Link
-                  to="/entity-viewer"
+                  to={urlFor.entityViewer()}
                   className={styles.button}
                   onClick={() => handleButtonClick('entity-viewer')}
                 >
-                  <span>Entity viewer</span>
+                  <span>Feature explorer</span>
                   <div className={styles.appIconWrapper}>
                     <EntityViewerIcon />
                   </div>

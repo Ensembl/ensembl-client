@@ -113,7 +113,7 @@ const MainContentTop = (props: {
             onClick={onAddSpeciesClick}
             className={styles.addSpeciesButton}
           >
-            Add a species
+            Add a genome
           </AddButton>
         </div>
         <div className={styles.removeGenomesControls}>

@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+import {
+  useState,
+  type DetailedHTMLProps,
+  type ButtonHTMLAttributes
+} from 'react';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
-import type { DetailedHTMLProps, ButtonHTMLAttributes } from 'react';
 
 import SpeciesName from 'src/shared/components/species-name/SpeciesName';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 import type { Release } from 'src/shared/types/release';
@@ -35,6 +41,7 @@ export type Props = DetailedHTMLProps<
   species: CommittedItem;
   theme: SpeciesLozengeTheme;
   withReleaseInfo?: boolean;
+  onRemove?: () => void;
 };
 
 const SpeciesLozenge = (props: Props) => {
@@ -42,6 +49,7 @@ const SpeciesLozenge = (props: Props) => {
     species,
     theme,
     withReleaseInfo = false,
+    onRemove,
     className: classNameFromProps,
     ...otherProps
   } = props;
@@ -53,12 +61,45 @@ const SpeciesLozenge = (props: Props) => {
   );
 
   return (
-    <button className={componentClasses} {...otherProps}>
-      <div className={styles.inner}>
-        <SpeciesName species={species} />
-      </div>
-      {withReleaseInfo && <ReleasePill release={species.release} />}
-    </button>
+    <div className={componentClasses}>
+      <button className={styles.speciesButton} {...otherProps}>
+        <div className={styles.inner}>
+          <SpeciesName species={species} />
+        </div>
+        {withReleaseInfo && <ReleasePill release={species.release} />}
+      </button>
+      {onRemove && <RemoveButton onRemove={onRemove} />}
+    </div>
+  );
+};
+
+const RemoveButton = ({ onRemove }: { onRemove: Props['onRemove'] }) => {
+  const [isHovering, setIsHovering] = useState(false);
+  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(
+    null
+  );
+
+  const buttonRef = (element: HTMLButtonElement) => {
+    setButtonElement(element);
+    return () => setButtonElement(null);
+  };
+
+  return (
+    <>
+      <CloseButton
+        ref={buttonRef}
+        className={styles.deleteButton}
+        onClick={onRemove}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        aria-label={`Remove this genome from selected genomes`}
+      />
+      {isHovering && (
+        <Tooltip anchor={buttonElement} autoAdjust={true}>
+          Delete this genome
+        </Tooltip>
+      )}
+    </>
   );
 };
 

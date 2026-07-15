@@ -19,7 +19,7 @@ import { useRef, type RefObject } from 'react';
 import { useSelector } from 'react-redux';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
-import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
+import { useGenomeTopLevelRegionsQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import * as constants from './chromosomeNavigatorConstants';
 
@@ -61,18 +61,18 @@ export const ChromosomeNavigatorWrapper = () => {
       }
     : null;
 
-  const { data: karyotype } = useGenomeKaryotypeQuery(genomeId);
+  const { data: topLevelRegions } = useGenomeTopLevelRegionsQuery(genomeId);
 
-  const currentKaryotypeItem = karyotype?.find(
+  const currentRegion = topLevelRegions?.find(
     (item) => item.name === chromosomeName
   );
-  const karyotypeItemLength = currentKaryotypeItem?.length ?? 0;
+  const currentRegionLength = currentRegion?.length ?? 0;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth } = useResizeObserver({ ref: containerRef });
 
   const props = {
-    length: karyotypeItemLength,
+    length: currentRegionLength,
     centromere: null,
     viewportStart,
     viewportEnd,

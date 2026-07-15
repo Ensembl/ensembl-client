@@ -70,7 +70,7 @@ const SpeciesInUse = ({
   return (
     <div className={styles.speciesInUse}>
       <span className={styles.label}>
-        <span className={styles.light}>Species</span> in use
+        <span className={styles.light}>Genomes</span> in use
       </span>
       <div className={styles.speciesInUsePill}>
         <span className={styles.speciesInUseNumerator}>

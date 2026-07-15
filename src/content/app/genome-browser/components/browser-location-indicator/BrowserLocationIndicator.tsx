@@ -14,155 +14,147 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef, type RefObject } from 'react';
+import { useState, useRef, type InputEvent, type SubmitEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
-import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { validateGenomicLocation } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import { useAppSelector } from 'src/store';
-import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
+import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
+
+import FlatInput from 'src/shared/components/input/FlatInput';
+import { PrimaryButton } from 'src/shared/components/button/Button';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
+
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import styles from './BrowserLocationIndicator.module.css';
 
 type Props = {
   className?: string;
-  containerRef?: RefObject<HTMLElement | null>;
-  nonOverlapElementRef?: RefObject<HTMLElement | null>;
 };
 
 export const BrowserLocationIndicator = (props: Props) => {
-  const shouldCheckProximity = props.containerRef && props.nonOverlapElementRef;
-  const [shouldShowRegionName, setShouldShowRegionName] =
-    useState(!shouldCheckProximity); // start with false if component needs to figure out how close it is to its neightbor on the left
-  const actualChrLocation = useAppSelector(getActualChrLocation);
-  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId) as string;
+  const chrLocation = useAppSelector(getActualChrLocation);
+  const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
+  const navigate = useNavigate();
 
-  const { data: genomeKaryotype } = useGenomeKaryotypeQuery(activeGenomeId);
+  const formattedLocation = chrLocation
+    ? formatLocationString(chrLocation)
+    : '';
+  const [prevFormattedLocation, setPrevFormattedLocation] =
+    useState(formattedLocation);
+  const [inputValue, setInputValue] = useState(formattedLocation);
+  const [isInputError, setIsInputError] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
 
-  const [regionName, chrStart, chrEnd] = actualChrLocation || [];
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  if (!regionName || !chrStart || !chrEnd || !activeGenomeId) {
-    return null;
+  if (formattedLocation !== prevFormattedLocation) {
+    setPrevFormattedLocation(formattedLocation);
+    setInputValue(formattedLocation);
   }
 
-  const activeChromosome = genomeKaryotype?.find((karyotype) => {
-    return karyotype.name === regionName;
-  });
+  const isSubmitDisabled = formattedLocation === inputValue || isValidating;
 
-  const componentClasses = classNames(
-    styles.browserLocationIndicator,
-    props.className
-  );
+  const onInputChange = (event: InputEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    setInputValue(value);
 
-  const onRegionNameVisibilityChange = (shouldShowRegionName: boolean) => {
-    setShouldShowRegionName(shouldShowRegionName);
+    if (isInputError) {
+      setIsInputError(false);
+    }
   };
 
-  return (
-    <div className={componentClasses}>
-      <div className={styles.chrLocationView}>
-        {activeChromosome?.is_circular ? (
-          <CircularChromosomeIndicator />
-        ) : (
-          <div className={styles.regionNameContainer}>
-            {shouldShowRegionName && (
-              <span className={styles.regionName}>{regionName}</span>
-            )}
-            {props.nonOverlapElementRef && props.containerRef && (
-              <ProximitySensor
-                regionName={regionName}
-                containerRef={props.containerRef}
-                nonOverlapElementRef={props.nonOverlapElementRef}
-                isRegionNameVisible={shouldShowRegionName}
-                onRegionNameVisibilityChange={onRegionNameVisibilityChange}
-              />
-            )}
-          </div>
-        )}
-        <div className={styles.chrRegion}>
-          <span>{formatNumber(chrStart as number)}</span>
-          <span className={styles.chrSeparator}>-</span>
-          <span>{formatNumber(chrEnd as number)}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ProximitySensor = ({
-  regionName,
-  containerRef,
-  nonOverlapElementRef,
-  isRegionNameVisible,
-  onRegionNameVisibilityChange
-}: {
-  regionName: string;
-  containerRef: RefObject<HTMLElement | null>;
-  nonOverlapElementRef: RefObject<HTMLElement | null>;
-  isRegionNameVisible: boolean;
-  onRegionNameVisibilityChange: (x: boolean) => void;
-}) => {
-  const probeRef = useRef<HTMLSpanElement>(null);
-  const isRegionNameVisibleRef = useRef(isRegionNameVisible);
-  const minDistanceToLeft = 60;
-
-  useEffect(() => {
-    if (!probeRef.current) {
+  const onSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSubmitDisabled) {
       return;
     }
 
-    const resizeObserver = new ResizeObserver(onContainerResize);
-    resizeObserver.observe(containerRef.current as HTMLElement);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [probeRef.current, nonOverlapElementRef.current]);
-
-  useEffect(() => {
-    isRegionNameVisibleRef.current = isRegionNameVisible;
-  }, [isRegionNameVisible]);
-
-  const onContainerResize = () => {
-    const isTooClose = isTooCloseToLeft();
-    const isRegionNameVisible = isRegionNameVisibleRef.current;
-    if (isTooClose && isRegionNameVisible) {
-      onRegionNameVisibilityChange(false);
-    } else if (!isTooClose && !isRegionNameVisible) {
-      onRegionNameVisibilityChange(true);
+    try {
+      setIsValidating(true);
+      const validationResult = await validateGenomicLocation({
+        location: inputValue,
+        genomeId: activeGenomeId as string
+      });
+      const validatedLocation = validationResult.location;
+      if (validatedLocation) {
+        onValidationSuccess(validatedLocation);
+      } else throw new Error();
+    } catch {
+      setIsInputError(true);
+    } finally {
+      setIsValidating(false);
     }
   };
 
-  const isTooCloseToLeft = () => {
-    const featureSummaryStrip = nonOverlapElementRef.current;
-    if (!featureSummaryStrip) {
-      return true; // to be on the safe side
-    }
-    const probe = probeRef.current as HTMLElement;
-    const featureSummaryStripRightCoord =
-      featureSummaryStrip.getBoundingClientRect().right;
-    const isfeatureSummaryStripOverflowing =
-      featureSummaryStrip.scrollWidth > featureSummaryStrip.clientWidth;
-    const probeLeftCoord = probe.getBoundingClientRect().left;
-    const distance = probeLeftCoord - featureSummaryStripRightCoord;
+  const onValidationSuccess = (locationString: string) => {
+    navigate(
+      urlFor.browser({
+        genomeId: genomeIdForUrl,
+        focus: `location:${locationString}`,
+        location: locationString
+      })
+    );
+    inputRef.current?.blur();
+  };
 
-    return distance < minDistanceToLeft || isfeatureSummaryStripOverflowing;
+  const [regionName, start, end] = chrLocation || [];
+
+  if (!activeGenomeId || !regionName || !start || !end) {
+    return null;
+  }
+
+  const componentClasses = classNames(styles.container, props.className);
+
+  const onWarningTooltipClose = () => {
+    removeWarning();
+  };
+
+  const removeWarning = () => {
+    if (isInputError) {
+      setIsInputError(false);
+    }
   };
 
   return (
-    <div className={styles.probeAnchor}>
-      <span className={styles.probe} ref={probeRef}>
-        {regionName}
-      </span>
-    </div>
+    <form className={componentClasses} onSubmit={onSubmit}>
+      <div>
+        <FlatInput
+          ref={inputRef}
+          className={styles.input}
+          value={inputValue}
+          onInput={onInputChange}
+          onBlur={removeWarning}
+        />
+        {isInputError && (
+          <Tooltip
+            anchor={inputRef.current}
+            delay={0}
+            onClose={onWarningTooltipClose}
+          >
+            Invalid location
+          </Tooltip>
+        )}
+      </div>
+      <PrimaryButton disabled={isSubmitDisabled}>Go</PrimaryButton>
+    </form>
   );
 };
 
-const CircularChromosomeIndicator = () => {
-  return <div className={styles.circularIndicator}></div>;
+const formatLocationString = (chrLocation: ChrLocation) => {
+  return getFormattedLocation({
+    chromosome: chrLocation[0],
+    start: chrLocation[1],
+    end: chrLocation[2]
+  });
 };
 
 export default BrowserLocationIndicator;

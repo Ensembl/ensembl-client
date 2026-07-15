@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useGenomeKaryotypeQuery } from 'src/shared/state/genome/genomeApiSlice';
+import { useGenomeTopLevelRegionsQuery } from 'src/shared/state/genome/genomeApiSlice';
 
 import type {
   BlastJobResult,
@@ -33,12 +33,12 @@ const useGroupedBlastHits = (params: {
 }) => {
   const { genomeId, job } = params;
   const {
-    currentData: genomeKaryotype,
+    currentData: genomeTopLevelRegions,
     isFetching,
     isError
-  } = useGenomeKaryotypeQuery(genomeId); // the karyotype data has properly sorted top-level sequences
+  } = useGenomeTopLevelRegionsQuery(genomeId); // the karyotype data has properly sorted top-level sequences
 
-  if (!genomeKaryotype) {
+  if (!genomeTopLevelRegions) {
     return {
       currentData: undefined,
       isFetching,
@@ -47,7 +47,7 @@ const useGroupedBlastHits = (params: {
   }
 
   const { chromosomeHits, nonChromosomeHits } = partitionBlastHits({
-    karyotype: genomeKaryotype,
+    topLevelRegions: genomeTopLevelRegions,
     job
   });
   const topMatches = getTopMatches(chromosomeHits);
@@ -71,13 +71,13 @@ const useGroupedBlastHits = (params: {
  * Only the hits that matched chromosomes will be drawn in the diagram.
  */
 const partitionBlastHits = ({
-  karyotype,
+  topLevelRegions,
   job
 }: {
-  karyotype: GenomeKaryotypeItem[];
+  topLevelRegions: GenomeKaryotypeItem[];
   job: BlastJobResult;
 }) => {
-  const chromosomeNames = new Set(karyotype.map((item) => item.name));
+  const chromosomeNames = new Set(topLevelRegions.map((item) => item.name));
   const chromosomeHits: BlastHit[] = [];
   const nonChromosomeHits: BlastHit[] = [];
 

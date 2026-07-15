@@ -17,7 +17,7 @@
 /**
  * A word on naming.
  *
- * For 'app' pages (genome browser, entity viewer, etc.),
+ * For 'app' pages (genome browser, feature explorer, etc.),
  * this space would normally be called an 'app bar'.
  * But since the contact us page isn't an 'app', the name 'top bar'
  * seems more appropriate. It seems we will only have one such 'bar'

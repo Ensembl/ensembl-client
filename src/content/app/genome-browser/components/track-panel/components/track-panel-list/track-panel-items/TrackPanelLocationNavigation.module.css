@@ -1,0 +1,32 @@
+.container {
+  padding: 0 10px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: [label] auto 1fr;
+  column-gap: 10px;
+  row-gap: 1.5rem;
+  align-items: center;
+  justify-items: start;
+}
+
+.grid label {
+  font-weight: var(--font-weight-light);
+  text-align: right;
+}
+
+.select {
+  --select-max-width: 100%;
+}
+
+.locationInputWrapper {
+  display: flex;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.errorMessage {
+  color: var(--color-red);
+  margin: 20px 0 0 42px;
+}

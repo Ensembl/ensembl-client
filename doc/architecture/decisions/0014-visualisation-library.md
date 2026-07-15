@@ -8,7 +8,7 @@ Accepted
 
 ## Context
 
-While we have a powerful data visualisation tool already in the form of the new genome browser, we have many additional visualisation requirements, particularly in Entity Viewer. These will need to show not only biological objects such as transcripts but also graphs, trees and other complex interactive diagrams.
+While we have a powerful data visualisation tool already in the form of the new genome browser, we have many additional visualisation requirements, particularly in Feature Explorer. These will need to show not only biological objects such as transcripts but also graphs, trees and other complex interactive diagrams.
 
 Developing these types of views by extending the genome browser would be very labour-intensive, since everything would have to be written from scratch. We therefore need a separate library/codebase that will enable us to create a wide variety of custom visualisations, with or without animations and interactivity.
 

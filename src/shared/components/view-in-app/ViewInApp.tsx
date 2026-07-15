@@ -34,7 +34,7 @@ export const Apps = {
     icon: GenomeBrowserIcon
   },
   entityViewer: {
-    tooltip: 'Entity Viewer',
+    tooltip: 'Feature explorer',
     icon: EntityViewerIcon
   },
   activityViewer: {

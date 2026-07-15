@@ -51,6 +51,10 @@ vi.mock('./track-panel-items/TrackPanelRegularItem', () => ({
   default: () => <div className="trackPanelRegularItem" />
 }));
 
+vi.mock('./track-panel-items/TrackPanelLocationNavigation', () => ({
+  default: () => <div className="trackPanelLocationNavigation" />
+}));
+
 vi.mock(
   'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics',
   () => ({
@@ -152,18 +156,9 @@ describe('<TrackPanelList />', () => {
 
       await userEvent.click(geneSearchLink);
 
-      let state = store.getState();
+      const state = store.getState();
       expect(getBrowserSidebarModalView(state)).toBe(
         BrowserSidebarModalView.SEARCH
-      );
-
-      const navigateLocationLink = getByText('Change location');
-
-      await userEvent.click(navigateLocationLink);
-
-      state = store.getState();
-      expect(getBrowserSidebarModalView(state)).toBe(
-        BrowserSidebarModalView.NAVIGATE
       );
     });
   });

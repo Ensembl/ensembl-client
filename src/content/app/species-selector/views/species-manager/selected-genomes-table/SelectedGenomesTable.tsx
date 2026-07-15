@@ -65,7 +65,7 @@ const SelectedGenomesTable = (props: {
   );
 
   if (!allSelectedGenomes.length) {
-    return <div>You have not selected any species</div>;
+    return <div>You have not selected any genomes</div>;
   }
 
   const getLinkToSpeciesPage = (species: CommittedItem) => {
@@ -129,7 +129,7 @@ const SelectedGenomesTable = (props: {
               />
             </span>
           </ColumnHead>
-          <ColumnHead>Species home page</ColumnHead>
+          <ColumnHead>Genome home page</ColumnHead>
           <ColumnHead>Common name</ColumnHead>
           <ColumnHead>Scientific name</ColumnHead>
           <ColumnHead>Type</ColumnHead>

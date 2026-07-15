@@ -36,14 +36,14 @@ export const SpeciesManagerAppBar = () => {
 
   const mainContent = <AppBarMainContent selectedSpecies={selectedSpecies} />;
 
-  const appName = <AppName>Species Selector</AppName>;
+  const appName = <AppName>Genome selector</AppName>;
 
   return (
     <AppBar
       topLeft={appName}
       topRight={<SpeciesManagerIndicator mode="close" onClose={onClose} />}
       mainContent={mainContent}
-      aside={<HelpPopupButton slug="species-selector-intro" />}
+      aside={<HelpPopupButton slug="genome-selector-intro" />}
     />
   );
 };

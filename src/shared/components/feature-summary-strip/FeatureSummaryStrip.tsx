@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { memo, type RefObject } from 'react';
+import { memo } from 'react';
 
 import GeneSummaryStrip from './GeneSummaryStrip';
 import LocationSummaryStrip from './LocationSummaryStrip';
@@ -22,38 +22,38 @@ import TranscriptSummaryStrip from './TranscriptSummaryStrip';
 import VariantSummaryStrip from './VariantSummaryStrip';
 
 import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes';
+import type { Variety } from './types';
 
 export type FeatureSummaryStripProps = {
   focusObject: FocusObject;
   className?: string;
-  ref?: RefObject<HTMLDivElement | null>;
+  variety?: Variety;
 };
 
 export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
-  const { focusObject, ref } = props;
+  const { focusObject, variety = 'default' } = props;
 
   switch (focusObject.type) {
     case 'gene':
       return (
         <GeneSummaryStrip
           gene={focusObject}
-          ref={ref}
           className={props.className}
+          variety={variety}
         />
       );
     case 'transcript':
       return (
         <TranscriptSummaryStrip
           transcript={focusObject}
-          elementRef={ref}
           className={props.className}
+          variety={variety}
         />
       );
     case 'location':
       return (
         <LocationSummaryStrip
           location={focusObject}
-          ref={ref}
           className={props.className}
         />
       );
@@ -61,8 +61,8 @@ export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
       return (
         <VariantSummaryStrip
           variant={focusObject}
-          ref={ref}
           className={props.className}
+          variety={variety}
         />
       );
     default:
