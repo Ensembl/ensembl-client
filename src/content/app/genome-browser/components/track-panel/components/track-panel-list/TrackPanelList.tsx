@@ -147,17 +147,12 @@ export const TrackPanelList = () => {
                 <AccordionItemPanel
                   className={styles.trackPanelAccordionItemContent}
                 >
-                  {category.track_category_id === 'genes-transcripts' && (
-                    <div className={styles.trackPanelSectionLegend}>
-                      <span className={styles.trackPanelSectionLegendMarker} />
-                      <span>Genes & transcripts</span>
-                    </div>
-                  )}
                   <dl>
                     {category.track_list.map((track) => (
                       <TrackPanelRegularItem
                         {...track}
                         genomeId={activeGenomeId}
+                        category={category.track_category_id}
                         key={track.track_id}
                       />
                     ))}

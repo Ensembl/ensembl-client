@@ -56,20 +56,6 @@
   padding: 10px 0 20px;
 }
 
-.trackPanelSectionLegend {
-  display: flex;
-  align-items: center;
-  column-gap: 12px;
-  padding: 4px 10px;
-}
-
-.trackPanelSectionLegendMarker {
-  width: 10px;
-  height: 10px;
-  background-color: var(--color-blue);
-  flex-shrink: 0;
-}
-
 .modalLinksWrapper {
   margin: 0 0 20px 10px;
   display: flex;

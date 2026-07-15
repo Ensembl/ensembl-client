@@ -39,6 +39,7 @@ import styles from './TrackPanelItem.module.css';
 
 type Props = GenomicTrack & {
   genomeId: string;
+  category: string;
 };
 
 const TrackPanelRegularItem = (props: Props) => {
