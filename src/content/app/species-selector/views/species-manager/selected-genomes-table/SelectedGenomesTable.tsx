@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useAppDispatch } from 'src/store';
@@ -119,10 +118,8 @@ const SelectedGenomesTable = (props: {
           <ColumnHead>
             <div className={styles.tableCellCheckboxWrapper}>
               <SelectAllGenomesCheckbox
-                checked={allVisibleGenomesSelected}
-                indeterminate={
-                  someVisibleGenomesSelected && !allVisibleGenomesSelected
-                }
+                someVisibleGenomesSelected={someVisibleGenomesSelected}
+                allVisibleGenomesSelected={allVisibleGenomesSelected}
                 disabled={!filteredGenomes.length}
                 onChange={toggleAllVisibleGenomesSelection}
               />
@@ -203,26 +200,23 @@ const SelectedGenomesTable = (props: {
 };
 
 const SelectAllGenomesCheckbox = (props: {
-  checked: boolean;
-  indeterminate: boolean;
+  someVisibleGenomesSelected: boolean;
+  allVisibleGenomesSelected: boolean;
   disabled: boolean;
   onChange: () => void;
 }) => {
-  const checkboxRef = useRef<HTMLInputElement>(null);
+  const isChecked = props.allVisibleGenomesSelected;
 
-  useEffect(() => {
-    if (checkboxRef.current) {
-      checkboxRef.current.indeterminate = props.indeterminate;
-    }
-  }, [props.indeterminate]);
+  // NOTE:
+  // if we want to add an indeterminate status of the checkbox,
+  // that would be props.someVisibleGenomesSelected && !props.allVisibleGenomesSelected
 
   return (
     <Checkbox
-      ref={checkboxRef}
-      checked={props.checked}
+      checked={isChecked}
       disabled={props.disabled}
       onChange={props.onChange}
-      aria-label="Select all species in this table"
+      aria-label="Select all genomes in this table"
     />
   );
 };
