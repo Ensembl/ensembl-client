@@ -12,6 +12,7 @@
 }
 
 .mainContentTop {
+  --gap-width: clamp(40px, 7vw, 90px);
   display: grid;
   grid-template-areas:
     "genome-label-selector search-field add-genome-button delete-button";
@@ -22,12 +23,12 @@
   --add-button-icon-color: var(--color-green);
   --add-button-label-color: var(--color-black);
   height: 30px;
-  margin-left: clamp(40px, 7vw, 90px);
+  margin-left: var(--gap-width);
 }
 
 .filterField {
   --shaded-input-width: 180px;
-  margin-left: clamp(40px, 7vw, 90px);
+  margin-left: var(--gap-width);
 }
 
 .removeGenomesButtonWrapper {
@@ -35,6 +36,7 @@
   display: flex;
   column-gap: 10px;
   justify-self: end;
+  margin-left: var(--gap-width);
 }
 
 .removeGenomesIcon {
