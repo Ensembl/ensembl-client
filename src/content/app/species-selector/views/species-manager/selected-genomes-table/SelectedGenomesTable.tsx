@@ -117,8 +117,7 @@ const SelectedGenomesTable = (props: {
       <thead>
         <tr>
           <ColumnHead>
-            <span className={styles.selectionColumnHeader}>
-              <span>Select</span>
+            <div className={styles.tableCellCheckboxWrapper}>
               <SelectAllGenomesCheckbox
                 checked={allVisibleGenomesSelected}
                 indeterminate={
@@ -127,9 +126,9 @@ const SelectedGenomesTable = (props: {
                 disabled={!filteredGenomes.length}
                 onChange={toggleAllVisibleGenomesSelection}
               />
-            </span>
+            </div>
           </ColumnHead>
-          <ColumnHead>Genome home page</ColumnHead>
+          <ColumnHead>Genome page</ColumnHead>
           <ColumnHead>Common name</ColumnHead>
           <ColumnHead>Scientific name</ColumnHead>
           <ColumnHead>Type</ColumnHead>

@@ -1,120 +1,72 @@
 .container {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(60px, auto) 1fr;
+  grid-template-rows: auto 1fr;
+  row-gap: 35px;
   box-sizing: border-box;
-  width: calc(100vw - 90px);
   height: 100%;
   padding-left: var(--double-standard-gutter);
+  width: max-content;
+  max-width: calc(100vw - 90px);
+  min-width: 890px;
 }
 
 .mainContentTop {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  row-gap: 14px;
-  column-gap: clamp(40px, 7vw, 90px);
+  display: grid;
+  grid-template-areas:
+    "genome-label-selector search-field add-genome-button delete-button";
+  grid-template-columns: auto auto auto 1fr;
 }
 
 .addSpeciesButton {
   --add-button-icon-color: var(--color-green);
   --add-button-label-color: var(--color-black);
   height: 30px;
-}
-
-.mainContentTopRight {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  row-gap: 14px;
-  column-gap: var(--double-standard-gutter);
-  justify-content: space-between;
-  flex: 1 1 640px;
-  min-width: 0;
-}
-
-.tableActions {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  row-gap: 10px;
-  column-gap: clamp(28px, 4vw, 50px);
-  min-width: 0;
+  margin-left: clamp(40px, 7vw, 90px);
 }
 
 .filterFieldWrapper {
   display: flex;
   align-items: flex-start;
+  margin-left: clamp(40px, 7vw, 90px);
 }
 
-.removeGenomesControls {
+.removeGenomesButtonWrapper {
+  grid-area: delete-button;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  flex: 0 1 auto;
-  min-width: 0;
-  margin-right: 10px;
-  align-self: flex-start;
-}
-
-.removeGenomesControlsTop {
-  display: flex;
-  flex-direction: column;
-  row-gap: 6px;
-  align-items: flex-start;
-}
-
-.removeGenomesAction {
-  display: flex;
-  align-items: flex-start;
   column-gap: 10px;
-}
-
-.removeGenomesLabel {
-  display: flex;
-  align-items: center;
-  height: 30px;
+  justify-self: end;
 }
 
 .removeGenomesIcon {
   width: 18px;
   aspect-ratio: 1;
-  fill: var(--color-blue);
+  fill: var(--color-black);
 }
 
-.removeGenomesIconDisabled {
-  fill: var(--color-grey);
+.removeGenomesButtonWrapper:has(button:disabled) {
+  .removeGenomesIcon {
+    fill: var(--color-grey);
+  }
 }
 
 .removeGenomesButton {
   --primary-button-color: var(--color-red);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 122px;
-  height: 30px;
-  padding: 0;
-}
-
-.removeGenomesButton:not(:disabled) {
   --button-border: 1px solid var(--color-red);
 }
 
-.removeGenomesWarning {
-  margin-top: 4px;
-  max-width: min(420px, calc(100vw - 80px));
-  color: var(--color-red);
-  white-space: normal;
-}
+@media (width < 1200px) {
+  .mainContentTop {
+    grid-template-areas:
+      "genome-label-selector search-field add-genome-button"
+      ".                     .            delete-button";
+    grid-template-columns: auto auto 1fr;
+    row-gap: 20px;
+  }
 
-.removeGenomesWarningHidden {
-  visibility: hidden;
-}
-
-@media (width >= 1200px) {
-  .removeGenomesWarning {
-    max-width: none;
-    white-space: nowrap;
+  .addSpeciesButton {
+    margin-left: initial;
+    justify-self: end;
   }
 }
 
@@ -123,10 +75,9 @@
 */
 .genomesTableContainerOuter {
   height: 100%;
-  overflow-y: auto;
+  overflow: auto;
   padding-bottom: var(--global-padding-bottom);
-  max-width: calc(100vw - 90px);
-  padding-right: 20px;
+  /* padding-right: 20px; */
 }
 
 /* A horizontally scrollable container.

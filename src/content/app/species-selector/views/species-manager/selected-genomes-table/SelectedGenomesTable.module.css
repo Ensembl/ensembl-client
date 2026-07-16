@@ -10,37 +10,13 @@
 /* the first column contains row selectors */
 .table th:nth-child(1),
 .table td:nth-child(1) {
-  --table-cell-padding-left: 0;
-  --table-cell-padding-right: 0;
-  box-sizing: border-box;
-  width: var(--selection-column-width);
-  min-width: var(--selection-column-width);
+  --table-column-head-padding-right: 20px;
+  --table-cell-padding-right: 20px;
 }
 
-.table th:nth-child(1) {
-  --table-column-head-padding-right: 0;
-  --table-column-head-padding-left: 0;
-}
-
-.table td:nth-child(1) {
-  text-align: center;
-}
-
-.selectionColumnHeader {
-  --_checkbox-width: var(--checkbox-side-size, 13px);
-  --_checkbox-half-width: 6.5px;
-  --_selection-column-gap: 8px;
-  display: grid;
-  grid-template-columns:
-    calc(50% - var(--_selection-column-gap) - var(--_checkbox-half-width))
-    var(--_checkbox-width);
+.tableCellCheckboxWrapper {
+  display: flex;
   align-items: center;
-  width: 100%;
-  column-gap: var(--_selection-column-gap);
-}
-
-.selectionColumnHeader span {
-  justify-self: end;
 }
 
 /* the second column contains just the home icon; no need for a regular wide padding */
@@ -66,11 +42,6 @@
 
 .alignCenter {
   text-align: center;
-}
-
-.selectionColumnCell input {
-  display: block;
-  margin: 0 auto;
 }
 
 .speciesHomeLink {

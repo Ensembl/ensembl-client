@@ -73,14 +73,12 @@ const SpeciesManager = () => {
           onRemoveSelectedGenomes={removeSelectedGenomes}
         />
         <div className={styles.genomesTableContainerOuter}>
-          <div className={styles.genomesTableContainerInner}>
-            <SelectedGenomesTable
-              allSelectedGenomes={allSelectedGenomes}
-              filteredGenomes={filteredGenomes}
-              selectedGenomeIds={selectedAvailableGenomeIds}
-              onSelectedGenomeIdsChange={setSelectedGenomeIds}
-            />
-          </div>
+          <SelectedGenomesTable
+            allSelectedGenomes={allSelectedGenomes}
+            filteredGenomes={filteredGenomes}
+            selectedGenomeIds={selectedAvailableGenomeIds}
+            onSelectedGenomeIdsChange={setSelectedGenomeIds}
+          />
         </div>
       </div>
     </ModalView>
@@ -101,51 +99,32 @@ const MainContentTop = (props: {
   return (
     <div className={styles.mainContentTop}>
       <SpeciesLozengeDisplaySelector />
-      <div className={styles.mainContentTopRight}>
-        <div className={styles.tableActions}>
-          <label className={styles.filterFieldWrapper}>
-            <ShadedInput
-              onChange={props.onFilterChange}
-              placeholder="Find in list"
-            />
-          </label>
-          <AddButton
-            onClick={onAddSpeciesClick}
-            className={styles.addSpeciesButton}
-          >
-            Add a genome
-          </AddButton>
-        </div>
-        <div className={styles.removeGenomesControls}>
-          <div className={styles.removeGenomesControlsTop}>
-            <div className={styles.removeGenomesAction}>
-              <div className={styles.removeGenomesLabel}>
-                <TrashcanIcon
-                  className={classNames(styles.removeGenomesIcon, {
-                    [styles.removeGenomesIconDisabled]:
-                      !props.hasSelectedGenomes
-                  })}
-                />
-              </div>
-              <PrimaryButton
-                type="button"
-                className={styles.removeGenomesButton}
-                disabled={!props.hasSelectedGenomes}
-                onClick={props.onRemoveSelectedGenomes}
-              >
-                Remove genomes
-              </PrimaryButton>
-            </div>
-            <div
-              className={classNames(styles.removeGenomesWarning, {
-                [styles.removeGenomesWarningHidden]: !props.hasSelectedGenomes
-              })}
-              aria-hidden={!props.hasSelectedGenomes}
-            >
-              Do you wish to delete the genomes from your list ?
-            </div>
-          </div>
-        </div>
+      <label className={styles.filterFieldWrapper}>
+        <ShadedInput
+          onChange={props.onFilterChange}
+          placeholder="Find in list"
+        />
+      </label>
+      <AddButton
+        onClick={onAddSpeciesClick}
+        className={styles.addSpeciesButton}
+      >
+        Add a genome
+      </AddButton>
+      <div className={styles.removeGenomesButtonWrapper}>
+        <TrashcanIcon
+          className={classNames(styles.removeGenomesIcon, {
+            [styles.removeGenomesIconDisabled]: !props.hasSelectedGenomes
+          })}
+        />
+        <PrimaryButton
+          type="button"
+          className={styles.removeGenomesButton}
+          disabled={!props.hasSelectedGenomes}
+          onClick={props.onRemoveSelectedGenomes}
+        >
+          Remove genomes
+        </PrimaryButton>
       </div>
     </div>
   );
