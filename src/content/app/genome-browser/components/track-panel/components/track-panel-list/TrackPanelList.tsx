@@ -152,7 +152,6 @@ export const TrackPanelList = () => {
                       <TrackPanelRegularItem
                         {...track}
                         genomeId={activeGenomeId}
-                        category={category.track_category_id}
                         key={track.track_id}
                       />
                     ))}
