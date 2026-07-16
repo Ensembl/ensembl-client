@@ -42,18 +42,7 @@
 .removeGenomesIcon {
   width: 18px;
   aspect-ratio: 1;
-  fill: var(--color-black);
-}
-
-.removeGenomesButtonWrapper:has(button:disabled) {
-  .removeGenomesIcon {
-    fill: var(--color-grey);
-  }
-}
-
-.removeGenomesButton {
-  --primary-button-color: var(--color-red);
-  --button-border: 1px solid var(--color-red);
+  fill: var(--color-grey);
 }
 
 @media (width < 1200px) {

@@ -119,7 +119,6 @@ const MainContentTop = (props: {
         />
         <PrimaryButton
           type="button"
-          className={styles.removeGenomesButton}
           disabled={!props.hasSelectedGenomes}
           onClick={props.onRemoveSelectedGenomes}
         >
