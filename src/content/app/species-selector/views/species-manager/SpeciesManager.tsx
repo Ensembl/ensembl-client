@@ -99,12 +99,12 @@ const MainContentTop = (props: {
   return (
     <div className={styles.mainContentTop}>
       <SpeciesLozengeDisplaySelector />
-      <label className={styles.filterFieldWrapper}>
-        <ShadedInput
-          onChange={props.onFilterChange}
-          placeholder="Find in list"
-        />
-      </label>
+      <ShadedInput
+        className={styles.filterField}
+        onChange={props.onFilterChange}
+        placeholder="Find in list"
+        aria-label="Find in list"
+      />
       <AddButton
         onClick={onAddSpeciesClick}
         className={styles.addSpeciesButton}

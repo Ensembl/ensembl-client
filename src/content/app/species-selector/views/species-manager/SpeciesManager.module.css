@@ -25,9 +25,8 @@
   margin-left: clamp(40px, 7vw, 90px);
 }
 
-.filterFieldWrapper {
-  display: flex;
-  align-items: flex-start;
+.filterField {
+  --shaded-input-width: 180px;
   margin-left: clamp(40px, 7vw, 90px);
 }
 
