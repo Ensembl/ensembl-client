@@ -13,7 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext, useRef, useEffect, useCallback, useMemo } from 'react';
+import {
+  useState,
+  useContext,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo
+} from 'react';
 
 import config from 'config';
 import { useAppSelector } from 'src/store';
@@ -236,9 +243,25 @@ const useTrackIdToTrackPathMap = () => {
     }
   );
 
+  const [previousTrackCategories, setPreviousTrackCategories] = useState<
+    GenomeTrackCategory[]
+  >([]);
+  const [currentTrackCategoriesState, setCurrentTrackCategoriesState] =
+    useState(trackCategories);
+
+  if (
+    trackCategories.length &&
+    trackCategories !== currentTrackCategoriesState
+  ) {
+    setPreviousTrackCategories(currentTrackCategoriesState);
+    setCurrentTrackCategoriesState(trackCategories);
+  }
+
   const trackIdToPathMap = useMemo(() => {
-    return getTrackIdToTrackPathMap(trackCategories);
-  }, [trackCategories]);
+    return getTrackIdToTrackPathMap(
+      trackCategories.concat(previousTrackCategories)
+    );
+  }, [trackCategories, previousTrackCategories]);
 
   return trackIdToPathMap;
 };
@@ -254,5 +277,15 @@ const getTrackIdToTrackPathMap = (trackCategories: GenomeTrackCategory[]) => {
     {} as Record<string, string[]>
   );
 };
+
+// const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// const getTrackPath = (trackId: string) => {
+//   if (uuidRegex.test(trackId)) {
+//     return ['track', 'expand', trackId];
+//   } else {
+//     return ['track', trackId];
+//   }
+// };
 
 export default useGenomeBrowser;
