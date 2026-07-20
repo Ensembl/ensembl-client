@@ -16,7 +16,7 @@
 
 import { Request, Response } from 'express';
 import { renderToPipeableStream } from 'react-dom/server';
-import { matchPath, StaticRouter } from 'react-router-dom';
+import { matchPath, StaticRouter } from 'react-router';
 import { Provider } from 'react-redux';
 import pick from 'lodash/pick';
 

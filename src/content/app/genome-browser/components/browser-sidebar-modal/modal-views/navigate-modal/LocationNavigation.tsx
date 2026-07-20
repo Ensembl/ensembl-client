@@ -15,7 +15,7 @@
  */
 
 import { useRef, useState, type InputEvent, type KeyboardEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
 import { useAppSelector } from 'src/store';

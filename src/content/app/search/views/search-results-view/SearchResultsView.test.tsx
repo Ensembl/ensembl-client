@@ -40,7 +40,7 @@ const useLazySearchVariantsQuery = vi.fn();
 let mockCommittedSpecies: CommittedItem[] = [];
 let mockHasLoadedStoredSpecies = true;
 
-vi.mock('react-router-dom', () => ({
+vi.mock('react-router', () => ({
   useNavigate: () => mockNavigate,
   useSearchParams: () => [mockSearchParams, mockSetSearchParams],
   useLocation: () => ({ state: mockLocationState }),

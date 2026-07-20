@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import type { FormEvent } from 'react';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';

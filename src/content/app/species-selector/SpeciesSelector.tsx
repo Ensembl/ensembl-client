@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router';
 
 import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
 import SpeciesSearchResultsAppBar from './components/species-selector-search-results-app-bar/SpeciesSelectorSearchResultsAppBar';

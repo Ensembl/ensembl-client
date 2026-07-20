@@ -17,7 +17,7 @@
 import { StrictMode } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 
 import ensureBrowserSupport from 'src/shared/helpers/browserSupport';
 import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';

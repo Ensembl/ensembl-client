@@ -20,7 +20,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { http, graphql, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
 import set from 'lodash/fp/set';
 
 import createRootReducer from 'src/root/rootReducer';

@@ -15,7 +15,7 @@
  */
 
 import { useEffect } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 
 import { useAppSelector } from 'src/store';
 

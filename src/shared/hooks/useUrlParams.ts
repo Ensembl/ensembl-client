@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { matchPath, useLocation } from 'react-router-dom';
+import { matchPath, useLocation } from 'react-router';
 
 /**
  * React-router version 6 has removed optional url parameters

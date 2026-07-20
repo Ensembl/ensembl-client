@@ -16,7 +16,7 @@
 
 import { useEffect } from 'react';
 import { useParams } from 'react-router';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';

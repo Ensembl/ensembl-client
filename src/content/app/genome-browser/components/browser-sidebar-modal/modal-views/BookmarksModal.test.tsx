@@ -38,7 +38,7 @@ const mockGenomeBrowser = vi.fn(() => new MockGenomeBrowser() as any);
 
 const mockGenomeId = 'grch38';
 
-vi.mock('react-router-dom', () => ({
+vi.mock('react-router', () => ({
   Link: (props: any) => (
     <a href={props.to} onClick={props.onClick}>
       {props.children}

@@ -15,7 +15,7 @@
  */
 
 import { memo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import isEqual from 'lodash/isEqual';
 
 import { useAppSelector } from 'src/store';

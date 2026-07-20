@@ -20,7 +20,7 @@ import {
   useCallback,
   type InputEvent
 } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import { useAppSelector } from 'src/store';
 

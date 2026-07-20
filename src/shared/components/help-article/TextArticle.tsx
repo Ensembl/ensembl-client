@@ -16,7 +16,7 @@
 
 import { useRef, useEffect, RefObject } from 'react';
 import classNames from 'classnames';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import { TextArticleData } from 'src/shared/types/help-and-docs/article';
 

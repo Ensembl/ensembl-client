@@ -15,7 +15,7 @@
  */
 
 import classNames from 'classnames';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router';
 import { useSelector } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';

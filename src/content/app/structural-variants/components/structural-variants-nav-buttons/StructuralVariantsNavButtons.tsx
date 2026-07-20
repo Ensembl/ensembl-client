@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import '@ensembl/ensembl-structural-variants/nav-buttons';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 

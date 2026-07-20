@@ -15,7 +15,7 @@
  */
 
 import { Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';

@@ -15,7 +15,7 @@
  */
 
 import { Fragment, useReducer, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { useAppDispatch } from 'src/store';
 
