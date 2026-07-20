@@ -88,15 +88,13 @@ const speciesGeneralSlice = createSlice({
         expandedSections: SpeciesStatsSection[];
       }>
     ) {
-      const stateToUpdate = state.uiState[action.payload.genomeId]
-        ? state
-        : set(action.payload.genomeId, { expandedSections: [] }, state);
+      const { genomeId, expandedSections } = action.payload;
 
-      return set(
-        `uiState.${action.payload.genomeId}.expandedSections`,
-        action.payload.expandedSections,
-        stateToUpdate
-      );
+      if (!state.uiState[genomeId]) {
+        state.uiState[genomeId] = { expandedSections: [] };
+      }
+
+      state.uiState[genomeId].expandedSections = expandedSections;
     },
 
     restoreUI(state) {

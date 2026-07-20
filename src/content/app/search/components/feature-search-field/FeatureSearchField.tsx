@@ -33,6 +33,8 @@ export type Props = {
   disabled?: boolean;
 };
 
+const labelText = 'Find a feature in the selected genomes';
+
 const FeatureSearchField = (props: Props) => {
   const {
     labelStyle = 'plain',
@@ -49,7 +51,7 @@ const FeatureSearchField = (props: Props) => {
 
   const label =
     labelStyle === 'plain' ? (
-      'Find a feature'
+      labelText
     ) : (
       <span
         className={classNames(styles.label, {
@@ -57,7 +59,7 @@ const FeatureSearchField = (props: Props) => {
         })}
       >
         <SearchIcon className={styles.searchIcon} />
-        <span>Find a feature</span>
+        <span>{labelText}</span>
       </span>
     );
 

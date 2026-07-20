@@ -108,7 +108,7 @@ describe('previouslyViewedObjectsStorageService', () => {
     });
   });
 
-  describe('storing objects viewed in the entity viewer', () => {
+  describe('storing objects viewed in the feature explorer', () => {
     const genomeId = 'human';
     const previouslyViewedObject: PreviouslyViewedEntity = {
       id: 'ENSG0000001.1',
@@ -117,7 +117,7 @@ describe('previouslyViewedObjectsStorageService', () => {
       label: ['MyGene', 'ENSG0000001']
     };
 
-    test('save objects viewed in the entity viewer', async () => {
+    test('save objects viewed in the feature explorer', async () => {
       await savePreviouslyViewedEntities(genomeId, [previouslyViewedObject]);
 
       // now read back the stored option
@@ -128,7 +128,7 @@ describe('previouslyViewedObjectsStorageService', () => {
       expect(retrievedData).toEqual([previouslyViewedObject]);
     });
 
-    test('retrieve stored objects viewed in the entity viewer', async () => {
+    test('retrieve stored objects viewed in the feature explorer', async () => {
       // write species name display option to indexed db directly, without using the service
       await IndexedDB.set(
         STORE_NAME,
@@ -213,7 +213,7 @@ describe('previouslyViewedObjectsStorageService', () => {
       expect(retrievedData[mouseGenomeId]).toEqual([mouseGenomeBrowserObject]);
     });
 
-    test('retrieve all objects viewed in the entity viewer', async () => {
+    test('retrieve all objects viewed in the feature explorer', async () => {
       const retrievedData = await getAllPreviouslyViewedEntities();
       expect(retrievedData[humanGenomeId]).toEqual([humanEntityViewerObject]);
       expect(retrievedData[mouseGenomeId]).toEqual([mouseEntityViewerObject]);

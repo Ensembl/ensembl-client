@@ -32,14 +32,6 @@ export const getEntityViewerGenomeState = (state: RootState) => {
     : null;
 };
 
-export const getEntityViewerSidebarUIState = (state: RootState) => {
-  const activeEntityId = getEntityViewerActiveEntityId(state);
-  return activeEntityId
-    ? getEntityViewerGenomeState(state)?.entities[activeEntityId]?.uiState ||
-        null
-    : null;
-};
-
 export const getEntityViewerSidebarTabName = (state: RootState) => {
   const activeEntityId = getEntityViewerActiveEntityId(state);
   return activeEntityId

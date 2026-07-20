@@ -21,7 +21,6 @@ import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useG
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import { getTranscriptMetadata as getTranscriptSupportLevel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
-import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
@@ -89,25 +88,11 @@ const TrackPanelTranscript = (props: Props) => {
       onShowMore={onShowMore}
     >
       <div className={styles.label}>
-        <span
-          className={styles.colourMarker}
-          style={{ backgroundColor: getTranscriptColor(transcript) }}
-        />
         <span className={styles.labelText}>{currentTranscriptId}</span>
         {secondaryLabel}
       </div>
     </SimpleTrackPanelItemLayout>
   );
-};
-
-const getTranscriptColor = (transcript: TrackPanelTranscriptType) => {
-  if (transcript.metadata.canonical?.value) {
-    return '#0099ff'; // blue
-  } else if (isProteinCodingTranscript(transcript)) {
-    return '#6f8190'; // dark grey
-  } else {
-    return '#b7c0c8'; // regular grey
-  }
 };
 
 export default TrackPanelTranscript;

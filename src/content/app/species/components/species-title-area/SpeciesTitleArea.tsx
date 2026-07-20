@@ -144,7 +144,7 @@ const SpeciesTitleArea = () => {
         </div>
         {isRemoving && (
           <DeletionConfirmation
-            warningText="If you remove this species, any views you have configured will be lost — do you wish to continue?"
+            warningText="If you remove this genome, any views you have configured will be lost — do you wish to continue?"
             confirmText="Remove"
             cancelText="Do not remove"
             className={styles.speciesRemoveMessage}

@@ -24,6 +24,7 @@ export type Props = {
   disabled?: boolean;
   withReleaseInfo?: boolean;
   onClick?: (species: CommittedItem) => void;
+  onRemove?: (species: CommittedItem) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   className?: string;
@@ -34,18 +35,22 @@ const SelectedSpecies = (props: Props) => {
     props.onClick?.(props.species);
   };
 
+  const onRemove = () => {
+    props.onRemove?.(props.species);
+  };
+
   return (
     <SpeciesLozenge
       species={props.species}
       className={props.className}
       withReleaseInfo={props.withReleaseInfo}
       onClick={onClick}
-      {...getSpeciesLozengeProps(props)}
+      {...getSpeciesLozengeProps({ ...props, onRemove })}
     />
   );
 };
 
-const getSpeciesLozengeProps = (props: Props) => {
+const getSpeciesLozengeProps = (props: Props & { onRemove: () => void }) => {
   const { isActive = false, disabled } = props;
 
   // TODO: add invalid (red) species when we start having them
@@ -66,7 +71,8 @@ const getSpeciesLozengeProps = (props: Props) => {
     } as const;
   } else {
     return {
-      theme: 'blue'
+      theme: 'blue',
+      onRemove: props.onRemove
     } as const;
   }
 };

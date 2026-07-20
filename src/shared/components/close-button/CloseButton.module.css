@@ -12,11 +12,11 @@
 
 
 .icon circle {
-  fill: var(--color-blue);
+  fill: var(--close-button-background-color, var(--color-blue));
 }
 
 .icon path {
-  fill: var(--color-white);
+  fill: var(--close-button-cross-color, var(--color-white));
 }
 
 

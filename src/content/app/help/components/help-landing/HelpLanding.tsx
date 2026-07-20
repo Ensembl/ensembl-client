@@ -44,12 +44,12 @@ const AppsSection = () => {
           <div className={styles.appLabel}>
             <LabelledAppIcon app="speciesSelector" />
           </div>
-          Create &amp; manage your own species list
+          Create &amp; manage your own list of genomes
           <ul>
-            <li>opened from the launchbar at the top of every page</li>
-            <li>add as many species as you want</li>
-            <li>your species will then be available across all apps</li>
-            <li>use the species tabs to see information about each species</li>
+            <li>open from the launchbar at the top of every page</li>
+            <li>add as many genomes as you want</li>
+            <li>your genomes will then be available across all apps</li>
+            <li>use the genome tabs to see information about each genome</li>
           </ul>
         </div>
 
@@ -104,7 +104,7 @@ const StartUsingSection = () => {
       {isExpanded && (
         <div className={styles.stepsGrid}>
           <div>
-            <Step count={1} label="Find and add a species">
+            <Step count={1} label="Find and add a genome">
               <LabelledAppIcon app="speciesSelector" size="small" />
             </Step>
           </div>
@@ -146,11 +146,11 @@ const LastSection = () => {
           <div className={styles.appLabel}>
             <LabelledAppIcon app="blast" />
           </div>
-          Compare DNA or protein sequences across species
+          Compare DNA or protein sequences across genomes
           <ul>
             <li>opened from the launchbar at the top of every page</li>
-            <li>add up to 30 sequences and up to 25 species at a time</li>
-            <li>see significant sequence matches across species</li>
+            <li>add up to 30 sequences and up to 25 genomes at a time</li>
+            <li>see significant sequence matches across genomes</li>
             <li>results available for 7 days</li>
           </ul>
         </div>

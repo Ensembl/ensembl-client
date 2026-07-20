@@ -53,7 +53,7 @@ const NoResults = () => {
         </span>
       </div>
       <div className={styles.noMatchesMessage}>
-        Sorry, we don’t recognise, or may not have data for this species
+        Sorry, we don’t recognise, or may not have data for this genome
       </div>
       <SearchHelp />
     </div>
@@ -68,8 +68,8 @@ const SearchHelp = () => {
         suggest
       </p>
       <ul>
-        <li>only search for a species</li>
-        <li>use a full name where possible</li>
+        <li>only search for a genome</li>
+        <li>use the full name of a species where possible</li>
         <li>try a different name or identifier</li>
       </ul>
     </div>

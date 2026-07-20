@@ -16,6 +16,7 @@
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useMediaQuery from 'src/shared/hooks/useMediaQuery';
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
 
 import { smallViewportMediaQuery } from 'src/content/app/tools/blast/views/blast-form/blastFormConstants';
 
@@ -45,6 +46,7 @@ const BlastAppBar = () => {
   const blastView = useAppSelector(getBlastView);
   const modalView = useAppSelector(getModalView);
   const blastFormStep = useAppSelector(getBlastFormStep);
+  const { removeGenome } = useGenomeRemoval();
 
   const dispatch = useAppDispatch();
 
@@ -78,6 +80,7 @@ const BlastAppBar = () => {
           key={index}
           species={species}
           onClick={() => speciesLozengeClick(species)}
+          onRemove={removeGenome}
         />
       ))
     : speciesList.map((species, index) => (

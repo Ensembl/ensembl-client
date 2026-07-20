@@ -16,10 +16,12 @@
 
 import { Router } from 'express';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 const router = Router();
 
-router.get('/species', (_, res) => {
-  res.redirect(301, '/species-selector');
+router.get('/genome', (_, res) => {
+  res.redirect(301, urlFor.speciesSelector());
 });
 
 router.get('/help/articles', (_, res) => {

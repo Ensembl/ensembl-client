@@ -18,6 +18,8 @@ import { useSelector } from 'react-redux';
 
 import { AppName as AppNameText } from 'src/global/globalConfig';
 
+import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
+
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
@@ -36,6 +38,7 @@ type SpeciesAppBarProps = {
 const SpeciesAppBar = (props: SpeciesAppBarProps) => {
   const activeGenomeId = useSelector(getActiveGenomeId);
   const enabledCommittedSpecies = useSelector(getEnabledCommittedSpecies);
+  const { removeGenome } = useGenomeRemoval();
 
   const speciesTabs = enabledCommittedSpecies.map((species, index) => (
     <SelectedSpecies
@@ -43,6 +46,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
       species={species}
       isActive={species.genome_id === activeGenomeId}
       onClick={props.onSpeciesSelect}
+      onRemove={removeGenome}
     />
   ));
 
@@ -53,7 +57,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
       topLeft={<AppName>{AppNameText.SPECIES_SELECTOR}</AppName>}
       topRight={<SpeciesManagerIndicator />}
       mainContent={tabsSlider}
-      aside={<HelpPopupButton slug="species-homepage" />}
+      aside={<HelpPopupButton slug="genome-homepage" />}
     />
   );
 };

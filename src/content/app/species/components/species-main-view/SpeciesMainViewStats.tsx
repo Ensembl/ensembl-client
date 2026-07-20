@@ -174,7 +174,7 @@ const SpeciesMainViewStats = () => {
   const activeGenomeId = useAppSelector(getActiveGenomeId);
   const genomeUIState = useAppSelector(getActiveGenomeUIState);
   const { genomeId: genomeIdForUrl } = useUrlParams<'genomeId'>(
-    '/species/:genomeId'
+    '/genome/:genomeId'
   ) as { genomeId: string };
   const species = useAppSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)
@@ -225,7 +225,9 @@ const SpeciesMainViewStats = () => {
     isExpanded: boolean
   ) => {
     if (isExpanded) {
-      species && trackSpeciesStatsSectionOpen(species, section);
+      if (species) {
+        trackSpeciesStatsSectionOpen(species, section);
+      }
       dispatch(setActiveGenomeExpandedSections([...expandedSections, section]));
     } else {
       dispatch(

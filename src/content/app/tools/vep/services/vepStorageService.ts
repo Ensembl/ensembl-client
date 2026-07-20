@@ -22,6 +22,8 @@ import {
   TEMPORARY_VEP_SUBMISSION_STORAGE_DURATION
 } from './vepStorageServiceConstants';
 
+import { cloneFileRestoredFromIndexedDb } from 'src/shared/helpers/indexedDbHelpers';
+
 import type {
   VepSubmission,
   VepSubmissionWithoutInputFile
@@ -71,19 +73,16 @@ export const updateVepSubmission = async (
   }
 
   // The if block below is a hack due to IndexedDB (mis)behaviour in Safari.
-  // Safari seems to dislike it when you store a record one of whose fields is a file (i.e. a blob),
+  // Safari seems to dislike it when you store a record with a file (i.e. a blob),
   // and when you then retrieve that record from the db, change one of the fields that is not the file field,
   // and save it back to the db.
   // In such cases, IndexedDB in Safari (as recent as Safari 18) fails with an error:
   // 'UnknownError: Error preparing Blob/File data to be stored in object store'
   //
-  // The if block below clones the stored file into a new one. This is silly additional CPU work and memory pressure.
-  // TODO: observe in newer Safaris if this remains a problem, and remove this hack if no longer is.
+  // NOTE: this no longer seems to be a problem in Safari 26; but keeping this hack for now
   if (storedSubmission.inputFile) {
-    const fileClone = await storedSubmission.inputFile.arrayBuffer();
-    storedSubmission.inputFile = new File(
-      [fileClone],
-      storedSubmission.inputFile.name
+    storedSubmission.inputFile = await cloneFileRestoredFromIndexedDb(
+      storedSubmission.inputFile
     );
   }
 

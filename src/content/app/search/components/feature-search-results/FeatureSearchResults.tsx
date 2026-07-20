@@ -104,7 +104,7 @@ export const FeatureSearchResults = (props: {
               <span className={styles.capitalized}>{featureType}</span>
             </th>
             <th className={styles.tableHeaderForButton}>Genome Browser</th>
-            <th className={styles.tableHeaderForButton}>Entity Viewer</th>
+            <th className={styles.tableHeaderForButton}>Feature explorer</th>
           </tr>
         </thead>
         <tbody>
@@ -272,7 +272,7 @@ const FeatureSearchActionButton = (props: {
     );
   } else if (appName === 'entityViewer') {
     return (
-      <Link to={links.entityViewer.url} aria-label="view in entity viewer">
+      <Link to={links.entityViewer.url} aria-label="view in feature explorer">
         <EntityViewerIcon className={styles.appIcon} />
       </Link>
     );

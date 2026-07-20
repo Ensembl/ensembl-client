@@ -142,7 +142,7 @@ const useEntityViewerRouting = () => {
 
   useEffect(() => {
     if (!genomeIdInUrl && genomeIdForUrl) {
-      // the url is /entity-viewer; but the user has already viewed some species in EntityViewer
+      // the url is /feature-explorer; but the user has already viewed some species in Feature Explorer
       const newUrl = urlFor.entityViewer({
         genomeId: genomeIdForUrl,
         entityId: entityIdForUrl
@@ -154,7 +154,7 @@ const useEntityViewerRouting = () => {
       entityIdForUrl &&
       !entityIdInUrl
     ) {
-      // the url is /entity-viewer/:genome_id; but the user has already viewed a gene
+      // the url is /feature-explorer/:genome_id; but the user has already viewed a gene
       const replacementUrl = urlFor.entityViewer({
         genomeId: genomeIdForUrl,
         entityId: entityIdForUrl

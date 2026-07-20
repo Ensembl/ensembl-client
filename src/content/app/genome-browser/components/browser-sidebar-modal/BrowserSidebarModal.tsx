@@ -39,18 +39,14 @@ const browserSidebarModals: Record<string, ReturnType<typeof lazy>> = {
   ),
   [BrowserSidebarModalView.DOWNLOAD]: lazy(
     () => import('./modal-views/DownloadModal')
-  ),
-  [BrowserSidebarModalView.NAVIGATE]: lazy(
-    () => import('./modal-views/NavigateModal')
   )
 };
 
 export const browserSidebarModalTitles: { [key: string]: string } = {
-  [BrowserSidebarModalView.SEARCH]: 'Search this species',
+  [BrowserSidebarModalView.SEARCH]: 'Search this genome',
   [BrowserSidebarModalView.BOOKMARKS]: 'Previously viewed',
   [BrowserSidebarModalView.SHARE]: 'Share',
-  [BrowserSidebarModalView.DOWNLOAD]: 'Download',
-  [BrowserSidebarModalView.NAVIGATE]: 'Change location'
+  [BrowserSidebarModalView.DOWNLOAD]: 'Download'
 };
 
 export const BrowserSidebarModal = () => {

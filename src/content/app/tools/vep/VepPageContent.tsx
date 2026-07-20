@@ -29,7 +29,7 @@ import styles from './VepPageContent.module.css';
 const VepPageContent = () => {
   return (
     <Routes>
-      <Route path="species-selector" element={<SpeciesSelectorWrapper />} />
+      <Route path="genome-selector" element={<SpeciesSelectorWrapper />} />
       <Route path="*" element={<MainWrapper />} />
     </Routes>
   );

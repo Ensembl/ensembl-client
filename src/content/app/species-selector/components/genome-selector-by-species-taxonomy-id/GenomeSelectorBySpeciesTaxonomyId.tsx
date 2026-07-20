@@ -129,6 +129,7 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
           <TopSection
             {...props}
             genomes={genomes}
+            totalGenomesCount={data.meta.total_hits}
             stagedGenomes={stagedGenomes}
             speciesImageUrl={speciesImageUrl}
           />
@@ -171,12 +172,13 @@ const GenomeSelectorBySpeciesTaxonomyId = (props: Props) => {
 
 type TopSectionProps = Props & {
   genomes: ReturnType<typeof useSelectableGenomesTable>['genomes'];
+  totalGenomesCount: number;
   stagedGenomes: ReturnType<typeof useSelectableGenomesTable>['stagedGenomes'];
   speciesImageUrl: string | undefined;
 };
 
 const TopSection = (props: TopSectionProps) => {
-  const { genomes, stagedGenomes, speciesImageUrl } = props;
+  const { genomes, stagedGenomes, speciesImageUrl, totalGenomesCount } = props;
   const navigate = useNavigate();
 
   const onSpeciesAdd = () => {
@@ -190,7 +192,6 @@ const TopSection = (props: TopSectionProps) => {
   const selectedGenomesCount = genomes.filter(
     (genome) => genome.isSelected
   ).length;
-  const totalGenomesCount = genomes.length;
 
   return (
     <section className={styles.top}>

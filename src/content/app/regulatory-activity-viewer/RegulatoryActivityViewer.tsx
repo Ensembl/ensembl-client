@@ -90,7 +90,7 @@ const ActivityViewer = () => {
     return (
       <div className={styles.container}>
         <ActivityViewerAppBar />
-        <div>Please select species.</div>
+        <div>Please select a genome.</div>
       </div>
     );
   } else if (

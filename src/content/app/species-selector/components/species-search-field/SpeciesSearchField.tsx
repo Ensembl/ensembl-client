@@ -36,11 +36,11 @@ export const SpeciesSearchField = (props: Props) => {
   const { labelStyle = 'plain', ...otherProps } = props;
   const label =
     labelStyle === 'plain' ? (
-      'Find a species'
+      'Find a genome'
     ) : (
       <span className={styles.label}>
         <SpeciesSelectorIcon className={styles.icon} />
-        <span>Find a species</span>
+        <span>Find a genome</span>
       </span>
     );
 
@@ -58,7 +58,7 @@ export const SpeciesSearchField = (props: Props) => {
 const placeholderText = 'Common or scientific name...';
 
 const helpText = `
-Search for a species using a common name, scientific name, assembly ID or GCA.
+Search for a genome using species common name, scientific name, taxon id, or assembly id.
 If no results are shown, please try a different spelling or attribute
 `;
 

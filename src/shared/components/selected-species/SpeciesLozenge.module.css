@@ -2,12 +2,21 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 28px;
-  padding: 0 20px;
   border-width: 1px;
   border-radius: 20px;
   border-style: solid;
   user-select: none;
+}
+
+.speciesButton {
+  height: 28px;
+  padding-left: 20px;
+  padding-right: 20px;
+  color: inherit;
+}
+
+.species:has(.deleteButton) .speciesButton {
+  padding-left: 32px;
 }
 
 .themeBlue {
@@ -48,17 +57,16 @@
   line-height: 1;
 }
 
-.inner [data-part="common-name"],
-.inner [data-part="scientific-name"] {
+.inner [data-part='common-name'],
+.inner [data-part='scientific-name'] {
   font-size: 16px;
-  font-weight: var(--font-weight-bold);  
+  font-weight: var(--font-weight-bold);
 }
 
-.inner [data-part="assembly-name"],
-.inner [data-part="assembly-id"] {
+.inner [data-part='assembly-name'],
+.inner [data-part='assembly-id'] {
   font-size: 11px;
 }
-
 
 .releasePill {
   position: absolute;
@@ -70,6 +78,23 @@
   font-size: 9px;
   font-weight: var(--font-weight-bold);
   top: 0;
-  right: 12px;
+  right: var(--species-lozenge-release-pill-right, 12px);
   transform: translate(0, -65%);
+}
+
+.deleteButton {
+  --close-button-background-color: var(--color-white);
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+}
+
+.themeBlue .deleteButton {
+  --close-button-cross-color: var(--color-blue);
+}
+
+
+.themeRed {
+  --close-button-cross-color: var(--color-red);
 }

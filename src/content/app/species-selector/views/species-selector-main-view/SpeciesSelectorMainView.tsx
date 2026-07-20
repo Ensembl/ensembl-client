@@ -21,7 +21,6 @@ import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/
 import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 import { useGenomeGroupCategoriesQuery } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
@@ -43,15 +42,11 @@ const SpeciesSelectorMainView = () => {
   const canSearchFeature = committedSpecies.length > 0;
   const { trackSpeciesSearchQuery } = useSpeciesSelectorAnalytics();
   const [activeTab, setActiveTab] = useState(popularSpeciesTab);
-  const shouldShowGenomeGroupTabs = !isProductionEnvironment();
   const { currentData: genomeGroupCategoriesData } =
-    useGenomeGroupCategoriesQuery(undefined, {
-      skip: !shouldShowGenomeGroupTabs
-    });
+    useGenomeGroupCategoriesQuery();
 
-  const genomeGroupCategories = shouldShowGenomeGroupTabs
-    ? (genomeGroupCategoriesData?.group_categories ?? [])
-    : [];
+  const genomeGroupCategories =
+    genomeGroupCategoriesData?.group_categories ?? [];
   const tabs = [
     popularSpeciesTab,
     ...genomeGroupCategories.map((category) => category.display_name)

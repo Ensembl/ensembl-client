@@ -152,8 +152,8 @@ const MainContent = (props: {
 };
 
 /**
- * The intention of the hook below is such that when user switches between genomes within Entity Viewer,
- * or between Entity Viewer and other pages on the site, we could reconstruct the allele
+ * The intention of the hook below is such that when user switches between genomes within Feature Explorer,
+ * or between Feature Explorer and other pages on the site, we could reconstruct the allele
  * that the user was viewing, and the view that they used to inspect that allele.
  */
 const useVariantViewRouting = (params: {

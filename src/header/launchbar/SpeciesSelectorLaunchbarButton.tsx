@@ -37,10 +37,10 @@ const SpeciesSelectorLaunchbarButton = () => {
   return (
     <LaunchbarButton
       path={urlHelper.speciesSelector()}
-      description="Species selector"
+      description="Genome selector"
       icon={SpeciesSelectorIcon}
       enabled={true}
-      isActive={['species', 'species-selector'].includes(firstPathnamePart)}
+      isActive={['genome', 'genome-selector'].includes(firstPathnamePart)}
       isClickableWhenActive={true}
     />
   );

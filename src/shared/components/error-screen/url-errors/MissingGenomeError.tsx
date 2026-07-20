@@ -82,7 +82,7 @@ const InvalidSpeciesError = (props: InvalidSpeciesErrorProps) => {
       <main className={styles.main}>
         <AlertButton className={styles.alertButton} />
         <div className={styles.errorMessage}>
-          This species is no longer available
+          This genome is no longer available
         </div>
         <div className={styles.suggestion}>
           Any invalid genomes and their site configurations will be removed

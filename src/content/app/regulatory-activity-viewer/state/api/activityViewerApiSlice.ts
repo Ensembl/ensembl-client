@@ -91,7 +91,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       query: (params) => {
         const { assemblyId } = params;
         return {
-          url: `${config.regulationApiBaseUrl}/annotation/v0.10/release/${releaseName}/assembly/${assemblyId}/availability`
+          url: `${config.regulationApiBaseUrl}/annotation/v0.11/release/${releaseName}/assembly/${assemblyId}/availability`
         };
       }
     }),
@@ -99,7 +99,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       query: (params) => {
         const { assemblyId, location } = params;
         return {
-          url: `${config.regulationApiBaseUrl}/annotation/v0.10/release/${releaseName}/assembly/${assemblyId}?location=${location}`
+          url: `${config.regulationApiBaseUrl}/annotation/v0.11/release/${releaseName}/assembly/${assemblyId}?location=${location}`
         };
       }
     }),
@@ -107,7 +107,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       queryFn: async (params, _, __, baseQuery) => {
         const { assemblyId, geneId } = params;
         try {
-          const url = `${config.regulationApiBaseUrl}/annotation/v0.10/release/${releaseName}/assembly/${assemblyId}/gene/${geneId}`;
+          const url = `${config.regulationApiBaseUrl}/annotation/v0.11/release/${releaseName}/assembly/${assemblyId}/gene/${geneId}`;
           const result = await baseQuery(url);
           return {
             data: result.data as FocusGene
@@ -124,7 +124,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
     }),
     baseEpigenomes: builder.query<Epigenome[], BaseEpigenomesRequestParams>({
       query: (params) => ({
-        url: `${config.regulationApiBaseUrl}/epigenomes/v0.7/release/${releaseName}/base_epigenomes/assembly/${params.assemblyId}`
+        url: `${config.regulationApiBaseUrl}/epigenomes/v0.8/release/${releaseName}/base_epigenomes/assembly/${params.assemblyId}`
       })
     }),
     epigenomeMetadataDimensions: builder.query<
@@ -132,7 +132,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
       EpigenomeMetadataRequestParams
     >({
       query: (params) => ({
-        url: `${config.regulationApiBaseUrl}/epigenomes/v0.7/release/${releaseName}/metadata_dimensions/assembly/${params.assemblyId}`
+        url: `${config.regulationApiBaseUrl}/epigenomes/v0.8/release/${releaseName}/metadata_dimensions/assembly/${params.assemblyId}`
       })
     }),
     epigenomesActivity: builder.query<
@@ -141,7 +141,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
     >({
       queryFn: async (params, _, __, baseQuery) => {
         const { assemblyId, epigenomeIds, locations, regionName } = params;
-        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.7/release/${releaseName}/region_activity/assembly/${assemblyId}`;
+        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.8/release/${releaseName}/region_activity/assembly/${assemblyId}`;
         const requestBody = {
           region_name: regionName,
           locations,
@@ -172,7 +172,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
     >({
       queryFn: async (params, _, __, baseQuery) => {
         const { assemblyId, epigenomeIds, combiningDimensions } = params;
-        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.7/release/${releaseName}/labels/assembly/${assemblyId}`;
+        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.8/release/${releaseName}/labels/assembly/${assemblyId}?add_nbsp=true`;
         const requestBody = {
           collapsed_by: combiningDimensions,
           epigenome_ids: prepareEpigenomeIdsForRequest(epigenomeIds)
@@ -202,7 +202,7 @@ const activityViewerApiSlice = restApiSlice.injectEndpoints({
     >({
       queryFn: async (params, _, __, baseQuery) => {
         const { assemblyId, epigenomeIds, geneId } = params;
-        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.7/release/${releaseName}/gene_activity/assembly/${assemblyId}/gene/${geneId}`;
+        const url = `${config.regulationApiBaseUrl}/epigenomes/v0.8/release/${releaseName}/gene_activity/assembly/${assemblyId}/gene/${geneId}`;
         const requestBody = {
           epigenome_ids: prepareEpigenomeIdsForRequest(epigenomeIds)
         };

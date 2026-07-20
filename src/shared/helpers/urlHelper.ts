@@ -53,12 +53,12 @@ type SpeciesSelectorSearchParams = {
 };
 
 export const speciesPage = (params: SpeciesPageUrlParams) => {
-  const speciesPageRootPath = '/species';
+  const speciesPageRootPath = '/genome';
 
   return `${speciesPageRootPath}/${params.genomeId}`;
 };
 
-const speciesSelectorPath = '/species-selector';
+const speciesSelectorPath = '/genome-selector';
 
 export const speciesSelector = () => speciesSelectorPath;
 
@@ -121,12 +121,12 @@ export const browser = (params?: BrowserUrlParams) => {
 export const entityViewer = (params?: EntityViewerUrlParams) => {
   if (!params?.genomeId && params?.entityId) {
     // this should never happen; this combination doesn't make sense
-    throw 'Malformed Entity Viewer url';
+    throw 'Malformed Feature Explorer url';
   }
 
   const genomeId = params?.genomeId || '';
   const entityId = params?.entityId || '';
-  let path = '/entity-viewer';
+  let path = '/feature-explorer';
   if (genomeId) {
     path += `/${genomeId}`;
   }
@@ -151,7 +151,7 @@ export const entityViewerTranscript = (params: {
   view?: string | null;
 }) => {
   const { genomeId, transcriptId } = params;
-  const pathname = `/entity-viewer/${genomeId}/${transcriptId}`;
+  const pathname = `/feature-explorer/${genomeId}/${transcriptId}`;
   const urlSearchParams = new URLSearchParams('');
   if (params?.view) {
     urlSearchParams.append('view', params.view);
@@ -169,11 +169,11 @@ export const entityViewerVariant = (params?: {
 }) => {
   if (!params?.genomeId && params?.variantId) {
     // this should never happen
-    throw 'Invalid parameters combination for Entity Viewer variant url';
+    throw 'Invalid parameters combination for Feature Explorer variant url';
   }
   const genomeId = params?.genomeId || '';
   const variantId = params?.variantId || '';
-  let path = '/entity-viewer';
+  let path = '/feature-explorer';
 
   const variantIdForUrl = variantId.startsWith('variant:')
     ? variantId
@@ -260,7 +260,7 @@ export const blastSubmission = (submissionId: string) =>
 
 export const vepForm = () => '/vep';
 
-export const vepSpeciesSelector = () => '/vep/species-selector';
+export const vepSpeciesSelector = () => '/vep/genome-selector';
 
 export const vepUnviewedSubmissionsList = () => '/vep/unviewed-submissions';
 

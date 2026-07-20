@@ -15,13 +15,14 @@
  */
 
 import classNames from 'classnames';
-import type { RefObject } from 'react';
 
 import { getDisplayStableId } from 'src/shared/helpers/focusObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
 import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
+
+import type { Variety } from './types';
 
 import styles from './FeatureSummaryStrip.module.css';
 
@@ -37,19 +38,27 @@ type Gene = Pick<FocusGene, GeneFields>;
 type Props = {
   gene: Gene;
   className?: string;
-  ref?: RefObject<HTMLDivElement | null>;
+  variety?: Variety;
 };
 
 const GeneSummaryStrip = (props: Props) => {
-  const { gene, className: classNameFromProps, ref } = props;
+  const { gene, className: classNameFromProps, variety = 'default' } = props;
 
   const componentClasses = classNames(
     styles.featureSummaryStrip,
     classNameFromProps
   );
 
+  if (variety === 'minimal') {
+    return (
+      <div className={componentClasses}>
+        <GeneName gene={gene} />
+      </div>
+    );
+  }
+
   return (
-    <div className={componentClasses} ref={ref}>
+    <div className={componentClasses}>
       <GeneName gene={gene} />
       <Biotype gene={gene} />
       {gene.strand && (

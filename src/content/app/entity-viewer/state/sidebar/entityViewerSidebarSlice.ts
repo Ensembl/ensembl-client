@@ -20,18 +20,12 @@ import {
   type Action,
   type ThunkAction
 } from '@reduxjs/toolkit';
-import merge from 'lodash/merge';
-import mergeWith from 'lodash/mergeWith';
 
-import {
-  getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEntityId
-} from '../general/entityViewerGeneralSelectors';
+import { getEntityViewerActiveGenomeId } from '../general/entityViewerGeneralSelectors';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { Status } from 'src/shared/types/status';
 import type { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
-import type JSONValue from 'src/shared/types/JSON';
 import type { RootState } from 'src/store';
 
 export type ToggleStatus = Status.OPEN | Status.CLOSED;
@@ -54,11 +48,6 @@ export type EntityViewerSidebarState = Readonly<{
 export type EntityViewerSidebarGenomeState = Readonly<{
   status: ToggleStatus;
   selectedTabName: SidebarTabName;
-  entities: {
-    [entityId: string]: {
-      uiState: EntityViewerSidebarUIState;
-    };
-  };
   sidebarModalView: SidebarModalView | null;
 }>;
 
@@ -110,22 +99,6 @@ export const openSidebar = () => toggleSidebar(Status.OPEN);
 
 export const closeSidebar = () => toggleSidebar(Status.CLOSED);
 
-export const updateEntityUI =
-  (
-    fragment: Partial<EntityViewerSidebarUIState>
-  ): ThunkAction<void, RootState, void, Action<string>> =>
-  (dispatch, getState) => {
-    const state = getState();
-    const genomeId = getEntityViewerActiveGenomeId(state);
-    const entityId = getEntityViewerActiveEntityId(state);
-
-    if (!genomeId || !entityId) {
-      return;
-    }
-
-    dispatch(updateEntityUIState({ genomeId, entityId, fragment }));
-  };
-
 export const openSidebarModal =
   (
     sidebarModalView: SidebarModalView
@@ -174,7 +147,6 @@ export const buildInitialStateForGenome = (
   [genomeId]: {
     status: Status.OPEN,
     selectedTabName: SidebarTabName.OVERVIEW,
-    entities: {},
     sidebarModalView: null
   }
 });
@@ -199,40 +171,16 @@ const entityViewerSidebarSlice = createSlice({
       const { genomeId, fragment: newFragment } = action.payload;
       const oldStateFragment =
         state[genomeId] || buildInitialStateForGenome(genomeId)[genomeId];
-      const updatedFragment = merge({}, oldStateFragment, newFragment);
-      state[genomeId] = updatedFragment;
-    },
-    updateEntityUIState(
-      state,
-      action: PayloadAction<{
-        genomeId: string;
-        entityId: string;
-        fragment: Partial<EntityViewerSidebarUIState>;
-      }>
-    ) {
-      const { genomeId, entityId, fragment: newFragment } = action.payload;
-
-      if (!state[genomeId]) {
-        return; // this should never happen; but the action is meaningless if it does
-      }
-
-      // We need to overwrite the arrays instead of merging them so that it is easier to remove entries
-      const overwriteArray = (objValue: JSONValue, srcValue: JSONValue) => {
-        if (Array.isArray(objValue)) {
-          return srcValue;
-        }
+      const updatedFragment = {
+        ...oldStateFragment,
+        ...newFragment
       };
-
-      mergeWith(
-        state[genomeId].entities[entityId].uiState,
-        newFragment,
-        overwriteArray
-      );
+      state[genomeId] = updatedFragment;
     }
   }
 });
 
-export const { initializeSidebar, updateGenomeState, updateEntityUIState } =
+export const { initializeSidebar, updateGenomeState } =
   entityViewerSidebarSlice.actions;
 
 export default entityViewerSidebarSlice.reducer;

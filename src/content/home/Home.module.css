@@ -117,29 +117,24 @@
 }
 
 .appListItem .button {
-  display: block;
+  display: flex;
   position: relative;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.2rem;
   width: 221px;
   height: 40px;
+  padding-left: 16px; /* half the width of an app icon */
   background-color: var(--color-blue);
   color: var(--color-white);
   border-radius: 6px;
   text-align: center;
-  padding: 5px;
   font-size: 18px;
   font-weight: var(--font-weight-bold);
 }
 
-.appListItem .button span {
-  margin-left: -20px;
-}
-
 .appIconWrapper {
   font-size: 0;
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
 }
 
 .appListItem .bottomText {
