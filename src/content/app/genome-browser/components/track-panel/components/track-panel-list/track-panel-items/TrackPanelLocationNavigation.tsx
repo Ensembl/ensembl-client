@@ -15,7 +15,7 @@
  */
 
 import { useState, useId, type InputEvent, type KeyboardEvent } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 
 import { useAppDispatch, useAppSelector, type AppDispatch } from 'src/store';
 

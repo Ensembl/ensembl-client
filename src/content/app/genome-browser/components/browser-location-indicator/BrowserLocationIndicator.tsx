@@ -15,7 +15,7 @@
  */
 
 import { useState, useRef, type InputEvent, type SubmitEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
