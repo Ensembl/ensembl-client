@@ -1,5 +1,4 @@
 User-agent: *
 Disallow: /genome-browser/
-Disallow: /blast/
-Disallow: /vep/
+Disallow: /tools/
 Disallow: /genome-selector/search

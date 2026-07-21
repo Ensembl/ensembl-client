@@ -25,7 +25,7 @@ import useLastVisitedPath from './useLastVisitedPath';
 import LaunchbarButtonWithNotification from './LaunchbarButtonWithNotification';
 import { BlastIcon } from 'src/shared/components/app-icon';
 
-const BLAST_APP_ROOT_PATH = '/blast';
+const BLAST_APP_ROOT_PATH = '/tools/blast';
 
 const BlastLaunchbarButton = () => {
   const unviewedSubmissions = useAppSelector(getUnviewedBlastSubmissions);

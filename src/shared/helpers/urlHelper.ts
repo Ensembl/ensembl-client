@@ -249,25 +249,27 @@ export const structuralVariantsViewer = (params?: {
   return query ? `${pathname}?${query}` : pathname;
 };
 
-export const blastForm = () => '/blast';
+export const blastForm = () => '/tools/blast';
 
-export const blastUnviewedSubmissions = () => '/blast/unviewed-submissions';
+export const blastUnviewedSubmissions = () =>
+  '/tools/blast/unviewed-submissions';
 
-export const blastSubmissionsList = () => '/blast/submissions';
+export const blastSubmissionsList = () => '/tools/blast/submissions';
 
 export const blastSubmission = (submissionId: string) =>
-  `/blast/submissions/${submissionId}`;
+  `/tools/blast/submissions/${submissionId}`;
 
-export const vepForm = () => '/vep';
+export const vepForm = () => '/tools/vep';
 
-export const vepSpeciesSelector = () => '/vep/genome-selector';
+export const vepSpeciesSelector = () => '/tools/vep/genome-selector';
 
-export const vepUnviewedSubmissionsList = () => '/vep/unviewed-submissions';
+export const vepUnviewedSubmissionsList = () =>
+  '/tools/vep/unviewed-submissions';
 
-export const vepSubmissionsList = () => '/vep/submissions';
+export const vepSubmissionsList = () => '/tools/vep/submissions';
 
 export const vepResults = ({ submissionId }: { submissionId: string }) =>
-  `/vep/submissions/${submissionId}`;
+  `/tools/vep/submissions/${submissionId}`;
 
 type RefgetUrlParams = {
   checksum: string;
