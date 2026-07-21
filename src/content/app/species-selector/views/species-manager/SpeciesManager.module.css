@@ -60,7 +60,7 @@
   .mainContentTop {
     grid-template-areas:
       "genome-label-selector search-field add-genome-button"
-      ".                     .            delete-button";
+      ". . delete-button";
     grid-template-columns: auto auto 1fr;
     row-gap: 20px;
   }
