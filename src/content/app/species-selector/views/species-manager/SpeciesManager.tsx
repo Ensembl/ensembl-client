@@ -72,7 +72,7 @@ const SpeciesManager = () => {
           hasSelectedGenomes={!!selectedAvailableGenomeIds.length}
           onRemoveSelectedGenomes={removeSelectedGenomes}
         />
-        <div className={styles.genomesTableContainerOuter}>
+        <div className={styles.genomesTableContainer}>
           <SelectedGenomesTable
             allSelectedGenomes={allSelectedGenomes}
             filteredGenomes={filteredGenomes}

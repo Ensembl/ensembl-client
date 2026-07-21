@@ -74,18 +74,8 @@
 /* A vertically scrollable container, with a right padding
    that puts some space between the table of genomes and the vertical scrollbar
 */
-.genomesTableContainerOuter {
+.genomesTableContainer {
   height: 100%;
   overflow: auto;
   padding-bottom: var(--global-padding-bottom);
-  /* padding-right: 20px; */
-}
-
-/* A horizontally scrollable container.
-   It complements the .genomesTableContainerOuter such that
-   none of the table content can be seen crossing behind the right sticky columns
-   and into the right padding of the outer container.
-*/
-.genomesTableContainerInner {
-  overflow-x: auto;
 }
