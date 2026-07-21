@@ -1,52 +1,81 @@
 .container {
   display: grid;
-  grid-template-columns: max-content;
-  grid-template-rows: minmax(60px, auto) 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  row-gap: 35px;
+  box-sizing: border-box;
   height: 100%;
   padding-left: var(--double-standard-gutter);
+  width: max-content;
+  max-width: calc(100vw - 90px);
+  min-width: 890px;
 }
 
 .mainContentTop {
-  display: flex;
-  align-items: flex-start;
-  column-gap: 90px;
+  --gap-width: clamp(40px, 7vw, 90px);
+  display: grid;
+  grid-template-areas:
+    "genome-label-selector search-field add-genome-button delete-button";
+  grid-template-columns: auto auto auto 1fr;
 }
 
 .addSpeciesButton {
   --add-button-icon-color: var(--color-green);
   --add-button-label-color: var(--color-black);
-  position: sticky;
-  right: calc(16px + 45px); /* 16px is the diameter of the close button; and 45px is minimum allowed distance between add button and close button */
+  height: 30px;
+  margin-left: var(--gap-width);
 }
 
-.mainContentTopRight {
-  display: flex;
-  column-gap: var(--double-standard-gutter);
-  justify-content: space-between;
-  flex-grow: 1;
+.filterField {
+  --shaded-input-width: 180px;
+  margin-left: var(--gap-width);
 }
 
-.filterFieldWrapper {
+.removeGenomesButtonWrapper {
+  grid-area: delete-button;
   display: flex;
-  align-items: center;
+  column-gap: 10px;
+  justify-self: end;
+  margin-left: var(--gap-width);
+}
+
+.removeGenomesIcon {
+  width: 18px;
+  aspect-ratio: 1;
+  fill: var(--color-black);
+}
+
+.removeGenomesButtonWrapper:has(button:disabled) {
+  .removeGenomesIcon {
+    fill: var(--color-grey);
+  }
+}
+
+.removeGenomesButton {
+  --primary-button-color: var(--color-red);
+  --button-border: 1px solid var(--color-red);
+}
+
+@media (width < 1200px) {
+  .mainContentTop {
+    grid-template-areas:
+      "genome-label-selector search-field add-genome-button"
+      ". . delete-button";
+    grid-template-columns: auto auto 1fr;
+    row-gap: 20px;
+  }
+
+  .addSpeciesButton {
+    margin-left: initial;
+    justify-self: end;
+  }
 }
 
 /* A vertically scrollable container, with a right padding
    that puts some space between the table of genomes and the vertical scrollbar
 */
-.genomesTableContainerOuter {
+.genomesTableContainer {
   height: 100%;
-  overflow-y: auto;
+  overflow: auto;
   padding-bottom: var(--global-padding-bottom);
-  max-width: calc(100vw - 90px);
-  padding-right: 20px;
-}
-
-/* A horizontally scrollable container.
-   It complements the .genomesTableContainerOuter such that
-   none of the table content can be seen crossing behind the right sticky columns
-   and into the right padding of the outer container.
-*/
-.genomesTableContainerInner {
-  overflow-x: auto;
 }

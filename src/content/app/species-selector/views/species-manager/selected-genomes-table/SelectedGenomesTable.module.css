@@ -1,40 +1,43 @@
 .table {
   --table-background: var(--color-light-grey);
+  --selection-column-width: 104px;
 }
 
 .table th {
   white-space: nowrap;
 }
 
-/* the first column contains just the home icon; no need for a regular wide padding */
+/* the first column contains row selectors */
 .table th:nth-child(1),
 .table td:nth-child(1) {
+  --table-column-head-padding-right: 20px;
+  --table-cell-padding-right: 20px;
+}
+
+.tableCellCheckboxWrapper {
+  display: flex;
+  align-items: center;
+}
+
+/* the second column contains just the home icon; no need for a regular wide padding */
+.table th:nth-child(2),
+.table td:nth-child(2) {
   --table-column-head-padding-right: 10px;
   --table-column-head-padding-left: 10px;
   --table-cell-padding-left: 0;
   --table-cell-padding-right: 0;
 }
 
-/* two last columns contain only narrow icons; no need for a regular wide padding */
-.table th:nth-child(9),
+/* the last column contains only a narrow toggle; no need for a regular wide padding */
 .table th:nth-child(10),
-.table td:nth-child(9),
 .table td:nth-child(10) {
   --table-column-head-padding-right: 10px;
   --table-column-head-padding-left: 10px;
   --table-cell-padding-left: 0;
   --table-cell-padding-right: 0;
   position: sticky;
-  background-color: var(--color-light-grey);
-}
-
-.table th:nth-child(10),
-.table td:nth-child(10) {
   right: 0;
-}
-
-.disabledRow {
-  color: var(--color-medium-dark-grey);
+  background-color: var(--color-light-grey);
 }
 
 .alignCenter {
@@ -52,28 +55,4 @@
   aspect-ratio: 1;
   padding: 2px;
   font-size: 0; /* to remove the empty vertical space around the home icon and better center it vertically */
-}
-
-.disabledRow .homeIcon {
-  fill: var(--color-medium-dark-grey);
-}
-
-.removalRow {
-  --table-row-border-color: transparent;
-  --table-cell-padding-top: 0;
-}
-
-.removalRowContent {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  column-gap: 20px;
-}
-
-.removalWarning {
-  color: var(--color-red);
-}
-
-.cancelGenomeRemoval {
-  color: var(--color-blue);
 }
