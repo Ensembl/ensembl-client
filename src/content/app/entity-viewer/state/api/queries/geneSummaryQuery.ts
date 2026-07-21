@@ -15,7 +15,7 @@
  */
 
 import { gql } from 'graphql-request';
-import { Pick3 } from 'ts-multipick';
+import type { Pick3 } from 'ts-multipick';
 
 import type { FullGene } from 'src/shared/types/core-api/gene';
 

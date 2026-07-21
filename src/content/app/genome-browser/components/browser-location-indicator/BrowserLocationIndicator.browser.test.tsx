@@ -19,7 +19,7 @@ import { page, userEvent } from 'vitest/browser';
 import { faker } from '@faker-js/faker';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { MemoryRouter, useLocation } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router';
 import { setupWorker } from 'msw/browser';
 import { http, HttpResponse, passthrough } from 'msw';
 import merge from 'lodash/fp/merge';

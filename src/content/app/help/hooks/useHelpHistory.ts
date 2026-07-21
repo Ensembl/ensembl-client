@@ -15,7 +15,7 @@
  */
 
 import { useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 /**
  * React-router uses the `history` library (maintained by the same team),

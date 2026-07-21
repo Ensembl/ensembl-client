@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import classNames from 'classnames';
 
 import VideoIcon from 'static/icons/icon_video.svg';

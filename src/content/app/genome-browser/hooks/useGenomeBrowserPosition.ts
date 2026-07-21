@@ -16,7 +16,7 @@
 
 import { useEffect, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';

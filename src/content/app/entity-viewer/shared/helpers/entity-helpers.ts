@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Pick2, Pick3 } from 'ts-multipick';
+import type { Pick2, Pick3 } from 'ts-multipick';
 
 import type { Slice } from 'src/shared/types/core-api/slice';
 import type { PhasedExon, Exon } from 'src/shared/types/core-api/exon';

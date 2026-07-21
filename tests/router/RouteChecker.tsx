@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useLocation, Location, useNavigationType } from 'react-router-dom';
+import { useLocation, Location, useNavigationType } from 'react-router';
 
 /**
  * A utility component that passes the current location received from react-router

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import { useAppSelector } from 'src/store';
 

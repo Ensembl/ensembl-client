@@ -17,7 +17,7 @@
 import { ReactNode } from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
-import { Pick2, Pick3 } from 'ts-multipick';
+import type { Pick2, Pick3 } from 'ts-multipick';
 
 import type { FullTranscript } from 'src/shared/types/core-api/transcript';
 import type { SplicedExon } from 'src/shared/types/core-api/exon';

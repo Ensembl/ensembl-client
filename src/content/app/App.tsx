@@ -15,7 +15,7 @@
  */
 
 import { Suspense, useEffect, memo } from 'react';
-import { useLocation, useRoutes } from 'react-router-dom';
+import { useLocation, useRoutes } from 'react-router';
 import { useDispatch } from 'react-redux';
 
 import routesConfig from 'src/routes/routesConfig';
