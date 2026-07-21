@@ -16,6 +16,7 @@
 
 import {
   useState,
+  useCallback,
   type DetailedHTMLProps,
   type ButtonHTMLAttributes
 } from 'react';
@@ -79,10 +80,10 @@ const RemoveButton = ({ onRemove }: { onRemove: Props['onRemove'] }) => {
     null
   );
 
-  const buttonRef = (element: HTMLButtonElement) => {
+  const buttonRef = useCallback((element: HTMLButtonElement) => {
     setButtonElement(element);
     return () => setButtonElement(null);
-  };
+  }, []);
 
   return (
     <>

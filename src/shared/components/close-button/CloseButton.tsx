@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { memo, type ComponentProps } from 'react';
 import classNames from 'classnames';
-import type { ComponentProps } from 'react';
 
 import CloseIcon from 'static/icons/icon_close.svg';
 
@@ -78,4 +78,4 @@ export const CloseButtonWithLabel = (
   );
 };
 
-export default CloseButton;
+export default memo(CloseButton);

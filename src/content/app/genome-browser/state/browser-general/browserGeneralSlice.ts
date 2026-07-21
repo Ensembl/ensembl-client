@@ -21,7 +21,6 @@ import {
   type PayloadAction,
   type ThunkAction
 } from '@reduxjs/toolkit';
-import { batch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browserStorageService';
@@ -83,33 +82,33 @@ export const setDataFromUrlAndSave: ActionCreator<
   const currentActiveGenomeId = getBrowserActiveGenomeId(state);
   const currentActiveFocusObjectId = getBrowserActiveFocusObjectId(state);
 
-  batch(() => {
-    // update previously viewed objects before active genome id or active focus object id have changed
-    if (
-      activeGenomeId === currentActiveGenomeId &&
-      activeFocusObjectId !== currentActiveFocusObjectId
-    ) {
-      dispatch(updatePreviouslyViewedObjectsAndSave());
-    }
-    if (
-      activeFocusObjectId &&
-      activeFocusObjectId !== currentActiveFocusObjectId
-    ) {
-      dispatch(
-        updateTrackPanelTabForNewFocusObject({
-          genomeId: activeGenomeId,
-          focusObjectId: activeFocusObjectId
-        })
-      );
-    }
+  // update previously viewed objects before active genome id or active focus object id have changed
+  if (
+    activeGenomeId === currentActiveGenomeId &&
+    activeFocusObjectId !== currentActiveFocusObjectId
+  ) {
+    dispatch(updatePreviouslyViewedObjectsAndSave());
+  }
+  if (
+    activeFocusObjectId &&
+    activeFocusObjectId !== currentActiveFocusObjectId
+  ) {
+    dispatch(
+      updateTrackPanelTabForNewFocusObject({
+        genomeId: activeGenomeId,
+        focusObjectId: activeFocusObjectId
+      })
+    );
+  }
 
-    dispatch(browserGeneralSlice.actions.setDataFromUrl(payload));
-    dispatch(setInitialTrackPanelDataForGenome(payload));
-  });
+  dispatch(browserGeneralSlice.actions.setDataFromUrl(payload));
+  dispatch(setInitialTrackPanelDataForGenome(payload));
 
   browserStorageService.saveActiveGenomeId(activeGenomeId);
-  chrLocation &&
+
+  if (chrLocation) {
     browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });
+  }
 
   if (activeFocusObjectId) {
     browserStorageService.updateActiveFocusObjectIds({
