@@ -21,6 +21,10 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { checkNeedToUpdateGenomes } from 'src/shared/validators/genomeValidators';
 
 import {
+  getReleaseInfo,
+  saveReleaseInfo
+} from 'src/shared/services/generalStorageService';
+import {
   getAllSelectedSpecies,
   saveMultipleSelectedSpecies,
   deleteSelectedSpeciesById
@@ -32,6 +36,33 @@ import browserStorageService from './content/app/genome-browser/services/browser
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
 import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
+import type { Release } from 'src/shared/types/release';
+
+export const checkRelease = async () => {
+  try {
+    const storedReleaseInfo = await getReleaseInfo();
+    const releaseUrl = `${config.metadataApiBaseUrl}/releases?current_only=true`;
+    const currentReleases: Release[] = await fetch(releaseUrl).then(
+      (response) => response.json()
+    );
+    const areSameReleases = currentReleases.every((release) =>
+      Boolean(storedReleaseInfo.find((r) => r.name === release.name))
+    );
+
+    if (!areSameReleases) {
+      // as a side effect, store newly fetched releases if they are different from the locally stored
+      await saveReleaseInfo(currentReleases);
+    }
+
+    return {
+      hasReleaseChanged: !areSameReleases
+    };
+  } catch {
+    return {
+      hasReleaseChanged: false
+    };
+  }
+};
 
 export const checkGenomes = async () => {
   try {

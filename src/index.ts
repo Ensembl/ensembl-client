@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-<<<<<<< HEAD
-import { StrictMode } from 'react';
-import { hydrateRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router';
-=======
 import { isUnsupportedBrowser } from 'src/shared/helpers/browserSupport';
-import { checkGenomes } from './checkGenomes';
->>>>>>> 978280bf (Check locally stored genomes when the app initialises, and update them if needed)
+import { checkRelease, checkGenomes } from './checkGenomes';
 
 const main = async () => {
   if (isUnsupportedBrowser()) {
@@ -31,7 +24,10 @@ const main = async () => {
   }
 
   // run checks for genomes
-  await checkGenomes();
+  const { hasReleaseChanged } = await checkRelease();
+  if (hasReleaseChanged) {
+    await checkGenomes();
+  }
 
   await import('./initialiseClient');
 };
