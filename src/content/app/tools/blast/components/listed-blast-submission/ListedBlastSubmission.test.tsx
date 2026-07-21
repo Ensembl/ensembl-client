@@ -20,6 +20,8 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import * as blastStorageService from 'src/content/app/tools/blast/services/blastStorageService';
 import { BLAST_RESULTS_AVAILABILITY_DURATION } from 'src/content/app/tools/blast/services/blastStorageServiceConstants';
 import { UNAVAILABLE_RESULTS_WARNING } from 'src/content/app/tools/shared/constants/displayedMessages';
@@ -201,7 +203,7 @@ describe('BlastSubmissionHeader', () => {
         expect(buttonLink).toBeTruthy();
         expect(buttonLink.tagName.toLowerCase()).toBe('a');
         expect(buttonLink.getAttribute('href')).toBe(
-          `/blast/submissions/${submission.id}`
+          urlFor.blastSubmission(submission.id)
         );
       });
     });
