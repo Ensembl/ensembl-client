@@ -108,12 +108,12 @@ const routes: RouteConfig[] = [
     element: <ActivityViewerPage />
   },
   {
-    path: '/blast/*',
+    path: '/tools/blast/*',
     element: <BlastPage />,
     serverFetch: blastServerFetch
   },
   {
-    path: '/vep/*',
+    path: '/tools/vep/*',
     element: <VepPage />,
     serverFetch: vepServerFetch
   },

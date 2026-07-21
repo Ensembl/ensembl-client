@@ -25,7 +25,7 @@ import { VepIcon } from 'src/shared/components/app-icon';
 
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 
-const VEP_APP_ROOT_PATH = '/vep';
+const VEP_APP_ROOT_PATH = '/tools/vep';
 
 /**
  * Similarly to BlastLaunchbarButton, this button will show a dot
