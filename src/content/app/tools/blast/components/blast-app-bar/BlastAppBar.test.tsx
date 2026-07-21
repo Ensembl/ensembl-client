@@ -15,7 +15,7 @@
  */
 
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { configureStore } from '@reduxjs/toolkit';
 import { render, getByText } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

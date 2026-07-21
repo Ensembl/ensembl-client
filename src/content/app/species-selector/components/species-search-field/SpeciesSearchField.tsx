@@ -15,7 +15,7 @@
  */
 
 import { useState, type InputEvent } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import MainSearchField from 'src/shared/components/main-search-field/MainSearchField';
 

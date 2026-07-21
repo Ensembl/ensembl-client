@@ -24,7 +24,7 @@ import { EntityViewerSidebarBookmarks } from './EntityViewerBookmarks';
 
 const mockGenomeId = 'human'; // to be picked up by the test runner
 
-vi.mock('react-router-dom', () => ({
+vi.mock('react-router', () => ({
   Link: (props: any) => (
     <a className="link" href={props.to}>
       {props.children}

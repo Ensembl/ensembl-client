@@ -15,7 +15,7 @@
  */
 
 import upperFirst from 'lodash/upperFirst';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';

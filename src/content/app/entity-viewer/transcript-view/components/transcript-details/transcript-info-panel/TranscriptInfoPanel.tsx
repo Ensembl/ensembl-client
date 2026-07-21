@@ -15,7 +15,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router';
 import classNames from 'classnames';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';

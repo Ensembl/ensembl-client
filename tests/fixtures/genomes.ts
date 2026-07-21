@@ -50,7 +50,6 @@ const createTrack = (): GenomicTrack => {
     trigger: ['track', 'gene-pc-fwd'],
     type: 'gene',
     additional_info: faker.lorem.words(),
-    colour: 'DARK_GREY',
     label: faker.lorem.words(),
     on_by_default: true,
     display_order: 1,

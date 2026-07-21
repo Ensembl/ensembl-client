@@ -23,7 +23,7 @@ import GeneOverview from './GeneOverview';
 const mockGenomeId = 'genome_id';
 const mockGeneId = 'unversioned_gene_id';
 
-vi.mock('react-router-dom', () => ({
+vi.mock('react-router', () => ({
   useParams: vi.fn(() => ({
     params: {
       entityId: mockGenomeId,

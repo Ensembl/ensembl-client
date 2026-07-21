@@ -15,7 +15,7 @@
  */
 
 import { gql } from 'graphql-request';
-import { Pick2 } from 'ts-multipick';
+import type { Pick2 } from 'ts-multipick';
 
 import type { Region } from 'src/shared/types/core-api/slice';
 

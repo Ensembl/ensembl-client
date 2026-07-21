@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Pick2 } from 'ts-multipick';
+import type { Pick2 } from 'ts-multipick';
 
 import {
   getSplicedRNALength,

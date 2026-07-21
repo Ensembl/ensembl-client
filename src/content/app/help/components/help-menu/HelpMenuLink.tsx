@@ -20,7 +20,7 @@
 // if we discover a need to reuse it.
 
 import { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 type Props = {
   to: string;

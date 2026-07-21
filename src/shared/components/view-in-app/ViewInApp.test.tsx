@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MemoryRouter, Location } from 'react-router-dom';
+import { MemoryRouter, Location } from 'react-router';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import sampleSize from 'lodash/sampleSize';

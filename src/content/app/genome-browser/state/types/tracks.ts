@@ -44,7 +44,6 @@ export type GenomicTrack = {
   type: GenomicTrackType;
   trigger: string[]; // <-- see the note about triggers above
   label: string;
-  colour: string; // NOTE: the backend will want to get rid of this field
   additional_info: string;
   description: string;
   on_by_default: boolean;

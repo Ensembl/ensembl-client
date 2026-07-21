@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 

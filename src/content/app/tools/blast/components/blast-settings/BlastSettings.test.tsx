@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { render, act, waitFor } from '@testing-library/react';

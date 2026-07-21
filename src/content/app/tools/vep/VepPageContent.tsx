@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router';
 
 import VepAppBar from './components/vep-app-bar/VepAppBar';
 import VepTopBar from './components/vep-top-bar/VepTopBar';

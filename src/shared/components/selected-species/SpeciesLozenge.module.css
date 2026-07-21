@@ -44,6 +44,7 @@
 }
 
 .themeRed {
+  --close-button-cross-color: var(--color-red);
   border-color: var(--species-lozenge-bg-color, var(--color-red));
   background-color: var(--species-lozenge-bg-color, var(--color-red));
   color: var(--species-lozenge-text-color, var(--color-white));
@@ -92,9 +93,4 @@
 
 .themeBlue .deleteButton {
   --close-button-cross-color: var(--color-blue);
-}
-
-
-.themeRed {
-  --close-button-cross-color: var(--color-red);
 }

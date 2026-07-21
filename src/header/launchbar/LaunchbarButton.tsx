@@ -17,7 +17,7 @@
 import type { FunctionComponent } from 'react';
 
 import { memo } from 'react';
-import { NavLink, useMatch } from 'react-router-dom';
+import { NavLink, useMatch } from 'react-router';
 import classNames from 'classnames';
 
 import useHover from 'src/shared/hooks/useHover';

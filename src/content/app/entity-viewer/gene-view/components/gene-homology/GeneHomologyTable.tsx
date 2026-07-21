@@ -15,7 +15,7 @@
  */
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import DataTable from 'src/shared/components/data-table/DataTable';
 import { CircularPercentageIndicator } from 'src/shared/components/proportion-indicator/CircularProportionIndicator';

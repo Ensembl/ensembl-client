@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityViewerIds';
 import { useDefaultEntityViewerVariantQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';

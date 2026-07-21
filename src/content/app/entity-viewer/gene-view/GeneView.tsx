@@ -16,7 +16,7 @@
 
 import { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';

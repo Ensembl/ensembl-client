@@ -21,7 +21,7 @@ import {
   type DetailedHTMLProps,
   type HTMLAttributes
 } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import '@ensembl/ensembl-structural-variants';
 
 import { useAppSelector } from 'src/store';

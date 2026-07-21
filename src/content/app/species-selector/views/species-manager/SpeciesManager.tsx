@@ -15,8 +15,8 @@
  */
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import type { FormEvent } from 'react';
+import { useNavigate } from 'react-router';
+import type { ChangeEvent } from 'react';
 
 import classNames from 'classnames';
 
@@ -86,7 +86,7 @@ const SpeciesManager = () => {
 };
 
 const MainContentTop = (props: {
-  onFilterChange: (event: FormEvent<HTMLInputElement>) => void;
+  onFilterChange: (event: ChangeEvent<HTMLInputElement>) => void;
   hasSelectedGenomes: boolean;
   onRemoveSelectedGenomes: () => void;
 }) => {

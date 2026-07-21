@@ -16,7 +16,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 
 import useHelpAppAnalytics from '../../hooks/useHelpAppAnalytics';
 
