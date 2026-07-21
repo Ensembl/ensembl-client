@@ -15,7 +15,7 @@
  */
 
 import classNames from 'classnames';
-import { forwardRef, type ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 
 import styles from './Checkbox.module.css';
 
@@ -29,21 +29,12 @@ import styles from './Checkbox.module.css';
 
 type Props = Omit<ComponentProps<'input'>, 'type'>; // the type of the input used in this comoponent is always 'checkbox'
 
-const Checkbox = forwardRef<HTMLInputElement, Props>((props, ref) => {
+const Checkbox = (props: Props) => {
   const { className: classNameFromProps, ...otherProps } = props;
 
   const checkboxClasses = classNames(styles.checkbox, classNameFromProps);
 
-  return (
-    <input
-      {...otherProps}
-      ref={ref}
-      type="checkbox"
-      className={checkboxClasses}
-    />
-  );
-});
-
-Checkbox.displayName = 'Checkbox';
+  return <input {...otherProps} type="checkbox" className={checkboxClasses} />;
+};
 
 export default Checkbox;
