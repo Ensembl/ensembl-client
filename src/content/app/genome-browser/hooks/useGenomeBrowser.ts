@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useContext, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useContext, useRef, useEffect, useCallback } from 'react';
 
 import config from 'config';
 import { useAppSelector } from 'src/store';
@@ -28,10 +28,8 @@ import * as genomeBrowserCommands from 'src/content/app/genome-browser/services/
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/contexts/GenomeBrowserContext';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
 
 import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
-import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 
 const useMandatoryGenomeBrowserContext = () => {
   const genomeBrowserContext = useContext(GenomeBrowserContext);
@@ -47,8 +45,6 @@ const useMandatoryGenomeBrowserContext = () => {
 const useGenomeBrowser = () => {
   const genomeBrowserContext = useMandatoryGenomeBrowserContext();
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
-
-  const trackIdToPathMap = useTrackIdToTrackPathMap();
 
   const {
     genomeBrowser,
@@ -152,7 +148,7 @@ const useGenomeBrowser = () => {
         return;
       }
       const { trackId, isEnabled } = params;
-      const trackPath = trackIdToPathMap[trackId] ?? ['track', trackId];
+      const trackPath = getTrackPath(trackId);
 
       genomeBrowserCommands.toggleTrack({
         genomeBrowser,
@@ -160,7 +156,7 @@ const useGenomeBrowser = () => {
         isEnabled
       });
     },
-    [genomeBrowser, trackIdToPathMap]
+    [genomeBrowser]
   );
 
   // At the moment, most track settings are just a boolean flag. Will this continue to be the case? Who knows.
@@ -170,7 +166,7 @@ const useGenomeBrowser = () => {
         return;
       }
       const { trackId, setting, isEnabled } = params;
-      const trackPath = trackIdToPathMap[trackId] ?? ['track', trackId];
+      const trackPath = getTrackPath(trackId);
 
       genomeBrowserCommands.toggleTrackSetting({
         genomeBrowser,
@@ -179,7 +175,7 @@ const useGenomeBrowser = () => {
         isEnabled
       });
     },
-    [genomeBrowser, trackIdToPathMap]
+    [genomeBrowser]
   );
 
   const updateFocusGeneTranscripts = useCallback(
@@ -212,47 +208,32 @@ const useGenomeBrowser = () => {
 };
 
 /**
- * There is, currently, a disconnect between what information genome browser needs
- * to toggle a track on or off (it needs a full "path" to the track, expressed in
- * the "trigger" field of track payload), and what the genome browser sends back
- * in its message about which tracks are being displayed (it only sends the last part
- * of the path, i.e. the last string of the "trigger" array).
+ * To toggle a genome browser track or its settings, the client has to generate
+ * a "track path" — an array of strings that genome browser will use to identify the track.
  *
- * This hook creates a map between a track id and the trigger required for
- * messages to the genome browser. The map includes non-focus tracks
- * for the currently active genome, as well as for the previous active genome.
- * The reason for storing information about tracks of the previous active genome
- * is to be able to turn off previous genome's tracks that don't even exist
- * for the currently active genome (e.g. a variation track may exist for human,
- * but not for some bacterium).
+ * There are currently two types of genome browser tracks:
+ *   - Older tracks with human-readable ids (e.g. protein-coding genes on the forward strand)
+ *   - Newer tracks identified by uuids. They are registered by the genome browser
+ *     using a mechanism called 'expansion'.
+ *
+ * Ideally, the client shouldn't know any of this. Ideally, tracks would be identified
+ * just by their ids. But, while this is not the case, the client will use a hack
+ * as an easy option of generating a track path.
+ *
+ * The hack is: if track id is uuid-shaped, then it is an "expansion" track
+ * that uses one path pattern; and in other cases, it is a "non-expansion" track,
+ * which uses a different path pattern.
  */
-const useTrackIdToTrackPathMap = () => {
-  const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
 
-  const { currentData: trackCategories = [] } = useGenomeTracksQuery(
-    activeGenomeId ?? '',
-    {
-      skip: !activeGenomeId
-    }
-  );
+const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-  const trackIdToPathMap = useMemo(() => {
-    return getTrackIdToTrackPathMap(trackCategories);
-  }, [trackCategories]);
-
-  return trackIdToPathMap;
-};
-
-const getTrackIdToTrackPathMap = (trackCategories: GenomeTrackCategory[]) => {
-  const tracks = trackCategories.flatMap(({ track_list }) => track_list);
-
-  return tracks.reduce(
-    (accumulator, track) => {
-      accumulator[track.track_id] = track.trigger;
-      return accumulator;
-    },
-    {} as Record<string, string[]>
-  );
+const getTrackPath = (trackId: string) => {
+  if (uuidRegex.test(trackId)) {
+    return ['track', 'expand', trackId];
+  } else {
+    return ['track', trackId];
+  }
 };
 
 export default useGenomeBrowser;

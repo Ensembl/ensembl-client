@@ -37,6 +37,11 @@ import type { TrackSettingsPerTrack } from 'src/content/app/genome-browser/state
  * Only one copy of this hook should be run.
  */
 
+type TrackIdsList = {
+  trackId: string;
+  isEnabled: boolean;
+}[];
+
 const useGenomicTracks = () => {
   const { activeGenomeId } = useGenomeBrowserIds();
   const trackSettingsForGenome = useAppSelector((state) =>
@@ -44,6 +49,8 @@ const useGenomicTracks = () => {
   );
   const { genomeBrowser, ...genomeBrowserMethods } = useGenomeBrowser();
   const genomeIdInitialisedRef = useRef('');
+
+  const previousTrackIdsRef = useRef<TrackIdsList>([]);
 
   const { data: genomeTrackCategories } = useGenomeTracksQuery(
     activeGenomeId as string,
@@ -62,12 +69,16 @@ const useGenomicTracks = () => {
       return;
     }
 
-    const trackIdsList = prepareTrackIdsList(
-      genomeTrackCategories ?? [],
-      trackSettingsForGenome ?? {}
-    );
+    const trackIdsList = prepareTrackIdsList({
+      trackGroups: genomeTrackCategories ?? [],
+      trackSettings: trackSettingsForGenome ?? [],
+      previousTrackIdsList: previousTrackIdsRef.current
+    });
+
     trackIdsList.forEach(genomeBrowserMethods.toggleTrack);
     genomeIdInitialisedRef.current = activeGenomeId as string;
+
+    previousTrackIdsRef.current = trackIdsList;
 
     return () => {
       genomeIdInitialisedRef.current = '';
@@ -84,22 +95,21 @@ const useGenomicTracks = () => {
     if (!genomeBrowser || !trackSettingsForGenome) {
       return;
     }
-
     sendTrackSettings(trackSettingsForGenome, genomeBrowserMethods);
   }, [trackSettingsForGenome, genomeBrowser, genomeBrowserMethods]);
 };
 
-type TrackIdsList = {
-  trackId: string;
-  isEnabled: boolean;
-}[];
-
 // Create a list of tracks to enable in the genome browser.
 // Assume that all tracks should be enabled by default
-const prepareTrackIdsList = (
-  trackGroups: GenomeTrackCategory[],
-  trackSettings: TrackSettingsPerTrack
-): TrackIdsList => {
+const prepareTrackIdsList = ({
+  trackGroups,
+  trackSettings,
+  previousTrackIdsList
+}: {
+  trackGroups: GenomeTrackCategory[];
+  trackSettings: TrackSettingsPerTrack;
+  previousTrackIdsList: TrackIdsList;
+}): TrackIdsList => {
   const trackIdsList = trackGroups
     .flatMap(({ track_list }) => track_list)
     .map(({ track_id, on_by_default }) => {
@@ -112,7 +122,21 @@ const prepareTrackIdsList = (
         isEnabled: isVisibleTrack
       };
     });
-  return trackIdsList;
+
+  // Find if there are any tracks from the previous render
+  // that are not included in the new list of ids
+  // (such as what happens when user switches from one genome to another),
+  // and prepare a payload to tell the genome browser to switch them off.
+  const outdatedTrackIds = previousTrackIdsList
+    .filter(({ trackId }) => {
+      return !trackIdsList.find((track) => track.trackId === trackId);
+    })
+    .map((track) => ({
+      ...track,
+      isEnabled: false
+    }));
+
+  return trackIdsList.concat(outdatedTrackIds);
 };
 
 const sendTrackSettings = (
