@@ -84,8 +84,8 @@ export const checkNeedToUpdateGenomes = ({
 
     // Inspect local genomes, and update them if necessary
     draftGenomes.forEach((localGenome) => {
-      // if some other genome claims the genome tag of the reference genome, remove the tag
       if (
+        genomeTag !== null &&
         localGenome.genome_tag === genomeTag &&
         localGenome.genome_id !== genomeId
       ) {
