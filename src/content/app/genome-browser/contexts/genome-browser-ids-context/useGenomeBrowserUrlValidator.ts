@@ -181,17 +181,18 @@ const useGenomeBrowserUrlValidator = (params: Params) => {
   const runAfterValidation = useCallback(
     (fn: () => unknown) => {
       if (
-        !hasFocusObjectToValidate ||
-        (stateRef.current.doneValidating &&
-          !stateRef.current.isMissingFocusObject &&
-          !stateRef.current.isInvalidLocation)
+        genomeId &&
+        (!hasFocusObjectToValidate ||
+          (stateRef.current.doneValidating &&
+            !stateRef.current.isMissingFocusObject &&
+            !stateRef.current.isInvalidLocation))
       ) {
         fn();
       } else {
         postValidationQueueRef.current.push(fn);
       }
     },
-    [hasFocusObjectToValidate]
+    [hasFocusObjectToValidate, genomeId]
   );
 
   const resetValidator = () => {
