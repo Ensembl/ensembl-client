@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { StoredGeneViewTranscriptsState } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
-import { EntityViewerGeneralState } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 import storageService, {
-  StorageServiceInterface,
+  type StorageServiceInterface,
   StorageType
 } from 'src/services/storage-service';
+
+import type { StoredGeneViewTranscriptsState } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import type { EntityViewerGeneralState } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 
 export enum StorageKeys {
   GENERAL_STATE = 'entityViewer.generalState',
