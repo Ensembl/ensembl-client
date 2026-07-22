@@ -31,7 +31,7 @@ import { IndexedDBUpdateScheduler } from './indexeddb-migrations/dbUpdateSchedul
 import { migrateSpeciesStore } from './indexeddb-migrations/speciesStoreMigrations';
 
 const DB_NAME = 'ensembl-website';
-const DB_VERSION = 8;
+const DB_VERSION = 9;
 
 const getDbPromise = (params?: {
   onBlocking?: OpenDBCallbacks<unknown>['blocking'];
