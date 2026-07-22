@@ -39,7 +39,7 @@ export const checkNeedToUpdateGenomes = ({
 
   let shouldUpdateGenomes = false;
 
-  const draftGenomes: CommittedItem[] = [...localGenomes];
+  const draftGenomes: CommittedItem[] = structuredClone(localGenomes);
   const genomeIdsToDelete = new Set<string>();
 
   // GENOME DELETION
