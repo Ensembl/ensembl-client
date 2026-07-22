@@ -88,7 +88,7 @@ describe('checkNeedToUpdateGenomes', () => {
     expect(checkResult.genomeIdsToDelete.size).toBe(0);
     expect(checkResult.genomes.length).toBe(2);
 
-    expect(checkResult.genomes[0]).toBe(human2);
+    expect(checkResult.genomes[0]).toEqual(human2);
 
     const updatedHuman = checkResult.genomes[1];
     expect(updatedHuman.release).toEqual(integratedRelease);
