@@ -101,8 +101,8 @@ export const checkGenomes = async () => {
         if (window.location.href.includes(genomeIdToDelete)) {
           // navigate to genome selector
           window.location.replace(urlFor.speciesSelector());
+          break;
         }
-        await deleteGenome(genomeIdToDelete);
       }
     }
   } catch {
