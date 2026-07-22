@@ -72,15 +72,20 @@ export const checkGenomes = async () => {
       (genome) => genome.genome_id
     );
 
-    const referenceGenomePromises = localGenomeIds.map((genomeId) => {
-      const url = `${config.metadataApiBaseUrl}/genome/${genomeId}/explain`;
-      return fetch(url).then((response) =>
-        response.json()
-      ) as Promise<BriefGenomeSummary>;
-    });
+    const referenceGenomeResults = await Promise.allSettled(
+      localGenomeIds.map(async (genomeId) => {
+        const url = `${config.metadataApiBaseUrl}/genome/${genomeId}/explain`;
+        const response = await fetch(url);
+        return (await response.json()) as BriefGenomeSummary;
+      })
+    );
 
-    const referenceGenomes = await Promise.all(referenceGenomePromises);
-
+    const referenceGenomes = referenceGenomeResults
+      .filter(
+        (result): result is PromiseFulfilledResult<BriefGenomeSummary> =>
+          result.status === 'fulfilled'
+      )
+      .map((result) => result.value);
     const checkResult = checkNeedToUpdateGenomes({
       localGenomes: locallyStoredGenomes,
       referenceGenomes
