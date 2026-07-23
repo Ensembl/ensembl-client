@@ -104,9 +104,9 @@ export const checkGenomes = async () => {
       // isn't in the current url
       for (const genomeIdToDelete of genomeIdsToDelete) {
         if (window.location.href.includes(genomeIdToDelete)) {
-          // navigate to genome selector
-          window.location.replace(urlFor.speciesSelector());
-          break;
+          return {
+            redirectTo: urlFor.speciesSelector()
+          };
         }
       }
     }

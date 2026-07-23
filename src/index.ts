@@ -26,7 +26,11 @@ const main = async () => {
   // run checks for genomes
   const { hasReleaseChanged } = await checkRelease();
   if (hasReleaseChanged) {
-    await checkGenomes();
+    const genomesCheckResult = await checkGenomes();
+    if (genomesCheckResult?.redirectTo) {
+      window.location.replace(genomesCheckResult.redirectTo);
+      return;
+    }
   }
 
   await import('./initialiseClient');
