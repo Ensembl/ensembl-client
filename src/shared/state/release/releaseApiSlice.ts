@@ -24,7 +24,7 @@ const releaseApiSlice = restApiSlice.injectEndpoints({
     // query intended to discover whether a string available to the client is a genome id or a genome tag
     releases: builder.query<Release[], void>({
       query: () => ({
-        url: `${config.metadataApiBaseUrl}/releases`
+        url: `${config.metadataApiBaseUrl}/releases?current_only=true`
       })
     }),
     genomeCounts: builder.query<GenomeCounts, void>({

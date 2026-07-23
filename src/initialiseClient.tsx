@@ -19,7 +19,6 @@ import { hydrateRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router';
 
-import ensureBrowserSupport from 'src/shared/helpers/browserSupport';
 import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 
 import { Provider as IndexedDBProvider } from 'src/shared/contexts/IndexedDBContext';
@@ -37,8 +36,6 @@ import Root from './root/Root';
 import { registerSW } from './registerServiceWorker';
 
 import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
-
-ensureBrowserSupport();
 
 const store = configureStore();
 

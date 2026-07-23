@@ -16,6 +16,7 @@
 
 import { openDB, IDBPDatabase, type OpenDBCallbacks } from 'idb';
 
+import { GENERAL_STORE_NAME } from 'src/shared/services/generalStorageConstants';
 import { GENERAL_UI_STORE_NAME } from 'src/shared/services/generalUIStorageConstants';
 import { SELECTED_SPECIES_STORE_NAME } from 'src/content/app/species-selector/services/speciesSelectorStorageConstants';
 import { GB_TRACK_SETTINGS_STORE_NAME } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageConstants';
@@ -30,7 +31,7 @@ import { IndexedDBUpdateScheduler } from './indexeddb-migrations/dbUpdateSchedul
 import { migrateSpeciesStore } from './indexeddb-migrations/speciesStoreMigrations';
 
 const DB_NAME = 'ensembl-website';
-const DB_VERSION = 8;
+const DB_VERSION = 9;
 
 const getDbPromise = (params?: {
   onBlocking?: OpenDBCallbacks<unknown>['blocking'];
@@ -42,6 +43,9 @@ const getDbPromise = (params?: {
       // FIXME use constants for object store names
       if (!db.objectStoreNames.contains('contact-forms')) {
         db.createObjectStore('contact-forms');
+      }
+      if (!db.objectStoreNames.contains(GENERAL_STORE_NAME)) {
+        db.createObjectStore(GENERAL_STORE_NAME);
       }
       if (!db.objectStoreNames.contains(GENERAL_UI_STORE_NAME)) {
         db.createObjectStore(GENERAL_UI_STORE_NAME);

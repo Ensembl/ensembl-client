@@ -20,6 +20,8 @@ import { isFulfilled, type Action } from '@reduxjs/toolkit';
 
 import { saveMultipleSelectedSpecies } from 'src/content/app/species-selector/services/speciesSelectorStorageService';
 
+import { buildCommittedItemFromBriefGenomeSummary } from 'src/content/app/species-selector/helpers/selectedGenomeHelpers';
+
 import {
   getCommittedSpecies,
   getCommittedSpeciesById
@@ -33,8 +35,6 @@ import {
 import { fetchGenomeSummary } from 'src/shared/state/genome/genomeApiSlice';
 
 import type { RootState } from 'src/store';
-import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
-import type { BriefGenomeSummary } from 'src/shared/state/genome/genomeTypes';
 
 /**
  * When information about a genome is fetched:
@@ -84,7 +84,7 @@ export const ensureCommittedSpeciesEpic: Epic<Action, Action, RootState> = (
  * This epic is intended to run after selected species have been read back
  * from user's browser storage. It compares the list of selected species
  * with the list of fetched genomes in the redux storage; and if it finds genomes
- * that are not among in the selected species list, it adds them to this list.
+ * that are not in the selected genomes list, it adds them to this list.
  */
 
 export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
@@ -128,24 +128,3 @@ export const checkLoadedSpeciesEpic: Epic<Action, Action, RootState> = (
       return updateCommittedSpecies(allCommittedSpecies);
     })
   );
-
-const buildCommittedItemFromBriefGenomeSummary = (
-  genome: BriefGenomeSummary
-): CommittedItem => {
-  return {
-    genome_id: genome.genome_id,
-    genome_tag: genome.genome_tag,
-    common_name: genome.common_name,
-    scientific_name: genome.scientific_name,
-    species_taxonomy_id: genome.species_taxonomy_id,
-    type: genome.type,
-    is_reference: genome.is_reference,
-    assembly: {
-      accession_id: genome.assembly.accession_id,
-      name: genome.assembly.name
-    },
-    release: genome.release,
-    isEnabled: true,
-    addedAt: Date.now()
-  };
-};

@@ -39,10 +39,12 @@ const browserChecks = [
   lacksNewArrayMethods
 ];
 
-const ensureBrowserSupport = () => {
-  if (browserChecks.some((check) => check())) {
-    window.location.replace('/unsupported-browser');
-  }
-};
+/**
+ * NOTE:
+ * Consider checks for the following apis:
+ * - Navigation API (Baseline 2026)
+ */
 
-export default ensureBrowserSupport;
+export const isUnsupportedBrowser = () => {
+  return browserChecks.some((check) => check());
+};
