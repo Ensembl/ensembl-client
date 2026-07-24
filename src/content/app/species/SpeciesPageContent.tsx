@@ -43,6 +43,8 @@ import SpeciesSidebarModal from './components/species-sidebar-modal/SpeciesSideb
 import SpeciesSidebarToolstrip from './components/species-sidebar-toolstrip/SpeciesSidebarToolstrip';
 import AddButton from 'src/shared/components/add-button/AddButton';
 import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
+import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
+import { SidebarLoader } from 'src/shared/components/loader';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
@@ -104,10 +106,6 @@ const SpeciesPageContent = () => {
     );
   }
 
-  if (!genomeSummary || !speciesDetails) {
-    return null; // TODO: consider some kind of a spinner?
-  }
-
   return (
     <div className={styles.speciesPage}>
       <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
@@ -133,19 +131,32 @@ const SpeciesPageContent = () => {
   );
 };
 
-const SidebarContent = (props: {
-  genomeSummary: BriefGenomeSummary;
-  speciesDetails: GenomeInfo;
+const SidebarContent = ({
+  genomeSummary,
+  speciesDetails
+}: {
+  genomeSummary: BriefGenomeSummary | undefined;
+  speciesDetails: GenomeInfo | undefined;
 }) => {
+  const isDataReady = genomeSummary && speciesDetails;
   const isSpeciesSidebarModalOpened = useAppSelector(
     getIsSpeciesSidebarModalOpened
   );
+
+  if (!isDataReady) {
+    return (
+      <Sidebar>
+        <SidebarLoader />
+      </Sidebar>
+    );
+  }
+
   return isSpeciesSidebarModalOpened ? (
     <SpeciesSidebarModal />
   ) : (
     <SpeciesPageSidebar
-      data={props.speciesDetails}
-      genomeSuppressionMessage={props.genomeSummary.suppression_details}
+      data={speciesDetails}
+      genomeSuppressionMessage={genomeSummary.suppression_details}
     />
   );
 };
