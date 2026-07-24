@@ -43,6 +43,8 @@ import SpeciesSidebarModal from './components/species-sidebar-modal/SpeciesSideb
 import SpeciesSidebarToolstrip from './components/species-sidebar-toolstrip/SpeciesSidebarToolstrip';
 import AddButton from 'src/shared/components/add-button/AddButton';
 import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
+import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
+import { SidebarLoader } from 'src/shared/components/loader';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
@@ -104,9 +106,7 @@ const SpeciesPageContent = () => {
     );
   }
 
-  if (!genomeSummary || !speciesDetails) {
-    return null; // TODO: consider some kind of a spinner?
-  }
+  const isDataReady = genomeSummary && speciesDetails;
 
   return (
     <div className={styles.speciesPage}>
@@ -115,10 +115,16 @@ const SpeciesPageContent = () => {
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
         sidebarContent={
-          <SidebarContent
-            genomeSummary={genomeSummary}
-            speciesDetails={speciesDetails}
-          />
+          isDataReady ? (
+            <SidebarContent
+              genomeSummary={genomeSummary}
+              speciesDetails={speciesDetails}
+            />
+          ) : (
+            <Sidebar>
+              <SidebarLoader />
+            </Sidebar>
+          )
         }
         sidebarNavigation={null}
         topbarContent={<TopBar isSidebarOpen={sidebarStatus} />}

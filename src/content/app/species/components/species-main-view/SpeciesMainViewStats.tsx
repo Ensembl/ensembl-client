@@ -204,7 +204,9 @@ const SpeciesMainViewStats = () => {
   if (isFetchingStatistics) {
     return (
       <div className={styles.statsWrapper}>
-        <CircleLoader />
+        <div className={styles.statsLoading}>
+          <CircleLoader />
+        </div>
       </div>
     );
   }

@@ -17,6 +17,12 @@
   padding: 5px 20px var(--global-padding-bottom) 140px;
 }
 
+.statsLoading {
+  display: flex;
+  justify-content: center;
+  padding: var(--standard-gutter);
+}
+
 .pointerBox {
   padding: 6px 12px;
   background: var(--color-black);
