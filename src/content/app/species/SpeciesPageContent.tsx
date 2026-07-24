@@ -106,8 +106,6 @@ const SpeciesPageContent = () => {
     );
   }
 
-  const isDataReady = genomeSummary && speciesDetails;
-
   return (
     <div className={styles.speciesPage}>
       <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
@@ -115,16 +113,10 @@ const SpeciesPageContent = () => {
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
         sidebarContent={
-          isDataReady ? (
-            <SidebarContent
-              genomeSummary={genomeSummary}
-              speciesDetails={speciesDetails}
-            />
-          ) : (
-            <Sidebar>
-              <SidebarLoader />
-            </Sidebar>
-          )
+          <SidebarContent
+            genomeSummary={genomeSummary}
+            speciesDetails={speciesDetails}
+          />
         }
         sidebarNavigation={null}
         topbarContent={<TopBar isSidebarOpen={sidebarStatus} />}
@@ -139,19 +131,32 @@ const SpeciesPageContent = () => {
   );
 };
 
-const SidebarContent = (props: {
-  genomeSummary: BriefGenomeSummary;
-  speciesDetails: GenomeInfo;
+const SidebarContent = ({
+  genomeSummary,
+  speciesDetails
+}: {
+  genomeSummary: BriefGenomeSummary | undefined;
+  speciesDetails: GenomeInfo | undefined;
 }) => {
+  const isDataReady = genomeSummary && speciesDetails;
   const isSpeciesSidebarModalOpened = useAppSelector(
     getIsSpeciesSidebarModalOpened
   );
+
+  if (!isDataReady) {
+    return (
+      <Sidebar>
+        <SidebarLoader />
+      </Sidebar>
+    );
+  }
+
   return isSpeciesSidebarModalOpened ? (
     <SpeciesSidebarModal />
   ) : (
     <SpeciesPageSidebar
-      data={props.speciesDetails}
-      genomeSuppressionMessage={props.genomeSummary.suppression_details}
+      data={speciesDetails}
+      genomeSuppressionMessage={genomeSummary.suppression_details}
     />
   );
 };
