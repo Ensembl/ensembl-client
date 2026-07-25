@@ -15,7 +15,20 @@
  */
 
 import { useCallback } from 'react';
-import { fromEvent, switchMap, tap, takeUntil } from 'rxjs';
+import {
+  fromEvent,
+  map,
+  tap,
+  scan,
+  distinctUntilChanged,
+  take,
+  takeUntil,
+  share,
+  withLatestFrom,
+  merge,
+  exhaustMap,
+  ignoreElements
+} from 'rxjs';
 
 /**
  * The purpose of this hook is to enable interaction with the species tabs slider
@@ -30,15 +43,9 @@ const useSliderGestures = () => {
   const refCallback = useCallback((element: HTMLElement) => {
     const observable = createDragObservable(element);
     const subscription = observable.subscribe();
-    // element.addEventListener('mousedown', onMouseDown, { capture: true });
-    // element.addEventListener('click', onClick, { capture: true }); // to control whether to pass the click to the genome lozenge
-    // elementRef.current = element;
 
     return () => {
       subscription.unsubscribe();
-      // element.removeEventListener('mousedown', onMouseDown);
-      // element.removeEventListener('click', onClick);
-      // elementRef.current = null;
     };
   }, []);
 
@@ -47,7 +54,7 @@ const useSliderGestures = () => {
   };
 };
 
-// const DRAG_THRESHOLD = 6; // consider a mouse event to be a drag gesture if the mouse moved this distance after mousedown
+const DRAG_THRESHOLD = 6; // consider a mouse event to be a drag gesture if the mouse moved this distance after mousedown
 
 // FIXME: change mouse to pointer
 
@@ -57,20 +64,52 @@ const createDragObservable = (element: HTMLElement) => {
   });
 
   const pipeline = mouseDown$.pipe(
-    switchMap((downEvent) => {
+    exhaustMap((downEvent) => {
       const startX = downEvent.clientX;
       const startScrollLeft = element.scrollLeft;
 
-      const mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
-      const mouseUp$ = fromEvent<MouseEvent>(document, 'mouseup');
-
-      return mouseMove$.pipe(
-        tap((moveEvent) => {
-          const deltaX = moveEvent.clientX - startX;
-          element.scrollLeft = startScrollLeft - deltaX;
-        }),
+      const mouseUp$ = fromEvent<MouseEvent>(document, 'mouseup').pipe(take(1));
+      const mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove').pipe(
         takeUntil(mouseUp$)
       );
+      const click$ = fromEvent<MouseEvent>(document, 'click', {
+        capture: true,
+        once: true
+      }).pipe(take(1));
+
+      const deltaX$ = mouseMove$.pipe(
+        map((moveEvent) => {
+          return moveEvent.clientX - startX;
+        }),
+        share()
+      );
+      const dragStarted$ = deltaX$.pipe(
+        map((deltaX) => {
+          return Math.abs(deltaX) > DRAG_THRESHOLD;
+        }),
+        scan((isDragging, hasCrossedThreshold) => {
+          return isDragging || hasCrossedThreshold;
+        }),
+        distinctUntilChanged()
+      );
+      const suppressClick$ = click$.pipe(
+        withLatestFrom(dragStarted$),
+        tap(([event, isDragging]) => {
+          if (isDragging) {
+            event.stopPropagation();
+            event.preventDefault();
+          }
+        }),
+        ignoreElements()
+      );
+      const scrollUpdate$ = deltaX$.pipe(
+        tap((deltaX) => {
+          element.scrollLeft = startScrollLeft - deltaX;
+        }),
+        ignoreElements()
+      );
+
+      return merge(scrollUpdate$, suppressClick$);
     })
   );
 
