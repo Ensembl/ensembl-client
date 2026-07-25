@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useReducer, type ReactNode, type RefObject } from 'react';
-
-type Params = {
-  containerRef: RefObject<HTMLDivElement | null>;
-  children: ReactNode;
-};
+import { useCallback, useRef, useReducer } from 'react';
 
 const initialScrollState = {
   canScrollLeft: false,
@@ -36,56 +31,14 @@ const scrollStateReducer = (
   };
 };
 
-const useSpeciesTabsSlider = (params: Params) => {
-  const { containerRef, children } = params;
+const useSpeciesTabsSlider = () => {
   const [scrollState, scrollStateDispatch] = useReducer(
     scrollStateReducer,
     initialScrollState
   );
 
-  // connect intersection observers to the first and the last species tabs
-  useEffect(() => {
-    const tabsContainer = containerRef.current;
-    if (!tabsContainer) {
-      return;
-    }
-
-    const speciesTabs = [...tabsContainer.children];
-    if (!speciesTabs.length) {
-      scrollStateDispatch({
-        canScrollLeft: false,
-        canScrollRight: false
-      });
-      return;
-    }
-
-    const firstSpeciesTab = speciesTabs.at(0) as HTMLElement;
-    const lastSpeciesTab = speciesTabs.at(-1) as HTMLElement;
-
-    const tabIntersectionObserverOptions = {
-      root: tabsContainer,
-      rootMargin: '1px', // to overcome rounding errors
-      threshold: 1
-    };
-
-    const firstTabIntersectionObserver = new IntersectionObserver(
-      updateScrollLeftState,
-      tabIntersectionObserverOptions
-    );
-
-    const lastTabIntersectionObserver = new IntersectionObserver(
-      updateScrollRightState,
-      tabIntersectionObserverOptions
-    );
-
-    firstTabIntersectionObserver.observe(firstSpeciesTab);
-    lastTabIntersectionObserver.observe(lastSpeciesTab);
-
-    return () => {
-      firstTabIntersectionObserver.disconnect();
-      lastTabIntersectionObserver.disconnect();
-    };
-  }, [children]);
+  const containerRef = useRef<HTMLElement>(null);
+  const intersectionObserverRefs = useRef<IntersectionObserver[]>([]);
 
   /**
    * NOTE for the two functions below:
@@ -172,8 +125,85 @@ const useSpeciesTabsSlider = (params: Params) => {
     tabsContainer.scrollTo({ left: scrollTo, behavior: 'smooth' });
   };
 
+  const clearIntersectionObservers = useCallback(() => {
+    // clear old intersection observers
+    intersectionObserverRefs.current.forEach((observer) => {
+      observer.disconnect();
+    });
+    intersectionObserverRefs.current = [];
+  }, []);
+
+  const setIntersectionObservers = useCallback(() => {
+    const container = containerRef.current as HTMLElement;
+    const genomeTabs = [...container.children];
+    if (!genomeTabs.length) {
+      scrollStateDispatch({
+        canScrollLeft: false,
+        canScrollRight: false
+      });
+      return;
+    }
+
+    const firstGenomeTab = genomeTabs.at(0) as HTMLElement;
+    const lastGenomeTab = genomeTabs.at(-1) as HTMLElement;
+
+    const tabIntersectionObserverOptions = {
+      root: container,
+      rootMargin: '1px', // to overcome rounding errors
+      threshold: 1
+    };
+
+    const firstTabIntersectionObserver = new IntersectionObserver(
+      updateScrollLeftState,
+      tabIntersectionObserverOptions
+    );
+
+    const lastTabIntersectionObserver = new IntersectionObserver(
+      updateScrollRightState,
+      tabIntersectionObserverOptions
+    );
+
+    firstTabIntersectionObserver.observe(firstGenomeTab);
+    lastTabIntersectionObserver.observe(lastGenomeTab);
+
+    intersectionObserverRefs.current = [
+      firstTabIntersectionObserver,
+      lastTabIntersectionObserver
+    ];
+  }, []);
+
+  const mutationObserverCallback: MutationCallback = useCallback(() => {
+    clearIntersectionObservers();
+    setIntersectionObservers();
+  }, [setIntersectionObservers, clearIntersectionObservers]);
+
+  const refCallback = useCallback(
+    (element: HTMLElement) => {
+      containerRef.current = element;
+      setIntersectionObservers();
+
+      // set up a mutation observer to react to changes
+      // in the number of genome lozenges
+      const mutationObserverConfig = { childList: true };
+      const mutationObserver = new MutationObserver(mutationObserverCallback);
+      mutationObserver.observe(element, mutationObserverConfig);
+
+      return () => {
+        mutationObserver.disconnect();
+        clearIntersectionObservers();
+        containerRef.current = null;
+      };
+    },
+    [
+      mutationObserverCallback,
+      setIntersectionObservers,
+      clearIntersectionObservers
+    ]
+  );
+
   return {
     ...scrollState,
+    refCallback,
     scrollLeft,
     scrollRight
   };

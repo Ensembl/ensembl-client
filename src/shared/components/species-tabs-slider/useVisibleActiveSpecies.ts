@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, type RefObject } from 'react';
+import { useRef, useCallback } from 'react';
 
 /**
  * The purpose of this hook is to make sure that, when the SpeciesTabsSlider mounts,
@@ -24,89 +24,106 @@ import { useEffect, type RefObject } from 'react';
  * then it is scrolled to the nearest visible side of the container.
  */
 
-const useVisibleActiveSpecies = (ref: RefObject<HTMLDivElement | null>) => {
-  useEffect(() => {
-    if (!ref.current) {
-      return;
-    }
+const useVisibleActiveSpecies = () => {
+  const elementRef = useRef<HTMLElement>(null);
 
-    // set up a mutation observer to react to any of the species lozenges
-    // becoming active when user clicks on it
-    const mutationObserverConfig = { attributes: true, subtree: true };
-    const mutationObserver = new MutationObserver(mutationObserverCallback);
-    mutationObserver.observe(ref.current, mutationObserverConfig);
+  const scrollToActiveSpeciesTab = useCallback(
+    (
+      params: {
+        scrollOptions?: ScrollIntoViewOptions;
+      } = {}
+    ) => {
+      const { scrollOptions = {} } = params;
+      const container = elementRef.current as HTMLElement;
+      const activeSpeciesLozenge = container?.querySelector(
+        'button[data-active="true"]'
+      ) as HTMLElement | null;
 
-    updatePositionWhenFontsAreReady();
+      if (!container || !activeSpeciesLozenge) {
+        return;
+      }
 
-    return () => {
-      mutationObserver.disconnect();
-    };
-  }, []);
+      const elementBoundingClientRect =
+        activeSpeciesLozenge.getBoundingClientRect();
+      const containerBoundingClientRect = container.getBoundingClientRect();
+      const { x: elementX, width: elementWidth } = elementBoundingClientRect;
+      const { x: containerX, width: containerWidth } =
+        containerBoundingClientRect;
 
-  const mutationObserverCallback: MutationCallback = (mutationList) => {
-    const attributeChangeMutation = mutationList.find((mutation) => {
-      return (
-        mutation.type === 'attributes' &&
-        mutation.attributeName === 'data-active' &&
-        (mutation.target as HTMLElement).dataset.active
-      );
-    });
-    if (attributeChangeMutation) {
-      scrollToActiveSpeciesTab({ behavior: 'smooth' });
-    }
-  };
+      if (
+        elementX >= containerX &&
+        elementX + elementWidth <= containerX + containerWidth
+      ) {
+        // species lozenge is visible inside of the container
+        return;
+      }
+      let scrollTo: number;
+
+      if (elementX < containerX) {
+        // species lozenge is at least partly hidden behind the left corner
+        // of the container
+        scrollTo = Math.floor(
+          activeSpeciesLozenge.offsetLeft - container.offsetLeft
+        );
+      } else {
+        // species lozenge is at least partly hidden behind the right corner
+        // of the container
+        scrollTo = Math.ceil(
+          activeSpeciesLozenge.offsetLeft +
+            activeSpeciesLozenge.offsetWidth -
+            container.offsetWidth -
+            container.offsetLeft
+        );
+      }
+      container.scrollTo({ ...scrollOptions, left: scrollTo });
+    },
+    []
+  );
 
   // for proper calculation of tab positions, wait until fonts are ready
-  const updatePositionWhenFontsAreReady = async () => {
+  const updatePositionWhenFontsAreReady = useCallback(async () => {
     await document.fonts.ready;
     scrollToActiveSpeciesTab();
-  };
+  }, [scrollToActiveSpeciesTab]);
 
-  const scrollToActiveSpeciesTab = (
-    scrollOptions: ScrollIntoViewOptions = {}
-  ) => {
-    const container = ref.current;
-    const activeSpeciesLozenge = container?.querySelector(
-      'button[data-active="true"]'
-    ) as HTMLElement | null;
+  const mutationObserverCallback: MutationCallback = useCallback(
+    (mutationList) => {
+      const attributeChangeMutation = mutationList.find((mutation) => {
+        return (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'data-active' &&
+          (mutation.target as HTMLElement).dataset.active
+        );
+      });
+      if (attributeChangeMutation) {
+        scrollToActiveSpeciesTab({ scrollOptions: { behavior: 'smooth' } });
+      }
+    },
+    [scrollToActiveSpeciesTab]
+  );
 
-    if (!container || !activeSpeciesLozenge) {
-      return;
-    }
+  const refCallback = useCallback(
+    (element: HTMLElement) => {
+      elementRef.current = element;
 
-    const elementBoundingClientRect =
-      activeSpeciesLozenge.getBoundingClientRect();
-    const containerBoundingClientRect = container.getBoundingClientRect();
-    const { x: elementX, width: elementWidth } = elementBoundingClientRect;
-    const { x: containerX, width: containerWidth } =
-      containerBoundingClientRect;
+      // set up a mutation observer to react to any of the species lozenges
+      // becoming active when user clicks on it
+      const mutationObserverConfig = { attributes: true, subtree: true };
+      const mutationObserver = new MutationObserver(mutationObserverCallback);
+      mutationObserver.observe(element, mutationObserverConfig);
 
-    if (
-      elementX >= containerX &&
-      elementX + elementWidth <= containerX + containerWidth
-    ) {
-      // species lozenge is visible inside of the container
-      return;
-    }
-    let scrollTo: number;
+      updatePositionWhenFontsAreReady();
 
-    if (elementX < containerX) {
-      // species lozenge is at least partly hidden behind the left corner
-      // of the container
-      scrollTo = Math.floor(
-        activeSpeciesLozenge.offsetLeft - container.offsetLeft
-      );
-    } else {
-      // species lozenge is at least partly hidden behind the right corner
-      // of the container
-      scrollTo = Math.ceil(
-        activeSpeciesLozenge.offsetLeft +
-          activeSpeciesLozenge.offsetWidth -
-          container.offsetWidth -
-          container.offsetLeft
-      );
-    }
-    container.scrollTo({ ...scrollOptions, left: scrollTo });
+      return () => {
+        mutationObserver.disconnect();
+        elementRef.current = null;
+      };
+    },
+    [mutationObserverCallback, updatePositionWhenFontsAreReady]
+  );
+
+  return {
+    refCallback
   };
 };
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef, memo, type ReactNode } from 'react';
+import { memo, type ReactNode, useCallback } from 'react';
 import classNames from 'classnames';
 
 import useSpeciesTabsSlider from './useSpeciesTabsSlider';
@@ -30,15 +30,29 @@ type Props = {
 };
 
 const SpeciesTabsSlider = (props: Props) => {
-  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const {
+    refCallback: hookRefCallback1,
+    canScrollLeft,
+    canScrollRight,
+    scrollLeft,
+    scrollRight
+  } = useSpeciesTabsSlider();
+  const { refCallback: hookRefCallback2 } = useSliderGestures();
+  const { refCallback: hookRefCallback3 } = useVisibleActiveSpecies();
 
-  const { canScrollLeft, canScrollRight, scrollLeft, scrollRight } =
-    useSpeciesTabsSlider({
-      containerRef: tabsContainerRef,
-      children: props.children
-    });
-  useSliderGestures(tabsContainerRef);
-  useVisibleActiveSpecies(tabsContainerRef);
+  const refCallback = useCallback(
+    (element: HTMLDivElement) => {
+      const cleanup1 = hookRefCallback1(element);
+      const cleanup2 = hookRefCallback2(element);
+      const cleanup3 = hookRefCallback3(element);
+      return () => {
+        cleanup1();
+        cleanup2();
+        cleanup3();
+      };
+    },
+    [hookRefCallback1, hookRefCallback2, hookRefCallback3]
+  );
 
   const areAllTabsInViewport = !canScrollLeft && !canScrollRight;
 
@@ -66,7 +80,7 @@ const SpeciesTabsSlider = (props: Props) => {
         </button>
       </div>
 
-      <div ref={tabsContainerRef} className={styles.tabsContainer}>
+      <div ref={refCallback} className={styles.tabsContainer}>
         {props.children}
       </div>
 

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, type RefObject } from 'react';
+import { useCallback } from 'react';
+import { fromEvent, switchMap, tap, takeUntil } from 'rxjs';
 
 /**
  * The purpose of this hook is to enable interaction with the species tabs slider
@@ -25,71 +26,55 @@ import { useEffect, useRef, type RefObject } from 'react';
  * - user should be able to scroll trough species tabs by using the mouse wheel
  */
 
-const useSliderGestures = (ref: RefObject<Element | null>) => {
-  const startXRef = useRef(0);
-  const startScrollLeftRef = useRef(0);
-  const currentXRef = useRef(0);
-  const isMouseDownRef = useRef(false);
-  const isDraggingRef = useRef(false);
-
-  useEffect(() => {
-    if (!ref.current) {
-      return; // should not happen
-    }
-
-    ref.current.addEventListener('mousedown', onMouseDown, { capture: true });
-    ref.current.addEventListener('click', onClick, { capture: true }); // to control whether to pass the click to the species lozenge
+const useSliderGestures = () => {
+  const refCallback = useCallback((element: HTMLElement) => {
+    const observable = createDragObservable(element);
+    const subscription = observable.subscribe();
+    // element.addEventListener('mousedown', onMouseDown, { capture: true });
+    // element.addEventListener('click', onClick, { capture: true }); // to control whether to pass the click to the genome lozenge
+    // elementRef.current = element;
 
     return () => {
-      ref.current?.removeEventListener('mousedown', onMouseDown);
-      ref.current?.removeEventListener('click', onClick);
+      subscription.unsubscribe();
+      // element.removeEventListener('mousedown', onMouseDown);
+      // element.removeEventListener('click', onClick);
+      // elementRef.current = null;
     };
   }, []);
 
-  const onMouseDown = (event: Event) => {
-    const target = event.currentTarget as HTMLElement;
-    startScrollLeftRef.current = target.scrollLeft;
-    const mouseEvent = event as MouseEvent;
-    isMouseDownRef.current = true;
-    startXRef.current = mouseEvent.clientX;
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+  return {
+    refCallback
   };
+};
 
-  const onMouseMove = (event: Event) => {
-    if (!isMouseDownRef.current) {
-      return;
-    }
-    const mouseEvent = event as MouseEvent;
-    currentXRef.current = mouseEvent.clientX;
-    const deltaX = currentXRef.current - startXRef.current;
+// const DRAG_THRESHOLD = 6; // consider a mouse event to be a drag gesture if the mouse moved this distance after mousedown
 
-    if (Math.abs(deltaX) > 6 && !isDraggingRef.current) {
-      isDraggingRef.current = true;
-    }
+// FIXME: change mouse to pointer
 
-    (ref.current as HTMLElement).scrollLeft =
-      startScrollLeftRef.current - deltaX;
-  };
+const createDragObservable = (element: HTMLElement) => {
+  const mouseDown$ = fromEvent<MouseEvent>(element, 'mousedown', {
+    capture: true
+  });
 
-  const onMouseUp = () => {
-    isMouseDownRef.current = false;
-    setTimeout(() => (isDraggingRef.current = false), 0);
+  const pipeline = mouseDown$.pipe(
+    switchMap((downEvent) => {
+      const startX = downEvent.clientX;
+      const startScrollLeft = element.scrollLeft;
 
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-  };
+      const mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
+      const mouseUp$ = fromEvent<MouseEvent>(document, 'mouseup');
 
-  const onClick = (event: Event) => {
-    // If the user tries a "drag" gesture (mouse down followed by mouse move) while over a species lozenge,
-    // this will be interpreted as a click on the lozenge, and the species will change.
-    // This function prevents this from happening.
-    if (isDraggingRef.current) {
-      event.stopPropagation();
-      isDraggingRef.current = false;
-    }
-  };
+      return mouseMove$.pipe(
+        tap((moveEvent) => {
+          const deltaX = moveEvent.clientX - startX;
+          element.scrollLeft = startScrollLeft - deltaX;
+        }),
+        takeUntil(mouseUp$)
+      );
+    })
+  );
+
+  return pipeline;
 };
 
 export default useSliderGestures;
