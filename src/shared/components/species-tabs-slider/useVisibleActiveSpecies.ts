@@ -27,6 +27,11 @@ import { useRef, useCallback } from 'react';
 const useVisibleActiveSpecies = () => {
   const elementRef = useRef<HTMLElement>(null);
 
+  // NOTE:
+  // When all our target browsers start supporting the container: "nearest" option
+  // of element.scrollIntoView method, the below function will become as easy as:
+  // activeSpeciesLozenge.scrollIntoView({ behavior: 'smooth', inline: 'nearest', container: 'nearest' })
+  // See https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView
   const scrollToActiveSpeciesTab = useCallback(
     (
       params: {
@@ -36,46 +41,30 @@ const useVisibleActiveSpecies = () => {
       const { scrollOptions = {} } = params;
       const container = elementRef.current as HTMLElement;
       const activeSpeciesLozenge = container?.querySelector(
-        'button[data-active="true"]'
+        '[data-active="true"]'
       ) as HTMLElement | null;
 
       if (!container || !activeSpeciesLozenge) {
         return;
       }
 
-      const elementBoundingClientRect =
-        activeSpeciesLozenge.getBoundingClientRect();
-      const containerBoundingClientRect = container.getBoundingClientRect();
-      const { x: elementX, width: elementWidth } = elementBoundingClientRect;
-      const { x: containerX, width: containerWidth } =
-        containerBoundingClientRect;
+      const left = activeSpeciesLozenge.offsetLeft;
+      const right = left + activeSpeciesLozenge.offsetWidth;
 
-      if (
-        elementX >= containerX &&
-        elementX + elementWidth <= containerX + containerWidth
-      ) {
-        // species lozenge is visible inside of the container
-        return;
-      }
-      let scrollTo: number;
+      const visibleLeft = container.scrollLeft;
+      const visibleRight = visibleLeft + container.clientWidth;
 
-      if (elementX < containerX) {
-        // species lozenge is at least partly hidden behind the left corner
-        // of the container
-        scrollTo = Math.floor(
-          activeSpeciesLozenge.offsetLeft - container.offsetLeft
-        );
-      } else {
-        // species lozenge is at least partly hidden behind the right corner
-        // of the container
-        scrollTo = Math.ceil(
-          activeSpeciesLozenge.offsetLeft +
-            activeSpeciesLozenge.offsetWidth -
-            container.offsetWidth -
-            container.offsetLeft
-        );
+      if (left < visibleLeft) {
+        container.scrollTo({
+          left: left - container.offsetLeft,
+          ...scrollOptions
+        });
+      } else if (right > visibleRight) {
+        container.scrollTo({
+          left: right - container.offsetLeft - container.clientWidth,
+          ...scrollOptions
+        });
       }
-      container.scrollTo({ ...scrollOptions, left: scrollTo });
     },
     []
   );
