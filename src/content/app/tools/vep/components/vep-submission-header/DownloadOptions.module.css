@@ -1,0 +1,75 @@
+/* The download trigger, styled like the sibling results-page buttons (e.g. the
+   "Results" ButtonLink): a blue button with the icon and a "Download" label. */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border: 1px solid var(--color-blue);
+  border-radius: 4px;
+  background-color: var(--color-blue);
+  color: var(--color-white);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.trigger svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  fill: var(--color-white);
+}
+
+.triggerDisabled {
+  background-color: var(--color-grey);
+  border-color: var(--color-grey);
+  cursor: default;
+}
+
+/* PointerBox defaults to a dark (tooltip) theme; override to a light surface so
+   the menu's dark option text is legible. */
+.pointerBox {
+  padding: 0;
+  --pointer-box-color: var(--color-white);
+  --pointer-box-text-color: var(--color-black);
+  box-shadow: 0 2px 6px var(--shadow-color, rgba(0, 0, 0, 0.25));
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 14px;
+  text-decoration: none;
+  color: var(--color-black);
+}
+
+.option + .option {
+  border-top: 1px solid var(--color-medium-light-grey);
+}
+
+.option:hover {
+  background-color: var(--color-blue);
+  color: var(--color-white);
+}
+
+.optionTitle {
+  font-weight: var(--font-weight-bold);
+}
+
+.optionDetail {
+  font-size: 12px;
+  color: var(--color-dark-grey);
+}
+
+.option:hover .optionDetail {
+  color: var(--color-white);
+}

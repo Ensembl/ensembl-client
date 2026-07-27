@@ -6,9 +6,10 @@
     [form-title] max-content
     [transcript-set-and-submit] 1fr
     [vep-version] max-content
-    [job-lists-navigation] max-content;
+    [job-lists-navigation] max-content
+    [ensembl-mark] max-content;
   grid-template-areas:
-    'vep-logo form-title transcript-set-and-submit vep-version job-lists-navigation';
+    'vep-logo form-title transcript-set-and-submit vep-version job-lists-navigation ensembl-mark';
   column-gap: 32px;
   max-width: var(--vep-container-max-width);
   white-space: nowrap;
@@ -22,6 +23,21 @@
   justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
 }
 
+/* The form page scrolls as a whole document (nothing inside it is its own
+   scroller), so the bar — which carries the transcript set and the Run button —
+   used to scroll out of reach on a long form. Sticky keeps it in place without
+   taking it out of flow, so the layout below is unchanged and no spacer is
+   needed.
+
+   The bar already has an opaque background, so content passes behind it rather
+   than through it. z-index 10 puts it over the form; the results filter popover
+   sits at 100 and still wins, which is right — it is opened deliberately. */
+.vepFormTopBar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
 .vepGenericGrid {
   display: grid;
   align-items: center;
@@ -30,9 +46,10 @@
     [new-job-button] max-content
     [results-availability] minmax(0, 1fr)
     [vep-version] auto
-    [job-lists-navigation] auto;
+    [job-lists-navigation] auto
+    [ensembl-mark] max-content;
   grid-template-areas:
-    'vep-logo new-job-button results-availability vep-version job-lists-navigation';
+    'vep-logo new-job-button results-availability vep-version job-lists-navigation ensembl-mark';
   column-gap: 32px;
   max-width: var(--vep-container-max-width);
   white-space: nowrap;
@@ -46,6 +63,15 @@
   grid-area: vep-logo;
   width: 130px;
   aspect-ratio: 10/1;
+}
+
+.ensemblMark {
+  grid-area: ensembl-mark;
+  justify-self: end;
+  align-self: start;
+  height: 37px;
+  /* viewport width/height of the mark svg, so it keeps its aspect ratio */
+  aspect-ratio: 395.70001/373.89998; /* stylelint-disable-line number-max-precision */
 }
 
 .runAJob {
@@ -124,10 +150,11 @@
       [vep-logo] max-content
       [form-title] 1fr
       [vep-version] max-content
-      [job-lists-navigation] auto;
+      [job-lists-navigation] auto
+      [ensembl-mark] max-content;
     grid-template-areas:
-      'vep-logo form-title vep-version job-lists-navigation'
-      'transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit';
+      'vep-logo form-title vep-version job-lists-navigation ensembl-mark'
+      'transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit ensembl-mark';
     row-gap: 8px;
   }
 
@@ -155,10 +182,11 @@
       [vep-logo] max-content
       [new-job-button] 1fr
       [vep-version] auto
-      [job-lists-navigation] auto;
+      [job-lists-navigation] auto
+      [ensembl-mark] max-content;
     grid-template-areas:
-      'vep-logo new-job-button vep-version job-lists-navigation'
-      'results-availability results-availability results-availability .';
+      'vep-logo new-job-button vep-version job-lists-navigation ensembl-mark'
+      'results-availability results-availability results-availability . ensembl-mark';
     row-gap: 3px;
   }
 

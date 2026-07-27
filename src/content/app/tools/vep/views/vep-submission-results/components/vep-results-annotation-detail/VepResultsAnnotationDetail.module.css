@@ -1,0 +1,288 @@
+.detail {
+  /* 16px, not the 40px it was: the annotation sections are laid out in
+     multi-column, so every pixel of horizontal padding is taken off each
+     column. At 40px the IntAct interactions table was squeezed 11px below its
+     own min-content width, which is what made its text collide with the next
+     column. */
+  padding: 16px;
+  background-color: var(--color-light-grey);
+  /* Horizontal step each sub-option heading (and its content) is indented by,
+     per level of nesting. Compounds through nested option blocks. */
+  --annotation-indent-step: 10px;
+}
+
+/* The annotation sections are laid out as balanced text columns rather than a
+   grid: their heights vary a lot (e.g. Variant Impact Predictions is tall,
+   Conservation & constraint short), and a grid sizes each row to its tallest
+   item, leaving big empty gaps next to short sections. Multi-column packing
+   avoids that. Kept separate from .detail so the interactive toolbar above can
+   sit in normal flow (an interactive control inside a multicol can lose clicks). */
+.sections {
+  /* 320px, not 260px: this is a *minimum* column width, so the browser packs as
+     many as fit — which means a wider viewport gives NARROWER columns, and at
+     260px a wide window produced 282px columns. The widest table here (IntAct's
+     interactions) needs 355px, so it was squeezed below its own minimum and its
+     text collided with the next column. 320px keeps every column wide enough
+     for it at every width tested; the cost is one fewer column on a wide
+     screen. Raise this if a table ever needs more than a 440px column. */
+  column-width: 320px;
+  column-gap: 16px;
+}
+
+/* Full-width toolbar row above the annotation sections (outside the multicol). */
+.detailToolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+/* Collapse (blue close cross) control at the bottom-right of the panel — a
+   second, closer affordance to collapse the expanded annotations without
+   scrolling back to the row's expand chevron. */
+.collapseRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.noOptions {
+  color: var(--color-dark-grey);
+}
+
+/* Category sub-heading within a panel section (e.g. Missense / Splicing).
+   Slightly larger than option rows and with extra space below to set the
+   subsection apart from the options under it. */
+.categoryLabel {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-dark-grey);
+  /* A category groups options within a section. */
+  font-size: 14px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+.categoryLabel:first-child {
+  margin-top: 0;
+}
+
+/* A multi-value option: its own label above its values (e.g. Dosage
+   sensitivity over pHaplo / pTriplo). */
+.optionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* The heading's content, indented one step beneath it. A nested OptionBlock's
+   own children wrap in another of these, so the indent compounds with depth. */
+.optionChildren {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: var(--annotation-indent-step);
+}
+
+.optionLabel {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-dark-grey);
+  /* The top-level option heading. Only level 0 uses this class; deeper
+     sub-options keep the 10px body size. */
+  font-size: 12px;
+}
+
+/* Sub-option heading weights step down with nesting depth (see OptionBlock's
+   `level`): a top-level option is bold (.optionLabel), an intermediate
+   sub-option semi-bold, a bottom-level one normal — so nested sections read as
+   subordinate to their option instead of as sibling sections. */
+.optionLabelIntermediate {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark-grey);
+}
+
+.optionLabelPlain {
+  font-weight: var(--font-weight-normal);
+  color: var(--color-dark-grey);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* Keep each section whole within a column, and space sections vertically
+     (multi-column layout has no row gap). */
+  break-inside: avoid;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-blue);
+  /* The section (panel) heading — top of the annotation hierarchy. */
+  font-size: 16px;
+  border-bottom: 1px solid var(--color-medium-light-grey);
+  padding-bottom: 2px;
+}
+
+.sectionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* Panel body size — value rows and the sub-option (intermediate/plain)
+     labels that inherit it. */
+  font-size: 11px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  /* A single-value option row pairs a larger emphasised label with a body-size
+     value; align on the baseline so they sit level. */
+  align-items: baseline;
+}
+
+.rowLabel {
+  color: var(--color-dark-grey);
+}
+
+.mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Space a headed sub-section from whatever sat above it. The phenotype tables
+   sit directly under their headings, so "Gene associated" and its table ran
+   straight into the "Variant associated" heading below with nothing between
+   them. Only between siblings, so the first section stays tight to its parent
+   heading. */
+.optionChildren > .optionBlock + .optionBlock {
+  margin-top: 10px;
+}
+
+/* A small breakdown table (ClinVar's conflicting classifications, IntAct's
+   interactions): a header row of column labels over one row per list element.
+   Sized to content, not the full column width.
+
+   No indent of its own: every one of these sits inside a heading's
+   `.optionChildren`, which already applies a step. Adding another indented it
+   twice and cost width the columns need. */
+.breakdownTable {
+  border-collapse: collapse;
+}
+
+.breakdownTable th,
+.breakdownTable td {
+  text-align: left;
+  /* 8px between columns, not 16px. Table auto-layout was giving the Feature
+     Type column less than its longest word needed, so the text ran on into the
+     gutter and closed the gap to the next column to a few pixels — which read
+     as the columns colliding. The narrower gutter buys back the difference. */
+  padding: 2px 8px 2px 0;
+  vertical-align: top;
+}
+
+.breakdownTable th:last-child,
+.breakdownTable td:last-child {
+  padding-right: 0;
+}
+
+.breakdownTable th {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-dark-grey);
+  border-bottom: 1px solid var(--color-medium-light-grey);
+  padding-bottom: 3px;
+}
+
+/* A row label with an inline help (?) icon, e.g. popEVE gap-frequency guidance. */
+.labelWithHelp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-dark-grey);
+}
+
+.rowHelpIcon {
+  flex: none;
+}
+
+/* Phenotype association: a plain text line under the Phenotypes option block. */
+.phenotypeItem {
+  overflow-wrap: anywhere;
+}
+
+/* A Gene Ontology term: the linked GO id followed by its name. */
+.goItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 8px;
+}
+
+.goLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--color-blue);
+  white-space: nowrap;
+}
+
+/* A spec-driven `list` item: its cells laid out in a wrapping row. */
+.listItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 8px;
+  overflow-wrap: anywhere;
+}
+
+/* A list element rendered as a stack of labelled field-rows (NearestExonJB).
+   Consecutive records get a little separation so multiple boundaries read
+   as distinct groups. */
+.listRecord:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+/* A linked value inside a list item (a GO term, an OpenTargets disease, a MaveDB
+   urn).
+
+   Deliberately NOT `inline-flex` + `nowrap`, which is what it was while the
+   linked value was always a short identifier. Some of these values are prose —
+   "RNA polymerase II cis-regulatory region sequence-specific DNA binding" — and
+   an unbreakable link that long overflows its column and collides with the next
+   one in the multi-column annotation layout.
+
+   Inline, so the text wraps like any other. The icon keeps its gap through a
+   margin rather than flex, and rides along with the final word. */
+.listLink {
+  color: var(--color-blue);
+}
+
+.listLink svg {
+  margin-left: 3px;
+  vertical-align: -1px;
+}
+
+/* A source cited inside a help popup (popEVE's gap-frequency paper). Unlike
+   .listLink it may wrap: the popup is narrow and the citation trails a sentence,
+   so forcing it onto one line would push the popup wider than its content. */
+.helpLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--color-blue);
+}
+
+/* ProtVar's per-row "View in ProtVar" link icon (the same URL on each row). */
+.protvarLink {
+  display: inline-flex;
+  align-items: center;
+}
+
+.phenotypeToggle {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-blue);
+  font-size: inherit;
+}

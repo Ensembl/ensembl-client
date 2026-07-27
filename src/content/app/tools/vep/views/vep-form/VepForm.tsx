@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useAppDispatch } from 'src/store';
 
@@ -22,10 +22,13 @@ import useVepFormConfig from './useVepFormConfig';
 
 import { initialiseVepForm } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
+import Modal from 'src/shared/components/modal/Modal';
+import VepSpeciesSelector from '../vep-species-selector/VepSpeciesSelector';
 import {
   VepFormSpecies,
   VepSpeciesSelectorNavButton
 } from './vep-form-species-section/VepFormSpeciesSection';
+import VepSpeciesPresets from './vep-form-species-section/VepSpeciesPresets';
 import VepFormVariantsSection from './vep-form-variants-section/VepFormVariantsSection';
 import VepFormOptionsSection from './vep-form-options-section/VepFormOptionsSection';
 import VepSubmissionName from './vep-submission-name/VepSubmissionName';
@@ -38,6 +41,10 @@ const VepForm = () => {
   useVepFormConfig();
   const dispatch = useAppDispatch();
   const isInitialisedRef = useRef(false);
+  const [isSpeciesSelectorOpen, setIsSpeciesSelectorOpen] = useState(false);
+
+  const openSpeciesSelector = () => setIsSpeciesSelectorOpen(true);
+  const closeSpeciesSelector = () => setIsSpeciesSelectorOpen(false);
 
   useEffect(() => {
     if (isInitialisedRef.current) {
@@ -58,15 +65,25 @@ const VepForm = () => {
         <FormSection>
           <div className={styles.topFormSectionRegularGrid}>
             <div className={styles.topFormSectionName}>Genome</div>
-            <VepFormSpecies className={styles.topFormSectionMain} />
+            <VepFormSpecies
+              className={styles.topFormSectionMain}
+              onOpenSpeciesSelector={openSpeciesSelector}
+            />
             <VepSpeciesSelectorNavButton
               className={styles.topFormSectionToggle}
+              onOpenSpeciesSelector={openSpeciesSelector}
             />
           </div>
+          <VepSpeciesPresets />
         </FormSection>
         <VepFormVariantsSection />
         <VepFormOptionsSection />
       </div>
+      {isSpeciesSelectorOpen && (
+        <Modal onClose={closeSpeciesSelector}>
+          <VepSpeciesSelector onClose={closeSpeciesSelector} />
+        </Modal>
+      )}
     </div>
   );
 };

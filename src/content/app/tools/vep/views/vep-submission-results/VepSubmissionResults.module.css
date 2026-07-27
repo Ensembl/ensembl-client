@@ -6,7 +6,11 @@
   margin-left: var(--double-standard-gutter);
   margin-right: var(--standard-gutter);
   max-width: calc(var(--vep-container-max-width) - var(--standard-gutter));
-  overflow: hidden;
+  /* No overflow clip here. The table's own horizontal/vertical scroll is
+     contained by .tableViewport / .tableViewportWrapper, so clipping the
+     container was redundant — and it cut off the filter's consequence dropdown
+     whenever an empty (0-results) table left this container short of the
+     dropdown's height. */
 }
 
 .fullPageSpinnerContainer {
@@ -32,10 +36,24 @@
     [input-summary] auto
     [per-page] 1fr
     [pagination] auto
+    [expand-toggle] auto
     [filters-toggle] auto;
   column-gap: var(--standard-gutter);
   align-items: center;
   margin-bottom: 16px;
+}
+
+/* Text button that opens / closes every annotation-detail panel on the page. */
+.expandAllToggle {
+  grid-column: expand-toggle;
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--color-blue);
 }
 
 .perPage {
@@ -55,10 +73,8 @@
   grid-column: pagination;
 }
 
-.mockFiltersToggle {
-  --show-hide-label-color: var(--color-grey);
-  --chevron-fill: var(--color-grey);
-  pointer-events: none;
+.filtersToggle {
+  cursor: pointer;
 }
 
 .table {
@@ -71,12 +87,21 @@
 }
 
 
-/* The styling of column widths below will probably need to be adjusted */
-.table td:nth-child(2), th:nth-child(2) {
+/* Caps on the results table's own narrow columns: Ref (2nd) and Location (3rd).
+   Scoped with child combinators to this table's own rows, and stated per row
+   group, because the annotation panel nests its own tables inside a `td` of this
+   one: a descendant selector (and the bare `th:nth-child(2)` that used to sit in
+   this list, unscoped, matching every second header cell on the page) capped the
+   second and third column of every breakdown table too. That squeezed the
+   Classifier / ΔP columns below the width their own text needs, and the text
+   then spilled past the panel. */
+.table > thead > tr > th:nth-child(2),
+.table > tbody > tr > td:nth-child(2) {
   max-width: 50px;
 }
 
-.table td:nth-child(3), th:nth-child(3) {
+.table > thead > tr > th:nth-child(3),
+.table > tbody > tr > td:nth-child(3) {
   max-width: 100px;
 }
 
@@ -146,3 +171,54 @@
 .speciesName [data-part="assembly-name"] {
   font-size: 11px;
 }
+
+.detailToggle {
+  appearance: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.detailChevron,
+.detailChevronOpen {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.15s ease;
+}
+
+.detailChevronOpen {
+  transform: rotate(180deg);
+}
+
+/* The annotation panel spans the full width between the row division lines.
+   The shared Table's own `td` rule outranks a plain class selector here (its
+   selector carries an element as well), so a bare `padding: 0` on this class
+   silently did nothing — the horizontal inset has to come off through the
+   variables that component exposes for the purpose. Vertical padding stays:
+   it separates the panel from the rows above and below. */
+.detailCell {
+  --table-cell-padding-left: 0;
+  --table-cell-padding-right: 0;
+}
+
+.transcriptBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.transcriptBadge {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-white);
+  background-color: var(--color-blue);
+  white-space: nowrap;
+}
+

@@ -20,6 +20,16 @@ const variantGroups = [
     label: 'Protein altering variant',
     variant_types: [
       {
+        label: 'feature_elongation',
+        so_accession_id: 'SO:0001907',
+        url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001907'
+      },
+      {
+        label: 'feature_truncation',
+        so_accession_id: 'SO:0001906',
+        url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001906'
+      },
+      {
         label: 'frameshift_variant',
         so_accession_id: 'SO:0001589',
         url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001589'
@@ -58,6 +68,16 @@ const variantGroups = [
         label: 'stop_lost',
         so_accession_id: 'SO:0001578',
         url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001578'
+      },
+      {
+        label: 'transcript_ablation',
+        so_accession_id: 'SO:0001893',
+        url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001893'
+      },
+      {
+        label: 'transcript_amplification',
+        so_accession_id: 'SO:0001889',
+        url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001889'
       }
     ]
   },
@@ -168,6 +188,16 @@ const variantGroups = [
     label: 'Regulatory region variant',
     variant_types: [
       {
+        label: 'regulatory_region_ablation',
+        so_accession_id: 'SO:0001894',
+        url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001894'
+      },
+      {
+        label: 'regulatory_region_amplification',
+        so_accession_id: 'SO:0001891',
+        url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001891'
+      },
+      {
         label: 'regulatory_region_variant',
         so_accession_id: 'SO:0001566',
         url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001566'
@@ -176,6 +206,16 @@ const variantGroups = [
         label: 'TF_binding_site_variant',
         so_accession_id: 'SO:0001782',
         url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001782'
+      },
+      {
+        label: 'TFBS_ablation',
+        so_accession_id: 'SO:0001895',
+        url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001895'
+      },
+      {
+        label: 'TFBS_amplification',
+        so_accession_id: 'SO:0001892',
+        url: 'http://www.sequenceontology.org/miso/current_svn/term/SO:0001892'
       }
     ]
   },

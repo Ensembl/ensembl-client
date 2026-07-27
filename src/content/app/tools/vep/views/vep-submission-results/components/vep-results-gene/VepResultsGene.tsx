@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
+
+import {
+  geneGenomeBrowserUrl,
+  geneFeatureExplorerUrl,
+  openInNewTab
+} from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 
 import type { Strand } from 'src/shared/types/core-api/strand';
 
@@ -35,24 +39,12 @@ type Props = {
 const VepResultsGene = (props: Props) => {
   const { genomeId, stableId, symbol, strand } = props;
 
-  const focusIdForUrl = buildFocusIdForUrl({
-    type: 'gene',
-    objectId: stableId
-  });
-
+  // Clicking the gene id opens a small "View in" popup offering the Genome
+  // Browser and the Feature Explorer (the entityViewer slot is the Feature
+  // Explorer). Both open the full Ensembl app in a new tab.
   const links = {
-    genomeBrowser: {
-      url: urlFor.browser({
-        genomeId,
-        focus: focusIdForUrl
-      })
-    },
-    entityViewer: {
-      url: urlFor.entityViewer({
-        genomeId,
-        entityId: focusIdForUrl
-      })
-    }
+    genomeBrowser: openInNewTab(geneGenomeBrowserUrl(genomeId, stableId)),
+    entityViewer: openInNewTab(geneFeatureExplorerUrl(genomeId, stableId))
   };
 
   return (

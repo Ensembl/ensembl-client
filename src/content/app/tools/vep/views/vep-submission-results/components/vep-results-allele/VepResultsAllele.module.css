@@ -15,6 +15,12 @@
   font-weight: var(--font-weight-light);
 }
 
+/* A symbolic (<DEL>) or breakend (G[17:198982[) allele, shown verbatim rather
+   than truncated like a nucleotide sequence. */
+.symbolicAllele {
+  overflow-wrap: anywhere;
+}
+
 .copy {
   margin-bottom: 0.5rem;
 }

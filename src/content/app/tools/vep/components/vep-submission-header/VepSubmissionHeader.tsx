@@ -38,7 +38,7 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
-import DownloadLink from 'src/shared/components/download-button/DownloadLink';
+import DownloadOptions from './DownloadOptions';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import UnavailableResults from 'src/content/app/tools/shared/components/help-messages/UnavailableResults';
 
@@ -130,6 +130,8 @@ const ControlButtons = (
 
   const canGetResults = submission.status === 'SUCCEEDED';
   const downloadLink = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
+  // Flattened, fully-expanded table (spreadsheet-friendly) vs the raw VCF.
+  const tableDownloadLink = `${downloadLink}?format=tsv`;
   const vepResultsLink = urlFor.vepResults({
     submissionId: props.submission.id
   });
@@ -149,8 +151,9 @@ const ControlButtons = (
     return (
       <div className={styles.controls}>
         <DeleteButton onClick={onDelete} disabled={isDeleting} />
-        <DownloadLink
-          href={downloadLink}
+        <DownloadOptions
+          vcfHref={downloadLink}
+          tableHref={tableDownloadLink}
           disabled={isDeleting || !canGetResults}
         />
         <ButtonLink

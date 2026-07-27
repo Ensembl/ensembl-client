@@ -33,6 +33,7 @@ import VepSubmitButton from '../vep-submit-button/VepSubmitButton';
 import EnsemblVepLogo from './EnsemblVepLogo';
 import EnsemblVepVersion from './EnsemblVepVersion';
 import VepTopBarNavButtons from './VepTopBarNavButtons';
+import EnsemblMark from './EnsemblMark';
 
 import styles from './VepTopBar.module.css';
 
@@ -48,6 +49,7 @@ const VepFormTopBar = () => {
         </div>
         <EnsemblVepVersion />
         <VepTopBarNavButtons />
+        <EnsemblMark />
       </div>
     </ToolsTopBar>
   );
@@ -58,7 +60,9 @@ const TranscriptSetSelector = () => {
   const vepFormParameters = useAppSelector(getVepFormParameters);
   const { currentData: vepFormConfig } = useVepFormConfigQuery(
     {
-      genome_id: selectedSpecies?.genome_id ?? ''
+      genome_id: selectedSpecies?.genome_id ?? '',
+      species_taxonomy_id: selectedSpecies?.species_taxonomy_id,
+      assembly_name: selectedSpecies?.assembly.name
     },
     {
       skip: !selectedSpecies

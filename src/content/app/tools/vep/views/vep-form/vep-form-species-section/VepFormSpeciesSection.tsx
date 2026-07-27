@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-import { Link } from 'react-router';
+import classNames from 'classnames';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
-import { useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { getSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+import { clearSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import { VepSpeciesName } from 'src/content/app/tools/vep/components/vep-species-name/VepSpeciesName';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
 import TextButton from 'src/shared/components/text-button/TextButton';
 
-const vepSpeciesSelectorUrl = urlFor.vepSpeciesSelector();
+import styles from './VepFormSpeciesSection.module.css';
 
-export const VepFormSpecies = (props: { className?: string }) => {
+export const VepFormSpecies = (props: {
+  className?: string;
+  onOpenSpeciesSelector: () => void;
+}) => {
   const selectedSpecies = useAppSelector(getSelectedSpecies);
 
   if (!selectedSpecies) {
-    return <Link to={vepSpeciesSelectorUrl}>Select a genome</Link>;
+    return (
+      <TextButton onClick={props.onOpenSpeciesSelector}>
+        Select a genome
+      </TextButton>
+    );
   }
 
   return (
@@ -42,12 +48,29 @@ export const VepFormSpecies = (props: { className?: string }) => {
   );
 };
 
-export const VepSpeciesSelectorNavButton = (props: { className?: string }) => {
+export const VepSpeciesSelectorNavButton = (props: {
+  className?: string;
+  onOpenSpeciesSelector: () => void;
+}) => {
   const selectedSpecies = useAppSelector(getSelectedSpecies);
+  const dispatch = useAppDispatch();
+
+  const onClear = () => {
+    dispatch(clearSelectedSpecies());
+  };
+
+  if (!selectedSpecies) {
+    return (
+      <div className={props.className}>
+        <PlusButton onClick={props.onOpenSpeciesSelector} />
+      </div>
+    );
+  }
 
   return (
-    <Link to={vepSpeciesSelectorUrl} className={props.className}>
-      {!selectedSpecies ? <PlusButton /> : <TextButton>Change</TextButton>}
-    </Link>
+    <div className={classNames(props.className, styles.speciesToggle)}>
+      <TextButton onClick={props.onOpenSpeciesSelector}>Change</TextButton>
+      <TextButton onClick={onClear}>Clear</TextButton>
+    </div>
   );
 };

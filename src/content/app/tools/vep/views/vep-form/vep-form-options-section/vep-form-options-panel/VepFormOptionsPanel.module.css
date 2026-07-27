@@ -1,0 +1,165 @@
+.panelBody {
+  --padding-side: 42px;
+  background-color: var(--color-light-grey);
+  padding: 12px var(--padding-side) 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Right-aligned panel-header action (shown only while the panel is expanded):
+   toggle every option in the panel on (with their default sub-options) / off. */
+.selectAllButton {
+  margin-left: auto;
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  color: var(--color-blue);
+  white-space: nowrap;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.groupLabel {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-dark-grey);
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 200px);
+  column-gap: 1.5rem;
+  row-gap: 10px;
+  align-items: start;
+}
+
+/* A group of allele-frequency sources (gnomAD exomes/genomes, All of Us, SV,
+   CNV). Each carries its own ancestry/subset matrix, so they get wider columns
+   than a standard option and sit side by side across the panel, filling the
+   available width. The column count drops on a narrow viewport. */
+.optionsGridSources {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  column-gap: 2rem;
+}
+
+.optionCell {
+  display: flex;
+  flex-direction: column;
+}
+
+/* An option's checkbox row + its help (question-mark) icon, side by side. */
+.optionHeader {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Keep the help icon at full size when the option label is long enough to make
+   the flex row want to shrink it. */
+.helpIcon {
+  flex: none;
+}
+
+/* Force an option to begin a new grid row (used to drop UTRAnnotator below the
+   base transcript options). */
+.rowBreak {
+  grid-column-start: 1;
+}
+
+/* A non-checkbox option label (e.g. the HGVS group heading). */
+.optionHeading {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-dark-grey);
+}
+
+/* Two linked checkboxes (HGVSc + HGVSp) sharing a left bracket to show they
+   toggle together. */
+.linkedPair {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.linkedBracket {
+  flex: none;
+  width: 6px;
+  border: 1px solid var(--color-medium-light-grey);
+  border-right: none;
+  border-radius: 3px 0 0 3px;
+}
+
+.linkedChecks {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* A labelled group of nested options within a parent option's children. */
+.subOptionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.groupHeading {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-dark-grey);
+  margin-top: 4px;
+}
+
+/* Secondary options, indented under their parent checkbox. */
+.childOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid var(--color-medium-light-grey);
+}
+
+/* A labelled select/number sub-option row. */
+.subOptionRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.subOptionLabel {
+  color: var(--color-dark-grey);
+}
+
+.subOptionSelect {
+  width: 100%;
+}
+
+.numberInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border: 1px solid var(--color-medium-light-grey);
+  border-radius: 4px;
+}
+
+/* "Customise selection" under an allele-frequency source: a text button in the
+   same idiom as the results page's "+ n more", revealing the source's full
+   ancestry matrix. Left as text rather than a control so the suggested-defaults
+   view stays the quiet one. */
+.customiseButton {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-blue);
+  font-size: inherit;
+}

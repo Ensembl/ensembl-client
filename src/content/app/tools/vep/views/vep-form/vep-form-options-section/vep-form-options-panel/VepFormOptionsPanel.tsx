@@ -1,0 +1,437 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useState, useEffect, useMemo, useRef } from 'react';
+import noop from 'lodash/noop';
+import classNames from 'classnames';
+
+import { useAppDispatch, useAppSelector } from 'src/store';
+
+import { getVepFormParameters } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+import { updateParameters } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
+
+import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
+import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
+
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+
+import type {
+  FormPanel,
+  FormPanelOption,
+  FormPanelSubOption
+} from 'src/content/app/tools/vep/types/vepFormConfig';
+import { groupByCategory } from 'src/content/app/tools/vep/utils/groupByCategory';
+import {
+  panelSelectionUpdates,
+  isPanelFullySelected,
+  subOptionToggleUpdates,
+  optionToggleUpdates
+} from './panelSelectionUpdates';
+import { getOptionHelp } from './optionHelp';
+import OptionHelpText from './OptionHelpText';
+
+import commonStyles from '../VepFormOptionsSection.module.css';
+import styles from './VepFormOptionsPanel.module.css';
+
+type Props = {
+  panel: FormPanel;
+  /**
+   * A command from the section-level "Enable all default options" toggle: open
+   * every panel, or close them again. Not plain state — a panel is otherwise
+   * free to be opened and closed on its own, so this must apply only when the
+   * section toggle is actually clicked. `nonce` changes on each click, which is
+   * what distinguishes a fresh command from a re-render.
+   */
+  expandCommand?: { expanded: boolean; nonce: number };
+};
+
+/**
+ * An option carrying a nested group — the gnomAD / All of Us allele-frequency
+ * sources, each with its own ancestry (or subset) matrix. These need more room
+ * than a standard 200px option column, so a group of them is laid out in wider
+ * columns (see `optionsGridSources`).
+ */
+const isSourceOption = (option: FormPanelOption) =>
+  !!option.sub_options?.some((subOption) => subOption.type === 'group');
+
+/**
+ * A collapsible "Job options" panel rendered from the tools-API form config: a
+ * title with a show/hide toggle (collapsed by default), revealing the panel's
+ * options grouped by category.
+ *
+ * Each option's `id` is also its submission parameter name, so toggling an
+ * option (or changing a sub-option) writes straight into the redux form
+ * parameters and reaches the submission payload.
+ */
+const VepFormOptionsPanel = (props: Props) => {
+  const { panel, expandCommand } = props;
+  const dispatch = useAppDispatch();
+  const formParameters = useAppSelector(getVepFormParameters);
+  const [isExpanded, setIsExpanded] = useState(false);
+  // Which allele-frequency sources have had "Customise selection" clicked. An
+  // AF source carries a whole ancestry matrix — gnomAD Exomes alone is 25
+  // checkboxes — so until asked, a source shows only what is actually selected.
+  const [customisedSources, setCustomisedSources] = useState<
+    Record<string, boolean>
+  >({});
+
+  const groups = useMemo(() => groupByCategory(panel.options), [panel.options]);
+
+  const boolValue = (id: string, fallback: boolean) => {
+    const value = formParameters[id];
+    return value === undefined ? fallback : !!value;
+  };
+
+  // Whether any top-level option in this panel is currently selected.
+  const hasSelectedOption = useMemo(
+    () => panel.options.some((option) => !!formParameters[option.id]),
+    [panel.options, formParameters]
+  );
+
+  // Auto-expand once when the panel has selected options — e.g. when returning
+  // to the form via Edit/rerun, whose restored parameters arrive asynchronously.
+  // Only fires once, so the user can collapse it again afterwards.
+  const didAutoExpand = useRef(false);
+  useEffect(() => {
+    if (!didAutoExpand.current && hasSelectedOption) {
+      setIsExpanded(true);
+      didAutoExpand.current = true;
+    }
+  }, [hasSelectedOption]);
+
+  // Open/close on the section toggle's command. Keyed on the nonce, not on
+  // `expanded`, so clicking the section toggle twice back to the same value
+  // still lands — and so a re-render never reopens a panel the user just closed.
+  const lastExpandNonce = useRef(expandCommand?.nonce);
+  useEffect(() => {
+    if (expandCommand && expandCommand.nonce !== lastExpandNonce.current) {
+      lastExpandNonce.current = expandCommand.nonce;
+      setIsExpanded(expandCommand.expanded);
+    }
+  }, [expandCommand]);
+
+  const toggleExpanded = () => setIsExpanded((expanded) => !expanded);
+
+  // "Select all" / "Unselect all": one toggle that switches every top-level
+  // option in the panel on, or (once they all are) back off. Only shown while
+  // the panel is expanded, so it acts on options the user can see.
+  const allSelected = useMemo(
+    () => isPanelFullySelected(panel, formParameters),
+    [panel, formParameters]
+  );
+  const toggleSelectAll = () =>
+    dispatch(updateParameters(panelSelectionUpdates(panel, !allSelected)));
+
+  // renderSubOption and renderOption are mutually recursive (a 'group'
+  // sub-option renders nested options, which may themselves have sub-options).
+  // Declared as hoisted functions so the forward reference is clean.
+  /**
+   * Whether a sub-option shows while a source is uncustomised. Only selections
+   * are hidden: a setting like the SV overlap cutoff is part of the suggested
+   * defaults, not a choice among many, so it always shows.
+   */
+  function isSuggested(subOption: FormPanelSubOption): boolean {
+    if (subOption.type === 'group') {
+      return subOption.options.some(isSuggestedOption);
+    }
+    if (subOption.type === 'boolean') {
+      return boolValue(subOption.id, subOption.default);
+    }
+    return true;
+  }
+
+  function isSuggestedOption(option: FormPanelOption): boolean {
+    return boolValue(option.id, option.default);
+  }
+
+  // `owner` is the top-level option a boolean sub-option belongs to, passed
+  // only from the direct-children call site: it is what lets unticking the last
+  // sub-option switch the option itself off (see subOptionToggleUpdates).
+  function renderSubOption(
+    subOption: FormPanelSubOption,
+    showAll = true,
+    owner?: FormPanelOption
+  ) {
+    if (subOption.type === 'group') {
+      const options = showAll
+        ? subOption.options
+        : subOption.options.filter(isSuggestedOption);
+      if (options.length === 0) {
+        return null;
+      }
+      return (
+        <div className={styles.subOptionGroup} key={subOption.label ?? 'group'}>
+          {subOption.label && (
+            <div className={styles.groupHeading}>{subOption.label}</div>
+          )}
+          {options.map((option) => renderOption(option, showAll))}
+        </div>
+      );
+    }
+
+    if (subOption.type === 'select') {
+      const value = formParameters[subOption.id];
+      const currentValue =
+        value === undefined ? subOption.default : String(value);
+      return (
+        <div className={styles.subOptionRow} key={subOption.id}>
+          {subOption.label && (
+            <span className={styles.subOptionLabel}>{subOption.label}</span>
+          )}
+          <SimpleSelect
+            options={subOption.options}
+            value={currentValue}
+            className={styles.subOptionSelect}
+            onChange={noop}
+            onInput={(event) =>
+              dispatch(
+                updateParameters({ [subOption.id]: event.currentTarget.value })
+              )
+            }
+          />
+        </div>
+      );
+    }
+
+    if (subOption.type === 'number') {
+      const value = formParameters[subOption.id];
+      const currentValue = value === undefined ? subOption.default : Number(value);
+      const { min, max } = subOption;
+      // Keep the stored value an integer within [min, max]; an empty/invalid
+      // entry falls back to the default rather than storing NaN.
+      const clamp = (raw: string) => {
+        const parsed = Math.trunc(Number(raw));
+        let next = raw === '' || Number.isNaN(parsed) ? subOption.default : parsed;
+        if (min !== undefined) next = Math.max(min, next);
+        if (max !== undefined) next = Math.min(max, next);
+        return next;
+      };
+      return (
+        <div className={styles.subOptionRow} key={subOption.id}>
+          {subOption.label && (
+            <span className={styles.subOptionLabel}>{subOption.label}</span>
+          )}
+          <input
+            type="number"
+            className={styles.numberInput}
+            value={currentValue}
+            min={min}
+            max={max}
+            step={1}
+            onChange={(event) =>
+              dispatch(
+                updateParameters({
+                  [subOption.id]: clamp(event.currentTarget.value)
+                })
+              )
+            }
+          />
+        </div>
+      );
+    }
+
+    // boolean sub-option
+    return (
+      <CheckboxWithLabel
+        key={subOption.id}
+        label={subOption.label ?? subOption.id}
+        checked={boolValue(subOption.id, subOption.default)}
+        onChange={(isChecked) =>
+          dispatch(
+            updateParameters(
+              owner
+                ? subOptionToggleUpdates(
+                    owner,
+                    subOption.id,
+                    isChecked,
+                    formParameters
+                  )
+                : { [subOption.id]: isChecked }
+            )
+          )
+        }
+      />
+    );
+  }
+
+  // HGVS is a single control: linked HGVSc + HGVSp (the `hgvs` param, toggled
+  // together) shown in a bracket, off by default.
+  //
+  // HGVSg (the `hgvsg` param) is deliberately NOT offered here: its genomic
+  // notation names chromosomes in a form we cannot yet map, so it is hidden from
+  // the form and from the results. The param itself stays wired — the backend's
+  // ProtVar entry carries `forces_on: ["hgvsg"]`, silently computing it so the
+  // ProtVar link can be built from it. Restore the checkbox (and the display
+  // row in the annotation spec) once chromosome synonyms are available.
+  function renderHgvsOption(option: FormPanelOption) {
+    const cpChecked = boolValue('hgvs', false);
+    const setCp = (isChecked: boolean) =>
+      dispatch(updateParameters({ hgvs: isChecked }));
+    const help = getOptionHelp(option);
+    return (
+      <div className={styles.optionCell} key="hgvs">
+        <div className={styles.optionHeader}>
+          <span className={styles.optionHeading}>HGVS</span>
+          {help && (
+            <QuestionButton
+              helpText={<OptionHelpText help={help} />}
+              className={{ inline: styles.helpIcon }}
+            />
+          )}
+        </div>
+        <div className={styles.childOptions}>
+          {/* HGVSc + HGVSp are linked (bracketed) and toggle together. */}
+          <div className={styles.linkedPair}>
+            <div className={styles.linkedBracket} />
+            <div className={styles.linkedChecks}>
+              <CheckboxWithLabel
+                label="HGVSc"
+                checked={cpChecked}
+                onChange={setCp}
+              />
+              <CheckboxWithLabel
+                label="HGVSp"
+                checked={cpChecked}
+                onChange={setCp}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function renderOption(option: FormPanelOption, showAll = true) {
+    if (option.id === 'hgvs') {
+      return renderHgvsOption(option);
+    }
+    const checked = boolValue(option.id, option.default);
+    const help = getOptionHelp(option);
+    // An AF source starts showing only its suggested defaults; everything else
+    // is behind "Customise selection". Options without a nested matrix (the
+    // ordinary one- or two-checkbox options) are unaffected.
+    const isCustomisable = showAll && isSourceOption(option);
+    const showChildren = isCustomisable
+      ? !!customisedSources[option.id]
+      : showAll;
+    const cellClassName = classNames(
+      styles.optionCell,
+      // UTRAnnotator starts a new grid row, so the base transcript options
+      // (Distance to TSS / Nearest gene / Nearest exon junction boundary) sit on
+      // the top row and UTRAnnotator drops down next to RiboSeqORFs.
+      { [styles.rowBreak]: option.id === 'utrannotator' }
+    );
+    return (
+      <div className={cellClassName} key={option.id}>
+        <div className={styles.optionHeader}>
+          <CheckboxWithLabel
+            label={option.label}
+            checked={checked}
+            onChange={(isChecked) =>
+              dispatch(updateParameters(optionToggleUpdates(option, isChecked)))
+            }
+          />
+          {help && (
+            <QuestionButton
+              helpText={<OptionHelpText help={help} />}
+              className={{ inline: styles.helpIcon }}
+            />
+          )}
+        </div>
+        {checked && (option.locked_children || option.sub_options) && (
+          <div className={styles.childOptions}>
+            {/* Locked children mirror the parent and can't be toggled
+                independently; rendered checked (not disabled) so they show as
+                on rather than greyed out; clicks are no-ops. */}
+            {option.locked_children?.map((child) => (
+              <CheckboxWithLabel
+                key={child.id}
+                label={child.label}
+                checked={true}
+                onChange={noop}
+              />
+            ))}
+            {option.sub_options
+              ?.filter((subOption) => showChildren || isSuggested(subOption))
+              .map((subOption) =>
+                renderSubOption(subOption, showChildren, option)
+              )}
+            {isCustomisable && (
+              <button
+                type="button"
+                className={styles.customiseButton}
+                onClick={() =>
+                  setCustomisedSources((current) => ({
+                    ...current,
+                    [option.id]: !showChildren
+                  }))
+                }
+              >
+                {showChildren ? 'Show fewer' : 'Customise selection'}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <FormSection>
+      <div className={commonStyles.sectionTitleContainer}>
+        <ShowHide
+          label={panel.label}
+          isExpanded={isExpanded}
+          onClick={toggleExpanded}
+        />
+        {isExpanded && (
+          <button
+            type="button"
+            className={styles.selectAllButton}
+            onClick={toggleSelectAll}
+          >
+            {allSelected ? 'Unselect all' : 'Select all'}
+          </button>
+        )}
+      </div>
+      {isExpanded && (
+        <div className={styles.panelBody}>
+          {groups.map((group, index) => (
+            <div className={styles.group} key={group.category ?? index}>
+              {group.category && (
+                <div className={styles.groupLabel}>{group.category}</div>
+              )}
+              <div
+                className={classNames(styles.optionsGrid, {
+                  // Allele-frequency sources carry whole matrices of their own,
+                  // so they get wider columns — side by side under their
+                  // category heading rather than one per full-width row.
+                  [styles.optionsGridSources]: group.options.some(isSourceOption)
+                })}
+              >
+                {group.options.map((option) => renderOption(option))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </FormSection>
+  );
+};
+
+export default VepFormOptionsPanel;

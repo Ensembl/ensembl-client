@@ -1,12 +1,7 @@
 .grid {
   --vep-container-max-width: 1800px; /* same as for BLAST */
   display: grid;
-  grid-template-rows: auto max-content 1fr;
+  grid-template-rows: max-content 1fr; /* VEP top bar, then the main content */
   height: 100%;
 }
 
-.speciesSelectorGrid {
-  display: grid;
-  grid-template-rows: auto 1fr; /* No grey bar at the top of the species selector */
-  height: 100%;
-}

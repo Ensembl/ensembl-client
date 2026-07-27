@@ -98,6 +98,13 @@
   color: var(--color-red);
 }
 
+/* input check (remove with the check) */
+.inputError {
+  margin: 6px 0 0;
+  color: var(--color-red);
+  font-size: 12px;
+}
+
 .invisible {
   visibility: hidden;
   pointer-events: none;

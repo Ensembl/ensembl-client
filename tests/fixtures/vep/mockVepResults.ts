@@ -40,7 +40,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.486,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -101,7 +100,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5633,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -162,7 +160,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5811,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -223,7 +220,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5811,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -284,7 +280,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5367,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -345,7 +340,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5617,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -406,7 +400,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5803,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -467,7 +460,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'DEL',
-          representative_population_allele_frequency: null,
           predicted_molecular_consequences: []
         }
       ]
@@ -487,7 +479,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.0853,
           predicted_molecular_consequences: [
             {
               feature_type: null,
@@ -512,7 +503,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.8077,
           predicted_molecular_consequences: [
             {
               feature_type: null,
@@ -537,7 +527,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5579,
           predicted_molecular_consequences: [
             {
               feature_type: null,
@@ -562,7 +551,6 @@ const mockVepResults = {
         {
           allele_sequence: 'ATT',
           allele_type: 'INS',
-          representative_population_allele_frequency: null,
           predicted_molecular_consequences: []
         }
       ]
@@ -582,7 +570,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5431,
           predicted_molecular_consequences: [
             {
               feature_type: null,
@@ -607,7 +594,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5561,
           predicted_molecular_consequences: [
             {
               feature_type: null,
@@ -632,7 +618,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'DEL',
-          representative_population_allele_frequency: null,
           predicted_molecular_consequences: []
         }
       ]
@@ -652,7 +637,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.7722,
           predicted_molecular_consequences: [
             {
               feature_type: null,
@@ -677,7 +661,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.7728,
           predicted_molecular_consequences: [
             {
               feature_type: null,
@@ -702,7 +685,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5519,
           predicted_molecular_consequences: [
             {
               feature_type: null,
@@ -727,7 +709,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5339,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -788,7 +769,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.38,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -849,7 +829,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5369,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -910,7 +889,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.501,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -971,7 +949,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.0148,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1032,7 +1009,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5563,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1093,7 +1069,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.0575,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1154,7 +1129,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.0803,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1215,7 +1189,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.2348,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1276,7 +1249,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.0591,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1337,7 +1309,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4816,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1398,7 +1369,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.0651,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1459,7 +1429,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.52,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1520,7 +1489,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5282,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1581,7 +1549,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1494,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1642,7 +1609,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1817,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1703,7 +1669,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.9499,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1764,7 +1729,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1895,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1825,7 +1789,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1522,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1886,7 +1849,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1647,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -1947,7 +1909,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.9439,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2008,7 +1969,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.234,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2069,7 +2029,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'DEL',
-          representative_population_allele_frequency: null,
           predicted_molecular_consequences: []
         }
       ]
@@ -2089,7 +2048,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.0054,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2150,7 +2108,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1967,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2211,7 +2168,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.2031,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2272,7 +2228,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.9395,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2333,7 +2288,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.9441,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2394,7 +2348,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1853,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2455,7 +2408,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'DEL',
-          representative_population_allele_frequency: null,
           predicted_molecular_consequences: []
         }
       ]
@@ -2475,7 +2427,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5717,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2536,7 +2487,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.2943,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2597,7 +2547,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.021,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2658,7 +2607,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.252,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2719,7 +2667,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.8916,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2780,7 +2727,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.3708,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2841,7 +2787,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1591,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2902,7 +2847,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1326,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -2973,7 +2917,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.2879,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3044,7 +2987,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.2732,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3115,7 +3057,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1951,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3146,7 +3087,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.2053,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3177,7 +3117,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.2143,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3208,7 +3147,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.2909,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3239,7 +3177,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4511,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3270,7 +3207,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4914,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3301,7 +3237,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4181,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3332,7 +3267,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4181,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3363,7 +3297,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4846,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3394,7 +3327,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4844,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3425,7 +3357,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.3275,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3456,7 +3387,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.2989,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3487,7 +3417,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.394,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3518,7 +3447,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.3894,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3549,7 +3477,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1849,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3580,7 +3507,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.617,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3611,7 +3537,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4453,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3642,7 +3567,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.6663,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3673,7 +3597,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1693,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3704,7 +3627,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1695,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3735,7 +3657,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1707,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3766,7 +3687,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4996,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3797,7 +3717,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4233,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3828,7 +3747,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4972,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3859,7 +3777,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1556,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3890,7 +3807,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.6078,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3921,7 +3837,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.1468,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3952,7 +3867,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5948,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -3983,7 +3897,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.2292,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4014,7 +3927,6 @@ const mockVepResults = {
         {
           allele_sequence: 'T',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.0795,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4045,7 +3957,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.7462,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4076,7 +3987,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.512,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4107,7 +4017,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.6308,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4138,7 +4047,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.625,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4169,7 +4077,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.5809,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4200,7 +4107,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.7069,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4231,7 +4137,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.8329,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4262,7 +4167,6 @@ const mockVepResults = {
         {
           allele_sequence: 'G',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.7428,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4293,7 +4197,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.7278,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4324,7 +4227,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.3596,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4385,7 +4287,6 @@ const mockVepResults = {
         {
           allele_sequence: 'C',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.6548,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',
@@ -4446,7 +4347,6 @@ const mockVepResults = {
         {
           allele_sequence: 'A',
           allele_type: 'SNV',
-          representative_population_allele_frequency: 0.4744,
           predicted_molecular_consequences: [
             {
               feature_type: 'transcript',

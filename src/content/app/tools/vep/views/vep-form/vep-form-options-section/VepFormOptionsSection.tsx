@@ -14,32 +14,44 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
+import { useMemo, useState } from 'react';
+
+import { useAppDispatch, useAppSelector } from 'src/store';
 
 import {
   getSelectedSpecies,
-  getVepFormInputCommittedFlag
+  getVepFormInputCommittedFlag,
+  getVepFormParameters
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+
+import { updateParameters } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import { useVepFormConfigQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
-import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
-import VepFormGeneOptions from './vep-form-gene-options/VepFormGeneOptions';
+import VepFormOptionsPanel from './vep-form-options-panel/VepFormOptionsPanel';
 import {
-  PseudoRadioButton,
-  PseudoRadioButtonGroup
-} from 'src/shared/components/pseudo-radio-button';
+  allPanelsSelectionUpdates,
+  areAllPanelsFullySelected
+} from './vep-form-options-panel/panelSelectionUpdates';
 import { CircleLoader } from 'src/shared/components/loader';
+
+import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 
 import styles from './VepFormOptionsSection.module.css';
 
+// The "Job options" panels are driven by the tools-API form config: the
+// `panels` it returns depend on the selected species/assembly (e.g. the human
+// GRCh37/38-only panels), and each option's id is its submission parameter, so
+// selections flow straight into the payload.
 const VepFormOptionsSection = () => {
   const selectedSpecies = useAppSelector(getSelectedSpecies);
   const isVariantsInputCommitted = useAppSelector(getVepFormInputCommittedFlag);
 
   const { currentData: formConfig, isFetching } = useVepFormConfigQuery(
     {
-      genome_id: selectedSpecies?.genome_id ?? ''
+      genome_id: selectedSpecies?.genome_id ?? '',
+      species_taxonomy_id: selectedSpecies?.species_taxonomy_id,
+      assembly_name: selectedSpecies?.assembly.name
     },
     {
       skip: !selectedSpecies
@@ -59,67 +71,61 @@ const VepFormOptionsSection = () => {
     return null;
   }
 
-  return (
-    <div className={styles.container}>
-      <SectionHeader />
-      <VepFormGeneOptions config={formConfig} />
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>
-            Protein & functional
-          </span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>Predictions</span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>
-            Variant population frequencies
-          </span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>
-            Variant phenotypes
-          </span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>Variant citations</span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>
-            Regulatory annotation
-          </span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>
-            Conservation & constraint
-          </span>
-        </div>
-      </FormSection>
-    </div>
-  );
+  return <OptionsSection panels={formConfig.panels} />;
 };
 
-const SectionHeader = () => {
+/**
+ * The panels, with a section-level toggle that switches every option on (each
+ * with its default sub-options) and opens the panels so the result is visible —
+ * or switches them all back off and closes them again.
+ */
+const OptionsSection = (props: { panels: FormPanel[] }) => {
+  const { panels } = props;
+  const dispatch = useAppDispatch();
+  const formParameters = useAppSelector(getVepFormParameters);
+
+  // Derived, not held: unticking one option by hand must flip the toggle back,
+  // or it would offer to disable a set that is no longer all on.
+  const allSelected = useMemo(
+    () => areAllPanelsFullySelected(panels, formParameters),
+    [panels, formParameters]
+  );
+
+  // Bumped on each click so the panels can tell a fresh command from a
+  // re-render (see VepFormOptionsPanel's `expandCommand`).
+  const [expandCommand, setExpandCommand] = useState<{
+    expanded: boolean;
+    nonce: number;
+  }>();
+
+  const toggleAll = () => {
+    const enabling = !allSelected;
+    dispatch(updateParameters(allPanelsSelectionUpdates(panels, enabling)));
+    setExpandCommand((previous) => ({
+      expanded: enabling,
+      nonce: (previous?.nonce ?? 0) + 1
+    }));
+  };
+
   return (
-    <div className={styles.sectionHeader}>
-      <span>Job options</span>
-      <PseudoRadioButtonGroup>
-        <PseudoRadioButton label="Short variants" />
-        <PseudoRadioButton label="Structural variants" disabled={true} />
-      </PseudoRadioButtonGroup>
+    <div className={styles.container}>
+      <div className={styles.sectionHeader}>
+        <span>Job options</span>
+        <button
+          type="button"
+          className={styles.enableAllButton}
+          onClick={toggleAll}
+        >
+          {allSelected ? 'Disable all options' : 'Enable all default options'}
+        </button>
+      </div>
+      {panels.map((panel) => (
+        <VepFormOptionsPanel
+          key={panel.id}
+          panel={panel}
+          expandCommand={expandCommand}
+        />
+      ))}
     </div>
   );
 };

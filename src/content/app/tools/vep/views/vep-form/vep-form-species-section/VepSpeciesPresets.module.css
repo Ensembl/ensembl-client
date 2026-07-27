@@ -1,0 +1,48 @@
+.presets {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 40px 12px;
+  flex-wrap: wrap;
+}
+
+.label {
+  font-weight: var(--font-weight-light);
+  color: var(--color-dark-grey);
+  flex-shrink: 0;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preset {
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid var(--color-medium-light-grey);
+  background-color: var(--color-white);
+  color: var(--color-black);
+  border-radius: 13px;
+  padding: 4px 14px;
+  font-size: var(--body-font-size);
+  line-height: 1.4;
+  white-space: nowrap;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.preset:hover {
+  border-color: var(--color-blue);
+  color: var(--color-blue);
+}
+
+.presetActive,
+.presetActive:hover {
+  border-color: var(--color-blue);
+  background-color: var(--color-blue);
+  color: var(--color-white);
+}

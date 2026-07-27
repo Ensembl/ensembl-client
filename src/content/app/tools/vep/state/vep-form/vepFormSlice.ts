@@ -40,10 +40,7 @@ import {
 import { addSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 import { vepFormSubmit } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
-import type {
-  VepFormConfig,
-  VepFormParameterName
-} from 'src/content/app/tools/vep/types/vepFormConfig';
+import type { VepFormConfig } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { VepSelectedSpecies } from 'src/content/app/tools/vep/types/vepSubmission';
 import type {
   VepSubmission as StoredVepSubmission,
@@ -52,9 +49,12 @@ import type {
 } from 'src/content/app/tools/vep/types/vepSubmission';
 import type { RootState } from 'src/store';
 
-type VepFormParameters = Partial<
-  Record<VepFormParameterName, string | boolean>
->;
+// Form parameters reach the backend as a JSON object. Keys include the
+// backend form-config parameters plus the client-added annotation options
+// (HGVS and the annotation plugins), so the key type is an open string.
+// Values are booleans (toggles), strings (selects), or numbers (e.g. a
+// nearest-exon search range).
+type VepFormParameters = Record<string, string | boolean | number>;
 
 export type VepFormState = {
   submissionId: string | null; // temporary client-side submission id
@@ -216,7 +216,7 @@ export const fillVepFormWithExistingSubmissionData = createAsyncThunk(
       selectedSpecies: storedSubmission.species,
       inputFileName: storedSubmission.inputFile?.name ?? null,
       inputText: storedSubmission.inputText,
-      parameters: storedSubmission.parameters,
+      parameters: storedSubmission.parameters as VepFormParameters,
       isInputCommitted: true
     };
 
@@ -305,11 +305,22 @@ const prepareRequestPayload = async ({
     );
   }
 
+  // Include the assembly name so the tools API can pick assembly-specific
+  // plugin data files (e.g. human GRCh37 vs GRCh38), and the species taxonomy
+  // id so it can pin this job's option panels using the same species/assembly
+  // rules /form_config uses (without it every human-specific panel would be
+  // silently missing from the pin).
+  const finalParameters = {
+    ...parameters,
+    assembly_name: species.assembly.name,
+    species_taxonomy_id: species.species_taxonomy_id
+  };
+
   return {
     submission_id: submissionId,
     genome_id: species.genome_id,
     input_file: inputFile as File,
-    parameters: JSON.stringify(parameters)
+    parameters: JSON.stringify(finalParameters)
   };
 };
 
@@ -321,10 +332,27 @@ const vepFormSlice = createSlice({
       state,
       action: PayloadAction<{ species: VepSelectedSpecies }>
     ) => {
-      // NOTE: selecting a new species means that form parameters,
-      // whose values might remain from previously selected species,
-      // should be reset
+      // Selecting (or switching) species starts the rest of the form fresh:
+      // any variants input, uploaded file and option/parameter selections left
+      // over from a previous species should be cleared.
+      //
+      // NOTE: this only clears redux state. A previously uploaded file still
+      // lives in browser storage (IndexedDB) under the temporary submission id;
+      // it is unreachable for submission (isInputCommitted is reset, and any new
+      // input replaces it), so it is left in place for now. TODO: purge the
+      // stored input file here too if orphaned files become a storage concern.
       state.selectedSpecies = action.payload.species;
+      state.inputText = '';
+      state.inputFileName = null;
+      state.isInputCommitted = false;
+      state.parameters = {};
+    },
+    // clear the selected species and the rest of the form tied to it
+    clearSelectedSpecies: (state) => {
+      state.selectedSpecies = null;
+      state.inputText = '';
+      state.inputFileName = null;
+      state.isInputCommitted = false;
       state.parameters = {};
     },
     // replace the whole parameters object in the state
@@ -334,8 +362,7 @@ const vepFormSlice = createSlice({
       for (const [parameterName, parameter] of Object.entries(
         action.payload.parameters
       )) {
-        defaultParameters[parameterName as VepFormParameterName] =
-          parameter.default_value;
+        defaultParameters[parameterName] = parameter.default_value;
       }
 
       state.parameters = defaultParameters;
@@ -396,6 +423,7 @@ const vepFormSlice = createSlice({
 
 export const {
   setSelectedSpecies,
+  clearSelectedSpecies,
   setDefaultParameters,
   updateParameters,
   updateSubmissionName,
