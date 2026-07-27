@@ -66,6 +66,11 @@ const createDragObservable = (element: HTMLElement) => {
       const startX = downEvent.clientX;
       const startScrollLeft = element.scrollLeft;
 
+      // NOTE: Although it is common, while setting up drag gestures using pointer events,
+      // to capture all pointer events into the element that started the gesture (i.e. emitted the pointerdown event)
+      // (i.e.: element.setPointerCapture(downEvent.pointerId)),
+      // this would not be suitable here, because it would prevent click events
+      // from being registered on genome lozenges.
       const pointerUp$ = fromEvent<PointerEvent>(document, 'pointerup').pipe(
         take(1)
       );
