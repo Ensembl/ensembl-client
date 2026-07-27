@@ -17,7 +17,11 @@
 import { useState } from 'react';
 import { faker } from '@faker-js/faker';
 
-import Panel from 'src/shared/components/panel/Panel';
+import {
+  Panel,
+  PanelHeader,
+  PanelBody
+} from 'src/shared/components/panel/Panel';
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
 import styles from './Panel.stories.module.css';
@@ -59,68 +63,43 @@ const TabWrapper = (args: DefaultArgs) => {
   );
 };
 
-export const DefaultPanelStory = (args: DefaultArgs) => (
+export const DefaultPanelStory = () => (
   <div className={styles.fullPageWrapper}>
-    <Panel header={'Default Panel'} onClose={args.onClose}>
-      <div>Panel Content</div>
+    <Panel>
+      <PanelHeader>Default Panel</PanelHeader>
+      <PanelBody>
+        <div>Panel Content</div>
+      </PanelBody>
     </Panel>
   </div>
 );
 
 DefaultPanelStory.storyName = 'default';
 
-export const FullPagePanelStory = (args: DefaultArgs) => (
-  <div className={styles.fullPageWrapper}>
-    <Panel
-      header={'Full Page Panel'}
-      onClose={args.onClose}
-      classNames={{
-        panel: styles.fullPagePanel
-      }}
-    >
-      <div>Panel Content</div>
-    </Panel>
-  </div>
-);
-
-FullPagePanelStory.storyName = 'full-page';
-
 export const PanelWithTabsStory = (args: DefaultArgs) => (
   <div className={styles.fullPageWrapper}>
-    <Panel
-      header={<TabWrapper {...args} />}
-      onClose={args.onClose}
-      classNames={{
-        panel: styles.fullPagePanel
-      }}
-    >
-      <div>Panel Content</div>
+    <Panel>
+      <PanelHeader>
+        <TabWrapper {...args} />
+      </PanelHeader>
+      <PanelBody>
+        <div>Panel Content</div>
+      </PanelBody>
     </Panel>
   </div>
 );
 
 PanelWithTabsStory.storyName = 'with tabs';
 
-export const PanelWithLongHeaderStory = (args: DefaultArgs) => (
-  <div className={styles.fullPageWrapper}>
-    <Panel header={<TabWrapper {...args} />} onClose={args.onClose}>
-      <div>{faker.lorem.paragraphs(100)}</div>
-    </Panel>
-  </div>
-);
-
-PanelWithLongHeaderStory.storyName = 'long header';
-
 export const PanelWithLongContentStory = (args: DefaultArgs) => (
   <div className={styles.fullPageWrapper}>
-    <Panel
-      header={<TabWrapper {...args} />}
-      onClose={args.onClose}
-      classNames={{
-        panel: styles.fullPagePanel
-      }}
-    >
-      <div>{faker.lorem.paragraphs(100)}</div>
+    <Panel>
+      <PanelHeader>
+        <TabWrapper {...args} />
+      </PanelHeader>
+      <PanelBody>
+        <div className={styles.preWrap}>{faker.lorem.paragraphs(100)}</div>
+      </PanelBody>
     </Panel>
   </div>
 );
