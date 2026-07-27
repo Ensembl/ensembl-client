@@ -186,7 +186,8 @@ export const availableFieldsForRow = (
     conditions.filter((_, i) => i !== rowIndex)
   );
   return FILTER_FIELDS.filter(
-    (f) => !usedElsewhere.has(f.field) || conditions[rowIndex]?.field === f.field
+    (f) =>
+      !usedElsewhere.has(f.field) || conditions[rowIndex]?.field === f.field
   );
 };
 

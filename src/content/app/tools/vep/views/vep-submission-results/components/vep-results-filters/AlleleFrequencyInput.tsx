@@ -91,7 +91,9 @@ const AlleleFrequencyInput = (props: Props) => {
     } else {
       selected.add(key);
     }
-    onChange({ values: sources.map((s) => s.key).filter((k) => selected.has(k)) });
+    onChange({
+      values: sources.map((s) => s.key).filter((k) => selected.has(k))
+    });
   };
 
   const onThresholdInput = (event: FormEvent<HTMLInputElement>) => {
@@ -184,9 +186,7 @@ const AlleleFrequencyInput = (props: Props) => {
         />
       </div>
       {thresholdInvalid && (
-        <span className={styles.tokenError}>
-          Enter a value between 0 and 1
-        </span>
+        <span className={styles.tokenError}>Enter a value between 0 and 1</span>
       )}
     </div>
   );

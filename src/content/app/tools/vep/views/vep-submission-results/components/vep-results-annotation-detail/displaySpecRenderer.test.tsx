@@ -159,7 +159,10 @@ describe('renderDisplayOption', () => {
   it("renders a help row's cited source as a link", async () => {
     const { container } = renderOption('eve', {
       consequence: [
-        annotation('popeve', 'transcript', { score: -3.21, gap_frequency: 0.07 })
+        annotation('popeve', 'transcript', {
+          score: -3.21,
+          gap_frequency: 0.07
+        })
       ]
     });
     // The help sits behind the (?) control, so open it first. QuestionButton is
@@ -258,7 +261,9 @@ describe('renderDisplayOption', () => {
       .getByText('Molecular function')
       .closest('div') as HTMLElement;
     expect(within(section).getByText('DNA binding')).toBeDefined();
-    expect(within(section).queryByText('regulation of transcription')).toBeNull();
+    expect(
+      within(section).queryByText('regulation of transcription')
+    ).toBeNull();
   });
 
   it('renders NearestGene (allele-scoped): gene id, distance and direction', () => {
@@ -266,8 +271,16 @@ describe('renderDisplayOption', () => {
       allele: [
         annotation('nearest_gene', 'allele', {
           nearest_genes: [
-            { gene_id: 'ENSG00000269981', distance: 19457, direction: 'upstream' },
-            { gene_id: 'ENSG00000279928', distance: 25274, direction: 'downstream' }
+            {
+              gene_id: 'ENSG00000269981',
+              distance: 19457,
+              direction: 'upstream'
+            },
+            {
+              gene_id: 'ENSG00000279928',
+              distance: 25274,
+              direction: 'downstream'
+            }
           ]
         })
       ]
@@ -312,8 +325,18 @@ describe('renderDisplayOption', () => {
       consequence: [
         annotation('nearest_exon_jb', 'transcript', {
           boundaries: [
-            { exon_id: 'ENSE1', distance: 3744, boundary_type: 'end', exon_length: 144 },
-            { exon_id: 'ENSE2', distance: 3169, boundary_type: 'start', exon_length: 86 }
+            {
+              exon_id: 'ENSE1',
+              distance: 3744,
+              boundary_type: 'end',
+              exon_length: 144
+            },
+            {
+              exon_id: 'ENSE2',
+              distance: 3169,
+              boundary_type: 'start',
+              exon_length: 86
+            }
           ]
         })
       ]
@@ -371,7 +394,9 @@ describe('renderDisplayOption', () => {
         .map((cell) => cell.textContent)
     ).toEqual(['Phenotype', 'Source']);
     // normalizePhenotype: underscores -> spaces; all-caps -> sentence case
-    expect(screen.getByRole('cell', { name: 'Li-Fraumeni syndrome' })).toBeDefined();
+    expect(
+      screen.getByRole('cell', { name: 'Li-Fraumeni syndrome' })
+    ).toBeDefined();
     expect(screen.getByRole('cell', { name: 'Breast cancer' })).toBeDefined();
     // neither the id nor the risk allele is a column
     expect(screen.queryByText('ENSG00000141510')).toBeNull();
@@ -441,10 +466,14 @@ describe('renderDisplayOption', () => {
     // in the Phenotype header and swaps Source for Classification, since every
     // row of it is ClinVar anyway
     expect(
-      within(tables[0]).getAllByRole('columnheader').map((c) => c.textContent)
+      within(tables[0])
+        .getAllByRole('columnheader')
+        .map((c) => c.textContent)
     ).toEqual(['Phenotype', 'Source']);
     expect(
-      within(tables[1]).getAllByRole('columnheader').map((c) => c.textContent)
+      within(tables[1])
+        .getAllByRole('columnheader')
+        .map((c) => c.textContent)
     ).toEqual(['Phenotype (ClinVar)', 'Classification']);
     expect(screen.getByRole('cell', { name: 'pathogenic' })).toBeDefined();
     // `indent` puts the unheaded ClinVar table in the same indent container a
@@ -494,7 +523,6 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByRole('cell', { name: 'disease 4' })).toBeNull();
     expect(screen.getByRole('cell', { name: 'Breast cancer' })).toBeDefined();
   });
-
 
   it('truncates a long list behind a show-more toggle (visible_count)', () => {
     renderOption('go', {
@@ -609,7 +637,11 @@ describe('renderDisplayOption', () => {
       allele: [
         annotation('opentargets', 'allele', {
           gwas_associations: [
-            { disease: 'EFO_0000305', gene_id: 'ENSG00000141510', l2g_score: 0.42 }
+            {
+              disease: 'EFO_0000305',
+              gene_id: 'ENSG00000141510',
+              l2g_score: 0.42
+            }
           ],
           qtl_associations: [{ gene_id: 'ENSG00000012048', biosample: 'blood' }]
         })
@@ -725,11 +757,15 @@ describe('renderDisplayOption', () => {
     const likelyBenignRow = screen
       .getByRole('cell', { name: 'Likely benign' })
       .closest('tr') as HTMLElement;
-    expect(within(likelyBenignRow).getByRole('cell', { name: '3' })).toBeDefined();
+    expect(
+      within(likelyBenignRow).getByRole('cell', { name: '3' })
+    ).toBeDefined();
     const pathogenicRow = screen
       .getByRole('cell', { name: 'Pathogenic' })
       .closest('tr') as HTMLElement;
-    expect(within(pathogenicRow).getByRole('cell', { name: '1' })).toBeDefined();
+    expect(
+      within(pathogenicRow).getByRole('cell', { name: '1' })
+    ).toBeDefined();
   });
 
   it('ClinVar renders nothing without an annotation', () => {
@@ -942,9 +978,6 @@ describe('renderDisplayOption', () => {
   });
 
   // --- IntAct: view + when coalesce + count + sub-option counts --------------
-
-
-
 });
 
 it('IntAct: the interactions table is in the default view, not behind Show all', () => {
@@ -962,9 +995,9 @@ it('IntAct: the interactions table is in the default view, not behind Show all',
   expect(screen.getByText('IntAct')).toBeDefined();
   expect(screen.getByText('EBI-1')).toBeDefined();
   expect(screen.getByText('mutation decreasing')).toBeDefined();
-  expect(
-    screen.getAllByRole('columnheader').map((h) => h.textContent)
-  ).toEqual(['Interaction AC', 'Feature Type']);
+  expect(screen.getAllByRole('columnheader').map((h) => h.textContent)).toEqual(
+    ['Interaction AC', 'Feature Type']
+  );
 });
 
 describe('IntAct interactions table', () => {
@@ -1013,9 +1046,9 @@ describe('IntAct interactions table', () => {
     renderIntact();
 
     // "uniprotkb:P00520_and_uniprotkb:P37840" is two accessions, not one.
-    expect(
-      screen.getByText('P00520').closest('a')?.getAttribute('href')
-    ).toBe('https://www.uniprot.org/uniprotkb/P00520/entry');
+    expect(screen.getByText('P00520').closest('a')?.getAttribute('href')).toBe(
+      'https://www.uniprot.org/uniprotkb/P00520/entry'
+    );
     expect(
       screen.getAllByText('P37840')[0].closest('a')?.getAttribute('href')
     ).toBe('https://www.uniprot.org/uniprotkb/P37840/entry');
@@ -1028,16 +1061,16 @@ describe('IntAct interactions table', () => {
     // UniProt, and neither must an affected protein that carries no prefix.
     expect(screen.getByText(/intact:EBI-999/)).toBeTruthy();
     expect(screen.queryByText('EBI-999')).toBeNull();
-    expect(
-      screen.getByText(/EBI-not-a-uniprot-id/).closest('a')
-    ).toBeNull();
+    expect(screen.getByText(/EBI-not-a-uniprot-id/).closest('a')).toBeNull();
   });
 
   it('drops columns whose sub-option did not run', () => {
     // Only the always-emitted columns; the four sub-option columns go.
     renderIntact(() => false);
 
-    const headers = screen.getAllByRole('columnheader').map((h) => h.textContent);
+    const headers = screen
+      .getAllByRole('columnheader')
+      .map((h) => h.textContent);
     expect(headers).toEqual(['Interaction AC', 'Feature Type']);
     expect(screen.queryByText('27348587')).toBeNull();
   });
@@ -1047,7 +1080,9 @@ describe('IntAct interactions table', () => {
     // affected proteins differ — so the first is lifted and the second is not.
     renderIntact();
 
-    expect(screen.getAllByRole('columnheader').map((h) => h.textContent)).toEqual([
+    expect(
+      screen.getAllByRole('columnheader').map((h) => h.textContent)
+    ).toEqual([
       'Interaction AC',
       'Feature Type',
       'Interaction Participants',
@@ -1072,7 +1107,9 @@ describe('IntAct interactions table', () => {
       subOptionRan: () => true
     });
 
-    expect(screen.getAllByRole('columnheader').map((h) => h.textContent)).toEqual([
+    expect(
+      screen.getAllByRole('columnheader').map((h) => h.textContent)
+    ).toEqual([
       'Interaction AC',
       'Feature Type',
       'Interaction Participants',
@@ -1087,14 +1124,19 @@ describe('IntAct interactions table', () => {
       consequence: [
         annotation('intact', 'transcript', {
           // one shared affected protein across both interactions
-          interactions: interactions.map((i) => ({ ...i, ap_ac: 'uniprotkb:P37840' }))
+          interactions: interactions.map((i) => ({
+            ...i,
+            ap_ac: 'uniprotkb:P37840'
+          }))
         })
       ],
       showAll: true,
       subOptionRan: () => true
     });
 
-    const headers = screen.getAllByRole('columnheader').map((h) => h.textContent);
+    const headers = screen
+      .getAllByRole('columnheader')
+      .map((h) => h.textContent);
     expect(headers).not.toContain('Affected Protein');
     // the lifted value keeps the prefix stripping and the UniProt link
     const lifted = screen.getAllByText('P37840').find((el) => el.closest('a'));

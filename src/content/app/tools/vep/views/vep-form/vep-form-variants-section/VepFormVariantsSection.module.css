@@ -31,7 +31,9 @@
 .gridColumnRight {
   grid-column: right;
   justify-self: start;
-  padding-left: calc(var(--standard-gutter) - var(--column-gap)); /* to achieve the same distance from textarea as the width of the standard gutter */
+  padding-left: calc(
+    var(--standard-gutter) - var(--column-gap)
+  ); /* to achieve the same distance from textarea as the width of the standard gutter */
 }
 
 .exampleInputsContainer {
@@ -70,7 +72,7 @@
 
 .fileDropZoneLabel {
   display: flex;
-  align-items: center;  
+  align-items: center;
 }
 
 .fileDropZoneLabel > span {

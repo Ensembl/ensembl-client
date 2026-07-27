@@ -259,17 +259,29 @@ const VepResultsAnnotationDetail = (props: {
       label: string;
       data: PopulationFrequencies | null;
     }[] = [
-      { id: 'gnomad_exomes', label: 'gnomAD exomes', data: getAnnotation(allele, 'gnomad_exomes') },
-      { id: 'gnomad_genomes', label: 'gnomAD genomes', data: getAnnotation(allele, 'gnomad_genomes') },
-      { id: 'allofus', label: 'All of Us', data: getAnnotation(allele, 'all_of_us') }
+      {
+        id: 'gnomad_exomes',
+        label: 'gnomAD exomes',
+        data: getAnnotation(allele, 'gnomad_exomes')
+      },
+      {
+        id: 'gnomad_genomes',
+        label: 'gnomAD genomes',
+        data: getAnnotation(allele, 'gnomad_genomes')
+      },
+      {
+        id: 'allofus',
+        label: 'All of Us',
+        data: getAnnotation(allele, 'all_of_us')
+      }
     ];
 
     // Present when either the overall AF or any population survives — a job that
     // selected specific sub-populations (but not the all-ancestry overall) has a
     // null `overall` yet real population values, and must still show.
     const hasData = (data: PopulationFrequencies | null) =>
-      data != null &&
-      (data.overall != null || Object.keys(data.populations).length > 0);
+      data !== null &&
+      (data.overall !== null || Object.keys(data.populations).length > 0);
 
     // Show a source only when its option was selected for the run — the same
     // selection gate every other option uses (renderOption), so an unselected
@@ -286,8 +298,16 @@ const VepResultsAnnotationDetail = (props: {
       label: string;
       data: GnomadStructuralData | null;
     }[] = [
-      { id: 'gnomad_sv', label: 'gnomAD SV', data: getAnnotation(allele, 'gnomad_sv') },
-      { id: 'gnomad_cnv', label: 'gnomAD CNV', data: getAnnotation(allele, 'gnomad_cnv') }
+      {
+        id: 'gnomad_sv',
+        label: 'gnomAD SV',
+        data: getAnnotation(allele, 'gnomad_sv')
+      },
+      {
+        id: 'gnomad_cnv',
+        label: 'gnomAD CNV',
+        data: getAnnotation(allele, 'gnomad_cnv')
+      }
     ];
     const structuralVisible = structuralSources.filter((s) => optionRan(s.id));
 
@@ -416,7 +436,7 @@ const FrequencyBlock = (props: {
 }) => {
   if (
     !props.data ||
-    (props.data.overall == null &&
+    (props.data.overall === null &&
       Object.keys(props.data.populations).length === 0)
   ) {
     return null;
@@ -426,7 +446,7 @@ const FrequencyBlock = (props: {
     <OptionBlock label={props.label}>
       {/* The all-ancestry "All" row only when its column was selected (the
           backend nulls `overall` otherwise); the per-population rows follow. */}
-      {props.data.overall != null && (
+      {props.data.overall !== null && (
         <Row label="All" value={num(props.data.overall)} />
       )}
       {Object.entries(props.data.populations).map(([pop, value]) => {
@@ -448,9 +468,9 @@ const FrequencyBlock = (props: {
 // Present when the variant overlaps a gnomAD SV/CNV (the id survives) or carries
 // any frequency for it.
 const structuralHasData = (data: GnomadStructuralData | null): boolean =>
-  data != null &&
-  (data.id != null ||
-    data.overall != null ||
+  data !== null &&
+  (data.id !== null ||
+    data.overall !== null ||
     Object.keys(data.populations).length > 0);
 
 // A gnomAD SV / CNV source: the overlapping variant's id + type, then its
@@ -467,11 +487,11 @@ const StructuralFrequencyBlock = (props: {
   const data = props.data as GnomadStructuralData;
   return (
     <OptionBlock label={props.label}>
-      {data.id != null && (
+      {data.id !== null && (
         <Row label="Structural variant" value={data.id} mono />
       )}
-      {data.svtype != null && <Row label="Type" value={data.svtype} />}
-      {data.overall != null && <Row label="All" value={num(data.overall)} />}
+      {data.svtype !== null && <Row label="Type" value={data.svtype} />}
+      {data.overall !== null && <Row label="All" value={num(data.overall)} />}
       {Object.entries(data.populations).map(([pop, value]) => (
         <Row key={pop} label={props.populationLabel(pop)} value={num(value)} />
       ))}

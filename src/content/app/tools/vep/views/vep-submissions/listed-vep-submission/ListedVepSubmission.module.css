@@ -32,7 +32,10 @@
 }
 
 .bodyAccepted:has(.submissionName) {
-  grid-template-columns: [species-name] 300px [input-summary] minmax(20%, 292px) [submission-name] minmax(200px, 1fr) [status] auto;
+  grid-template-columns: [species-name] 300px [input-summary] minmax(
+      20%,
+      292px
+    ) [submission-name] minmax(200px, 1fr) [status] auto;
 }
 
 .spinner {

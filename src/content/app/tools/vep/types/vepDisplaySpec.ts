@@ -295,7 +295,11 @@ export type DisplayTableBlockSpec = {
    * it builds a heading per table, so a second table repeats the heading rather
    * than joining it.
    */
-  where?: { field: string; equals?: string | null; not_equals?: string | null } | null;
+  where?: {
+    field: string;
+    equals?: string | null;
+    not_equals?: string | null;
+  } | null;
   /** list mode: show this many rows, the rest behind a show-more toggle (per
    *  section when grouped). */
   truncate?: DisplayTruncateSpec | null;

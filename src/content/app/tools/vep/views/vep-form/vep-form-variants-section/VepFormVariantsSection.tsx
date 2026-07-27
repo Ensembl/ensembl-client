@@ -99,10 +99,8 @@ const VepFormVariantsSection = () => {
         <div className={commonFormStyles.topFormSectionMain}>
           <MainContentCollapsed
             isExpanded={isExpanded}
-            canExpand={canExpand}
             inputText={inputText}
             inputFileName={inputFileName}
-            toggleExpanded={toggleExpanded}
           />
         </div>
         <div className={commonFormStyles.topFormSectionToggle}>
@@ -133,15 +131,11 @@ const VepFormVariantsSection = () => {
 const MainContentCollapsed = ({
   inputText,
   inputFileName,
-  isExpanded,
-  canExpand,
-  toggleExpanded
+  isExpanded
 }: {
   inputText: string | null;
   inputFileName: string | null;
   isExpanded: boolean;
-  canExpand: boolean;
-  toggleExpanded: () => void;
 }) => {
   if (isExpanded || (!inputText && !inputFileName)) {
     // No "Add variants" prompt: the section auto-expands once a species is

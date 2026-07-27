@@ -34,7 +34,10 @@ describe('VepResultsAllele', () => {
 
   it('renders a symbolic SV allele verbatim (not truncated) with its span', () => {
     render(
-      <VepResultsAllele sequence="<DEL:ME:ALU>" structuralVariantDetail="168 bp" />
+      <VepResultsAllele
+        sequence="<DEL:ME:ALU>"
+        structuralVariantDetail="168 bp"
+      />
     );
     // shown in full, no "…" truncation, no base-count treatment
     expect(screen.getByText('<DEL:ME:ALU>')).toBeDefined();

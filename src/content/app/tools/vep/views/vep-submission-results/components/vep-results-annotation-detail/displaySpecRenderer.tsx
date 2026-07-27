@@ -25,15 +25,14 @@ import {
   renderRowGroup,
   renderRowBlock,
   formatValue,
+  isAbsent,
   Row,
   OptionBlock,
   type RowSpec
 } from './annotationRows';
 
 import { withScore } from 'src/content/app/tools/vep/utils/annotationFormatters';
-import {
-  proteinFeatureExplorerUrl
-} from 'src/content/app/tools/vep/utils/featureExplorerUrls';
+import { proteinFeatureExplorerUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 import type { PredictedTranscriptConsequence } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import {
   getAnnotation,
@@ -131,7 +130,7 @@ const composeValue = (
   entities: Entities
 ): string | null => {
   const classification = readField(compose.classification, spec, entities);
-  if (classification == null || classification === '') {
+  if (isAbsent(classification)) {
     return null;
   }
   const score = readField(compose.score, spec, entities);
@@ -195,7 +194,10 @@ const rowValueAndPlaceholder = (
   if (!entities.showAll) {
     return { value, placeholder: undefined };
   }
-  return entities.subOptionRan(row.sub_option.id, row.sub_option.default ?? false)
+  return entities.subOptionRan(
+    row.sub_option.id,
+    row.sub_option.default ?? false
+  )
     ? { value, placeholder: '—' }
     : { value: null, placeholder: undefined };
 };
@@ -209,7 +211,7 @@ const toRowSpec = (
   // An app-popup link wraps the value itself (the protein id becomes the popup
   // trigger) rather than trailing it, so it is rendered here as the value node.
   if (row.link?.kind === 'app_popup') {
-    const absent = value == null || value === '';
+    const absent = isAbsent(value);
     return {
       key: row.key ?? undefined,
       label: rowLabel(row),
@@ -225,7 +227,7 @@ const toRowSpec = (
   // linking to its ClinVar page), interpolating `{value}` into the template. An
   // absent value renders nothing rather than a broken link.
   if (row.link?.kind === 'external' && row.link.template) {
-    const absent = value == null || value === '';
+    const absent = isAbsent(value);
     return {
       key: row.key ?? undefined,
       label: rowLabel(row),
@@ -303,9 +305,7 @@ const LINK_BUILDERS: Record<
   // *wraps* the value, so it becomes the row's value rather than a trailing bit.
   protein_popup: (context, value) => {
     const consequence = context.consequence as
-      | PredictedTranscriptConsequence
-      | null
-      | undefined;
+      PredictedTranscriptConsequence | null | undefined;
     const gene = consequence?.gene_stable_id;
     if (!gene) {
       return value; // no gene (e.g. intergenic) — plain id, no popup
@@ -347,7 +347,7 @@ const renderCell = (
   // An absent cell renders nothing — this drops an optional field (OpenTargets'
   // L2G score, a QTL biosample) rather than showing an empty cell, and keeps a
   // `num`/`with_score` format from being handed a null.
-  if (raw == null || raw === '') {
+  if (isAbsent(raw)) {
     return null;
   }
   const text = formatValue(raw, cell.format ?? 'text');
@@ -418,7 +418,7 @@ const renderListItem = (
     const fieldRows = item.rows
       .map((fieldRow) => {
         const raw = record[fieldRow.from];
-        if (raw == null || raw === '') {
+        if (isAbsent(raw)) {
           return null;
         }
         const text = formatValue(raw, fieldRow.format ?? 'text');
@@ -438,9 +438,7 @@ const renderListItem = (
   // become the value of a label/value row (ClinVar's per-class counts, ProtVar's
   // pockets).
   if (!item.label) {
-    return cells.length ? (
-      <div className={styles.listItem}>{cells}</div>
-    ) : null;
+    return cells.length ? <div className={styles.listItem}>{cells}</div> : null;
   }
   const label = renderItemLabel(item.label, element);
   // A trailing item link (ProtVar's icon) shows on every rendered item, even
@@ -456,7 +454,15 @@ const renderListItem = (
       label={label}
       // Space before the trailing link icon, matching a row's `{value} {link}`
       // (renderRows) so ProtVar's icon isn't jammed against the value.
-      value={linkNode ? <>{cells} {linkNode}</> : cells}
+      value={
+        linkNode ? (
+          <>
+            {cells} {linkNode}
+          </>
+        ) : (
+          cells
+        )
+      }
     />
   );
 };
@@ -534,7 +540,7 @@ const invariantValue = (
       column.from && isRecord
         ? (item as Record<string, unknown>)[column.from]
         : item;
-    return raw == null || raw === '' ? null : String(raw);
+    return isAbsent(raw) ? null : String(raw);
   });
   const [first] = values;
   if (first === null) {
@@ -560,7 +566,7 @@ const tableCellContent = (
     column.from && isRecord
       ? (element as Record<string, unknown>)[column.from]
       : element;
-  if (raw == null || raw === '') {
+  if (isAbsent(raw)) {
     return '';
   }
   const text = formatValue(raw, column.format ?? 'text') ?? '';
@@ -659,12 +665,14 @@ const renderMatrixTable = (
             {row.values.map((ref, colIndex) => {
               const column = valueColumns[colIndex];
               const raw = readField(ref, spec, entities);
-              const text =
-                raw == null || raw === ''
-                  ? ''
-                  : formatValue(raw, column?.format ?? 'text') ?? '';
+              const text = isAbsent(raw)
+                ? ''
+                : (formatValue(raw, column?.format ?? 'text') ?? '');
               return (
-                <td key={colIndex} className={column?.mono ? styles.mono : undefined}>
+                <td
+                  key={colIndex}
+                  className={column?.mono ? styles.mono : undefined}
+                >
                   {text}
                 </td>
               );
@@ -695,13 +703,16 @@ const renderTableBlock = (
     ? allItems.filter((item) => {
         const value =
           !!item && typeof item === 'object'
-            ? String((item as Record<string, unknown>)[block.where!.field] ?? '')
+            ? String(
+                (item as Record<string, unknown>)[block.where!.field] ?? ''
+              )
             : '';
         // `not_equals` is what stops a value nobody anticipated falling between
         // two tables and disappearing: one names what it wants, the other takes
         // the rest.
-        return block.where!.not_equals != null
-          ? value !== block.where!.not_equals
+        const notEquals = block.where!.not_equals;
+        return notEquals !== null && notEquals !== undefined
+          ? value !== notEquals
           : value === block.where!.equals;
       })
     : allItems;
@@ -728,7 +739,8 @@ const renderTableBlock = (
   // the table and give its width back to the columns that do vary. It stays a
   // column the moment the value differs anywhere.
   const lifted = selectedColumns.filter(
-    (column) => column.lift_when_invariant && invariantValue(column, items) !== null
+    (column) =>
+      column.lift_when_invariant && invariantValue(column, items) !== null
   );
   const columns = selectedColumns.filter((column) => !lifted.includes(column));
 
@@ -826,7 +838,7 @@ const groupRows = (
       row && typeof row === 'object'
         ? (row as Record<string, unknown>)[field]
         : null;
-    const value = raw == null || raw === '' ? null : String(raw);
+    const value = isAbsent(raw) ? null : String(raw);
     const heading = value === null ? null : (labels?.[value] ?? value);
     let group = byHeading.get(heading);
     if (!group) {
@@ -851,9 +863,7 @@ const whenSatisfied = (
 ): boolean => {
   const value = readField(when.present ?? when.empty ?? '', spec, entities);
   const isEmpty =
-    value == null ||
-    value === '' ||
-    (Array.isArray(value) && value.length === 0);
+    isAbsent(value) || (Array.isArray(value) && value.length === 0);
   return when.present ? !isEmpty : isEmpty;
 };
 

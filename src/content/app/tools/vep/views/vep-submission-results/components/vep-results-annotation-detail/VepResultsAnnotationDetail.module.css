@@ -6,6 +6,7 @@
      column. */
   padding: 16px;
   background-color: var(--color-light-grey);
+
   /* Horizontal step each sub-option heading (and its content) is indented by,
      per level of nesting. Compounds through nested option blocks. */
   --annotation-indent-step: 10px;
@@ -55,6 +56,7 @@
 .categoryLabel {
   font-weight: var(--font-weight-bold);
   color: var(--color-dark-grey);
+
   /* A category groups options within a section. */
   font-size: 14px;
   margin-top: 10px;
@@ -85,6 +87,7 @@
 .optionLabel {
   font-weight: var(--font-weight-bold);
   color: var(--color-dark-grey);
+
   /* The top-level option heading. Only level 0 uses this class; deeper
      sub-options keep the 10px body size. */
   font-size: 12px;
@@ -108,6 +111,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+
   /* Keep each section whole within a column, and space sections vertically
      (multi-column layout has no row gap). */
   break-inside: avoid;
@@ -117,6 +121,7 @@
 .sectionTitle {
   font-weight: var(--font-weight-bold);
   color: var(--color-blue);
+
   /* The section (panel) heading — top of the annotation hierarchy. */
   font-size: 16px;
   border-bottom: 1px solid var(--color-medium-light-grey);
@@ -127,6 +132,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+
   /* Panel body size — value rows and the sub-option (intermediate/plain)
      labels that inherit it. */
   font-size: 11px;
@@ -136,6 +142,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
+
   /* A single-value option row pairs a larger emphasised label with a body-size
      value; align on the baseline so they sit level. */
   align-items: baseline;
@@ -172,6 +179,7 @@
 .breakdownTable th,
 .breakdownTable td {
   text-align: left;
+
   /* 8px between columns, not 16px. Table auto-layout was giving the Feature
      Type column less than its longest word needed, so the text ran on into the
      gutter and closed the gap to the next column to a few pixels — which read

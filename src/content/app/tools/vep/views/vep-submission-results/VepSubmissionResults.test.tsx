@@ -169,9 +169,7 @@ describe('planLeadingCells', () => {
 });
 
 // A transcript-consequence row for a given alt allele.
-const transcriptRow = (
-  altAlleleSequence: string
-): VepResultsTableRowData => ({
+const transcriptRow = (altAlleleSequence: string): VepResultsTableRowData => ({
   ...makeRow({}),
   consequence: {
     feature_type: 'transcript',
@@ -181,11 +179,11 @@ const transcriptRow = (
 
 // An intergenic row: its alt allele lives on the row's alternativeAllele marker
 // (present only on the allele's first intergenic row, as getTabularData emits).
-const intergenicRow = (
-  altAlleleSequence?: string
-): VepResultsTableRowData => ({
+const intergenicRow = (altAlleleSequence?: string): VepResultsTableRowData => ({
   ...makeRow(
-    altAlleleSequence ? { alternativeAllele: alleleMarker(altAlleleSequence, 1) } : {}
+    altAlleleSequence
+      ? { alternativeAllele: alleleMarker(altAlleleSequence, 1) }
+      : {}
   ),
   consequence: {
     feature_type: null

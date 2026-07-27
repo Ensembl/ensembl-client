@@ -32,9 +32,10 @@
    the menu's dark option text is legible. */
 .pointerBox {
   padding: 0;
+
   --pointer-box-color: var(--color-white);
   --pointer-box-text-color: var(--color-black);
-  box-shadow: 0 2px 6px var(--shadow-color, rgba(0, 0, 0, 0.25));
+  box-shadow: 0 2px 6px var(--shadow-color, rgb(0 0 0 / 0.25));
 }
 
 .menu {

@@ -144,32 +144,32 @@ const VepSpeciesSelector = ({ onClose }: Props) => {
         onClose={onClose}
       />
 
-        {data?.matches.length ? (
-          <SpeciesSearchResultsTableWrapper>
-            <TableControlsSection>
-              <PaginationWithPerPage
-                currentPageNumber={searchResultsPage}
-                lastPageNumber={getSpeciesSearchLastPageNumber({
-                  data,
-                  perPage: searchResultsPerPage
-                })}
-                onPageChange={onPageNumberChange}
-                perPageValue={searchResultsPerPage}
-                onPerPageChange={onResultsPerPageChange}
-              />
-            </TableControlsSection>
-            <TableSection>
-              <SpeciesSearchResultsTable
-                results={deferredGenomes}
-                maxStagedGenomesNumber={1}
-                sortRule={sortRule}
-                onSortRuleChange={onSortRuleChange}
-                onTableExpandToggle={onTableExpandToggle}
-                onSpeciesSelectToggle={onGenomeStageToggle}
-              />
-            </TableSection>
-          </SpeciesSearchResultsTableWrapper>
-        ) : null}
+      {data?.matches.length ? (
+        <SpeciesSearchResultsTableWrapper>
+          <TableControlsSection>
+            <PaginationWithPerPage
+              currentPageNumber={searchResultsPage}
+              lastPageNumber={getSpeciesSearchLastPageNumber({
+                data,
+                perPage: searchResultsPerPage
+              })}
+              onPageChange={onPageNumberChange}
+              perPageValue={searchResultsPerPage}
+              onPerPageChange={onResultsPerPageChange}
+            />
+          </TableControlsSection>
+          <TableSection>
+            <SpeciesSearchResultsTable
+              results={deferredGenomes}
+              maxStagedGenomesNumber={1}
+              sortRule={sortRule}
+              onSortRuleChange={onSortRuleChange}
+              onTableExpandToggle={onTableExpandToggle}
+              onSpeciesSelectToggle={onGenomeStageToggle}
+            />
+          </TableSection>
+        </SpeciesSearchResultsTableWrapper>
+      ) : null}
     </div>
   );
 };

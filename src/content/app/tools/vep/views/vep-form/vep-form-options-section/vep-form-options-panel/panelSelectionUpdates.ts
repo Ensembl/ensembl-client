@@ -72,7 +72,10 @@ export const allPanelsSelectionUpdates = (
   panels: FormPanel[],
   selected: boolean
 ): Record<string, boolean> =>
-  Object.assign({}, ...panels.map((panel) => panelSelectionUpdates(panel, selected)));
+  Object.assign(
+    {},
+    ...panels.map((panel) => panelSelectionUpdates(panel, selected))
+  );
 
 /** Whether every option across every panel is currently switched on. */
 export const areAllPanelsFullySelected = (

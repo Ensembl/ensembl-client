@@ -180,8 +180,7 @@ export type OpenTargetsAssociation = {
 };
 
 export type PredictedMolecularConsequence =
-  | PredictedTranscriptConsequence
-  | PredictedIntergenicConsequence;
+  PredictedTranscriptConsequence | PredictedIntergenicConsequence;
 
 export type PredictedTranscriptConsequence = {
   feature_type: 'transcript';

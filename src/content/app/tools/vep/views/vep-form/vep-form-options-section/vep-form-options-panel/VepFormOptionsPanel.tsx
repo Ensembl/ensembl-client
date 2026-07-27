@@ -210,13 +210,15 @@ const VepFormOptionsPanel = (props: Props) => {
 
     if (subOption.type === 'number') {
       const value = formParameters[subOption.id];
-      const currentValue = value === undefined ? subOption.default : Number(value);
+      const currentValue =
+        value === undefined ? subOption.default : Number(value);
       const { min, max } = subOption;
       // Keep the stored value an integer within [min, max]; an empty/invalid
       // entry falls back to the default rather than storing NaN.
       const clamp = (raw: string) => {
         const parsed = Math.trunc(Number(raw));
-        let next = raw === '' || Number.isNaN(parsed) ? subOption.default : parsed;
+        let next =
+          raw === '' || Number.isNaN(parsed) ? subOption.default : parsed;
         if (min !== undefined) next = Math.max(min, next);
         if (max !== undefined) next = Math.min(max, next);
         return next;
@@ -421,7 +423,8 @@ const VepFormOptionsPanel = (props: Props) => {
                   // Allele-frequency sources carry whole matrices of their own,
                   // so they get wider columns — side by side under their
                   // category heading rather than one per full-width row.
-                  [styles.optionsGridSources]: group.options.some(isSourceOption)
+                  [styles.optionsGridSources]:
+                    group.options.some(isSourceOption)
                 })}
               >
                 {group.options.map((option) => renderOption(option))}

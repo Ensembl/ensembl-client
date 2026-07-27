@@ -39,9 +39,9 @@ const panel = (...ids: string[]): FormPanel => ({
 
 describe('panelSelectionUpdates', () => {
   it('switches every top-level option on', () => {
-    expect(panelSelectionUpdates(panel('revel', 'cadd', 'spliceai'), true)).toEqual(
-      { revel: true, cadd: true, spliceai: true }
-    );
+    expect(
+      panelSelectionUpdates(panel('revel', 'cadd', 'spliceai'), true)
+    ).toEqual({ revel: true, cadd: true, spliceai: true });
   });
 
   it('switches every top-level option off', () => {
@@ -144,9 +144,9 @@ describe('areAllPanelsFullySelected', () => {
   ];
 
   it('is true only when every option in every panel is on', () => {
-    expect(areAllPanelsFullySelected(panels, { a: true, b: true, c: true })).toBe(
-      true
-    );
+    expect(
+      areAllPanelsFullySelected(panels, { a: true, b: true, c: true })
+    ).toBe(true);
     // one option unticked by hand in the second panel
     expect(areAllPanelsFullySelected(panels, { a: true, b: true })).toBe(false);
   });

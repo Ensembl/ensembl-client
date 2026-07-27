@@ -58,7 +58,11 @@ const alleleAnnotation = (
 // HGVSc/HGVSp, hgvsg = HGVSg); there is no standalone `hgvsg` form option. SPDI
 // is a separate allele-level option (so it also surfaces for intergenic).
 const panels: FormPanel[] = [
-  { id: 'hgvs_panel', label: 'HGVS notation', options: [option('hgvs', 'HGVS')] },
+  {
+    id: 'hgvs_panel',
+    label: 'HGVS notation',
+    options: [option('hgvs', 'HGVS')]
+  },
   {
     id: 'representation',
     label: 'Variant representation',
@@ -267,9 +271,24 @@ describe('VepResultsAnnotationDetail', () => {
         panels={panels}
         display={displaySpecFixture}
         availableAfSources={[
-          { key: 'gnomAD_exomes_AF', source: 'gnomad_exomes', population: '', label: 'All' },
-          { key: 'gnomAD_exomes_AF_afr', source: 'gnomad_exomes', population: 'afr', label: 'African & African-American' },
-          { key: 'gnomAD_exomes_AF_nfe_XX', source: 'gnomad_exomes', population: 'nfe_XX', label: 'Non-Finnish European · Female' }
+          {
+            key: 'gnomAD_exomes_AF',
+            source: 'gnomad_exomes',
+            population: '',
+            label: 'All'
+          },
+          {
+            key: 'gnomAD_exomes_AF_afr',
+            source: 'gnomad_exomes',
+            population: 'afr',
+            label: 'African & African-American'
+          },
+          {
+            key: 'gnomAD_exomes_AF_nfe_XX',
+            source: 'gnomad_exomes',
+            population: 'nfe_XX',
+            label: 'Non-Finnish European · Female'
+          }
         ]}
       />
     );
@@ -398,13 +417,19 @@ describe('VepResultsAnnotationDetail', () => {
       const acceptorGain = screen
         .getByRole('cell', { name: 'Acceptor gain' })
         .closest('tr') as HTMLElement;
-      expect(within(acceptorGain).getByRole('cell', { name: '0.01' })).toBeDefined();
-      expect(within(acceptorGain).getByRole('cell', { name: '11' })).toBeDefined();
+      expect(
+        within(acceptorGain).getByRole('cell', { name: '0.01' })
+      ).toBeDefined();
+      expect(
+        within(acceptorGain).getByRole('cell', { name: '11' })
+      ).toBeDefined();
       // a missing delta position leaves that cell empty rather than dashing
       const donorLoss = screen
         .getByRole('cell', { name: 'Donor loss' })
         .closest('tr') as HTMLElement;
-      expect(within(donorLoss).getByRole('cell', { name: '0.04' })).toBeDefined();
+      expect(
+        within(donorLoss).getByRole('cell', { name: '0.04' })
+      ).toBeDefined();
       expect(screen.queryByText('—')).toBeNull();
     });
 
@@ -472,17 +497,46 @@ describe('VepResultsAnnotationDetail', () => {
               })
             ]
           })}
-          parameters={{ gnomad_exomes: true, gnomad_genomes: true, allofus: true }}
+          parameters={{
+            gnomad_exomes: true,
+            gnomad_genomes: true,
+            allofus: true
+          }}
           panels={panels}
           display={displaySpecFixture}
           // population rows are labelled from the metadata's AF sources (the same
           // selected columns each variant's populations are drawn from)
           availableAfSources={[
-            { key: 'gnomAD_exomes_AF', source: 'gnomad_exomes', population: '', label: 'All' },
-            { key: 'gnomAD_exomes_AF_afr', source: 'gnomad_exomes', population: 'afr', label: 'African & African-American' },
-            { key: 'gnomAD_genomes_AF', source: 'gnomad_genomes', population: '', label: 'All' },
-            { key: 'AoU_gvs_all_af', source: 'all_of_us', population: '', label: 'All' },
-            { key: 'AoU_gvs_max_af', source: 'all_of_us', population: 'max', label: 'Maximum subpopulation' }
+            {
+              key: 'gnomAD_exomes_AF',
+              source: 'gnomad_exomes',
+              population: '',
+              label: 'All'
+            },
+            {
+              key: 'gnomAD_exomes_AF_afr',
+              source: 'gnomad_exomes',
+              population: 'afr',
+              label: 'African & African-American'
+            },
+            {
+              key: 'gnomAD_genomes_AF',
+              source: 'gnomad_genomes',
+              population: '',
+              label: 'All'
+            },
+            {
+              key: 'AoU_gvs_all_af',
+              source: 'all_of_us',
+              population: '',
+              label: 'All'
+            },
+            {
+              key: 'AoU_gvs_max_af',
+              source: 'all_of_us',
+              population: 'max',
+              label: 'Maximum subpopulation'
+            }
           ]}
         />
       );
@@ -536,7 +590,10 @@ describe('VepResultsAnnotationDetail', () => {
           consequence={transcriptConsequence}
           allele={makeAllele({
             annotations: [
-              alleleAnnotation('gnomad_exomes', { overall: 0.4861, populations: {} })
+              alleleAnnotation('gnomad_exomes', {
+                overall: 0.4861,
+                populations: {}
+              })
             ]
           })}
           parameters={{}} // gnomAD exomes not selected
@@ -647,8 +704,18 @@ describe('VepResultsAnnotationDetail', () => {
         panels={panels}
         display={displaySpecFixture}
         availableAfSources={[
-          { key: 'gnomAD_SV_AF', source: 'gnomad_sv', population: '', label: 'All' },
-          { key: 'gnomAD_SV_AF_afr', source: 'gnomad_sv', population: 'afr', label: 'African & African-American' }
+          {
+            key: 'gnomAD_SV_AF',
+            source: 'gnomad_sv',
+            population: '',
+            label: 'All'
+          },
+          {
+            key: 'gnomAD_SV_AF_afr',
+            source: 'gnomad_sv',
+            population: 'afr',
+            label: 'African & African-American'
+          }
         ]}
       />
     );
@@ -680,8 +747,18 @@ describe('VepResultsAnnotationDetail', () => {
         panels={panels}
         display={displaySpecFixture}
         availableAfSources={[
-          { key: 'gnomAD_CNV_SF', source: 'gnomad_cnv', population: '', label: 'All' },
-          { key: 'gnomAD_CNV_SF_remaining', source: 'gnomad_cnv', population: 'remaining', label: 'Remaining' }
+          {
+            key: 'gnomAD_CNV_SF',
+            source: 'gnomad_cnv',
+            population: '',
+            label: 'All'
+          },
+          {
+            key: 'gnomAD_CNV_SF_remaining',
+            source: 'gnomad_cnv',
+            population: 'remaining',
+            label: 'Remaining'
+          }
         ]}
       />
     );
@@ -707,7 +784,7 @@ describe('VepResultsAnnotationDetail', () => {
                   source: 'ClinVar',
                   phenotype: 'Li-Fraumeni_syndrome',
                   id: 'ENSG00000141510',
-                  risk_allele: null,
+                  risk_allele: null
                 }
               ]
             })
@@ -740,9 +817,17 @@ describe('panel order', () => {
    */
   it('renders allele frequencies in the position its panel holds', () => {
     const orderedPanels: FormPanel[] = [
-      { id: 'variant_representations', label: 'Variant representations', options: [option('spdi', 'SPDI')] },
+      {
+        id: 'variant_representations',
+        label: 'Variant representations',
+        options: [option('spdi', 'SPDI')]
+      },
       { id: 'allele_frequencies', label: 'Allele frequencies', options: [] },
-      { id: 'genes_and_transcripts', label: 'Genes & transcripts', options: [option('hgvs', 'HGVS')] }
+      {
+        id: 'genes_and_transcripts',
+        label: 'Genes & transcripts',
+        options: [option('hgvs', 'HGVS')]
+      }
     ];
     const { container } = render(
       <VepResultsAnnotationDetail
@@ -751,7 +836,10 @@ describe('panel order', () => {
         allele={makeAllele({
           annotations: [
             alleleAnnotation('spdi', { spdi: 'NC_000019.10:7676153:A:G' }),
-            alleleAnnotation('gnomad_exomes', { overall: 0.42, populations: [] })
+            alleleAnnotation('gnomad_exomes', {
+              overall: 0.42,
+              populations: []
+            })
           ]
         })}
         parameters={{ hgvs: true, spdi: true, gnomad_exomes: true }}
@@ -759,9 +847,9 @@ describe('panel order', () => {
         display={displaySpecFixture}
       />
     );
-    const headings = [...container.querySelectorAll('[class*="sectionTitle"]')].map(
-      (el) => el.textContent
-    );
+    const headings = [
+      ...container.querySelectorAll('[class*="sectionTitle"]')
+    ].map((el) => el.textContent);
     const af = headings.indexOf('Allele frequencies');
     const genes = headings.indexOf('Genes & transcripts');
     expect(af).toBeGreaterThan(-1);

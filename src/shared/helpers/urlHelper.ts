@@ -261,8 +261,6 @@ export const blastSubmission = (submissionId: string) =>
 
 export const vepForm = () => '/tools/vep';
 
-export const vepSpeciesSelector = () => '/tools/vep/genome-selector';
-
 export const vepUnviewedSubmissionsList = () =>
   '/tools/vep/unviewed-submissions';
 

@@ -29,13 +29,15 @@ const DEFAULT_LINK_LABEL = 'More information';
 // restricted markdown subset lets the description stay a plain (serialisable)
 // string in the data layer while still supporting inline emphasis.
 const renderDescription = (description: string): ReactNode[] =>
-  description.split(/(\*[^*]+\*)/g).map((part, index) =>
-    part.length > 2 && part.startsWith('*') && part.endsWith('*') ? (
-      <em key={index}>{part.slice(1, -1)}</em>
-    ) : (
-      <Fragment key={index}>{part}</Fragment>
-    )
-  );
+  description
+    .split(/(\*[^*]+\*)/g)
+    .map((part, index) =>
+      part.length > 2 && part.startsWith('*') && part.endsWith('*') ? (
+        <em key={index}>{part.slice(1, -1)}</em>
+      ) : (
+        <Fragment key={index}>{part}</Fragment>
+      )
+    );
 
 const HelpLink = (props: { href: string; label?: string }) => (
   <a

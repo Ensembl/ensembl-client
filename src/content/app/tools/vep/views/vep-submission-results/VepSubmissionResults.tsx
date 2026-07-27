@@ -136,10 +136,12 @@ const VepSubmissionResults = () => {
   // `appliedFilters` is what actually drives the (server-side) request, committed
   // on Apply. Each apply is a full scan, so we don't refetch on every keystroke.
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [draftFilters, setDraftFilters] = useState<ResultsFilterCondition[]>([]);
-  const [appliedFilters, setAppliedFilters] = useState<ResultsFilterCondition[]>(
+  const [draftFilters, setDraftFilters] = useState<ResultsFilterCondition[]>(
     []
   );
+  const [appliedFilters, setAppliedFilters] = useState<
+    ResultsFilterCondition[]
+  >([]);
 
   // Bulk expand / collapse of every annotation-detail panel (see DetailExpansion).
   const [detailExpansion, setDetailExpansion] = useState<DetailExpansion>({
@@ -270,7 +272,8 @@ const VepSubmissionResults = () => {
   const maxPage = Math.ceil(total / per_page);
   // Ensembl URLs use the genome UUID; the human-readable tag (e.g. `grch38`) is
   // being retired.
-  const genomeIdForUrl = (submission as RestoredVepSubmission).species.genome_id;
+  const genomeIdForUrl = (submission as RestoredVepSubmission).species
+    .genome_id;
 
   // Filtered vs unfiltered counts for the "Showing X of Y" summary.
   const resultSummary = filterMetadata
@@ -343,7 +346,9 @@ const VepSubmissionResults = () => {
               parameters={submission.parameters}
               panels={resultsPanels}
               display={vepResults.metadata.display}
-              availableAfSources={vepResults.metadata.available_af_sources ?? []}
+              availableAfSources={
+                vepResults.metadata.available_af_sources ?? []
+              }
               detailExpansion={detailExpansion}
             />
           </div>
@@ -607,7 +612,11 @@ export const planLeadingCells = (
     }
     if (row.gene) {
       const data = row.gene;
-      for (const run of splitIntoRuns(index, data.rowspan, expandedDetailRows)) {
+      for (const run of splitIntoRuns(
+        index,
+        data.rowspan,
+        expandedDetailRows
+      )) {
         plan[run.rowIndex].gene = { data, rowSpan: run.rowSpan };
       }
     }
@@ -672,7 +681,12 @@ const VariantRow = (props: {
   // the variant changing (pagination) — not to the user separately expanding
   // transcripts, which grows `tabularData` but should leave open panels alone.
   const detailRowIndicesRef = useRef(detailRowIndices);
-  detailRowIndicesRef.current = detailRowIndices;
+  // Written after commit rather than during render (react-hooks/refs): this
+  // effect is declared first, so it has refreshed the ref by the time the effect
+  // below reads it in the same commit.
+  useEffect(() => {
+    detailRowIndicesRef.current = detailRowIndices;
+  });
   useEffect(() => {
     setExpandedDetailRows(
       detailExpansion.action === 'expand'
@@ -798,7 +812,9 @@ const VariantRow = (props: {
                 type="button"
                 className={styles.detailToggle}
                 aria-expanded={isDetailOpen}
-                aria-label={isDetailOpen ? 'Hide annotations' : 'Show annotations'}
+                aria-label={
+                  isDetailOpen ? 'Hide annotations' : 'Show annotations'
+                }
                 onClick={() => toggleDetail(index)}
               >
                 <Chevron

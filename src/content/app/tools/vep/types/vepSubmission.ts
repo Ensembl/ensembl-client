@@ -43,8 +43,7 @@ export type ServerSideSubmissionStatus =
   (typeof serverSideSubmissionStatuses)[number];
 
 export type SubmissionStatus =
-  | ClientSideSubmissionStatus
-  | ServerSideSubmissionStatus;
+  ClientSideSubmissionStatus | ServerSideSubmissionStatus;
 
 /**
  * Schema of the data that will be persisted in indexedDB.

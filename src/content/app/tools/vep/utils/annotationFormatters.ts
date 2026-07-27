@@ -25,13 +25,16 @@
 
 /** Integers as-is, otherwise 4 significant figures with trailing zeros dropped. */
 export const num = (value: number): string =>
-  Number.isInteger(value) ? `${value}` : Number(value.toPrecision(4)).toString();
+  Number.isInteger(value)
+    ? `${value}`
+    : Number(value.toPrecision(4)).toString();
 
 /**
  * Classifier terms arrive underscore-delimited (e.g. "likely_benign"); show
  * them space-separated for readability.
  */
-export const humanizeClass = (label: string): string => label.replace(/_/g, ' ');
+export const humanizeClass = (label: string): string =>
+  label.replace(/_/g, ' ');
 
 /**
  * Phenotype terms come `_`/`__`-delimited in mixed case (ClinVar/OMIM/GWAS).
@@ -59,7 +62,7 @@ export const withScore = (
   classification: string,
   score: number | null
 ): string =>
-  score != null
+  score !== null
     ? `${num(score)} (${humanizeClass(classification)})`
     : humanizeClass(classification);
 

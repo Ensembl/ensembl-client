@@ -8,16 +8,15 @@
     [vep-version] max-content
     [job-lists-navigation] max-content
     [ensembl-mark] max-content;
-  grid-template-areas:
-    'vep-logo form-title transcript-set-and-submit vep-version job-lists-navigation ensembl-mark';
+  grid-template-areas: 'vep-logo form-title transcript-set-and-submit vep-version job-lists-navigation ensembl-mark';
   column-gap: 32px;
   max-width: var(--vep-container-max-width);
   white-space: nowrap;
-
 }
 
 /* Style overrides for some of the ToolsTopBar styles */
-.vepFormTopBar, .vepGenericTopBar {
+.vepFormTopBar,
+.vepGenericTopBar {
   padding-top: 0;
   padding-bottom: 0;
   justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
@@ -48,8 +47,7 @@
     [vep-version] auto
     [job-lists-navigation] auto
     [ensembl-mark] max-content;
-  grid-template-areas:
-    'vep-logo new-job-button results-availability vep-version job-lists-navigation ensembl-mark';
+  grid-template-areas: 'vep-logo new-job-button results-availability vep-version job-lists-navigation ensembl-mark';
   column-gap: 32px;
   max-width: var(--vep-container-max-width);
   white-space: nowrap;
@@ -70,6 +68,7 @@
   justify-self: end;
   align-self: start;
   height: 37px;
+
   /* viewport width/height of the mark svg, so it keeps its aspect ratio */
   aspect-ratio: 395.70001/373.89998; /* stylelint-disable-line number-max-precision */
 }
@@ -191,6 +190,6 @@
   }
 
   .resultsAvailabilityNotice {
-      justify-self: end;
+    justify-self: end;
   }
 }

@@ -43,9 +43,9 @@ const VepSubmitButton = (props: { className?: string }) => {
 
   const canSubmit = Boolean(
     selectedSpecies &&
-      (inputText || inputFileName) &&
-      Object.keys(formParameters).length &&
-      isInputCommitted
+    (inputText || inputFileName) &&
+    Object.keys(formParameters).length &&
+    isInputCommitted
   );
 
   const onSubmit = async () => {

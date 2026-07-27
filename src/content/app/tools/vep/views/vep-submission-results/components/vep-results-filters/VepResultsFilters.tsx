@@ -15,7 +15,10 @@
  */
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
-import { PrimaryButton, SecondaryButton } from 'src/shared/components/button/Button';
+import {
+  PrimaryButton,
+  SecondaryButton
+} from 'src/shared/components/button/Button';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import DownloadOptions from 'src/content/app/tools/vep/components/vep-submission-header/DownloadOptions';
 

@@ -129,7 +129,8 @@ export type RowSpec = {
 // Absent = nothing to show. `0` and `false` are real values (SpliceAI deltas),
 // so only null/undefined and the empty string count as absent — matching the
 // truthiness checks these rows replace.
-const isAbsent = (value: unknown) => value == null || value === '';
+export const isAbsent = (value: unknown) =>
+  value === null || value === undefined || value === '';
 
 export const formatValue = (
   value: unknown,
@@ -160,10 +161,7 @@ export const formatValue = (
  * top-level option rows (see Row) — set only for a headingless group at the
  * option's own level, not for value rows nested under a heading.
  */
-export const renderRows = (
-  rows: RowSpec[],
-  emphasis = false
-): ReactNode[] => {
+export const renderRows = (rows: RowSpec[], emphasis = false): ReactNode[] => {
   const nodes: ReactNode[] = [];
   rows.forEach((row, index) => {
     // A pre-rendered value (an app-popup-wrapped id) bypasses formatting; a
@@ -205,7 +203,15 @@ export const renderRows = (
       <Row
         key={row.key ?? index}
         label={row.label}
-        value={row.link ? <>{formatted} {row.link}</> : formatted}
+        value={
+          row.link ? (
+            <>
+              {formatted} {row.link}
+            </>
+          ) : (
+            formatted
+          )
+        }
         mono={row.mono}
         emphasis={emphasis}
       />

@@ -42,9 +42,9 @@ const live: FormPanel[] = [
 
 describe('resolveResultsPanels', () => {
   it('prefers the panels pinned to the job', () => {
-    expect(resolveResultsPanels({ pinnedPanels: pinned, livePanels: live })).toBe(
-      pinned
-    );
+    expect(
+      resolveResultsPanels({ pinnedPanels: pinned, livePanels: live })
+    ).toBe(pinned);
   });
 
   it('falls back to the live panels for a job submitted before pinning', () => {
@@ -69,6 +69,8 @@ describe('resolveResultsPanels', () => {
       pinnedPanels: pinned,
       livePanels: live
     });
-    expect(resolved?.[0].options.map((option) => option.id)).toEqual(['protein']);
+    expect(resolved?.[0].options.map((option) => option.id)).toEqual([
+      'protein'
+    ]);
   });
 });
