@@ -3,7 +3,7 @@
 # You can also use it to build and run ensembl-client instance locally,
 # if you prefer that over running Node directly on your machine.
 
-FROM node:24.11.0 AS builder
+FROM node:24.18.0 AS builder
 
 ARG SOURCE_DIR="./"
 
@@ -23,7 +23,7 @@ RUN npm ci --loglevel warn && \
 
 
 # PRODUCTION IMAGE
-FROM node:24.11.0-alpine AS runner
+FROM node:24.18.0-alpine AS runner
 
 RUN mkdir -p /srv/ensembl-client
 WORKDIR /srv/ensembl-client/
