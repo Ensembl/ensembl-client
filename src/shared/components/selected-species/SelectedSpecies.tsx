@@ -59,7 +59,7 @@ const getSpeciesLozengeProps = (props: Props & { onRemove: () => void }) => {
     return {
       theme: 'grey',
       disabled: true,
-      'data-active': true
+      isActive: true
     } as const;
   }
 
@@ -67,7 +67,7 @@ const getSpeciesLozengeProps = (props: Props & { onRemove: () => void }) => {
     return {
       theme: 'black',
       disabled: true,
-      'data-active': true
+      isActive: true
     } as const;
   } else {
     return {

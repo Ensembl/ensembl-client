@@ -41,6 +41,7 @@ export type Props = DetailedHTMLProps<
 > & {
   species: CommittedItem;
   theme: SpeciesLozengeTheme;
+  isActive?: boolean;
   withReleaseInfo?: boolean;
   onRemove?: () => void;
 };
@@ -49,6 +50,7 @@ const SpeciesLozenge = (props: Props) => {
   const {
     species,
     theme,
+    isActive,
     withReleaseInfo = false,
     onRemove,
     className: classNameFromProps,
@@ -62,7 +64,7 @@ const SpeciesLozenge = (props: Props) => {
   );
 
   return (
-    <div className={componentClasses}>
+    <div className={componentClasses} data-active={isActive}>
       <button className={styles.speciesButton} {...otherProps}>
         <div className={styles.inner}>
           <SpeciesName species={species} />
