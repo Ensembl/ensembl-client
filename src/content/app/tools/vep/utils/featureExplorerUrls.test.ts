@@ -19,11 +19,8 @@ import {
   geneGenomeBrowserUrl,
   geneFeatureExplorerUrl,
   transcriptFeatureExplorerUrl,
-  proteinFeatureExplorerUrl,
-  openInNewTab
+  proteinFeatureExplorerUrl
 } from './featureExplorerUrls';
-
-const BASE = 'https://beta.ensembl.org';
 
 describe('genome browser urls', () => {
   it('builds a location focus url', () => {
@@ -33,12 +30,12 @@ describe('genome browser urls', () => {
         start: 100,
         end: 150
       })
-    ).toBe(`${BASE}/genome-browser/grch38?focus=location:19:100-150`);
+    ).toBe('/genome-browser/grch38?focus=location:19:100-150');
   });
 
   it('builds a gene focus url, stripping the version', () => {
     expect(geneGenomeBrowserUrl('grch38', 'ENSG00000012048.23')).toBe(
-      `${BASE}/genome-browser/grch38?focus=gene:ENSG00000012048`
+      '/genome-browser/grch38?focus=gene:ENSG00000012048'
     );
   });
 });
@@ -46,13 +43,13 @@ describe('genome browser urls', () => {
 describe('feature explorer urls', () => {
   it('builds a gene url, stripping the version', () => {
     expect(geneFeatureExplorerUrl('grch38', 'ENSG00000012048.23')).toBe(
-      `${BASE}/feature-explorer/grch38/gene:ENSG00000012048?view=transcripts`
+      '/feature-explorer/grch38/gene:ENSG00000012048?view=transcripts'
     );
   });
 
   it('builds a transcript url, stripping the version', () => {
     expect(transcriptFeatureExplorerUrl('grch38', 'ENST00000315985.7')).toBe(
-      `${BASE}/feature-explorer/grch38/transcript:ENST00000315985`
+      '/feature-explorer/grch38/transcript:ENST00000315985'
     );
   });
 
@@ -64,28 +61,13 @@ describe('feature explorer urls', () => {
         'ENSP00000369497.3'
       )
     ).toBe(
-      `${BASE}/feature-explorer/grch38/gene:ENSG00000012048?view=protein&protein_id=ENSP00000369497`
+      '/feature-explorer/grch38/gene:ENSG00000012048?view=protein&protein_id=ENSP00000369497'
     );
   });
 
   it('uses the genome id verbatim, so a UUID works when there is no tag', () => {
-    expect(
-      geneFeatureExplorerUrl('a7335667-93e7-11ec-a8a3', 'ENSG1')
-    ).toBe(
-      `${BASE}/feature-explorer/a7335667-93e7-11ec-a8a3/gene:ENSG1?view=transcripts`
+    expect(geneFeatureExplorerUrl('a7335667-93e7-11ec-a8a3', 'ENSG1')).toBe(
+      '/feature-explorer/a7335667-93e7-11ec-a8a3/gene:ENSG1?view=transcripts'
     );
-  });
-});
-
-describe('openInNewTab', () => {
-  it('opens the url in a new tab when the returned handler is called', () => {
-    const open = vi.spyOn(window, 'open').mockImplementation(() => null);
-    openInNewTab(`${BASE}/x`)();
-    expect(open).toHaveBeenCalledWith(
-      `${BASE}/x`,
-      '_blank',
-      'noopener,noreferrer'
-    );
-    open.mockRestore();
   });
 });

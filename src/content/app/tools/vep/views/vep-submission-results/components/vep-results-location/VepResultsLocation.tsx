@@ -18,10 +18,7 @@ import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 
-import {
-  locationGenomeBrowserUrl,
-  openInNewTab
-} from 'src/content/app/tools/vep/utils/featureExplorerUrls';
+import { locationGenomeBrowserUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 
 type Props = {
   genomeId: string;
@@ -42,13 +39,13 @@ const VepResultsLocation = (props: Props) => {
   const endCoord = startCoord + VIEWPORT_WIDTH;
 
   const links = {
-    genomeBrowser: openInNewTab(
-      locationGenomeBrowserUrl(genomeId, {
+    genomeBrowser: {
+      url: locationGenomeBrowserUrl(genomeId, {
         regionName: location.region_name,
         start: startCoord,
         end: endCoord
       })
-    )
+    }
   };
 
   const formattedStart = formatNumber(location.start);

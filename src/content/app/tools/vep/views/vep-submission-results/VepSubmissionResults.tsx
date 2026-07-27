@@ -54,10 +54,7 @@ import {
 import { buildProtvarUrlFromHgvsg } from 'src/content/app/tools/vep/utils/buildProtvarUrlFromHgvsg';
 import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
 import { resolveResultsPanels } from 'src/content/app/tools/vep/utils/resultsPanels';
-import {
-  transcriptFeatureExplorerUrl,
-  openInNewTab
-} from 'src/content/app/tools/vep/utils/featureExplorerUrls';
+import { transcriptFeatureExplorerUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
@@ -954,9 +951,9 @@ const VariantTranscript = (props: {
       <div>
         <ViewInAppPopup
           links={{
-            entityViewer: openInNewTab(
-              transcriptFeatureExplorerUrl(genomeId, transcript.stable_id)
-            )
+            entityViewer: {
+              url: transcriptFeatureExplorerUrl(genomeId, transcript.stable_id)
+            }
           }}
         >
           {transcript.stable_id}

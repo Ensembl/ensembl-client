@@ -20,8 +20,7 @@ import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPop
 
 import {
   geneGenomeBrowserUrl,
-  geneFeatureExplorerUrl,
-  openInNewTab
+  geneFeatureExplorerUrl
 } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 
 import type { Strand } from 'src/shared/types/core-api/strand';
@@ -41,10 +40,10 @@ const VepResultsGene = (props: Props) => {
 
   // Clicking the gene id opens a small "View in" popup offering the Genome
   // Browser and the Feature Explorer (the entityViewer slot is the Feature
-  // Explorer). Both open the full Ensembl app in a new tab.
+  // Explorer). Both navigate within the app.
   const links = {
-    genomeBrowser: openInNewTab(geneGenomeBrowserUrl(genomeId, stableId)),
-    entityViewer: openInNewTab(geneFeatureExplorerUrl(genomeId, stableId))
+    genomeBrowser: { url: geneGenomeBrowserUrl(genomeId, stableId) },
+    entityViewer: { url: geneFeatureExplorerUrl(genomeId, stableId) }
   };
 
   return (

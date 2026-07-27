@@ -32,8 +32,7 @@ import {
 
 import { withScore } from 'src/content/app/tools/vep/utils/annotationFormatters';
 import {
-  proteinFeatureExplorerUrl,
-  openInNewTab
+  proteinFeatureExplorerUrl
 } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 import type { PredictedTranscriptConsequence } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import {
@@ -314,9 +313,9 @@ const LINK_BUILDERS: Record<
     return (
       <ViewInAppPopup
         links={{
-          entityViewer: openInNewTab(
-            proteinFeatureExplorerUrl(context.genomeId, gene, value)
-          )
+          entityViewer: {
+            url: proteinFeatureExplorerUrl(context.genomeId, gene, value)
+          }
         }}
       >
         {value}

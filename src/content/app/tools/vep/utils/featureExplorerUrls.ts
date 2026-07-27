@@ -15,18 +15,22 @@
  */
 
 /**
- * Full Ensembl URLs for the "View in" popups on VEP results — Genome Browser
- * (location, gene) and Feature Explorer (gene, transcript, protein).
+ * URLs for the "View in" popups on VEP results — Genome Browser (location,
+ * gene) and Feature Explorer (gene, transcript, protein).
  *
- * The standalone VEP app has no host router to resolve root-relative paths, so
- * the popups link out to the full Ensembl app instead, built here from simple
- * templates. `genomeId` is the genome UUID (the human-readable tag is being
- * retired), as the results view now resolves it.
+ * These are root-relative urls built through urlHelper, so ViewInApp navigates
+ * to them within the app and they follow whatever paths urlHelper defines. The
+ * standalone VEP repo built absolute https://beta.ensembl.org urls here and
+ * opened them in a new tab, because it had no host router to resolve
+ * root-relative paths; inside ensembl-client that is both unnecessary and wrong
+ * (it would send a user on a dev or staging deployment to production).
+ *
+ * `genomeId` is the genome UUID (the human-readable tag is being retired), as
+ * the results view now resolves it.
  */
 
-const ENSEMBL_BASE_URL = 'https://beta.ensembl.org';
-const GENOME_BROWSER_PATH = 'genome-browser';
-const FEATURE_EXPLORER_PATH = 'feature-explorer';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 // Ensembl stable ids carry a `.<version>` suffix (e.g. ENSG00000012048.23). The
 // "View in" popups link to the unversioned id — the Ensembl app resolves it to
@@ -40,13 +44,25 @@ export const locationGenomeBrowserUrl = (
   genomeId: string,
   location: { regionName: string; start: number; end: number }
 ): string =>
-  `${ENSEMBL_BASE_URL}/${GENOME_BROWSER_PATH}/${genomeId}?focus=location:${location.regionName}:${location.start}-${location.end}`;
+  urlFor.browser({
+    genomeId,
+    focus: buildFocusIdForUrl({
+      type: 'location',
+      objectId: `${location.regionName}:${location.start}-${location.end}`
+    })
+  });
 
 export const geneGenomeBrowserUrl = (
   genomeId: string,
   geneStableId: string
 ): string =>
-  `${ENSEMBL_BASE_URL}/${GENOME_BROWSER_PATH}/${genomeId}?focus=gene:${stripVersion(geneStableId)}`;
+  urlFor.browser({
+    genomeId,
+    focus: buildFocusIdForUrl({
+      type: 'gene',
+      objectId: stripVersion(geneStableId)
+    })
+  });
 
 // --- Feature Explorer ------------------------------------------------------
 
@@ -54,28 +70,38 @@ export const geneFeatureExplorerUrl = (
   genomeId: string,
   geneStableId: string
 ): string =>
-  `${ENSEMBL_BASE_URL}/${FEATURE_EXPLORER_PATH}/${genomeId}/gene:${stripVersion(geneStableId)}?view=transcripts`;
+  urlFor.entityViewer({
+    genomeId,
+    entityId: buildFocusIdForUrl({
+      type: 'gene',
+      objectId: stripVersion(geneStableId)
+    }),
+    view: 'transcripts'
+  });
 
 export const transcriptFeatureExplorerUrl = (
   genomeId: string,
   transcriptStableId: string
 ): string =>
-  `${ENSEMBL_BASE_URL}/${FEATURE_EXPLORER_PATH}/${genomeId}/transcript:${stripVersion(transcriptStableId)}`;
+  urlFor.entityViewer({
+    genomeId,
+    entityId: buildFocusIdForUrl({
+      type: 'transcript',
+      objectId: stripVersion(transcriptStableId)
+    })
+  });
 
 export const proteinFeatureExplorerUrl = (
   genomeId: string,
   geneStableId: string,
   proteinStableId: string
 ): string =>
-  `${ENSEMBL_BASE_URL}/${FEATURE_EXPLORER_PATH}/${genomeId}/gene:${stripVersion(geneStableId)}?view=protein&protein_id=${stripVersion(proteinStableId)}`;
-
-// --- Opening the link ------------------------------------------------------
-
-// ViewInApp delegates a link click to a function when the link is a function
-// (rather than an in-app `navigate`). These destinations are external, so the
-// handler opens a new tab.
-export const openInNewTab =
-  (url: string): (() => void) =>
-  () => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
+  urlFor.entityViewer({
+    genomeId,
+    entityId: buildFocusIdForUrl({
+      type: 'gene',
+      objectId: stripVersion(geneStableId)
+    }),
+    view: 'protein',
+    proteinId: stripVersion(proteinStableId)
+  });
