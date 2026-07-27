@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { memo, type ReactNode, useCallback } from 'react';
+import { useCallback, memo, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import useSpeciesTabsSlider from './useSpeciesTabsSlider';
