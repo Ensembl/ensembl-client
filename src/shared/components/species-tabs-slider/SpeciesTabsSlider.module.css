@@ -10,6 +10,7 @@
   column-gap: 15px;
   width: 100%;
   overflow-x: auto;
+  overscroll-behavior-y: none;
   scrollbar-width: none;
   padding-top: var(--tabs-container-padding-top);
 }

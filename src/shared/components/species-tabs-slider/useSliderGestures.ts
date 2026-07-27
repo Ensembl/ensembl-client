@@ -54,30 +54,31 @@ const useSliderGestures = () => {
   };
 };
 
-const DRAG_THRESHOLD = 6; // consider a mouse event to be a drag gesture if the mouse moved this distance after mousedown
-
-// FIXME: change mouse to pointer
+const DRAG_THRESHOLD = 6; // consider a pointer event to be a drag gesture if the pointer has moved this distance after pointerdown
 
 const createDragObservable = (element: HTMLElement) => {
-  const mouseDown$ = fromEvent<MouseEvent>(element, 'mousedown', {
+  const pointerDown$ = fromEvent<PointerEvent>(element, 'pointerdown', {
     capture: true
   });
 
-  const pipeline = mouseDown$.pipe(
+  const pipeline = pointerDown$.pipe(
     exhaustMap((downEvent) => {
       const startX = downEvent.clientX;
       const startScrollLeft = element.scrollLeft;
 
-      const mouseUp$ = fromEvent<MouseEvent>(document, 'mouseup').pipe(take(1));
-      const mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove').pipe(
-        takeUntil(mouseUp$)
+      const pointerUp$ = fromEvent<PointerEvent>(document, 'pointerup').pipe(
+        take(1)
       );
+      const pointerMove$ = fromEvent<PointerEvent>(
+        document,
+        'pointermove'
+      ).pipe(takeUntil(pointerUp$));
       const click$ = fromEvent<MouseEvent>(document, 'click', {
         capture: true,
         once: true
       }).pipe(take(1));
 
-      const deltaX$ = mouseMove$.pipe(
+      const deltaX$ = pointerMove$.pipe(
         map((moveEvent) => {
           return moveEvent.clientX - startX;
         }),
