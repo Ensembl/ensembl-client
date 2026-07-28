@@ -10,15 +10,20 @@ THEIRS = standalone/main:src/content/app/tools/vep
 ```
 
 Branch `integration/vep-v2` was identical to `origin/main` at the start of this
-work. Three commits were added:
+work.
 
 | commit | step |
 |---|---|
-| `a3d41bb2` | VEP V2: three-way merge of standalone into ensembl-client |
-| `e496353a` | VEP V2: restore in-app navigation from the results "View in" popups |
-| `d8b11ce1` | VEP V2: align with post-fork ensembl-client conventions |
+| `a3d41bb2` | 2 — VEP V2: three-way merge of standalone into ensembl-client |
+| `e496353a` | 3 — VEP V2: restore in-app navigation from the results "View in" popups |
+| `d8b11ce1` | 4 — VEP V2: align with post-fork ensembl-client conventions |
+| `11053fcf` | VEP V2: integration report |
 
 Total: 91 files changed, +12508 / −586.
+
+Step 5 (typecheck, lint, tests) added no commit, because nothing the integration
+introduced was broken — see §7, where every number is re-measured against an
+`origin/main` worktree rather than quoted.
 
 ---
 
@@ -132,9 +137,17 @@ rest are isolation artifacts and were **discarded**:
 | `views/…/vep-form-gene-options/VepFormGeneOptions.tsx` | Deletion accepted — V2 genuinely replaced the gene options with `VepFormOptionsPanel`, and origin/main never touched the file. |
 
 Files changed only by OURS (`VepSubmitButton.tsx`, `vepStorageService.ts`,
-`vepExampleVariantQuery.ts`, `useVepResultsPagination.ts`) were left untouched
-and verified byte-identical to `origin/main` after the merge. Files changed only
-by THEIRS were taken wholesale.
+`vepExampleVariantQuery.ts`, `useVepResultsPagination.ts`) were left untouched by
+the merge. Files changed only by THEIRS were taken wholesale.
+
+Three of those four are byte-identical to `origin/main` at `HEAD`.
+`VepSubmitButton.tsx` is not, and an earlier draft of this report wrongly said it
+was: the prettier run in `d8b11ce1` re-indented the `canSubmit` binary chain.
+Whitespace only, no token changed. This is prettier doing its job rather than a
+merge artifact — `origin/main`'s own copy of that file does **not** satisfy the
+repo's current prettier, because the formatter was bumped in `dae712f2` after
+that copy was last written. Verified by running `prettier --check` against both
+copies: `HEAD` passes, `origin/main` fails.
 
 ---
 
@@ -193,9 +206,14 @@ Restored **against V2 as written**, not by reverting:
   null-and-undefined check for `displaySpecRenderer`'s `not_equals`, whose type
   is `string | null | undefined` and where `not_equals: ''` must keep behaving as
   it did.
-- **prettier** — the standalone repo dropped it. Run across the whole VEP tree;
-  this is most of the line count in that commit (`displaySpec.fixture.ts` alone
-  is ~2.6k reflowed lines).
+- **prettier** — the standalone repo dropped it. Run across the VEP tree's
+  `.ts`/`.tsx`; this is most of the line count in that commit
+  (`displaySpec.fixture.ts` alone is ~2.6k reflowed lines). CSS was deliberately
+  left alone: `.lintstagedrc.json` runs prettier on `*.{ts,tsx}` only and
+  stylelint on `*.css`, so prettier is not enforced for CSS in this repo. Two VEP
+  CSS files (`VepSubmissionHeader.module.css`,
+  `ListedVepSubmission.module.css`) do not satisfy `prettier --check`; both
+  already fail it on `origin/main`, so this is inherited, not introduced.
 - **stylelint** — 15 warnings in V2's CSS (comment spacing, `rgba` → `rgb`,
   modern colour notation). Auto-fixed; `npm run lint:styles` is clean.
 - **licence headers** — `manage-licence-header add` across the VEP tree, as the
@@ -260,7 +278,23 @@ Nothing else outside the VEP directory was touched.
    `GET /vep/submissions/{id}/results` (new). Both come from the API-side
    handover under separate review. Neither is exercised by any test here.
 
-5. **The pre-commit hook.**
+5. **The 4 new `react-hooks` eslint errors (§4, §7).**
+   V2 code trips `react-hooks/refs` (3, `DownloadOptions.tsx`) and
+   `react-hooks/set-state-in-effect` (1, `TokenListInput.tsx`). I left them,
+   because both reproduce idioms already in ensembl-client — including in a
+   *shared* component — and because `origin/main` carries 64 and 16 of these
+   respectively. Fixing them here would make VEP the only part of the codebase
+   written to a rule the rest of it ignores.
+   The counter-argument, which is why this is listed rather than closed: because
+   `.lintstagedrc.json` runs `eslint --max-warnings=0` on staged `*.{ts,tsx}`,
+   **anyone who later edits either file will be unable to commit it** without
+   fixing the error first. That is already true of `VepResultsAllele.tsx` and
+   `VepFormVariantsSection.tsx` on `origin/main` today, so it is not a new class
+   of problem — but it is two more files in it. Both have safe behaviour-
+   preserving fixes (a callback ref/state anchor for the first, deriving from
+   props for the second) if you would rather pay that cost now.
+
+6. **The pre-commit hook.**
    `lint-staged` runs `eslint --max-warnings=0` over staged files. It did not run
    for the merge commit (`node_modules` was absent), and commits `e496353a` and
    `d8b11ce1` were made with `--no-verify` — the sequence you asked for puts the
@@ -270,25 +304,58 @@ Nothing else outside the VEP directory was touched.
 
 ---
 
-## 7. Verification
+## 7. Verification (step 5)
+
+Every figure below was re-measured from scratch, with the `origin/main` baseline
+taken from a separate `git worktree` checkout rather than quoted from memory.
 
 | check | baseline (`origin/main`) | after integration |
 |---|---|---|
 | `npx tsc` | clean | **clean** |
-| `npx vitest run` (node) | 3 files / 8 tests failing, 743 passing | **same 3 files / 8 tests failing, 908 passing** |
+| `npx vitest run` (node) | 3 files / 8 tests failing, 743 passing (147 files) | **same 3 files / 8 tests failing, 908 passing (161 files)** |
 | VEP tests specifically | 2 test files | **16 test files, 178 tests, all passing** |
 | `npx vitest run --config vitest.config.browser.mts` | — | **2 files / 11 tests passing** |
-| `npm run lint:styles` | clean | **clean** |
-| `npm run lint:scripts` | 230 problems (149 errors, 81 warnings) | **234 problems (153 errors, 81 warnings)** |
+| `npm run lint:styles` (stylelint) | clean | **clean** |
+| `npm run lint:scripts` (eslint, whole repo) | 230 problems (149 errors, 81 warnings) | **234 problems (153 errors, 81 warnings)** |
+| eslint, VEP tree only | 5 errors | **9 errors** |
 
 The 8 node-test failures are pre-existing on `origin/main` and unrelated to VEP
-(`Root.test.tsx`, `useBrowserRouting.test.tsx`, `TranscriptsFilter.test.tsx`).
-The +4 eslint errors are the four listed at the end of §4.
+(`Root.test.tsx`, `useBrowserRouting.test.tsx`, `TranscriptsFilter.test.tsx`);
+they are the same 8 before and after, and all stem from a `storage.getItem is
+not a function` fault in the genome-browser's storage service. Integration adds
+14 test files and 165 passing tests and breaks nothing.
 
-No V2 test and OURS test assert contradictory behaviour: `origin/main` had only
-two VEP test files (`vepStorageService.test.ts`,
-`vepSubmissionStatusPolling.test.ts`), V2 modified neither, and no test file
-present on `origin/main` is missing now.
+**Nothing broke that was not already broken, so step 5 produced no fix commit.**
+That is the honest outcome rather than an omission: typecheck, stylelint and both
+test suites are either clean or bit-for-bit at baseline.
+
+The only delta is +4 eslint errors, all in new V2 code, enumerated by rule:
+
+| file:line | rule | pre-existing? |
+|---|---|---|
+| `DownloadOptions.tsx:81` ×2, `:83` | `react-hooks/refs` | new |
+| `TokenListInput.tsx:64` | `react-hooks/set-state-in-effect` | new |
+| `VepResultsAllele.tsx:82` ×3, `:85` | `react-hooks/refs` | inherited from `origin/main` |
+| `VepFormVariantsSection.tsx:71` | `react-hooks/set-state-in-effect` | inherited from `origin/main` |
+
+These 4 are left unfixed deliberately (§4), and the reasoning was re-checked
+against the code rather than taken on trust: `DownloadOptions.tsx:81-83` is the
+same `anchorRef.current && <PointerBox anchor={anchorRef.current}>` shape as
+shared `src/shared/components/view-in-app-popup/ViewInAppPopup.tsx:66-68`, and
+`TokenListInput.tsx:62-67` syncs props to state the same way VEP's own
+`VepFormVariantsSection.tsx:67-72` already did before the fork. Both rules come
+from `eslint-plugin-react-hooks` 7.x, which arrived *after* the fork — so they
+are lint strictness V2 was never written against, and which `origin/main` does
+not satisfy either. Promoted to §6.5 as a decision for a human.
+
+### No contradictory tests
+
+`origin/main` had exactly two VEP test files (`vepStorageService.test.ts`,
+`vepSubmissionStatusPolling.test.ts`). THEIRS modified neither, both are
+unchanged at `HEAD`, and both pass. No test file present on `origin/main` is
+missing now, and no test was deleted or rewritten to accommodate V2. So the
+step-5 stop condition — a V2 test and an OURS test asserting contradictory
+behaviour — did not arise.
 
 ### What I could not verify without running the app
 
