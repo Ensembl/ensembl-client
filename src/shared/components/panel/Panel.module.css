@@ -11,25 +11,24 @@
 
   .header {
     grid-row: header;
+    display: flex;
+    align-items: center;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     background-color: var(--color-light-grey);
     box-shadow: 0 1px 3px var(--color-medium-light-grey);
     height: 34px;
-    padding: 4px 10px;
-    width: 100%;
-    line-height: 24px;
+    padding: 0 10px;
   }
 
   .body {
     grid-row: body;
-    padding: 0 20px 10px 10px;
+    padding: 10px 10px 20px 10px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
     overflow: auto;
     min-height: 100px;
-    height: calc(100% - 54px);
-    margin-top: 15px;
+    height: 100%;
   }
 
 }
