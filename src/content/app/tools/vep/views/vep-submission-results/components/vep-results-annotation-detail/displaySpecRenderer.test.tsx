@@ -50,6 +50,7 @@ const renderOption = (
     protvarUrl?: string;
     genomeId?: string;
     help?: OptionHelp;
+    openTargetsVariantId?: string;
     // extra typed fields the consequence carries for a link builder (the
     // protein popup reads gene_stable_id off the consequence).
     geneStableId?: string;
@@ -69,7 +70,8 @@ const renderOption = (
         subOptionRan: entities.subOptionRan,
         protvarUrl: entities.protvarUrl,
         genomeId: entities.genomeId,
-        help: entities.help
+        help: entities.help,
+        openTargetsVariantId: entities.openTargetsVariantId
       })}
     </>
   );
@@ -635,18 +637,28 @@ describe('renderDisplayOption', () => {
   // --- multi-cell list items: cell links, `label` prefix, absent cells -------
   // (OpenTargets: two list blocks under one option heading, one truncated.)
 
-  it('renders OpenTargets GWAS + QTL groups: templated links and an L2G meta', () => {
+  it('renders OpenTargets as two tables, with the EFO term as the disease', () => {
     renderOption('opentargets', {
       allele: [
         annotation('opentargets', 'allele', {
           gwas_associations: [
             {
               disease: 'EFO_0000305',
+              disease_label: 'breast carcinoma',
               gene_id: 'ENSG00000141510',
-              l2g_score: 0.42
+              l2g_score: 0.42,
+              p_value: '3.32e-28',
+              beta: 0.0125
             }
           ],
-          qtl_associations: [{ gene_id: 'ENSG00000012048', biosample: 'blood' }]
+          qtl_associations: [
+            {
+              gene_id: 'ENSG00000012048',
+              biosample: 'blood',
+              p_value: '1.81e-22',
+              beta: -0.794
+            }
+          ]
         })
       ]
     });
@@ -654,54 +666,145 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('GWAS gene associations')).toBeDefined();
     expect(screen.getByText('QTL gene associations')).toBeDefined();
 
-    // disease + gene cells become anchors from the spec's `{field}` templates
-    expect(
-      screen.getByText('EFO_0000305').closest('a')?.getAttribute('href')
-    ).toBe('https://platform.opentargets.org/disease/EFO_0000305');
-    expect(
-      screen.getByText('ENSG00000141510').closest('a')?.getAttribute('href')
-    ).toBe('https://platform.opentargets.org/target/ENSG00000141510');
+    const headers = screen
+      .getAllByRole('columnheader')
+      .map((h) => h.textContent);
+    expect(headers).toEqual([
+      'Disease association',
+      'Target Gene',
+      'Lead variant p-value',
+      'beta',
+      'Locus2Gene score',
+      'BioSample',
+      'Target Gene',
+      'Lead variant p-value',
+      'beta'
+    ]);
 
-    // the L2G cell's `label` is rendered as a prefix on its (num-formatted) value
-    expect(screen.getByText('L2G 0.42')).toBeDefined();
-    // QTL row: gene link plus a plain biosample meta cell
+    // the resolved EFO term, not the accession
+    expect(screen.getByText('breast carcinoma')).toBeDefined();
+    expect(screen.queryByText('EFO_0000305')).toBeNull();
+    // p-value as published: mantissa and exponent joined, not re-rounded
+    expect(screen.getByText('3.32e-28')).toBeDefined();
+    expect(screen.getByText('1.81e-22')).toBeDefined();
+    expect(screen.getByText('0.42')).toBeDefined();
     expect(screen.getByText('blood')).toBeDefined();
   });
 
-  it('drops an absent cell: no L2G when the score is null, no empty biosample', () => {
+  it('leaves the table cells unlinked', () => {
+    const { container } = renderOption('opentargets', {
+      allele: [
+        annotation('opentargets', 'allele', {
+          gwas_associations: [
+            {
+              disease: 'EFO_0000305',
+              disease_label: 'breast carcinoma',
+              gene_id: 'ENSG00000141510',
+              l2g_score: 0.42,
+              p_value: '3.32e-28',
+              beta: 0.0125
+            }
+          ],
+          qtl_associations: []
+        })
+      ]
+    });
+    expect(container.querySelectorAll('tbody a')).toHaveLength(0);
+  });
+
+  it('links the variant to its OpenTargets page, icon first', () => {
+    renderOption('opentargets', {
+      allele: [
+        annotation('opentargets', 'allele', {
+          gwas_associations: [],
+          qtl_associations: [
+            { gene_id: 'ENSG_A', biosample: 'blood', p_value: null, beta: null }
+          ]
+        })
+      ],
+      openTargetsVariantId: '1_230710048_A_G'
+    });
+    expect(screen.getByText('Variant link')).toBeDefined();
+    const link = screen.getByText('1_230710048_A_G').closest('a');
+    expect(link?.getAttribute('href')).toBe(
+      'https://platform.opentargets.org/variant/1_230710048_A_G'
+    );
+    expect(link?.getAttribute('target')).toBe('_blank');
+    expect(link?.getAttribute('rel')).toBe('noopener noreferrer');
+    // the icon precedes the text inside the anchor, with a gap on its right
+    expect(link?.firstElementChild?.tagName.toLowerCase()).toBe('svg');
+    expect(link?.className).toMatch(/iconFirst/);
+    // and the link sits on its own line under the heading rather than being
+    // pushed to the far edge as the value half of a label/value row
+    expect(link?.closest('[class*="row"]')?.className).toMatch(/plainRow/);
+  });
+
+  it('renders nothing at all when the variant has no OpenTargets data', () => {
+    // The link is built from the variant's own coordinates, so without a gate
+    // it would appear on every variant in the results whether OpenTargets had
+    // anything to say about it or not.
+    const { container } = renderOption('opentargets', {
+      allele: [],
+      openTargetsVariantId: '1_230710048_A_G'
+    });
+    expect(container.innerHTML).toBe('');
+  });
+
+  it('drops the variant link when the allele could not be resolved', () => {
+    renderOption('opentargets', {
+      allele: [
+        annotation('opentargets', 'allele', {
+          gwas_associations: [],
+          qtl_associations: [
+            { gene_id: 'ENSG_A', biosample: 'blood', p_value: null, beta: null }
+          ]
+        })
+      ]
+    });
+    expect(screen.queryByText('Variant link')).toBeNull();
+  });
+
+  it('leaves a table cell empty when its value is absent', () => {
     renderOption('opentargets', {
       allele: [
         annotation('opentargets', 'allele', {
           gwas_associations: [
-            { disease: 'EFO_1', gene_id: 'ENSG_A', l2g_score: null }
+            {
+              disease: 'EFO_1',
+              disease_label: 'a disease',
+              gene_id: 'ENSG_A',
+              l2g_score: null,
+              p_value: null,
+              beta: null
+            }
           ],
-          qtl_associations: [{ gene_id: 'ENSG_B', biosample: null }]
+          qtl_associations: []
         })
       ]
     });
-    // the surrounding link cells still render...
-    expect(screen.getByText('EFO_1')).toBeDefined();
+    // the row still renders; the cells with nothing in them are simply blank
+    expect(screen.getByText('a disease')).toBeDefined();
     expect(screen.getByText('ENSG_A')).toBeDefined();
-    expect(screen.getByText('ENSG_B')).toBeDefined();
-    // ...but a null `num` cell is dropped rather than crashing or showing empty
-    expect(screen.queryByText(/^L2G/)).toBeNull();
   });
 
-  it('truncates the GWAS list at visible_count (3)', () => {
+  it('truncates the GWAS table at visible_count (3)', () => {
     renderOption('opentargets', {
       allele: [
         annotation('opentargets', 'allele', {
           gwas_associations: [1, 2, 3, 4].map((n) => ({
             disease: `EFO_${n}`,
+            disease_label: `disease ${n}`,
             gene_id: `ENSG_${n}`,
-            l2g_score: null
+            l2g_score: null,
+            p_value: null,
+            beta: null
           })),
           qtl_associations: []
         })
       ]
     });
-    expect(screen.getByText('EFO_3')).toBeDefined();
-    expect(screen.queryByText('EFO_4')).toBeNull();
+    expect(screen.getByText('disease 3')).toBeDefined();
+    expect(screen.queryByText('disease 4')).toBeNull();
     expect(screen.getByText('+ 1 more')).toBeDefined();
   });
 

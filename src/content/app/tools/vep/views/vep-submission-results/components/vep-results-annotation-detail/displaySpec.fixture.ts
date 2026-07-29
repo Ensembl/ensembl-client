@@ -1090,92 +1090,166 @@ export const displaySpecFixture: DisplaySpec = {
       heading: 'OpenTargets',
       blocks: [
         {
+          heading: 'Variant link',
+          requires_selected: null,
+          when: null,
+          view: null,
+          kind: 'rows',
+          requires: 'opentargets',
+          rows: [
+            {
+              key: null,
+              label: '',
+              from: null,
+              compose: null,
+              format: null,
+              mono: false,
+              placeholder: null,
+              help: null,
+              help_link: null,
+              sub_option: null,
+              link: {
+                kind: 'external',
+                template: null,
+                builder: 'opentargets_variant'
+              }
+            }
+          ]
+        },
+        {
           heading: 'GWAS gene associations',
           requires_selected: null,
           when: null,
           view: null,
-          kind: 'list',
+          kind: 'table',
           requires: null,
+          indent: false,
           from: 'opentargets.gwas_associations',
+          columns: [
+            {
+              label: 'Disease association',
+              from: 'disease_label',
+              format: null,
+              mono: false,
+              sub_option: null,
+              link: null,
+              split: null,
+              link_prefix: null,
+              lift_when_invariant: false
+            },
+            {
+              label: 'Target Gene',
+              from: 'gene_id',
+              format: null,
+              mono: true,
+              sub_option: null,
+              link: null,
+              split: null,
+              link_prefix: null,
+              lift_when_invariant: false
+            },
+            {
+              label: 'Lead variant p-value',
+              from: 'p_value',
+              format: null,
+              mono: false,
+              sub_option: null,
+              link: null,
+              split: null,
+              link_prefix: null,
+              lift_when_invariant: false
+            },
+            {
+              label: 'beta',
+              from: 'beta',
+              format: 'num',
+              mono: false,
+              sub_option: null,
+              link: null,
+              split: null,
+              link_prefix: null,
+              lift_when_invariant: false
+            },
+            {
+              label: 'Locus2Gene score',
+              from: 'l2g_score',
+              format: 'num',
+              mono: false,
+              sub_option: null,
+              link: null,
+              split: null,
+              link_prefix: null,
+              lift_when_invariant: false
+            }
+          ],
           group_by: null,
+          where: null,
           truncate: {
             visible_count: 3
           },
-          item: {
-            label: null,
-            cells: [
-              {
-                label: null,
-                from: 'disease',
-                format: null,
-                mono: true,
-                link: {
-                  kind: 'external',
-                  template:
-                    'https://platform.opentargets.org/disease/{disease}',
-                  builder: null
-                }
-              },
-              {
-                label: null,
-                from: 'gene_id',
-                format: null,
-                mono: true,
-                link: {
-                  kind: 'external',
-                  template: 'https://platform.opentargets.org/target/{gene_id}',
-                  builder: null
-                }
-              },
-              {
-                label: 'L2G',
-                from: 'l2g_score',
-                format: 'num',
-                mono: false,
-                link: null
-              }
-            ],
-            rows: null,
-            link: null
-          }
+          rows: null
         },
         {
           heading: 'QTL gene associations',
           requires_selected: null,
           when: null,
           view: null,
-          kind: 'list',
+          kind: 'table',
           requires: null,
+          indent: false,
           from: 'opentargets.qtl_associations',
+          columns: [
+            {
+              label: 'BioSample',
+              from: 'biosample',
+              format: null,
+              mono: false,
+              sub_option: null,
+              link: null,
+              split: null,
+              link_prefix: null,
+              lift_when_invariant: false
+            },
+            {
+              label: 'Target Gene',
+              from: 'gene_id',
+              format: null,
+              mono: true,
+              sub_option: null,
+              link: null,
+              split: null,
+              link_prefix: null,
+              lift_when_invariant: false
+            },
+            {
+              label: 'Lead variant p-value',
+              from: 'p_value',
+              format: null,
+              mono: false,
+              sub_option: null,
+              link: null,
+              split: null,
+              link_prefix: null,
+              lift_when_invariant: false
+            },
+            {
+              label: 'beta',
+              from: 'beta',
+              format: 'num',
+              mono: false,
+              sub_option: null,
+              link: null,
+              split: null,
+              link_prefix: null,
+              lift_when_invariant: false
+            }
+          ],
           group_by: null,
+          where: null,
           truncate: {
             visible_count: 3
           },
-          item: {
-            label: null,
-            cells: [
-              {
-                label: null,
-                from: 'gene_id',
-                format: null,
-                mono: true,
-                link: {
-                  kind: 'external',
-                  template: 'https://platform.opentargets.org/target/{gene_id}',
-                  builder: null
-                }
-              },
-              {
-                label: null,
-                from: 'biosample',
-                format: null,
-                mono: false,
-                link: null
-              }
-            ],
-            rows: null,
-            link: null
-          }
+          rows: null
         }
       ]
     },

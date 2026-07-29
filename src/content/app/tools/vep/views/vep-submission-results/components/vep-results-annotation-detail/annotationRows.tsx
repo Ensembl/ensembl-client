@@ -77,14 +77,29 @@ export const Row = (props: {
   value: ReactNode;
   mono?: boolean;
   emphasis?: boolean;
-}) => (
-  <div className={styles.row}>
-    <span className={props.emphasis ? styles.optionLabel : styles.rowLabel}>
-      {props.label}
-    </span>
-    <span className={props.mono ? styles.mono : undefined}>{props.value}</span>
-  </div>
-);
+  /**
+   * A row that is only its value — no label opposite it. Rendered left-aligned
+   * under its heading rather than pushed to the far edge by the label/value
+   * `space-between` (the OpenTargets variant link).
+   */
+  plain?: boolean;
+}) =>
+  props.plain ? (
+    <div className={`${styles.row} ${styles.plainRow}`}>
+      <span className={props.mono ? styles.mono : undefined}>
+        {props.value}
+      </span>
+    </div>
+  ) : (
+    <div className={styles.row}>
+      <span className={props.emphasis ? styles.optionLabel : styles.rowLabel}>
+        {props.label}
+      </span>
+      <span className={props.mono ? styles.mono : undefined}>
+        {props.value}
+      </span>
+    </div>
+  );
 
 // An option whose output is more than a single value: renders the option's own
 // label as a sub-heading (below its panel/category) with its values beneath, so
@@ -146,6 +161,8 @@ export type RowSpec = {
   placeholder?: string;
   /** Defaults to the row's position, which is stable for these fixed lists. */
   key?: string;
+  /** See `Row.plain`: the row is its value alone, left-aligned. */
+  plain?: boolean;
   /**
    * A trailing element on the value — ProtVar's link icon. Shown only next to a
    * real value, never on a placeholder/dash row (as the old summary did).
@@ -224,6 +241,7 @@ export const renderRows = (
             value={row.valueNode}
             mono={row.mono}
             emphasis={emphasis}
+            plain={row.plain}
           />
         );
       }
@@ -244,6 +262,7 @@ export const renderRows = (
           value={row.placeholder}
           mono={row.mono}
           emphasis={emphasis}
+          plain={row.plain}
         />
       );
       return;
@@ -263,6 +282,7 @@ export const renderRows = (
         }
         mono={row.mono}
         emphasis={emphasis}
+        plain={row.plain}
       />
     );
   });

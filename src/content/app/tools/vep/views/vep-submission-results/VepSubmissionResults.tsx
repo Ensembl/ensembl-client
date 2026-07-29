@@ -52,6 +52,7 @@ import {
   isFailedVepSubmission
 } from 'src/content/app/tools/vep/utils/vepResultsAvailability';
 import { buildProtvarUrlFromHgvsg } from 'src/content/app/tools/vep/utils/buildProtvarUrlFromHgvsg';
+import { buildOpenTargetsVariantId } from 'src/content/app/tools/vep/utils/openTargetsVariantId';
 import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
 import { resolveResultsPanels } from 'src/content/app/tools/vep/utils/resultsPanels';
 import { transcriptFeatureExplorerUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
@@ -758,6 +759,14 @@ const VariantRow = (props: {
     const protvarUrl = buildProtvarUrlFromHgvsg(
       getAnnotation(allele, 'hgvsg')?.genomic
     );
+    // This variant in OpenTargets' notation, for the link in its annotation
+    // block. Built here rather than in the renderer because it comes from the
+    // results row — the variant's location and reference allele, plus this
+    // row's alternative allele — and not from any parsed annotation.
+    const openTargetsVariantId = buildOpenTargetsVariantId(
+      variant,
+      allele?.allele_sequence
+    );
 
     // The variant/allele/gene cells to emit on this row, already split so their
     // rowSpans never cover an expanded detail panel (see planLeadingCells).
@@ -838,6 +847,7 @@ const VariantRow = (props: {
                 display={display}
                 availableAfSources={availableAfSources}
                 protvarUrl={protvarUrl}
+                openTargetsVariantId={openTargetsVariantId}
                 onCollapse={() => toggleDetail(index)}
               />
             </td>

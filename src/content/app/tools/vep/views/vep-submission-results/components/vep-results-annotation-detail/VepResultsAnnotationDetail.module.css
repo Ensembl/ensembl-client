@@ -176,6 +176,32 @@
   border-collapse: collapse;
 }
 
+/* Keeps a table inside its column.
+
+   These tables are sized to content, and the widest of them no longer fits: the
+   OpenTargets GWAS table wants five columns, one of them an unbreakable gene id
+   and another a p-value like `3.3247766e-28`, which is more than a 320px
+   multi-column column can give it. Widening `.sections` would buy it room at
+   the cost of one fewer column for every panel at every width, so the table
+   scrolls within its own box instead.
+
+   `min-width: 0` on the wrapper and its flex ancestors is what makes that work:
+   a flex item defaults to `min-width: auto`, so it refuses to shrink below its
+   content and the overflow escapes the column rather than being caught here —
+   which is why a `max-width` on the table alone did nothing. */
+.tableScroll {
+  overflow-x: auto;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.section,
+.sectionBody,
+.optionBlock,
+.optionChildren {
+  min-width: 0;
+}
+
 .breakdownTable th,
 .breakdownTable td {
   text-align: left;
@@ -267,6 +293,20 @@
 .listLink svg {
   margin-left: 3px;
   vertical-align: -1px;
+}
+
+/* A link whose icon leads instead of trailing (the OpenTargets variant link):
+   the gap belongs on the other side of the icon. */
+.iconFirst svg {
+  margin-left: 0;
+  margin-right: 5px;
+}
+
+/* A row that is only its value, sitting under its own heading rather than
+   opposite a label — so it starts at the indent instead of being pushed to the
+   far edge by the label/value `space-between`. */
+.plainRow {
+  justify-content: flex-start;
 }
 
 /* A source cited inside a help popup (popEVE's gap-frequency paper). Unlike

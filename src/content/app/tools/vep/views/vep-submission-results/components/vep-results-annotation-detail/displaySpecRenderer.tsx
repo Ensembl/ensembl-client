@@ -81,6 +81,14 @@ export type LinkBuilderContext = {
   genomeId: string;
   protvarUrl?: string;
   consequence: AnnotatedEntity | null | undefined;
+  /**
+   * This variant in OpenTargets' own notation — `1_230710048_A_G`, i.e.
+   * chromosome_position_reference_alternate. Built upstream from the variant
+   * and allele (see VepSubmissionResults) because it comes from the results
+   * row rather than from anything a plugin parsed, so no `<plugin>.<field>`
+   * can name it.
+   */
+  openTargetsVariantId?: string;
 };
 
 type Entities = {
@@ -253,6 +261,22 @@ const toRowSpec = (
   spec: DisplaySpec,
   entities: Entities
 ): RowSpec => {
+  // A row with no `from`/`compose` is built entirely by its named builder: the
+  // value is job context, not annotation (the OpenTargets variant link). The
+  // builder returning null — no id to link — drops the row, exactly as an
+  // absent annotation value would.
+  if (!row.from && !row.compose && row.link?.builder) {
+    const node = renderLink(row.link, entities.linkContext);
+    return {
+      key: row.key ?? undefined,
+      label: rowLabel(row),
+      value: node ? '' : null,
+      valueNode: node ?? null,
+      // Its own line under the block heading, not the value half of a
+      // label/value pair — there is no label opposite it.
+      plain: true
+    };
+  }
   const { value, placeholder } = rowValueAndPlaceholder(row, spec, entities);
   // An app-popup link wraps the value itself (the protein id becomes the popup
   // trigger) rather than trailing it, so it is rendered here as the value node.
@@ -344,6 +368,21 @@ const LINK_BUILDERS: Record<
         aria-label="View in ProtVar"
       >
         <ExternalLinkIcon />
+      </a>
+    ) : null,
+  // The variant's OpenTargets page: the link icon, then the variant in
+  // OpenTargets' own notation as the link text. Unlike ProtVar's icon-only link
+  // this *is* the row's value — there is no annotation field behind it.
+  opentargets_variant: (context) =>
+    context.openTargetsVariantId ? (
+      <a
+        href={`https://platform.opentargets.org/variant/${context.openTargetsVariantId}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${styles.listLink} ${styles.iconFirst}`}
+      >
+        <ExternalLinkIcon />
+        {context.openTargetsVariantId}
       </a>
     ) : null,
   // The protein id as an in-app "View in" popup trigger (Entity Viewer), built
@@ -709,31 +748,33 @@ const renderMatrixTable = (
   const rows = block.rows ?? [];
   const valueColumns = block.columns.slice(1);
   const table = (
-    <table className={styles.breakdownTable}>
-      {tableHead(block.columns)}
-      <tbody>
-        {rows.map((row, rowIndex) => (
-          <tr key={rowIndex}>
-            <td>{row.label}</td>
-            {row.values.map((ref, colIndex) => {
-              const column = valueColumns[colIndex];
-              const raw = readField(ref, spec, entities);
-              const text = isAbsent(raw)
-                ? ''
-                : (formatValue(raw, column?.format ?? 'text') ?? '');
-              return (
-                <td
-                  key={colIndex}
-                  className={column?.mono ? styles.mono : undefined}
-                >
-                  {text}
-                </td>
-              );
-            })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className={styles.tableScroll}>
+      <table className={styles.breakdownTable}>
+        {tableHead(block.columns)}
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              <td>{row.label}</td>
+              {row.values.map((ref, colIndex) => {
+                const column = valueColumns[colIndex];
+                const raw = readField(ref, spec, entities);
+                const text = isAbsent(raw)
+                  ? ''
+                  : (formatValue(raw, column?.format ?? 'text') ?? '');
+                return (
+                  <td
+                    key={colIndex}
+                    className={column?.mono ? styles.mono : undefined}
+                  >
+                    {text}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
   return withHeading(block, level, table, entities);
 };
@@ -810,27 +851,29 @@ const renderTableBlock = (
     // TruncatedList adds no markup of its own, so the rows and the toggle stay
     // inside the tbody — the toggle as a row spanning every column.
     return (
-      <table className={styles.breakdownTable}>
-        {tableHead(columns)}
-        <tbody>
-          {block.truncate ? (
-            <TruncatedList
-              items={rows}
-              visibleCount={block.truncate.visible_count}
-              renderItem={bodyRow}
-              renderToggle={(toggleProps) => (
-                <tr>
-                  <td colSpan={columns.length}>
-                    <MoreToggle {...toggleProps} />
-                  </td>
-                </tr>
-              )}
-            />
-          ) : (
-            rows.map(bodyRow)
-          )}
-        </tbody>
-      </table>
+      <div className={styles.tableScroll}>
+        <table className={styles.breakdownTable}>
+          {tableHead(columns)}
+          <tbody>
+            {block.truncate ? (
+              <TruncatedList
+                items={rows}
+                visibleCount={block.truncate.visible_count}
+                renderItem={bodyRow}
+                renderToggle={(toggleProps) => (
+                  <tr>
+                    <td colSpan={columns.length}>
+                      <MoreToggle {...toggleProps} />
+                    </td>
+                  </tr>
+                )}
+              />
+            ) : (
+              rows.map(bodyRow)
+            )}
+          </tbody>
+        </table>
+      </div>
     );
   };
 
@@ -1026,6 +1069,7 @@ export const renderDisplayOption = (args: {
   // options without a builder link, and their tests, need not supply them.
   genomeId?: string;
   protvarUrl?: string;
+  openTargetsVariantId?: string;
   // The option's help, hung on whichever node turns out to be its visible title
   // (see Entities.helpAnchor). Optional: an option with no help renders exactly
   // as before.
@@ -1040,6 +1084,7 @@ export const renderDisplayOption = (args: {
     subOptionRan = () => false,
     genomeId = '',
     protvarUrl,
+    openTargetsVariantId,
     help
   } = args;
   const entities: Entities = {
@@ -1047,7 +1092,7 @@ export const renderDisplayOption = (args: {
     allele,
     showAll,
     subOptionRan,
-    linkContext: { genomeId, protvarUrl, consequence },
+    linkContext: { genomeId, protvarUrl, openTargetsVariantId, consequence },
     helpAnchor: help ? makeHelpAnchor(help) : undefined
   };
   // The option heading is the top level (0); its blocks are sub-options one

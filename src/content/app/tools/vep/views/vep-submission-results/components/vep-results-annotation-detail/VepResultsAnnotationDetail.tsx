@@ -84,6 +84,8 @@ const VepResultsAnnotationDetail = (props: {
    */
   availableAfSources?: AfSource[];
   protvarUrl?: string;
+  /** This variant in OpenTargets' notation, for the link in its block. */
+  openTargetsVariantId?: string;
   /** Collapse this detail (wired to the row's expand toggle). */
   onCollapse?: () => void;
 }) => {
@@ -96,6 +98,7 @@ const VepResultsAnnotationDetail = (props: {
     display,
     availableAfSources,
     protvarUrl,
+    openTargetsVariantId,
     onCollapse
   } = props;
   const [showAll, setShowAll] = useState(false);
@@ -173,6 +176,7 @@ const VepResultsAnnotationDetail = (props: {
       // For named link builders (ProtVar's icon, the protein "View in" popup).
       genomeId,
       protvarUrl,
+      openTargetsVariantId,
       // Hung on whichever node turns out to be the option's visible title.
       help: helpFor(optionId)
     });
