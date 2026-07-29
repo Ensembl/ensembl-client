@@ -46,8 +46,8 @@ const HelpLink = (props: { href: string; label?: string }) => (
     target="_blank"
     rel="noopener noreferrer"
   >
-    {props.label ?? DEFAULT_LINK_LABEL}
     <ExternalLinkIcon />
+    {props.label ?? DEFAULT_LINK_LABEL}
   </a>
 );
 

@@ -731,9 +731,9 @@ describe('renderDisplayOption', () => {
     );
     expect(link?.getAttribute('target')).toBe('_blank');
     expect(link?.getAttribute('rel')).toBe('noopener noreferrer');
-    // the icon precedes the text inside the anchor, with a gap on its right
+    // the icon precedes the text inside the anchor — the house rule for every
+    // link, so it needs no class of its own
     expect(link?.firstElementChild?.tagName.toLowerCase()).toBe('svg');
-    expect(link?.className).toMatch(/iconFirst/);
     // and the link sits on its own line under the heading rather than being
     // pushed to the far edge as the value half of a label/value row
     expect(link?.closest('[class*="row"]')?.className).toMatch(/plainRow/);
@@ -1362,5 +1362,98 @@ describe('option help on the results heading', () => {
     expect(
       container.querySelectorAll('[class*="questionButton"]')
     ).toHaveLength(0);
+  });
+});
+
+describe('the link icon always leads its text', () => {
+  /**
+   * The house rule: every link renders as icon, gap, then the blue clickable
+   * text. Asserted across the link kinds rather than one at a time, because
+   * they are built in four separate places (a row value, a table cell, a split
+   * cell's parts, and a named builder) and drifted apart once already.
+   */
+  /** The first child element of every anchor that has text — `svg` when the
+   *  icon leads, which is what each test asserts. */
+  const firstChildOfEachLink = (container: HTMLElement) =>
+    [...container.querySelectorAll('a')]
+      .filter((anchor) => (anchor.textContent ?? '').trim())
+      .map((anchor) => anchor.firstElementChild?.tagName.toLowerCase());
+
+  it('in a list item link (GO terms)', () => {
+    const { container } = renderOption('go', {
+      consequence: [
+        annotation('go', 'transcript', {
+          go_terms: [
+            {
+              id: 'GO:0006355',
+              name: 'regulation of transcription',
+              namespace: 'biological_process'
+            }
+          ]
+        })
+      ]
+    });
+    expect(firstChildOfEachLink(container)).toEqual(['svg']);
+  });
+
+  it('in a named builder link (the OpenTargets variant)', () => {
+    const { container } = renderOption('opentargets', {
+      allele: [
+        annotation('opentargets', 'allele', {
+          gwas_associations: [],
+          qtl_associations: [
+            { gene_id: 'ENSG_A', biosample: 'blood', p_value: null, beta: null }
+          ]
+        })
+      ],
+      openTargetsVariantId: '1_230710048_A_G'
+    });
+    expect(firstChildOfEachLink(container)).toEqual(['svg']);
+  });
+
+  it('in a builder link on a row and on list items (ProtVar)', () => {
+    // ProtVar's was the last icon still trailing: it rendered as a bare icon
+    // beside the score rather than leading it, on both shapes it appears in.
+    const { container } = renderOption('protvar', {
+      consequence: [
+        annotation('protvar', 'transcript', {
+          structure_stability_score: 1.23,
+          pockets: [{ pocket_id: 'P34', energy: 2, score: 0.324 }]
+        })
+      ],
+      protvarUrl: 'https://www.ebi.ac.uk/ProtVar/query?chromosome=1',
+      subOptionRan: () => true
+    });
+    expect(firstChildOfEachLink(container)).toEqual(['svg', 'svg']);
+    // the score is the link text, not a bare icon next to it
+    const scoreLink = screen.getByText('0.324').closest('a');
+    expect(scoreLink?.getAttribute('href')).toBe(
+      'https://www.ebi.ac.uk/ProtVar/query?chromosome=1'
+    );
+  });
+
+  it('in a table cell link (IntAct)', () => {
+    const { container } = renderOption('intact', {
+      consequence: [
+        annotation('intact', 'transcript', {
+          interactions: [
+            {
+              interaction_ac: 'EBI-1234',
+              feature_ac: 'EBI-5678',
+              feature_short_label: 'x',
+              feature_annotation: 'y',
+              ap_ac: 'uniprotkb:P37840',
+              interaction_participants: 'z',
+              pmid: '12345678'
+            }
+          ]
+        })
+      ],
+      showAll: true,
+      subOptionRan: () => true
+    });
+    const firstChildren = firstChildOfEachLink(container);
+    expect(firstChildren.length).toBeGreaterThan(0);
+    expect(firstChildren).toEqual(firstChildren.map(() => 'svg'));
   });
 });

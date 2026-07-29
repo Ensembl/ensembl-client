@@ -210,8 +210,8 @@ const rowLabel = (row: DisplayRowSpec): ReactNode =>
                 rel="noopener noreferrer"
                 className={styles.helpLink}
               >
-                {row.help_link.label ?? 'Read more'}
                 <ExternalLinkIcon />
+                {row.help_link.label ?? 'Read more'}
               </a>
             </>
           ) : (
@@ -292,8 +292,27 @@ const toRowSpec = (
         : renderLink(row.link, entities.linkContext, String(value))
     };
   }
+  // An external link whose URL comes from a named builder (ProtVar) wraps the
+  // value the same way a templated one does — icon, then the value as the link
+  // text. It used to trail the value as a bare icon, which is the one place the
+  // house rule was still broken.
+  if (row.link?.kind === 'external' && row.link.builder) {
+    const text = isAbsent(value)
+      ? null
+      : (formatValue(value, row.format ?? 'text') ?? null);
+    return {
+      key: row.key ?? undefined,
+      label: rowLabel(row),
+      value,
+      mono: row.mono ?? undefined,
+      valueNode:
+        text === null
+          ? null
+          : (renderLink(row.link, entities.linkContext, text) ?? text)
+    };
+  }
   // An external link with a URL template wraps the value in an anchor (the value
-  // becomes the clickable link + trailing icon, e.g. the ClinVar variation id
+  // becomes the clickable link, led by the icon, e.g. the ClinVar variation id
   // linking to its ClinVar page), interpolating `{value}` into the template. An
   // absent value renders nothing rather than a broken link.
   if (row.link?.kind === 'external' && row.link.template) {
@@ -310,8 +329,8 @@ const toRowSpec = (
           rel="noopener noreferrer"
           className={styles.listLink}
         >
-          {formatValue(value, row.format ?? 'text')}
           <ExternalLinkIcon />
+          {formatValue(value, row.format ?? 'text')}
         </a>
       )
     };
@@ -355,19 +374,23 @@ const interpolate = (template: string, item: Record<string, unknown>): string =>
 // item's `link.builder`.
 const LINK_BUILDERS: Record<
   string,
-  (context: LinkBuilderContext, value: string) => ReactNode
+  (context: LinkBuilderContext, value: ReactNode) => ReactNode
 > = {
-  // One icon per ProtVar row/item, to this variant's ProtVar page.
-  protvar: (context) =>
+  // This variant's ProtVar page. Like every link here it leads with the icon
+  // and makes the value beside it the blue clickable text — the value is the
+  // row's own (a stability score, a pocket's score), so the builder wraps it
+  // rather than sitting alongside as a bare icon.
+  protvar: (context, value) =>
     context.protvarUrl ? (
       <a
         href={context.protvarUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className={styles.protvarLink}
+        className={styles.listLink}
         aria-label="View in ProtVar"
       >
         <ExternalLinkIcon />
+        {value}
       </a>
     ) : null,
   // The variant's OpenTargets page: the link icon, then the variant in
@@ -379,7 +402,7 @@ const LINK_BUILDERS: Record<
         href={`https://platform.opentargets.org/variant/${context.openTargetsVariantId}`}
         target="_blank"
         rel="noopener noreferrer"
-        className={`${styles.listLink} ${styles.iconFirst}`}
+        className={styles.listLink}
       >
         <ExternalLinkIcon />
         {context.openTargetsVariantId}
@@ -392,6 +415,9 @@ const LINK_BUILDERS: Record<
     const consequence = context.consequence as
       PredictedTranscriptConsequence | null | undefined;
     const gene = consequence?.gene_stable_id;
+    // This builder puts the value in a URL, so unlike the others it needs the
+    // string form; it is only ever used on a row, whose value is one.
+    const id = String(value);
     if (!gene) {
       return value; // no gene (e.g. intergenic) — plain id, no popup
     }
@@ -399,7 +425,7 @@ const LINK_BUILDERS: Record<
       <ViewInAppPopup
         links={{
           entityViewer: {
-            url: proteinFeatureExplorerUrl(context.genomeId, gene, value)
+            url: proteinFeatureExplorerUrl(context.genomeId, gene, id)
           }
         }}
       >
@@ -413,7 +439,8 @@ const LINK_BUILDERS: Record<
 const renderLink = (
   link: DisplayLinkSpec,
   context: LinkBuilderContext,
-  value = ''
+  // What the link wraps: a formatted row value, or a list item's rendered cells.
+  value: ReactNode = ''
 ): ReactNode => {
   const builder = link.builder ? LINK_BUILDERS[link.builder] : undefined;
   return builder ? builder(context, value) : null;
@@ -452,8 +479,8 @@ const renderCell = (
           cell.mono ? `${styles.listLink} ${styles.mono}` : styles.listLink
         }
       >
-        {text}
         <ExternalLinkIcon />
+        {text}
       </a>
     );
   }
@@ -529,7 +556,7 @@ const renderListItem = (
   // A trailing item link (ProtVar's icon) shows on every rendered item, even
   // when a cell (the score) is absent — matching the old per-pocket summary.
   const linkNode = item.link
-    ? renderLink(item.link, entities.linkContext)
+    ? renderLink(item.link, entities.linkContext, <>{cells}</>)
     : null;
   if (!label && !cells.length && !linkNode) {
     return null;
@@ -537,17 +564,10 @@ const renderListItem = (
   return (
     <Row
       label={label}
-      // Space before the trailing link icon, matching a row's `{value} {link}`
-      // (renderRows) so ProtVar's icon isn't jammed against the value.
-      value={
-        linkNode ? (
-          <>
-            {cells} {linkNode}
-          </>
-        ) : (
-          cells
-        )
-      }
+      // A builder link wraps the item's cells rather than trailing them, so the
+      // icon leads and the cells are the blue clickable text — the same shape a
+      // linked row has (ProtVar's pocket and interface scores).
+      value={linkNode ?? cells}
     />
   );
 };
@@ -688,8 +708,8 @@ const tableCellContent = (
           rel="noopener noreferrer"
           className={styles.listLink}
         >
-          {value}
           <ExternalLinkIcon />
+          {value}
         </a>
       </Fragment>
     );

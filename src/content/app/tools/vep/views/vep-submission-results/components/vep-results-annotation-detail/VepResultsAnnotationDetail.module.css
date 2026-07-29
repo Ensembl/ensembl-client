@@ -284,22 +284,16 @@
    an unbreakable link that long overflows its column and collides with the next
    one in the multi-column annotation layout.
 
-   Inline, so the text wraps like any other. The icon keeps its gap through a
-   margin rather than flex, and rides along with the final word. */
+   Inline, so the text wraps like any other. The icon leads the text it links —
+   the house rule for every link here — and keeps its gap through a margin
+   rather than flex, so it rides along with the first word. */
 .listLink {
   color: var(--color-blue);
 }
 
 .listLink svg {
-  margin-left: 3px;
-  vertical-align: -1px;
-}
-
-/* A link whose icon leads instead of trailing (the OpenTargets variant link):
-   the gap belongs on the other side of the icon. */
-.iconFirst svg {
-  margin-left: 0;
   margin-right: 5px;
+  vertical-align: -1px;
 }
 
 /* A row that is only its value, sitting under its own heading rather than
@@ -317,12 +311,6 @@
   align-items: center;
   gap: 3px;
   color: var(--color-blue);
-}
-
-/* ProtVar's per-row "View in ProtVar" link icon (the same URL on each row). */
-.protvarLink {
-  display: inline-flex;
-  align-items: center;
 }
 
 .phenotypeToggle {
