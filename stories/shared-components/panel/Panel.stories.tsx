@@ -16,18 +16,14 @@
 
 import { faker } from '@faker-js/faker';
 
-import {
-  Panel,
-  PanelHeader,
-  PanelBody
-} from 'src/shared/components/panel/Panel';
+import { Panel, PanelHead, PanelBody } from 'src/shared/components/panel/Panel';
 
 import styles from './Panel.stories.module.css';
 
 export const DefaultPanelStory = () => (
   <div className={styles.fullPageWrapper}>
     <Panel>
-      <PanelHeader>Proteins</PanelHeader>
+      <PanelHead>Proteins</PanelHead>
       <PanelBody>
         <div>Panel Content</div>
       </PanelBody>
@@ -40,7 +36,7 @@ DefaultPanelStory.storyName = 'default';
 export const PanelWithLongContentStory = () => (
   <div className={styles.fullPageWrapper}>
     <Panel>
-      <PanelHeader>Long content</PanelHeader>
+      <PanelHead>Long content</PanelHead>
       <PanelBody>
         <div className={styles.preWrap}>{faker.lorem.paragraphs(100)}</div>
       </PanelBody>

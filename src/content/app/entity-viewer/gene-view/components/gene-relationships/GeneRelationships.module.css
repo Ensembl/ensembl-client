@@ -2,7 +2,7 @@
    Can/should they be extracted into a single component?
 */
 
-.panelHeader {
+.panelHead {
   color: var(--color-black);
   padding: 0 var(--standard-gutter);
 }

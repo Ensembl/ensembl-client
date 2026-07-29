@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Panel,
-  PanelHeader,
-  PanelBody
-} from 'src/shared/components/panel/Panel';
+import { Panel, PanelHead, PanelBody } from 'src/shared/components/panel/Panel';
 import GeneHomology from 'src/content/app/entity-viewer/gene-view/components/gene-homology/GeneHomology';
 
 import styles from './GeneRelationships.module.css';
@@ -26,9 +22,9 @@ import styles from './GeneRelationships.module.css';
 const GeneRelationships = () => {
   return (
     <Panel className={styles.panel}>
-      <PanelHeader className={styles.panelHeader}>
+      <PanelHead className={styles.panelHead}>
         <span className={styles.selectedTabName}>Homology</span>
-      </PanelHeader>
+      </PanelHead>
       <PanelBody className={styles.panelBody}>
         <GeneHomology />
       </PanelBody>

@@ -22,11 +22,7 @@ import {
   getProteinDescription
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import {
-  Panel,
-  PanelHeader,
-  PanelBody
-} from 'src/shared/components/panel/Panel';
+import { Panel, PanelHead, PanelBody } from 'src/shared/components/panel/Panel';
 import ProteinsListItemInfo, {
   type Props as ProteinListItemInfoProps
 } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/proteins-list-item-info/ProteinsListItemInfo';
@@ -46,9 +42,9 @@ const TranscriptFunction = (props: Props) => {
 
   return (
     <Panel className={styles.panel}>
-      <PanelHeader className={styles.panelHead}>
+      <PanelHead className={styles.panelHead}>
         <span className={styles.panelHeadTabActive}>Protein</span>
-      </PanelHeader>
+      </PanelHead>
       <PanelBody>
         {canDisplayProtein ? (
           <ProteinInfo

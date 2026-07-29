@@ -34,7 +34,7 @@ import useTranscriptConsequencesData, {
   type TranscriptConsequencesData
 } from './useTranscriptConsequencesData';
 
-import { Panel, PanelHeader, PanelBody } from 'src/shared/components/panel/Panel';
+import { Panel, PanelHead, PanelBody } from 'src/shared/components/panel/Panel';
 import TranscriptConsequenceDetails from './transcript-consequence-details/TranscriptConsequenceDetails';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import { CircleLoader } from 'src/shared/components/loader';
@@ -72,13 +72,13 @@ const TranscriptConsequences = (props: Props) => {
   if (isLoading) {
     return (
       <Panel>
-        <PanelHeader>
-          <div className={styles.panelHeader}>
+        <PanelHead>
+          <div className={styles.panelHead}>
             <span className={styles.transcriptConsqTitle}>
               Transcript consequences
             </span>
           </div>
-        </PanelHeader>
+        </PanelHead>
         <PanelBody>
           <div className={styles.container}>
             <CircleLoader />
@@ -89,7 +89,7 @@ const TranscriptConsequences = (props: Props) => {
   } else if (!currentData || !currentData.allele) {
     return (
       <Panel>
-        <PanelHeader>{null}</PanelHeader>
+        <PanelHead>{null}</PanelHead>
         <PanelBody>
           <div className={styles.container}>No data</div>
         </PanelBody>
@@ -102,12 +102,12 @@ const TranscriptConsequences = (props: Props) => {
   if (!transcriptConsequences) {
     return (
       <Panel>
-        <PanelHeader>
-          <PanelHeaderContent
+        <PanelHead>
+          <PanelHeadContent
             variant={variant}
             genesCount={geneData.length}
           />
-        </PanelHeader>
+        </PanelHead>
         <PanelBody>
           <div className={styles.container}>No data</div>
         </PanelBody>
@@ -149,12 +149,12 @@ const TranscriptConsequences = (props: Props) => {
 
   return (
     <Panel>
-      <PanelHeader>
-        <PanelHeaderContent
+      <PanelHead>
+        <PanelHeadContent
           variant={variant}
           genesCount={geneData.length}
         />
-      </PanelHeader>
+      </PanelHead>
       <PanelBody>
         <GenesWithTranscriptConsequences
           {...props}
@@ -167,7 +167,7 @@ const TranscriptConsequences = (props: Props) => {
   );
 };
 
-const PanelHeaderContent = (props: {
+const PanelHeadContent = (props: {
   variant: TranscriptConsequencesData['variant'];
   genesCount: number;
 }) => {
@@ -186,7 +186,7 @@ const PanelHeaderContent = (props: {
   };
 
   return (
-    <div className={styles.panelHeader}>
+    <div className={styles.panelHead}>
       <span className={styles.variantName}>{variant.name}</span>
       <span className={styles.variantType}>{variant.allele_type.value}</span>
       <span className={styles.colonSeparator}>:</span>

@@ -21,11 +21,7 @@ import { GeneFunctionTabName } from 'src/content/app/entity-viewer/state/gene-vi
 
 import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import {
-  Panel,
-  PanelHeader,
-  PanelBody
-} from 'src/shared/components/panel/Panel';
+import { Panel, PanelHead, PanelBody } from 'src/shared/components/panel/Panel';
 import ProteinsList from '../proteins-list/ProteinsList';
 
 import type { DefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
@@ -61,9 +57,9 @@ const GeneFunction = (props: Props) => {
 
   return (
     <Panel>
-      <PanelHeader className={styles.panelHeader}>
+      <PanelHead className={styles.panelHead}>
         <span className={styles.selectedTab}>Proteins</span>
-      </PanelHeader>
+      </PanelHead>
       <PanelBody className={styles.panelBody}>
         {getCurrentTabContent()}
       </PanelBody>

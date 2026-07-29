@@ -3,7 +3,7 @@
   color: var(--color-black);
 }
 
-.panelHeader {
+.panelHead {
   position: sticky;
   top: -5px;
   color: var(--color-black);

@@ -22,11 +22,7 @@ import usePopulationAlleleFrequenciesData, {
   PreparedPopulationFrequencyData
 } from './usePopulationAlleleFrequenciesData';
 
-import {
-  Panel,
-  PanelHeader,
-  PanelBody
-} from 'src/shared/components/panel/Panel';
+import { Panel, PanelHead, PanelBody } from 'src/shared/components/panel/Panel';
 import { CircularProportionIndicator } from 'src/shared/components/proportion-indicator/CircularProportionIndicator';
 import { Table, ColumnHead } from 'src/shared/components/table';
 import { CircleLoader } from 'src/shared/components/loader';
@@ -56,11 +52,11 @@ const PopulationAlleleFrequencies = (props: Props) => {
   if (isLoading) {
     return (
       <Panel>
-        <PanelHeader>
-          <div className={styles.panelHeader}>
+        <PanelHead>
+          <div className={styles.panelHead}>
             <span className={styles.alleleFreqTitle}>Allele frequency</span>
           </div>
-        </PanelHeader>
+        </PanelHead>
         <PanelBody>
           <div className={styles.container}>
             <CircleLoader />
@@ -81,9 +77,9 @@ const PopulationAlleleFrequencies = (props: Props) => {
   ) {
     return (
       <Panel>
-        <PanelHeader>
-          <PanelHeaderContent variant={variant} />
-        </PanelHeader>
+        <PanelHead>
+          <PanelHeadContent variant={variant} />
+        </PanelHead>
         <PanelBody>
           <div className={styles.container}>No data</div>
         </PanelBody>
@@ -139,9 +135,9 @@ const OnlyGlobalFrequencies = ({
 
   return (
     <Panel>
-      <PanelHeader>
-        <PanelHeaderContent variant={variant} />
-      </PanelHeader>
+      <PanelHead>
+        <PanelHeadContent variant={variant} />
+      </PanelHead>
       <PanelBody>
         <div className={styles.container}>
           <div className={styles.sectionHead}>
@@ -231,9 +227,9 @@ const PopulationAndGlobalFrequencies = ({
 
   return (
     <Panel>
-      <PanelHeader>
-        <PanelHeaderContent variant={variant} />
-      </PanelHeader>
+      <PanelHead>
+        <PanelHeadContent variant={variant} />
+      </PanelHead>
       <PanelBody>
         <div className={styles.container}>
           {populationGroups.map((group, index) => {
@@ -276,13 +272,13 @@ const PopulationAndGlobalFrequencies = ({
   );
 };
 
-const PanelHeaderContent = (props: {
+const PanelHeadContent = (props: {
   variant: PopulationFrequencyData['variant'];
 }) => {
   const { variant } = props;
 
   return (
-    <div className={styles.panelHeader}>
+    <div className={styles.panelHead}>
       <span className={styles.variantName}>{variant.name}</span>
       <span className={styles.variantType}>{variant.allele_type.value}</span>
       <span className={styles.colonSeparator}>:</span>

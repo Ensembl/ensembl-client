@@ -19,11 +19,7 @@ import { use, Suspense } from 'react';
 import useExonsData from './useExonsData';
 
 import ExonsTable from './exons-table/ExonsTable';
-import {
-  Panel,
-  PanelHeader,
-  PanelBody
-} from 'src/shared/components/panel/Panel';
+import { Panel, PanelHead, PanelBody } from 'src/shared/components/panel/Panel';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './ExonsView.module.css';
@@ -44,17 +40,11 @@ const ExonsView = ({
     return null;
   }
 
-  // const panelClasses = {
-  //   panel: styles.panel,
-  //   body: styles.panelBody,
-  //   header: styles.panelHead
-  // };
-
   return (
     <Panel className={styles.panel}>
-      <PanelHeader className={styles.panelHead}>
+      <PanelHead className={styles.panelHead}>
         <span className={styles.panelHeadTabActive}>Sequences</span>
-      </PanelHeader>
+      </PanelHead>
       <PanelBody className={styles.panelBody}>
         <Suspense fallback={<Loading />}>
           <PanelContent promise={exonsDataPromise} />

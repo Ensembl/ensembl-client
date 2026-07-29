@@ -30,7 +30,7 @@ export const Panel = ({
   return <div className={componentClasses}>{children}</div>;
 };
 
-export const PanelHeader = ({
+export const PanelHead = ({
   children,
   className
 }: {
