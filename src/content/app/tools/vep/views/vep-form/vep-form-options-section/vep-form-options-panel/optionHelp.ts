@@ -29,6 +29,46 @@ import type {
  * the API is just a matter of the option carrying its own `help`; nothing
  * downstream (resolver or renderer) needs to change.
  */
+/**
+ * Appended to every allele-frequency option's description. Population and
+ * ancestry-group names are reproduced exactly as the source publishes them —
+ * they are not mapped onto a common vocabulary, so the same cohort can appear
+ * under different names between sources.
+ */
+const POPULATION_NAMING = 'Populations are named as at source.';
+
+/**
+ * `{version}` in a description is filled from the version in the option's own
+ * label.
+ *
+ * The map is keyed by option id, and an id is shared across assemblies —
+ * `gnomad_exomes` is *gnomAD Exomes v4.1.1* on GRCh38 and *v2.1.1* on GRCh37 —
+ * so a version written into the description here would be wrong for one of
+ * them. The label is already per-assembly and comes from the API, so take it
+ * from there and there is only ever one version to keep right.
+ */
+const VERSION_PLACEHOLDER = /\s?\{version\}/g;
+const VERSION_IN_LABEL = /\bv\d+(?:\.\d+)*/;
+
+const withVersionFromLabel = (
+  help: OptionHelp,
+  option: FormPanelOption
+): OptionHelp => {
+  if (!help.description.includes('{version}')) {
+    return help;
+  }
+  // No version in the label leaves the sentence reading cleanly rather than
+  // with a gap or a stray space before the full stop.
+  const version = option.label.match(VERSION_IN_LABEL)?.[0];
+  return {
+    ...help,
+    description: help.description.replace(
+      VERSION_PLACEHOLDER,
+      version ? ` ${version}` : ''
+    )
+  };
+};
+
 export const OPTION_HELP: Record<string, OptionHelp> = {
   // --- Variant representations ---
   // HGVSg is not described here while its checkbox is hidden (pending
@@ -238,22 +278,29 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
   },
 
   // --- Allele frequencies ---
+  // Every allele-frequency option carries POPULATION_NAMING: the group names in
+  // these panels are the source's own, and differ between sources for what is
+  // often the same cohort, so the reader needs to know we have not harmonised
+  // them.
   gnomad_exomes: {
     description:
       'Allele frequencies from the exome sequences in the Genome Aggregation ' +
-      'Database (gnomAD) v4.1.1.',
+      'Database (gnomAD){version}. ' +
+      POPULATION_NAMING,
     links: [{ href: 'https://gnomad.broadinstitute.org/' }]
   },
   gnomad_genomes: {
     description:
       'Allele frequencies from the genome sequences in the Genome Aggregation ' +
-      'Database (gnomAD) v4.1.1.',
+      'Database (gnomAD){version}. ' +
+      POPULATION_NAMING,
     links: [{ href: 'https://gnomad.broadinstitute.org/' }]
   },
   allofus: {
     description:
       'Allele frequencies from the NIH All of Us Research Program, a diverse ' +
-      'cohort of participants from across the United States.',
+      'cohort of participants from across the United States. ' +
+      POPULATION_NAMING,
     links: [{ href: 'https://www.nature.com/articles/s41586-023-06957-x' }]
   }
 };
@@ -266,4 +313,9 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
  */
 export const getOptionHelp = (
   option: FormPanelOption
-): OptionHelp | undefined => option.help ?? OPTION_HELP[option.id];
+): OptionHelp | undefined => {
+  const help = option.help ?? OPTION_HELP[option.id];
+  // Applied to API-supplied help too, so the placeholder stays a property of
+  // the contract rather than of this fallback map.
+  return help && withVersionFromLabel(help, option);
+};

@@ -92,7 +92,10 @@ export type OptionHelpLink = {
  */
 export type OptionHelp = {
   /** Description text. A `*span*` is rendered emphasised (a small markdown
-   *  subset, so the string stays serialisable). */
+   *  subset, so the string stays serialisable). A `{version}` is replaced with
+   *  the version in the option's own label, so one description can serve an
+   *  option id that appears at different versions per assembly; it collapses
+   *  cleanly when the label carries no version. */
   description: string;
   /** Zero or more resource links rendered after the description. */
   links?: OptionHelpLink[];
