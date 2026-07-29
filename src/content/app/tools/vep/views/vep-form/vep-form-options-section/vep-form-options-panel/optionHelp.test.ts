@@ -72,16 +72,89 @@ describe('getOptionHelp', () => {
   });
 
   it('notes the source naming on every allele-frequency option', () => {
+    // All five options of the Allele frequencies panel — the short-variant
+    // sources and both structural-variant ones.
     const ids: [string, string][] = [
       ['gnomad_exomes', 'gnomAD Exomes v4.1.1'],
       ['gnomad_genomes', 'gnomAD Genomes v4.1.1'],
-      ['allofus', 'NIH All of Us']
+      ['allofus', 'NIH All of Us'],
+      ['gnomad_sv', 'gnomAD SV v4.1'],
+      ['gnomad_cnv', 'gnomAD CNV v4.1']
     ];
     for (const [id, label] of ids) {
       expect(getOptionHelp(option(id, label))?.description).toContain(
         'Populations are named as at source.'
       );
     }
+  });
+
+  describe('structural-variant sources', () => {
+    it('describes gnomAD SV as allele frequencies, versioned from the label', () => {
+      const help = getOptionHelp(option('gnomad_sv', 'gnomAD SV v4.1'));
+      expect(help?.description).toContain(
+        'Allele frequencies for structural variants'
+      );
+      expect(help?.description).toContain('(gnomAD) v4.1.');
+      expect(help?.links?.[0].href).toContain('v4-structural-variants');
+    });
+
+    it('describes gnomAD CNV as sample frequencies', () => {
+      const help = getOptionHelp(option('gnomad_cnv', 'gnomAD CNV v4.1'));
+      // gnomAD reports CNVs as the fraction of samples carrying the call, not
+      // as an allele count — the wording is deliberate, not a slip.
+      expect(help?.description).toContain(
+        'Sample frequencies for copy number variants'
+      );
+      expect(help?.description).not.toContain('Allele frequencies');
+      expect(help?.links?.[0].href).toContain('v4-copy-number-variants');
+    });
+
+    it('carries the GRCh37 version on gnomAD SV v2.1', () => {
+      const help = getOptionHelp(option('gnomad_sv', 'gnomAD SV v2.1'));
+      expect(help?.description).toContain('(gnomAD) v2.1.');
+      expect(help?.description).not.toContain('4.1');
+    });
+  });
+
+  describe('version-specific links', () => {
+    // gnomAD SV is v4.1 on GRCh38 and v2.1 on GRCh37, and the v4 release
+    // announcement does not describe the v2 callset. Each assembly must cite
+    // its own reference.
+    it('gives gnomAD SV v4.1 only the v4 announcement', () => {
+      const links = getOptionHelp(option('gnomad_sv', 'gnomAD SV v4.1'))?.links;
+      expect(links).toHaveLength(1);
+      expect(links?.[0].href).toContain('v4-structural-variants');
+    });
+
+    it('gives gnomAD SV v2.1 only the v2 paper', () => {
+      const links = getOptionHelp(option('gnomad_sv', 'gnomAD SV v2.1'))?.links;
+      expect(links).toHaveLength(1);
+      expect(links?.[0].href).toBe(
+        'https://www.nature.com/articles/s41586-020-2287-8'
+      );
+    });
+
+    it('matches on the major version, so a point release keeps its link', () => {
+      const links = getOptionHelp(
+        option('gnomad_sv', 'gnomAD SV v4.2.1')
+      )?.links;
+      expect(links).toHaveLength(1);
+      expect(links?.[0].href).toContain('v4-structural-variants');
+    });
+
+    it('drops version-specific links rather than guess when there is no version', () => {
+      // Citing the wrong release is worse than citing none.
+      const links = getOptionHelp(option('gnomad_sv', 'gnomAD SV'))?.links;
+      expect(links).toEqual([]);
+    });
+
+    it('always keeps links that are not version-specific', () => {
+      const links = getOptionHelp(
+        option('gnomad_exomes', 'gnomAD Exomes v2.1.1')
+      )?.links;
+      expect(links).toHaveLength(1);
+      expect(links?.[0].href).toBe('https://gnomad.broadinstitute.org/');
+    });
   });
 
   describe('API-supplied help', () => {
@@ -105,8 +178,8 @@ describe('getOptionHelp', () => {
   });
 
   it('is undefined for an option with no help anywhere', () => {
-    expect(
-      getOptionHelp(option('gnomad_sv', 'gnomAD SV v4.1'))
-    ).toBeUndefined();
+    expect(getOptionHelp(option('gencode_promoters', 'GENCODE promoter'))).toBe(
+      undefined
+    );
   });
 });

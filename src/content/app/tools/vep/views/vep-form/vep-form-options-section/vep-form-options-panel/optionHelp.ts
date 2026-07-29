@@ -38,35 +38,41 @@ import type {
 const POPULATION_NAMING = 'Populations are named as at source.';
 
 /**
- * `{version}` in a description is filled from the version in the option's own
- * label.
- *
- * The map is keyed by option id, and an id is shared across assemblies —
+ * The help map is keyed by option id, and an id is shared across assemblies —
  * `gnomad_exomes` is *gnomAD Exomes v4.1.1* on GRCh38 and *v2.1.1* on GRCh37 —
- * so a version written into the description here would be wrong for one of
- * them. The label is already per-assembly and comes from the API, so take it
- * from there and there is only ever one version to keep right.
+ * so anything version-specific written in here would be wrong for one of them.
+ * The label is already per-assembly and comes from the API, so both the
+ * description's `{version}` and the choice of which links apply are resolved
+ * from it, leaving one version to keep right instead of two.
  */
 const VERSION_PLACEHOLDER = /\s?\{version\}/g;
 const VERSION_IN_LABEL = /\bv\d+(?:\.\d+)*/;
 
-const withVersionFromLabel = (
+const resolveVersionedHelp = (
   help: OptionHelp,
   option: FormPanelOption
 ): OptionHelp => {
-  if (!help.description.includes('{version}')) {
-    return help;
-  }
+  const version = option.label.match(VERSION_IN_LABEL)?.[0];
+  // 'v4.1' -> '4'. Matching on the major alone means a point release does not
+  // silently drop a link that still describes the right callset.
+  const majorVersion = version?.slice(1).split('.')[0];
+
   // No version in the label leaves the sentence reading cleanly rather than
   // with a gap or a stray space before the full stop.
-  const version = option.label.match(VERSION_IN_LABEL)?.[0];
-  return {
-    ...help,
-    description: help.description.replace(
-      VERSION_PLACEHOLDER,
-      version ? ` ${version}` : ''
-    )
-  };
+  const description = help.description.includes('{version}')
+    ? help.description.replace(
+        VERSION_PLACEHOLDER,
+        version ? ` ${version}` : ''
+      )
+    : help.description;
+
+  // A version-specific link is dropped rather than guessed at when the label
+  // carries no version: citing the wrong release is worse than citing none.
+  const links = help.links?.filter(
+    (link) => !link.majorVersion || link.majorVersion === majorVersion
+  );
+
+  return { ...help, description, links };
 };
 
 export const OPTION_HELP: Record<string, OptionHelp> = {
@@ -302,6 +308,38 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       'cohort of participants from across the United States. ' +
       POPULATION_NAMING,
     links: [{ href: 'https://www.nature.com/articles/s41586-023-06957-x' }]
+  },
+  // The v4 release announcement does not describe the v2 callset that GRCh37
+  // carries, so each assembly's version cites its own reference.
+  gnomad_sv: {
+    description:
+      'Allele frequencies for structural variants in the Genome Aggregation ' +
+      'Database (gnomAD){version}. ' +
+      POPULATION_NAMING,
+    links: [
+      {
+        href: 'https://gnomad.broadinstitute.org/news/2023-11-v4-structural-variants/',
+        majorVersion: '4'
+      },
+      {
+        href: 'https://www.nature.com/articles/s41586-020-2287-8',
+        majorVersion: '2'
+      }
+    ]
+  },
+  // Sample rather than allele frequency: gnomAD reports CNVs as the fraction of
+  // samples carrying the call (hence the `_sf` option ids), not as an allele
+  // count over a called total.
+  gnomad_cnv: {
+    description:
+      'Sample frequencies for copy number variants in the Genome Aggregation ' +
+      'Database (gnomAD){version}. ' +
+      POPULATION_NAMING,
+    links: [
+      {
+        href: 'https://gnomad.broadinstitute.org/news/2023-11-v4-copy-number-variants/'
+      }
+    ]
   }
 };
 
@@ -317,5 +355,5 @@ export const getOptionHelp = (
   const help = option.help ?? OPTION_HELP[option.id];
   // Applied to API-supplied help too, so the placeholder stays a property of
   // the contract rather than of this fallback map.
-  return help && withVersionFromLabel(help, option);
+  return help && resolveVersionedHelp(help, option);
 };

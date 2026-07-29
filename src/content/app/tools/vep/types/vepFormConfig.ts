@@ -81,6 +81,17 @@ export type OptionHelpLink = {
   href: string;
   /** Visible link text; a generic label is used when omitted. */
   label?: string;
+  /**
+   * Show this link only when the option's label carries this major version.
+   * `'4'` matches v4.1 and v4.1.1, so a point release does not silently drop
+   * the link. A link without it always shows.
+   *
+   * For sources documented differently per version: gnomAD SV is v4.1 on
+   * GRCh38 and v2.1 on GRCh37, and the v4 release announcement does not
+   * describe the v2 callset. Without this, one assembly's help would cite the
+   * wrong paper.
+   */
+  majorVersion?: string;
 };
 
 /**
