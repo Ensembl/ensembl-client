@@ -4,6 +4,7 @@
     display: grid;
     grid-template-rows: [header] auto [body] 1fr;
     border-radius: 5px;
+    min-height: 0; /* so that in the context of a parent grid, it can shrink properly */
     height: 100%;
     max-width: 100%;
     box-shadow: 1px 1px 4px var(--shadow-color);

@@ -3,7 +3,6 @@
   padding-bottom: var(--global-padding-bottom);
 }
 
-/* Note: might need changing after Panel is refactored */
 .panelHeader {
   padding-left: calc(var(--standard-gutter) - 10px);
 }
