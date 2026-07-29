@@ -112,7 +112,6 @@ const DataTable = (props: TableProps) => {
   }, [tableState]);
 
   const wrapperClasses = classNames(
-    styles.wrapper,
     {
       [styles.wrapperThemeDark]: props.theme === 'dark'
     },

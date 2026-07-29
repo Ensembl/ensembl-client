@@ -34,7 +34,7 @@ import useTranscriptConsequencesData, {
   type TranscriptConsequencesData
 } from './useTranscriptConsequencesData';
 
-import Panel from 'src/shared/components/panel/Panel';
+import { Panel, PanelHeader, PanelBody } from 'src/shared/components/panel/Panel';
 import TranscriptConsequenceDetails from './transcript-consequence-details/TranscriptConsequenceDetails';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import { CircleLoader } from 'src/shared/components/loader';
@@ -70,38 +70,47 @@ const TranscriptConsequences = (props: Props) => {
   });
 
   if (isLoading) {
-    const panelHeader = (
-      <div className={styles.panelHeader}>
-        <span className={styles.transcriptConsqTitle}>
-          Transcript consequences
-        </span>
-      </div>
-    );
-
     return (
-      <Panel header={panelHeader}>
-        <div className={styles.container}>
-          <CircleLoader />
-        </div>
+      <Panel>
+        <PanelHeader>
+          <div className={styles.panelHeader}>
+            <span className={styles.transcriptConsqTitle}>
+              Transcript consequences
+            </span>
+          </div>
+        </PanelHeader>
+        <PanelBody>
+          <div className={styles.container}>
+            <CircleLoader />
+          </div>
+        </PanelBody>
       </Panel>
     );
   } else if (!currentData || !currentData.allele) {
     return (
       <Panel>
-        <div className={styles.container}>No data</div>
+        <PanelHeader>{null}</PanelHeader>
+        <PanelBody>
+          <div className={styles.container}>No data</div>
+        </PanelBody>
       </Panel>
     );
   }
 
   const { variant, transcriptConsequences, allele, geneData } = currentData;
-  const panelHeader = (
-    <PanelHeader variant={variant} genesCount={geneData.length} />
-  );
 
   if (!transcriptConsequences) {
     return (
-      <Panel header={panelHeader}>
-        <div className={styles.container}>No data</div>
+      <Panel>
+        <PanelHeader>
+          <PanelHeaderContent
+            variant={variant}
+            genesCount={geneData.length}
+          />
+        </PanelHeader>
+        <PanelBody>
+          <div className={styles.container}>No data</div>
+        </PanelBody>
       </Panel>
     );
   }
@@ -139,18 +148,26 @@ const TranscriptConsequences = (props: Props) => {
   });
 
   return (
-    <Panel header={panelHeader}>
-      <GenesWithTranscriptConsequences
-        {...props}
-        allele={allele}
-        variant={variant}
-        genes={geneDataWithTranscriptConsequences}
-      />
+    <Panel>
+      <PanelHeader>
+        <PanelHeaderContent
+          variant={variant}
+          genesCount={geneData.length}
+        />
+      </PanelHeader>
+      <PanelBody>
+        <GenesWithTranscriptConsequences
+          {...props}
+          allele={allele}
+          variant={variant}
+          genes={geneDataWithTranscriptConsequences}
+        />
+      </PanelBody>
     </Panel>
   );
 };
 
-const PanelHeader = (props: {
+const PanelHeaderContent = (props: {
   variant: TranscriptConsequencesData['variant'];
   genesCount: number;
 }) => {

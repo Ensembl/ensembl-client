@@ -19,7 +19,11 @@ import { use, Suspense } from 'react';
 import useExonsData from './useExonsData';
 
 import ExonsTable from './exons-table/ExonsTable';
-import Panel from 'src/shared/components/panel/Panel';
+import {
+  Panel,
+  PanelHeader,
+  PanelBody
+} from 'src/shared/components/panel/Panel';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './ExonsView.module.css';
@@ -40,17 +44,22 @@ const ExonsView = ({
     return null;
   }
 
-  const panelClasses = {
-    panel: styles.panel,
-    body: styles.panelBody,
-    header: styles.panelHead
-  };
+  // const panelClasses = {
+  //   panel: styles.panel,
+  //   body: styles.panelBody,
+  //   header: styles.panelHead
+  // };
 
   return (
-    <Panel header={<PanelHeader />} classNames={panelClasses}>
-      <Suspense fallback={<Loading />}>
-        <PanelContent promise={exonsDataPromise} />
-      </Suspense>
+    <Panel className={styles.panel}>
+      <PanelHeader className={styles.panelHead}>
+        <span className={styles.panelHeadTabActive}>Sequences</span>
+      </PanelHeader>
+      <PanelBody className={styles.panelBody}>
+        <Suspense fallback={<Loading />}>
+          <PanelContent promise={exonsDataPromise} />
+        </Suspense>
+      </PanelBody>
     </Panel>
   );
 };
@@ -67,10 +76,6 @@ const PanelContent = ({
   } else if (data) {
     return <ExonsTable data={data} />;
   }
-};
-
-const PanelHeader = () => {
-  return <span className={styles.panelHeadTabActive}>Sequences</span>;
 };
 
 const Loading = () => {

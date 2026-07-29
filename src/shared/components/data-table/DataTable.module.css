@@ -1,7 +1,3 @@
-.wrapper {
-  overflow: auto;
-}
-
 .wrapperThemeDark {
   background-color: var(--color-light-grey);
 }

@@ -19,11 +19,13 @@
     box-shadow: 0 1px 3px var(--color-medium-light-grey);
     height: 34px;
     padding: 0 10px;
+    line-height: 1;
   }
 
   .body {
     grid-row: body;
-    padding: 10px 10px 20px 10px;
+    padding: 10px 10px 20px;
+    background-color: var(--color-white);
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
     overflow: auto;

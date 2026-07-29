@@ -15,7 +15,6 @@
  */
 
 import classNames from 'classnames';
-import noop from 'lodash/noop';
 
 import {
   isProteinCodingTranscript,
@@ -23,8 +22,11 @@ import {
   getProteinDescription
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import Tabs, { type Tab } from 'src/shared/components/tabs/Tabs';
-import Panel from 'src/shared/components/panel/Panel';
+import {
+  Panel,
+  PanelHeader,
+  PanelBody
+} from 'src/shared/components/panel/Panel';
 import ProteinsListItemInfo, {
   type Props as ProteinListItemInfoProps
 } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/proteins-list-item-info/ProteinsListItemInfo';
@@ -35,18 +37,6 @@ import type { DefaultEntityViewerTranscriptQueryResult } from 'src/content/app/e
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.module.css';
 import styles from './TranscriptFunction.module.css';
 
-const tabsData: Tab[] = [
-  { title: 'Protein' },
-  { title: 'Variants', isDisabled: true },
-  { title: 'Phenotypes', isDisabled: true }
-];
-
-const tabClassNames = {
-  default: styles.tab,
-  selected: styles.selectedTab,
-  tabsContainer: styles.tabsContainer
-};
-
 type Props = {
   transcript: DefaultEntityViewerTranscriptQueryResult['transcript'];
 };
@@ -55,24 +45,22 @@ const TranscriptFunction = (props: Props) => {
   const canDisplayProtein = isProteinCodingTranscript(props.transcript);
 
   return (
-    <Panel
-      header={<TabWrapper />}
-      classNames={{
-        panel: styles.panel,
-        header: styles.header,
-        body: styles.panelBody
-      }}
-    >
-      {canDisplayProtein ? (
-        <ProteinInfo
-          transcript={
-            props.transcript as ProteinListItemInfoProps['transcript']
-          }
-          gene={props.transcript.gene}
-        />
-      ) : (
-        <div>This transcript is not protein-coding</div>
-      )}
+    <Panel className={styles.panel}>
+      <PanelHeader className={styles.panelHead}>
+        <span className={styles.panelHeadTabActive}>Protein</span>
+      </PanelHeader>
+      <PanelBody>
+        {canDisplayProtein ? (
+          <ProteinInfo
+            transcript={
+              props.transcript as ProteinListItemInfoProps['transcript']
+            }
+            gene={props.transcript.gene}
+          />
+        ) : (
+          <div>This transcript is not protein-coding</div>
+        )}
+      </PanelBody>
     </Panel>
   );
 };
@@ -116,17 +104,6 @@ const ProteinInfo = ({
         trackLength={proteinLength}
       />
     </div>
-  );
-};
-
-const TabWrapper = () => {
-  return (
-    <Tabs
-      tabs={tabsData}
-      selectedTab={tabsData[0].title}
-      classNames={tabClassNames}
-      onTabChange={noop}
-    />
   );
 };
 
