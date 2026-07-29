@@ -19,7 +19,7 @@ import { useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import { isExpandedTranscriptsListModified } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
-import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import { expandTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 type TranscriptWithCanonicalMetadata = {
   stable_id: string;
@@ -58,9 +58,9 @@ const useExpandedDefaultTranscript = (params: Params) => {
       // a bit of defensive programming:
       // there's something very wrong with our data if a gene doesn't have a canonical transcript;
       // but at least the code won't crash here
-      dispatch(toggleTranscriptInfo(canonicalTranscript.stable_id));
+      dispatch(expandTranscriptInfo(canonicalTranscript.stable_id));
     }
-  }, [params.geneStableId]);
+  }, [haveTranscriptsBeenExpanded, skip, transcripts, dispatch]);
 };
 
 export default useExpandedDefaultTranscript;
