@@ -178,7 +178,9 @@ describe('getOptionHelp', () => {
   });
 
   it('is undefined for an option with no help anywhere', () => {
-    expect(getOptionHelp(option('gencode_promoters', 'GENCODE promoter'))).toBe(
+    // A fictional id on purpose: naming a real option here makes the test fail
+    // the day that option is given help, which is not a regression.
+    expect(getOptionHelp(option('no_such_option', 'No such option'))).toBe(
       undefined
     );
   });

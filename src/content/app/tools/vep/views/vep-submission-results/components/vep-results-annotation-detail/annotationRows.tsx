@@ -16,6 +16,11 @@
 
 import type { ReactNode } from 'react';
 
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+// The form's help renderer, reused so one OptionHelp renders identically on the
+// form and against the matching results heading.
+import OptionHelpText from 'src/content/app/tools/vep/views/vep-form/vep-form-options-section/vep-form-options-panel/OptionHelpText';
+
 import {
   num,
   humanizeClass,
@@ -25,7 +30,33 @@ import {
   count
 } from 'src/content/app/tools/vep/utils/annotationFormatters';
 
+import type { OptionHelp } from 'src/content/app/tools/vep/types/vepFormConfig';
+
 import styles from './VepResultsAnnotationDetail.module.css';
+
+/**
+ * An option's title in the results with its help (?) beside it — the same text
+ * the form shows for that option, so a reader who skipped the form still gets
+ * the explanation, and the two can never disagree.
+ *
+ * Returns the label untouched when there is no help, so an option without any
+ * renders exactly as before.
+ */
+export const withOptionHelp = (
+  label: ReactNode,
+  help: OptionHelp | undefined
+): ReactNode =>
+  help ? (
+    <span className={styles.labelWithHelp}>
+      {label}
+      <QuestionButton
+        helpText={<OptionHelpText help={help} />}
+        className={{ inline: styles.rowHelpIcon }}
+      />
+    </span>
+  ) : (
+    label
+  );
 
 /**
  * The labelled-row vocabulary of the annotation detail panel.
@@ -68,7 +99,9 @@ export const Row = (props: {
 // wrap in another indented container the indent compounds — a level-2 block's
 // content sits two steps in.
 export const OptionBlock = (props: {
-  label: string;
+  /** ReactNode rather than string for the same reason as `Row`: a heading may
+   *  carry an inline help (?) control. */
+  label: ReactNode;
   children: ReactNode;
   level?: number;
 }) => {
@@ -161,8 +194,24 @@ export const formatValue = (
  * top-level option rows (see Row) — set only for a headingless group at the
  * option's own level, not for value rows nested under a heading.
  */
-export const renderRows = (rows: RowSpec[], emphasis = false): ReactNode[] => {
+export const renderRows = (
+  rows: RowSpec[],
+  emphasis = false,
+  /**
+   * Applied to the label of the first row that actually renders — not the first
+   * in the list, which may be dropped for an absent value. Used to hang the
+   * option's help (?) on a headingless option's title row, where that row *is*
+   * the option's visible title.
+   */
+  decorateFirstLabel?: (label: ReactNode) => ReactNode
+): ReactNode[] => {
   const nodes: ReactNode[] = [];
+  const label = (raw: ReactNode): ReactNode => {
+    if (!decorateFirstLabel || nodes.length > 0) {
+      return raw;
+    }
+    return decorateFirstLabel(raw);
+  };
   rows.forEach((row, index) => {
     // A pre-rendered value (an app-popup-wrapped id) bypasses formatting; a
     // null one means the underlying value was absent, so the row drops.
@@ -171,7 +220,7 @@ export const renderRows = (rows: RowSpec[], emphasis = false): ReactNode[] => {
         nodes.push(
           <Row
             key={row.key ?? index}
-            label={row.label}
+            label={label(row.label)}
             value={row.valueNode}
             mono={row.mono}
             emphasis={emphasis}
@@ -191,7 +240,7 @@ export const renderRows = (rows: RowSpec[], emphasis = false): ReactNode[] => {
       nodes.push(
         <Row
           key={row.key ?? index}
-          label={row.label}
+          label={label(row.label)}
           value={row.placeholder}
           mono={row.mono}
           emphasis={emphasis}
@@ -202,7 +251,7 @@ export const renderRows = (rows: RowSpec[], emphasis = false): ReactNode[] => {
     nodes.push(
       <Row
         key={row.key ?? index}
-        label={row.label}
+        label={label(row.label)}
         value={
           row.link ? (
             <>
@@ -228,9 +277,10 @@ export const renderRows = (rows: RowSpec[], emphasis = false): ReactNode[] => {
  */
 export const renderRowGroup = (
   rows: RowSpec[],
-  level = 0
+  level = 0,
+  decorateFirstLabel?: (label: ReactNode) => ReactNode
 ): ReactNode | null => {
-  const nodes = renderRows(rows, level === 0);
+  const nodes = renderRows(rows, level === 0, decorateFirstLabel);
   return nodes.length ? <>{nodes}</> : null;
 };
 
@@ -241,7 +291,7 @@ export const renderRowGroup = (
  * children (plain value rows), so they are never emphasised.
  */
 export const renderRowBlock = (
-  label: string,
+  label: ReactNode,
   rows: RowSpec[],
   level = 0
 ): ReactNode | null => {

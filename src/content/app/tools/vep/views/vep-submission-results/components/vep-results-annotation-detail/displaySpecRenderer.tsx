@@ -26,6 +26,7 @@ import {
   renderRowBlock,
   formatValue,
   isAbsent,
+  withOptionHelp,
   Row,
   OptionBlock,
   type RowSpec
@@ -34,6 +35,7 @@ import {
 import { withScore } from 'src/content/app/tools/vep/utils/annotationFormatters';
 import { proteinFeatureExplorerUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 import type { PredictedTranscriptConsequence } from 'src/content/app/tools/vep/types/vepResultsResponse';
+import type { OptionHelp } from 'src/content/app/tools/vep/types/vepFormConfig';
 import {
   getAnnotation,
   type AnnotatedEntity,
@@ -90,7 +92,51 @@ type Entities = {
   subOptionRan: (optionId: string, defaultValue: boolean) => boolean;
   // For named link builders referenced by a row/item `link.builder`.
   linkContext: LinkBuilderContext;
+  /**
+   * The option's own help, shown as a (?) beside whatever ends up being its
+   * top-level heading in the results — the same text the form shows for that
+   * option, so the two can never disagree.
+   *
+   * Which node that is cannot be known up front: an option may carry its own
+   * heading (ProtVar), or take it from its first block (SpliceAI), or have no
+   * heading at all and render as one emphasised label/value row (REVEL). Worse,
+   * the first block can be gated out by the data — ClinVar's conflicting-vs-not
+   * shapes are two different blocks, and only one of them draws. So the help is
+   * *claimed* by the first level-0 heading or row that actually draws, which is
+   * exactly the option's visible title in every one of those shapes.
+   *
+   * `take` yields the help once and null thereafter. Blocks render in document
+   * order within a single synchronous pass, so the claim is deterministic.
+   */
+  helpAnchor?: { take: () => OptionHelp | null };
 };
+
+/** One-shot holder: the first level-0 heading or row to draw takes the help. */
+const makeHelpAnchor = (help: OptionHelp) => {
+  let taken = false;
+  return {
+    take: () => {
+      if (taken) {
+        return null;
+      }
+      taken = true;
+      return help;
+    }
+  };
+};
+
+/** A heading with its (?) button, when this is the node claiming the option's
+ *  help. A nested heading (level > 0) is a sub-division of the option, not its
+ *  title, so it never claims. */
+const claimHelp = (
+  heading: ReactNode,
+  entities: Entities,
+  level: number
+): ReactNode =>
+  withOptionHelp(
+    heading,
+    (level === 0 ? entities.helpAnchor?.take() : null) ?? undefined
+  );
 
 /** Resolve a `<plugin>.<field>` reference against the right entity. */
 const readField = (
@@ -516,7 +562,10 @@ const renderListBlock = (
     : renderItems(items);
 
   return block.heading ? (
-    <OptionBlock label={block.heading} level={level}>
+    <OptionBlock
+      label={claimHelp(block.heading, entities, level)}
+      level={level}
+    >
       {body}
     </OptionBlock>
   ) : (
@@ -628,11 +677,15 @@ const tableHead = (columns: DisplayTableBlockSpec['columns']): ReactNode => (
 const withHeading = (
   block: DisplayTableBlockSpec,
   level: number,
-  table: ReactNode
+  table: ReactNode,
+  entities: Entities
 ): ReactNode => {
   if (block.heading) {
     return (
-      <OptionBlock label={block.heading} level={level}>
+      <OptionBlock
+        label={claimHelp(block.heading, entities, level)}
+        level={level}
+      >
         {table}
       </OptionBlock>
     );
@@ -682,7 +735,7 @@ const renderMatrixTable = (
       </tbody>
     </table>
   );
-  return withHeading(block, level, table);
+  return withHeading(block, level, table, entities);
 };
 
 const renderTableBlock = (
@@ -817,7 +870,7 @@ const renderTableBlock = (
       </>
     );
 
-  return withHeading(block, level, withLifted);
+  return withHeading(block, level, withLifted, entities);
 };
 
 /**
@@ -918,7 +971,10 @@ const renderBlock = (
       <Fragment key={index}>{node}</Fragment>
     ));
     return block.heading ? (
-      <OptionBlock label={block.heading} level={level}>
+      <OptionBlock
+        label={claimHelp(block.heading, entities, level)}
+        level={level}
+      >
         {body}
       </OptionBlock>
     ) : (
@@ -937,9 +993,20 @@ const renderBlock = (
     return renderTableBlock(block, spec, entities, level);
   }
   const rows = block.rows.map((row) => toRowSpec(row, spec, entities));
-  return block.heading
-    ? renderRowBlock(block.heading, rows, level)
-    : renderRowGroup(rows, level);
+  if (block.heading) {
+    return renderRowBlock(
+      claimHelp(block.heading, entities, level),
+      rows,
+      level
+    );
+  }
+  // Headingless at the option's own level: the first surviving row *is* the
+  // option's visible title (REVEL, CADD, SPDI …), so that label carries the
+  // help. Decorating the first row rather than rows[0] matters — rows[0] can be
+  // dropped for an absent value.
+  return renderRowGroup(rows, level, (label) =>
+    claimHelp(label, entities, level)
+  );
 };
 
 /**
@@ -959,6 +1026,10 @@ export const renderDisplayOption = (args: {
   // options without a builder link, and their tests, need not supply them.
   genomeId?: string;
   protvarUrl?: string;
+  // The option's help, hung on whichever node turns out to be its visible title
+  // (see Entities.helpAnchor). Optional: an option with no help renders exactly
+  // as before.
+  help?: OptionHelp;
 }): ReactNode | null => {
   const {
     option,
@@ -968,14 +1039,16 @@ export const renderDisplayOption = (args: {
     showAll = false,
     subOptionRan = () => false,
     genomeId = '',
-    protvarUrl
+    protvarUrl,
+    help
   } = args;
   const entities: Entities = {
     consequence,
     allele,
     showAll,
     subOptionRan,
-    linkContext: { genomeId, protvarUrl, consequence }
+    linkContext: { genomeId, protvarUrl, consequence },
+    helpAnchor: help ? makeHelpAnchor(help) : undefined
   };
   // The option heading is the top level (0); its blocks are sub-options one
   // level deeper. Without an option heading the blocks are themselves the
@@ -991,9 +1064,11 @@ export const renderDisplayOption = (args: {
     <Fragment key={index}>{node}</Fragment>
   ));
   // An option-level heading wraps every block in one OptionBlock (MaveDB); it is
-  // shown only because at least one block survived above.
+  // shown only because at least one block survived above. Its blocks rendered at
+  // level 1, so none of them can have claimed the help — it belongs here, on the
+  // option's own title.
   return option.heading ? (
-    <OptionBlock label={option.heading} level={0}>
+    <OptionBlock label={claimHelp(option.heading, entities, 0)} level={0}>
       {body}
     </OptionBlock>
   ) : (

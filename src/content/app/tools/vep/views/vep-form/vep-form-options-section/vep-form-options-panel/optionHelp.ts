@@ -209,6 +209,18 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       }
     ]
   },
+  nmd: {
+    description:
+      'Predicts whether a variant introducing a premature stop codon escapes ' +
+      '*n*onsense-*m*ediated m*RNA* *d*ecay, the pathway that degrades such ' +
+      'transcripts. An escaping transcript may still be translated into a ' +
+      'truncated protein.',
+    links: [
+      {
+        href: 'https://www.ensembl.org/info/docs/tools/vep/script/vep_plugins.html#nmd'
+      }
+    ]
+  },
   spliceai: {
     description:
       'Predicts variant impact on splicing. SpliceAI is a deep neural ' +
@@ -281,6 +293,14 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
         href: 'https://www.ensembl.org/info/genome/variation/phenotype/phenotype_annotation.html'
       }
     ]
+  },
+
+  // --- Regulatory ---
+  gencode_promoters: {
+    description:
+      'Reports overlap with a promoter region defined by the GENCODE gene ' +
+      'annotation, giving the overlapping region and its feature identifier.',
+    links: [{ href: 'https://www.gencodegenes.org/pages/promoter_windows/' }]
   },
 
   // --- Allele frequencies ---

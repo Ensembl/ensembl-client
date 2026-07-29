@@ -19,7 +19,7 @@ import { useState, useMemo, Fragment, type ReactNode } from 'react';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { Row, OptionBlock } from './annotationRows';
+import { Row, OptionBlock, withOptionHelp } from './annotationRows';
 import { renderDisplayOption } from './displaySpecRenderer';
 
 import type {
@@ -38,6 +38,7 @@ import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec
 import { groupByCategory } from 'src/content/app/tools/vep/utils/groupByCategory';
 import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
 import { subOptionRan as didSubOptionRun } from 'src/content/app/tools/vep/utils/subOptionRan';
+import { getOptionHelp } from 'src/content/app/tools/vep/views/vep-form/vep-form-options-section/vep-form-options-panel/optionHelp';
 import { num } from 'src/content/app/tools/vep/utils/annotationFormatters';
 import styles from './VepResultsAnnotationDetail.module.css';
 
@@ -115,6 +116,29 @@ const VepResultsAnnotationDetail = (props: {
 
   const optionRan = (optionId: string) => Boolean(parameters?.[optionId]);
 
+  /**
+   * The help text for an option, as shown on the form — looked up through the
+   * pinned `panels` because `getOptionHelp` resolves `{version}` and any
+   * version-specific link from the option's *label*, which is per-assembly
+   * (gnomAD SV is v4.1 on GRCh38, v2.1 on GRCh37).
+   *
+   * No panels (older jobs, and some callers pass none) simply means no help,
+   * and every heading renders exactly as it did before.
+   */
+  const optionsById = useMemo(() => {
+    const map = new Map<string, FormPanelOption>();
+    for (const panel of panels ?? []) {
+      for (const option of panel.options) {
+        map.set(option.id, option);
+      }
+    }
+    return map;
+  }, [panels]);
+  const helpFor = (optionId: string) => {
+    const option = optionsById.get(optionId);
+    return option ? getOptionHelp(option) : undefined;
+  };
+
   // Whether a sub-option ran (default-aware — see subOptionRan util). Any option
   // with multiple sub-options should, in Show all, list its run sub-options via
   // this helper (value or dash) — see ProtVar / mutfunc / IntAct below; apply the
@@ -148,7 +172,9 @@ const VepResultsAnnotationDetail = (props: {
       subOptionRan,
       // For named link builders (ProtVar's icon, the protein "View in" popup).
       genomeId,
-      protvarUrl
+      protvarUrl,
+      // Hung on whichever node turns out to be the option's visible title.
+      help: helpFor(optionId)
     });
   };
 
@@ -181,7 +207,12 @@ const VepResultsAnnotationDetail = (props: {
         return <Fragment key="hgvs">{content}</Fragment>;
       }
       return showAll ? (
-        <Row key="hgvs" label={option.label} value="—" emphasis />
+        <Row
+          key="hgvs"
+          label={withOptionHelp(option.label, helpFor('hgvs'))}
+          value="—"
+          emphasis
+        />
       ) : null;
     }
 
@@ -193,7 +224,14 @@ const VepResultsAnnotationDetail = (props: {
       return <Fragment key={option.id}>{content}</Fragment>;
     }
     if (showAll) {
-      return <Row key={option.id} label={option.label} value="—" emphasis />;
+      return (
+        <Row
+          key={option.id}
+          label={withOptionHelp(option.label, helpFor(option.id))}
+          value="—"
+          emphasis
+        />
+      );
     }
     return null;
   };
@@ -322,12 +360,13 @@ const VepResultsAnnotationDetail = (props: {
         return null;
       }
       const rows = noDataPopulationRows(id);
+      const labelNode = withOptionHelp(label, helpFor(id));
       return rows.length > 0 ? (
-        <OptionBlock key={id} label={label}>
+        <OptionBlock key={id} label={labelNode}>
           {rows}
         </OptionBlock>
       ) : (
-        <Row key={id} label={label} value="—" emphasis />
+        <Row key={id} label={labelNode} value="—" emphasis />
       );
     };
 
@@ -340,7 +379,7 @@ const VepResultsAnnotationDetail = (props: {
         return (
           <StructuralFrequencyBlock
             key={s.id}
-            label={s.label}
+            label={withOptionHelp(s.label, helpFor(s.id))}
             populationLabel={(code) => populationLabel(s.id, code)}
             data={s.data}
           />
@@ -358,7 +397,7 @@ const VepResultsAnnotationDetail = (props: {
         return (
           <FrequencyBlock
             key={s.id}
-            label={s.label}
+            label={withOptionHelp(s.label, helpFor(s.id))}
             populationLabel={(code) =>
               populationLabel(AF_SOURCE_KEY_BY_OPTION[s.id], code)
             }
@@ -430,7 +469,7 @@ const Section = (props: { title: ReactNode; children: ReactNode }) => (
 // sub-heading (like SpliceAI), with the selected populations beneath it, each
 // label-left / AF right-justified. `overall` is the all-populations figure.
 const FrequencyBlock = (props: {
-  label: string;
+  label: ReactNode;
   populationLabel: (code: string) => string;
   data: PopulationFrequencies | null;
 }) => {
@@ -477,7 +516,7 @@ const structuralHasData = (data: GnomadStructuralData | null): boolean =>
 // overall / per-population frequencies (like FrequencyBlock, with two identity
 // rows on top). `label` is the source name ("gnomAD SV" / "gnomAD CNV").
 const StructuralFrequencyBlock = (props: {
-  label: string;
+  label: ReactNode;
   populationLabel: (code: string) => string;
   data: GnomadStructuralData | null;
 }) => {

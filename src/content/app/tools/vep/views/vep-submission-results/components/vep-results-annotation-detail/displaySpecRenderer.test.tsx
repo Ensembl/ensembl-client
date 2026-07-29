@@ -26,6 +26,7 @@ import type {
   DisplayOptionSpec,
   DisplaySpec
 } from 'src/content/app/tools/vep/types/vepDisplaySpec';
+import type { OptionHelp } from 'src/content/app/tools/vep/types/vepFormConfig';
 
 const spec = displaySpecFixture;
 
@@ -48,6 +49,7 @@ const renderOption = (
     subOptionRan?: (optionId: string, defaultValue: boolean) => boolean;
     protvarUrl?: string;
     genomeId?: string;
+    help?: OptionHelp;
     // extra typed fields the consequence carries for a link builder (the
     // protein popup reads gene_stable_id off the consequence).
     geneStableId?: string;
@@ -66,7 +68,8 @@ const renderOption = (
         showAll: entities.showAll,
         subOptionRan: entities.subOptionRan,
         protvarUrl: entities.protvarUrl,
-        genomeId: entities.genomeId
+        genomeId: entities.genomeId,
+        help: entities.help
       })}
     </>
   );
@@ -1143,5 +1146,118 @@ describe('IntAct interactions table', () => {
     expect(lifted?.closest('a')?.getAttribute('href')).toBe(
       'https://www.uniprot.org/uniprotkb/P37840/entry'
     );
+  });
+  /**
+   * The option's help hangs on whatever turns out to be its visible title, and
+   * that node differs by option shape. These pin all four shapes, because the
+   * anchor is claimed at render time rather than decided up front.
+   */
+});
+
+describe('option help on the results heading', () => {
+  const help: OptionHelp = {
+    description: 'What this annotation means.',
+    links: [{ href: 'https://example.org/source' }]
+  };
+
+  const openHelp = async (container: HTMLElement) => {
+    const button = container.querySelector(
+      '[class*="questionButton"]'
+    ) as HTMLElement;
+    expect(button).toBeDefined();
+    await userEvent.click(button);
+  };
+
+  it('hangs it on a block heading (SpliceAI)', async () => {
+    const { container } = renderOption('spliceai', {
+      consequence: [
+        annotation('spliceai', 'transcript', {
+          symbol: 'BRCA2',
+          events: [{ event: 'DG', delta: 0.9, position: 12 }]
+        })
+      ],
+      help
+    });
+    expect(screen.getByText('SpliceAI')).toBeDefined();
+    await openHelp(container);
+    expect(screen.getByText(/What this annotation means/)).toBeDefined();
+  });
+
+  it('hangs it on an option-level heading (ProtVar)', async () => {
+    const { container } = renderOption('protvar', {
+      consequence: [
+        annotation('protvar', 'transcript', {
+          pockets: [{ pocket_id: '1', energy: 2, score: 3 }]
+        })
+      ],
+      help
+    });
+    expect(screen.getByText('ProtVar')).toBeDefined();
+    await openHelp(container);
+    expect(screen.getByText(/What this annotation means/)).toBeDefined();
+  });
+
+  it('hangs it on the title row of a headingless option (REVEL)', async () => {
+    const { container } = renderOption('revel', {
+      consequence: [annotation('revel', 'transcript', { score: 0.42 })],
+      help
+    });
+    await openHelp(container);
+    expect(screen.getByText(/What this annotation means/)).toBeDefined();
+  });
+
+  // The whole reason the anchor is claimed rather than assigned: ClinVar's
+  // two shapes are different blocks and only one of them draws.
+  it('follows ClinVar to whichever of its two shapes drew', async () => {
+    const { container } = renderOption('clinvar', {
+      subOptionRan: (id: string) => id === 'clinvar_short',
+      allele: [
+        annotation('clinvar', 'allele', {
+          significance: ['Pathogenic'],
+          conflicting_breakdown: []
+        })
+      ],
+      help
+    });
+    await openHelp(container);
+    expect(screen.getByText(/What this annotation means/)).toBeDefined();
+  });
+
+  it('claims once, so a nested heading does not repeat it', async () => {
+    const { container } = renderOption('phenotypes', {
+      allele: [
+        annotation('phenotype_data', 'allele', {
+          phenotypes: [
+            {
+              type: 'Gene',
+              source: 'GenCC',
+              phenotype: 'Li-Fraumeni_syndrome',
+              id: 'ENSG00000141510',
+              risk_allele: null
+            },
+            {
+              type: 'Variation',
+              source: 'ClinVar',
+              phenotype: 'BREAST_CANCER',
+              id: 'rs699',
+              risk_allele: null
+            }
+          ]
+        })
+      ],
+      help
+    });
+    expect(
+      container.querySelectorAll('[class*="questionButton"]')
+    ).toHaveLength(1);
+  });
+
+  it('renders exactly as before when the option has no help', () => {
+    const { container } = renderOption('revel', {
+      consequence: [annotation('revel', 'transcript', { score: 0.42 })]
+    });
+    expect(
+      container.querySelectorAll('[class*="questionButton"]')
+    ).toHaveLength(0);
   });
 });
