@@ -100,7 +100,7 @@ const useNotifications = () => {
 
       setNotifications(selectedNotifications);
     });
-  }, []);
+  }, [notifications.length]);
 
   const markNotificationAsSeen = async (id: string) => {
     // store / update notification data in IndexedDB
@@ -108,7 +108,7 @@ const useNotifications = () => {
       id,
       seen: true,
       dismissed: false,
-      savedAt: Date.now()
+      savedAt: getTimestamp()
     });
   };
 
@@ -117,7 +117,7 @@ const useNotifications = () => {
       id,
       seen: true,
       dismissed: true,
-      savedAt: Date.now()
+      savedAt: getTimestamp()
     });
 
     removeNotificationFromState(id);
@@ -139,9 +139,11 @@ const useNotifications = () => {
 // Hard-coded list of notifications
 const incomingNotifications: IncomingNotification[] = [
   {
-    id: 'beta-intro-rapid-retirement',
+    id: 'first-visit-notification',
     important: true
   }
 ];
+
+const getTimestamp = () => Date.now();
 
 export default useNotifications;
