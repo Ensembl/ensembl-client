@@ -421,6 +421,35 @@ export const displaySpecFixture: DisplaySpec = {
       ]
     },
     {
+      option_id: 'gerp',
+      heading: null,
+      blocks: [
+        {
+          heading: null,
+          requires_selected: null,
+          when: null,
+          view: null,
+          kind: 'rows',
+          requires: null,
+          rows: [
+            {
+              key: null,
+              label: 'GERP conservation score',
+              from: 'gerp.score',
+              compose: null,
+              format: 'num',
+              mono: false,
+              placeholder: null,
+              help: null,
+              help_link: null,
+              sub_option: null,
+              link: null
+            }
+          ]
+        }
+      ]
+    },
+    {
       option_id: 'loeuf',
       heading: null,
       blocks: [
@@ -1858,6 +1887,7 @@ export const displaySpecFixture: DisplaySpec = {
     cadd: 'allele',
     eve: 'transcript',
     utr_annotation: 'transcript',
+    gerp: 'allele',
     loeuf: 'transcript',
     nmd: 'transcript',
     spdi: 'allele',

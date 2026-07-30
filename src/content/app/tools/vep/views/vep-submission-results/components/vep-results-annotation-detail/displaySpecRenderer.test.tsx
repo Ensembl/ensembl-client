@@ -106,6 +106,26 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByText('9')).toBeNull();
   });
 
+  it('renders the GERP conservation score from the allele', () => {
+    // GERP is position-based, so it is allele-scoped like CADD: a same-named
+    // entry on the consequence must be ignored.
+    renderOption('gerp', {
+      allele: [annotation('gerp', 'allele', { score: 2.25 })],
+      consequence: [annotation('gerp', 'transcript', { score: 99 })]
+    });
+    expect(screen.getByText('GERP conservation score')).toBeDefined();
+    expect(screen.getByText('2.25')).toBeDefined();
+    expect(screen.queryByText('99')).toBeNull();
+  });
+
+  it('renders a negative GERP score as-is', () => {
+    // A faster-than-neutral site scores below zero; `num` must not drop the sign.
+    renderOption('gerp', {
+      allele: [annotation('gerp', 'allele', { score: -0.674 })]
+    });
+    expect(screen.getByText('-0.674')).toBeDefined();
+  });
+
   /**
    * `requires` is what keeps SpliceAI's event table from rendering for a variant
    * the plugin said nothing about.

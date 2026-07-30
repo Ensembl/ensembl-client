@@ -169,6 +169,11 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
   },
 
   // --- Conservation & constraint ---
+  gerp: {
+    description: 'Conservation scores calculated using GERP.',
+    links: [{ href: 'https://europepmc.org/article/pmc/2996323' }]
+  },
+
   // --- Variant Impact Predictions ---
   alphamissense: {
     description:

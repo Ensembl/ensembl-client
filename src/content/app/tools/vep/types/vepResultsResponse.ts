@@ -308,6 +308,13 @@ export type LoeufScore = {
   score: number | null;
 };
 
+// GERP conservation score (VEP's Conservation plugin, over a per-assembly
+// bigwig). Position-based, so it is the same on every transcript of an allele —
+// hence allele-scoped. May be negative (a faster-than-neutral site).
+export type GerpScore = {
+  score: number | null;
+};
+
 // NMD (nonsense-mediated decay) escape prediction: 'NMD_escaping_variant' when
 // the variant escapes NMD, else empty/absent.
 export type NmdData = {

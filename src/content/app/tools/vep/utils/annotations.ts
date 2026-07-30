@@ -25,6 +25,7 @@ import type {
   ClinVarSvAnnotation,
   DosageSensitivity,
   FivePrimeUtrAnnotation,
+  GerpScore,
   GoAnnotation,
   HgvsNotations,
   HgvsgRepresentation,
@@ -90,6 +91,7 @@ export type PluginDataMap = {
   opentargets: OpenTargetsAssociation;
   phenotype_data: VariantPhenotypeData;
   cadd: CaddScores;
+  gerp: GerpScore;
   spdi: SpdiRepresentation;
   hgvsg: HgvsgRepresentation;
 };
