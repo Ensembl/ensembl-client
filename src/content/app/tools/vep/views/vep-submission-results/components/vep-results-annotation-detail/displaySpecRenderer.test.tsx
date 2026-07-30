@@ -832,7 +832,7 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByText('Classification')).toBeNull();
   });
 
-  it('ClinVar with a conflicting breakdown: a headed table of per-class counts', () => {
+  it('ClinVar with a conflicting breakdown: the term stays on the significance row, over a table of per-class counts', () => {
     renderOption('clinvar', {
       subOptionRan: clinvarShortSelected,
       allele: [
@@ -845,13 +845,18 @@ describe('renderDisplayOption', () => {
         })
       ]
     });
-    // `when: present` picks the group. Its heading already says "Clinical
-    // significance", so the row beneath carries the value alone -- the only
-    // "Classification" in the block is the breakdown table's column.
+    // The conflicting case uses the same labelled row as the plain one, so the
+    // term reads on the significance line rather than a line below it. The
+    // label appears once, as a row label -- not as a heading with the value
+    // orphaned underneath.
+    const label = screen.getByText('Clinical significance');
+    const term = screen.getByText(
+      'Conflicting classifications of pathogenicity'
+    );
+    expect(screen.getAllByText('Clinical significance').length).toBe(1);
+    expect(label.parentElement).toBe(term.parentElement);
+    // the only "Classification" in the block is the breakdown table's column
     expect(screen.getAllByText('Classification').length).toBe(1);
-    expect(
-      screen.getByText('Conflicting classifications of pathogenicity')
-    ).toBeDefined();
     // the breakdown renders as a table: header columns then a row per class
     // (the class humanised) with its count
     expect(

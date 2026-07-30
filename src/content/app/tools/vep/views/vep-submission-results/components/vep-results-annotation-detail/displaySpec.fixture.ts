@@ -1316,10 +1316,7 @@ export const displaySpecFixture: DisplaySpec = {
             {
               heading: null,
               requires_selected: null,
-              when: {
-                present: null,
-                empty: 'clinvar.conflicting_breakdown'
-              },
+              when: null,
               view: null,
               kind: 'rows',
               requires: null,
@@ -1340,81 +1337,49 @@ export const displaySpecFixture: DisplaySpec = {
               ]
             },
             {
-              heading: 'Clinical significance',
+              heading: null,
               requires_selected: null,
               when: {
                 present: 'clinvar.conflicting_breakdown',
                 empty: null
               },
               view: null,
-              kind: 'group',
-              blocks: [
+              kind: 'table',
+              requires: null,
+              indent: true,
+              from: 'clinvar.conflicting_breakdown',
+              columns: [
                 {
-                  heading: null,
-                  requires_selected: null,
-                  when: null,
-                  view: null,
-                  kind: 'rows',
-                  requires: null,
-                  rows: [
-                    {
-                      key: null,
-                      label: '',
-                      from: 'clinvar.significance',
-                      compose: null,
-                      format: 'humanize_join',
-                      mono: false,
-                      placeholder: null,
-                      help: null,
-                      help_link: null,
-                      sub_option: null,
-                      link: null
-                    }
-                  ]
+                  label: 'Classification',
+                  from: 'significance',
+                  format: 'humanize',
+                  mono: false,
+                  sub_option: null,
+                  link: null,
+                  split: null,
+                  link_prefix: null,
+                  align: null,
+                  lift_when_invariant: false
                 },
                 {
-                  heading: null,
-                  requires_selected: null,
-                  when: null,
-                  view: null,
-                  kind: 'table',
-                  requires: null,
-                  indent: false,
-                  from: 'clinvar.conflicting_breakdown',
-                  columns: [
-                    {
-                      label: 'Classification',
-                      from: 'significance',
-                      format: 'humanize',
-                      mono: false,
-                      sub_option: null,
-                      link: null,
-                      split: null,
-                      link_prefix: null,
-                      align: null,
-                      lift_when_invariant: false
-                    },
-                    {
-                      label: 'Submitters reporting',
-                      from: 'count',
-                      format: 'num',
-                      mono: false,
-                      sub_option: null,
-                      link: null,
-                      split: null,
-                      link_prefix: null,
-                      align: null,
-                      lift_when_invariant: false
-                    }
-                  ],
-                  group_by: null,
-                  where: null,
-                  truncate: {
-                    visible_count: 3
-                  },
-                  rows: null
+                  label: 'Submitters reporting',
+                  from: 'count',
+                  format: 'num',
+                  mono: false,
+                  sub_option: null,
+                  link: null,
+                  split: null,
+                  link_prefix: null,
+                  align: null,
+                  lift_when_invariant: false
                 }
-              ]
+              ],
+              group_by: null,
+              where: null,
+              truncate: {
+                visible_count: 3
+              },
+              rows: null
             }
           ]
         },
