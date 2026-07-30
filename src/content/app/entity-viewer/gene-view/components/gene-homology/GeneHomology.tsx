@@ -58,13 +58,32 @@ const GeneHomology = () => {
     return <CircleLoader />;
   }
 
-  if (
-    isError ||
-    !currentData ||
-    !currentData.homologies ||
-    currentData.homologies.length === 0
-  ) {
-    return <span className={styles.noData}>No data</span>;
+  if (isError || !currentData) {
+    return (
+      <span className={styles.noData}>
+        An error occurred while fetching the data
+      </span>
+    );
+  }
+
+  // The following two cases distinguish between the homology pipeline not having been run at all,
+  // and the pipeline having been run, but no homologues found
+
+  if (!currentData.homologies) {
+    return (
+      <span className={styles.noData}>
+        Homology results are not available for this gene because the genome has
+        not yet been processed by the homology pipeline.
+      </span>
+    );
+  }
+
+  if (currentData.homologies.length === 0) {
+    return (
+      <span className={styles.noData}>
+        No homologues were found in the reference genome collection.
+      </span>
+    );
   }
 
   // We have checked above that both currentData and currentData.homologies exist;
