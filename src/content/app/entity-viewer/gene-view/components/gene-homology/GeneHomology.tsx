@@ -23,8 +23,6 @@ import useEntityViewerIds from 'src/content/app/entity-viewer/hooks/useEntityVie
 import GeneHomologyTable from './GeneHomologyTable';
 import { CircleLoader } from 'src/shared/components/loader';
 
-import type { GeneHomology as GeneHomologyType } from 'src/content/app/entity-viewer/state/api/types/geneHomology';
-
 import styles from './GeneHomology.module.css';
 
 const GeneHomology = () => {
@@ -88,11 +86,7 @@ const GeneHomology = () => {
 
   // We have checked above that both currentData and currentData.homologies exist;
   // but typescript cannot see this
-  return (
-    <GeneHomologyTable
-      homologies={currentData.homologies as GeneHomologyType[]}
-    />
-  );
+  return <GeneHomologyTable homologies={currentData.homologies} />;
 };
 
 export default GeneHomology;
