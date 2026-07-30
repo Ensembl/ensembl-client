@@ -18,7 +18,6 @@ import { useState, useRef } from 'react';
 import classNames from 'classnames';
 
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
-import Chevron from 'src/shared/components/chevron/Chevron';
 import VariantColour from 'src/shared/components/variant-color/VariantColor';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
@@ -85,17 +84,14 @@ const ConsequenceMultiSelect = (props: Props) => {
       <button
         type="button"
         className={classNames(styles.valueTrigger, {
-          [styles.valueTriggerEmpty]: values.length === 0
+          [styles.valueTriggerEmpty]: values.length === 0,
+          [styles.valueTriggerOpen]: isOpen
         })}
         onClick={() => setIsOpen((open) => !open)}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
       >
         <span>{summary}</span>
-        <Chevron
-          direction={isOpen ? 'up' : 'down'}
-          className={styles.triggerChevron}
-        />
       </button>
       {isOpen && (
         <div className={styles.optionsPanel}>

@@ -20,7 +20,6 @@ import classNames from 'classnames';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
-import Chevron from 'src/shared/components/chevron/Chevron';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import type {
@@ -126,7 +125,8 @@ const AlleleFrequencyInput = (props: Props) => {
             <button
               type="button"
               className={classNames(styles.valueTrigger, {
-                [styles.valueTriggerEmpty]: selectedCount === 0
+                [styles.valueTriggerEmpty]: selectedCount === 0,
+                [styles.valueTriggerOpen]: isSourcesOpen
               })}
               onClick={() => setIsSourcesOpen((open) => !open)}
               aria-haspopup="dialog"
@@ -137,10 +137,6 @@ const AlleleFrequencyInput = (props: Props) => {
                   ? 'Select sources'
                   : `${selectedCount} selected`}
               </span>
-              <Chevron
-                direction={isSourcesOpen ? 'up' : 'down'}
-                className={styles.triggerChevron}
-              />
             </button>
             {isSourcesOpen && (
               <div className={styles.optionsPanel}>
