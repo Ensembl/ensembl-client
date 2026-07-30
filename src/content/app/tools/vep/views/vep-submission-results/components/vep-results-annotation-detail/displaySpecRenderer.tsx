@@ -17,7 +17,9 @@
 import { Fragment, type ReactNode } from 'react';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
-import TruncatedList from 'src/content/app/tools/vep/components/truncated-list/TruncatedList';
+import TruncatedList, {
+  type TruncatedListToggleProps
+} from 'src/content/app/tools/vep/components/truncated-list/TruncatedList';
 import ExternalLinkIcon from 'src/content/app/tools/vep/components/external-link-icon/ExternalLinkIcon';
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 
@@ -349,11 +351,7 @@ const toRowSpec = (
 
 // --- list blocks (repeat + link + truncate) ---------------------------------
 
-const MoreToggle = (props: {
-  hiddenCount: number;
-  isExpanded: boolean;
-  toggle: () => void;
-}) => (
+const MoreToggle = (props: TruncatedListToggleProps) => (
   <button
     type="button"
     className={styles.phenotypeToggle}

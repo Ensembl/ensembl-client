@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import { useState, Fragment, type ReactNode } from 'react';
+import { useState, Fragment, type ReactNode, type SyntheticEvent } from 'react';
+import { flushSync } from 'react-dom';
 
 export type TruncatedListToggleProps = {
   /** How many items are hidden while collapsed (never negative). */
   hiddenCount: number;
   isExpanded: boolean;
-  toggle: () => void;
+  /**
+   * Wire straight to the control's `onClick`. The event is what lets collapsing
+   * hold its scroll position (see below); called without one it still toggles,
+   * just without the correction.
+   */
+  toggle: (event?: SyntheticEvent<HTMLElement>) => void;
 };
 
 type Props<Item> = {
@@ -38,6 +44,26 @@ type Props<Item> = {
 };
 
 /**
+ * The nearest ancestor that actually scrolls, or null when the page itself does.
+ *
+ * The results table scrolls inside its own viewport container rather than at
+ * document level, so adjusting `window.scrollY` would move nothing. Walking up
+ * keeps this correct either way.
+ */
+const scrollableAncestor = (element: HTMLElement): HTMLElement | null => {
+  let node = element.parentElement;
+  while (node) {
+    const { overflowY } = window.getComputedStyle(node);
+    const scrolls = overflowY === 'auto' || overflowY === 'scroll';
+    if (scrolls && node.scrollHeight > node.clientHeight) {
+      return node;
+    }
+    node = node.parentElement;
+  }
+  return null;
+};
+
+/**
  * A list that shows its first few items and reveals the rest on demand.
  *
  * The primitive owns only the expand state, the slicing and the hidden-item
@@ -50,7 +76,44 @@ const TruncatedList = <Item,>(props: Props<Item>) => {
 
   const visible = isExpanded ? items : items.slice(0, visibleCount);
   const hiddenCount = Math.max(items.length - visibleCount, 0);
-  const toggle = () => setIsExpanded((expanded) => !expanded);
+
+  /**
+   * Collapsing removes items from *above* the toggle, so the control — and
+   * everything after it — jumps up the page by however tall the hidden items
+   * were. In a long results table that leaves the reader looking at a different
+   * variant than the one they were expanding. So measure where the control sits,
+   * collapse, and scroll by however far it moved.
+   *
+   * The measurement has to happen at click time, not at the previous render:
+   * reading a long list means scrolling, which changes where the control is.
+   * `flushSync` applies the collapse to the DOM straight away so the second
+   * measurement can be taken in the same handler — before the browser paints,
+   * so the correction is never seen as a jump.
+   *
+   * Expanding needs none of this: it only adds below the reader's position, so
+   * nothing they are looking at moves.
+   */
+  const toggle = (event?: SyntheticEvent<HTMLElement>) => {
+    const control = event?.currentTarget;
+    if (!isExpanded || !control) {
+      setIsExpanded((expanded) => !expanded);
+      return;
+    }
+    const before = control.getBoundingClientRect().top;
+    flushSync(() => setIsExpanded(false));
+    // Negative: the control has risen, so scroll up by as much to leave it
+    // under the cursor.
+    const delta = control.getBoundingClientRect().top - before;
+    if (delta === 0) {
+      return;
+    }
+    const scroller = scrollableAncestor(control);
+    if (scroller) {
+      scroller.scrollTop += delta;
+    } else {
+      window.scrollBy(0, delta);
+    }
+  };
 
   return (
     <>

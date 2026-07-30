@@ -86,4 +86,73 @@ describe('TruncatedList', () => {
 
     expect(container.textContent).toBe('');
   });
+  /**
+   * Collapsing removes items from above the toggle, so the control and
+   * everything after it jump up the page. In the results table that leaves the
+   * reader looking at a different variant than the one they expanded, which is
+   * the bug this anchoring fixes.
+   *
+   * jsdom does no layout, so the geometry is stubbed: the toggle reports one
+   * position while expanded and a higher one once collapsed, and the scroller
+   * reports that it scrolls.
+   */
+  describe('keeps the toggle in place when collapsing', () => {
+    const renderInScroller = (tops: number[]) => {
+      const view = render(
+        <div data-test-id="scroller">
+          <TruncatedList
+            items={items}
+            visibleCount={3}
+            renderItem={(item) => <div>{item}</div>}
+            renderToggle={({ hiddenCount, isExpanded, toggle }) => (
+              <button type="button" onClick={toggle}>
+                {isExpanded ? 'Show fewer' : `+ ${hiddenCount} more`}
+              </button>
+            )}
+          />
+        </div>
+      );
+      const scroller = screen.getByTestId('scroller');
+      // a container that scrolls, as the results table's viewport does
+      vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+        overflowY: 'auto'
+      } as CSSStyleDeclaration);
+      Object.defineProperty(scroller, 'scrollHeight', { value: 1000 });
+      Object.defineProperty(scroller, 'clientHeight', { value: 400 });
+      scroller.scrollTop = 300;
+
+      let call = 0;
+      vi.spyOn(
+        screen.getByRole('button'),
+        'getBoundingClientRect'
+      ).mockImplementation(
+        () => ({ top: tops[Math.min(call++, tops.length - 1)] }) as DOMRect
+      );
+      return { view, scroller };
+    };
+
+    afterEach(() => vi.restoreAllMocks());
+
+    it('scrolls back by however far the toggle moved', async () => {
+      const user = userEvent.setup();
+      // the toggle reads 500 while expanded and 200 once the list has shrunk,
+      // so the correction is 300px upward
+      const { scroller } = renderInScroller([500, 200]);
+
+      await user.click(screen.getByRole('button')); // expand
+      await user.click(screen.getByRole('button')); // collapse
+
+      expect(scroller.scrollTop).toBe(0);
+    });
+
+    it('leaves the scroll alone when expanding', async () => {
+      const user = userEvent.setup();
+      const { scroller } = renderInScroller([500, 500]);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.getByText('e')).toBeDefined();
+      expect(scroller.scrollTop).toBe(300);
+    });
+  });
 });
