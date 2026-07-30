@@ -275,6 +275,7 @@ export const displaySpecFixture: DisplaySpec = {
                   link: null,
                   split: null,
                   link_prefix: null,
+                  align: null,
                   lift_when_invariant: false
                 },
                 {
@@ -286,6 +287,7 @@ export const displaySpecFixture: DisplaySpec = {
                   link: null,
                   split: null,
                   link_prefix: null,
+                  align: null,
                   lift_when_invariant: false
                 },
                 {
@@ -297,6 +299,7 @@ export const displaySpecFixture: DisplaySpec = {
                   link: null,
                   split: null,
                   link_prefix: null,
+                  align: null,
                   lift_when_invariant: false
                 }
               ],
@@ -677,6 +680,7 @@ export const displaySpecFixture: DisplaySpec = {
                       link: null,
                       split: null,
                       link_prefix: null,
+                      align: null,
                       lift_when_invariant: false
                     },
                     {
@@ -688,6 +692,7 @@ export const displaySpecFixture: DisplaySpec = {
                       link: null,
                       split: null,
                       link_prefix: null,
+                      align: null,
                       lift_when_invariant: false
                     }
                   ],
@@ -730,6 +735,7 @@ export const displaySpecFixture: DisplaySpec = {
                       link: null,
                       split: null,
                       link_prefix: null,
+                      align: null,
                       lift_when_invariant: false
                     },
                     {
@@ -741,6 +747,7 @@ export const displaySpecFixture: DisplaySpec = {
                       link: null,
                       split: null,
                       link_prefix: null,
+                      align: null,
                       lift_when_invariant: false
                     }
                   ],
@@ -774,6 +781,7 @@ export const displaySpecFixture: DisplaySpec = {
                       link: null,
                       split: null,
                       link_prefix: null,
+                      align: null,
                       lift_when_invariant: false
                     },
                     {
@@ -785,6 +793,7 @@ export const displaySpecFixture: DisplaySpec = {
                       link: null,
                       split: null,
                       link_prefix: null,
+                      align: null,
                       lift_when_invariant: false
                     }
                   ],
@@ -1135,6 +1144,7 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: false
             },
             {
@@ -1146,6 +1156,7 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: false
             },
             {
@@ -1157,6 +1168,7 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: 'right',
               lift_when_invariant: false
             },
             {
@@ -1168,10 +1180,11 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: false
             },
             {
-              label: 'Locus2Gene score',
+              label: 'Locus to Gene (L2G) Score',
               from: 'l2g_score',
               format: 'num',
               mono: false,
@@ -1179,6 +1192,7 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: false
             }
           ],
@@ -1208,6 +1222,7 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: false
             },
             {
@@ -1219,6 +1234,7 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: false
             },
             {
@@ -1230,6 +1246,7 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: 'right',
               lift_when_invariant: false
             },
             {
@@ -1241,6 +1258,7 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: false
             }
           ],
@@ -1373,17 +1391,19 @@ export const displaySpecFixture: DisplaySpec = {
                       link: null,
                       split: null,
                       link_prefix: null,
+                      align: null,
                       lift_when_invariant: false
                     },
                     {
                       label: 'Submitters reporting',
                       from: 'count',
-                      format: null,
+                      format: 'num',
                       mono: false,
                       sub_option: null,
                       link: null,
                       split: null,
                       link_prefix: null,
+                      align: null,
                       lift_when_invariant: false
                     }
                   ],
@@ -1675,6 +1695,7 @@ export const displaySpecFixture: DisplaySpec = {
               },
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: false
             },
             {
@@ -1686,6 +1707,7 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: false
             },
             {
@@ -1704,6 +1726,7 @@ export const displaySpecFixture: DisplaySpec = {
               },
               split: '_and_',
               link_prefix: 'uniprotkb:',
+              align: null,
               lift_when_invariant: false
             },
             {
@@ -1718,6 +1741,7 @@ export const displaySpecFixture: DisplaySpec = {
               link: null,
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: true
             },
             {
@@ -1736,6 +1760,7 @@ export const displaySpecFixture: DisplaySpec = {
               },
               split: null,
               link_prefix: 'uniprotkb:',
+              align: null,
               lift_when_invariant: true
             },
             {
@@ -1754,6 +1779,7 @@ export const displaySpecFixture: DisplaySpec = {
               },
               split: null,
               link_prefix: null,
+              align: null,
               lift_when_invariant: false
             }
           ],

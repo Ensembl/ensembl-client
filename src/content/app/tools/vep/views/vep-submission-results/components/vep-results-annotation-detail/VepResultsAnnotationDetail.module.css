@@ -7,6 +7,60 @@
   padding: 16px;
   background-color: var(--color-light-grey);
 
+  /* Do not lay this panel out while it is scrolled out of view.
+
+     "Expand all" opens a panel per row, and the default page size is 100 — so
+     resizing the window asked the browser to re-balance a hundred multi-column
+     layouts per frame, ninety-odd of them off screen. Multicol balances column
+     heights iteratively, which makes it one of the more expensive layout modes,
+     and that is what made dragging the window edge feel heavy.
+
+     `auto` on the intrinsic size means the browser remembers each panel's real
+     height once it has been rendered and uses that as the placeholder
+     afterwards; the 400px is only the first guess, for a panel that has never
+     been on screen.
+
+     Safe here because everything in this panel that escapes its bounds is
+     portalled to the body — the help tooltips (QuestionButton) and the "View
+     in" popup both are — so the paint containment this implies clips nothing.
+     The one component that renders a box inline (Toolbox, via VepResultsAllele)
+     sits in the table row, outside this panel. */
+  content-visibility: auto;
+
+  /* The panel's width must never feed back into the results table.
+
+     This panel sits in a `td colSpan` of that table, which is
+     `table-layout: auto`, so by default the panel's own contents help size the
+     table's columns — expanding a row squeezed Variant / Ref / Location / Alt
+     allele narrower to give the panel room.
+
+     The skipping above turned that into a ratchet. A skipped panel is sized
+     from its *last-remembered* width, so scrolling through "Expand all" laid
+     each panel out for the first time, recorded whatever width it got, and fed
+     that back as the cell's intrinsic width — widening the spanned columns,
+     which made the next panel render wider still. Measured on a 10-row page at
+     1920px, the four spanned columns went 348/310/372/150 before scrolling to
+     383/342/410/165 after, and stayed there on scrolling back up, because a
+     remembered size only ever grows.
+
+     Inline-size containment does NOT break that loop: the remembered size *is*
+     the size containment substitutes, so the panel keeps quoting its own
+     inflated width back at the table.
+
+     `width: 0` is what breaks it. Percentages are ignored when a table works
+     out its intrinsic column widths, so `min-width: 100%` contributes nothing
+     there and the cell asks for ~0 — the columns are sized by the result rows
+     alone. At layout time the percentage does resolve, so the panel still
+     fills the cell edge to edge. */
+  width: 0;
+  min-width: 100%;
+
+  /* Keeps the placeholder height of a skipped panel honest (`auto` = remember
+     the real height once rendered; 400px is only the first guess). The inline
+     axis is handled by the `width` pair above, so no intrinsic width is
+     asserted here — the `contain-intrinsic-size` shorthand would assert one. */
+  contain-intrinsic-height: auto 400px;
+
   /* Horizontal step each sub-option heading (and its content) is indented by,
      per level of nesting. Compounds through nested option blocks. */
   --annotation-indent-step: 10px;
@@ -19,15 +73,45 @@
    avoids that. Kept separate from .detail so the interactive toolbar above can
    sit in normal flow (an interactive control inside a multicol can lose clicks). */
 .sections {
-  /* 320px, not 260px: this is a *minimum* column width, so the browser packs as
-     many as fit — which means a wider viewport gives NARROWER columns, and at
-     260px a wide window produced 282px columns. The widest table here (IntAct's
-     interactions) needs 355px, so it was squeezed below its own minimum and its
-     text collided with the next column. 320px keeps every column wide enough
-     for it at every width tested; the cost is one fewer column on a wide
-     screen. Raise this if a table ever needs more than a 440px column. */
-  column-width: 320px;
+  /* A *minimum* column width: the browser packs as many as fit, so a wider
+     viewport gives NARROWER columns, and raising this number widens them by
+     fitting fewer.
+
+     400px, up from 320px. The OpenTargets GWAS table needs ~453px to show its
+     five columns without scrolling, and at 320px it never got it — measured
+     across viewports, 320px produced 327-423px columns and the table scrolled
+     at every one of them. Going far enough to always fit it (460px+) is worse
+     than the problem: it drops to two columns on anything under ~1400px, and a
+     600px-wide column stretches every short label/value row across a wide
+     empty gap.
+
+     400px is the compromise. Of 37 sampled widths from 1100 to 2000px, the
+     table fits at 22 and scrolls at the rest, and only 6 of them fall to two
+     columns (all under ~1250px). The narrowest column it ever produces is
+     ~423px, well clear of the 355px IntAct's interactions table needs — the
+     constraint that set the old value. */
+  column-width: 400px;
   column-gap: 16px;
+
+  /* How many columns this panel's content can actually fill, set per panel by
+     the component (see `--annotation-columns`): each section is
+     `break-inside: avoid`, so a panel with two sections can never fill more
+     than two columns, and asking for four just left two of them empty. Capped
+     at 3 there; 3 is the fallback for anything that does not set it.
+
+     With both `column-count` and `column-width` set, the count is a *maximum* —
+     a narrow viewport still drops to fewer columns on its own.
+
+     The max-width is what keeps this from backfiring: without it a two-column
+     panel would stretch those two columns across the whole row, and the
+     label/value rows inside are `space-between`, so each would pull its value
+     out to a far edge. Capping the width keeps columns near 400px and lets the
+     panel simply end where its content does. */
+  column-count: var(--annotation-columns, 3);
+  max-width: calc(
+    var(--annotation-columns, 3) * 400px + (var(--annotation-columns, 3) - 1) *
+      16px
+  );
 }
 
 /* Full-width toolbar row above the annotation sections (outside the multicol). */
@@ -200,6 +284,15 @@
 .optionBlock,
 .optionChildren {
   min-width: 0;
+}
+
+/* Numbers read right so a column of figures lines up on its digits; text reads
+   left. Applied to the header too, so it sits over the values rather than away
+   from them. Which columns are which is the spec's business — see
+   `alignmentClass` in displaySpecRenderer. */
+.breakdownTable th.alignRight,
+.breakdownTable td.alignRight {
+  text-align: right;
 }
 
 .breakdownTable th,

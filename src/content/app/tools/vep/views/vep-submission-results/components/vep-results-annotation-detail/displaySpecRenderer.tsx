@@ -715,11 +715,45 @@ const tableCellContent = (
 };
 
 // The header row shared by both table modes.
+/**
+ * A column's alignment class, or undefined for the default (left).
+ *
+ * The house rule is by data type: text reads left, numbers read right, so a
+ * column of figures lines up on its digits. That is derived from the format —
+ * `num` and `count` produce numbers — so a spec normally says nothing. `align`
+ * overrides it for the one case a format cannot express: a number the source
+ * publishes pre-formatted as a string, like OpenTargets' `2.033e-47`.
+ */
+const NUMERIC_FORMATS: ReadonlySet<string> = new Set(['num', 'count']);
+
+const alignmentClass = (
+  column: Pick<DisplayTableColumnSpec, 'format' | 'align'>
+): string | undefined => {
+  const align =
+    column.align ??
+    (column.format && NUMERIC_FORMATS.has(column.format) ? 'right' : 'left');
+  return align === 'right' ? styles.alignRight : undefined;
+};
+
+/** A cell's classes: the alignment rule, plus monospacing when asked for. */
+const cellClass = (
+  column: Pick<DisplayTableColumnSpec, 'format' | 'align' | 'mono'> | undefined
+): string | undefined => {
+  if (!column) {
+    return undefined;
+  }
+  const classes = [alignmentClass(column), column.mono ? styles.mono : null];
+  const used = classes.filter(Boolean);
+  return used.length ? used.join(' ') : undefined;
+};
+
 const tableHead = (columns: DisplayTableBlockSpec['columns']): ReactNode => (
   <thead>
     <tr>
       {columns.map((column, index) => (
-        <th key={index}>{column.label}</th>
+        <th key={index} className={alignmentClass(column)}>
+          {column.label}
+        </th>
       ))}
     </tr>
   </thead>
@@ -780,10 +814,7 @@ const renderMatrixTable = (
                   ? ''
                   : (formatValue(raw, column?.format ?? 'text') ?? '');
                 return (
-                  <td
-                    key={colIndex}
-                    className={column?.mono ? styles.mono : undefined}
-                  >
+                  <td key={colIndex} className={cellClass(column)}>
                     {text}
                   </td>
                 );
@@ -860,7 +891,7 @@ const renderTableBlock = (
     const bodyRow = (element: unknown, rowIndex: number) => (
       <tr key={rowIndex}>
         {columns.map((column, colIndex) => (
-          <td key={colIndex} className={column.mono ? styles.mono : undefined}>
+          <td key={colIndex} className={cellClass(column)}>
             {tableCellContent(column, element)}
           </td>
         ))}

@@ -858,3 +858,73 @@ describe('panel order', () => {
     expect(af).toBeLessThan(genes);
   });
 });
+
+/**
+ * Each section is `break-inside: avoid`, so it is an indivisible unit: a panel
+ * with N sections can never usefully fill more than N columns. Asking for more
+ * left empty columns beside the content, which is what made a variant with few
+ * annotations look sparse.
+ */
+describe('VepResultsAnnotationDetail column count', () => {
+  const columnsOf = (container: HTMLElement) =>
+    (
+      container.querySelector('[class*="sections"]') as HTMLElement
+    )?.style.getPropertyValue('--annotation-columns');
+
+  it('asks for one column when only one section survives', () => {
+    const { container } = render(
+      <VepResultsAnnotationDetail
+        genomeId="grch38"
+        consequence={transcriptConsequence}
+        allele={makeAllele()}
+        parameters={{ hgvs: true }}
+        panels={panels}
+        display={displaySpecFixture}
+      />
+    );
+
+    expect(columnsOf(container)).toBe('1');
+  });
+
+  it('never asks for more than three, however much there is', () => {
+    const { container } = render(
+      <VepResultsAnnotationDetail
+        genomeId="grch38"
+        consequence={withAnnotations([
+          transcriptAnnotation('cadd', { phred: 0.09, raw: -0.64 }),
+          transcriptAnnotation('revel', { score: 0.157 }),
+          transcriptAnnotation('loeuf', { score: 1.282 })
+        ])}
+        allele={makeAllele({
+          annotations: [alleleAnnotation('spdi', { spdi: '1:230710047:A:G' })]
+        })}
+        parameters={{
+          hgvs: true,
+          spdi: true,
+          cadd: true,
+          revel: true,
+          loeuf: true
+        }}
+        panels={panels}
+        display={displaySpecFixture}
+      />
+    );
+
+    expect(Number(columnsOf(container))).toBeLessThanOrEqual(3);
+  });
+
+  it('never asks for zero, even with nothing to show', () => {
+    const { container } = render(
+      <VepResultsAnnotationDetail
+        genomeId="grch38"
+        consequence={intergenicConsequence}
+        allele={makeAllele({ annotations: [] })}
+        parameters={{}}
+        panels={panels}
+        display={displaySpecFixture}
+      />
+    );
+
+    expect(Number(columnsOf(container))).toBeGreaterThanOrEqual(1);
+  });
+});

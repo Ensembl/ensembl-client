@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { useState, useMemo, Fragment, type ReactNode } from 'react';
+import {
+  useState,
+  useMemo,
+  Fragment,
+  type ReactNode,
+  type CSSProperties
+} from 'react';
 
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -425,6 +431,36 @@ const VepResultsAnnotationDetail = (props: {
     return <Section title="Allele frequencies">{nodes}</Section>;
   };
 
+  // Each section is `break-inside: avoid`, so it is an indivisible unit: a
+  // panel with N sections can never usefully fill more than N columns. Without
+  // this cap, a variant with only a couple of annotations spread those two
+  // sections over the three or four columns the viewport had room for, leaving
+  // most of the panel empty — which is what made sparse results look sparse.
+  //
+  // Capped at 3 as well: beyond that the columns are narrower than the widest
+  // tables want (see `.sections`), and a very long panel gains little from a
+  // fourth.
+  const renderedSections = [
+    ...(panels ?? []).map(renderPanel),
+    // Older jobs pinned their panels before allele frequencies were one, and
+    // some callers pass no panels at all. Both still get the block — appended,
+    // as it always was. Only its position moves when the panel is there to
+    // place it.
+    !(panels ?? []).some((panel) => panel.id === 'allele_frequencies')
+      ? renderFrequencies()
+      : null
+  ].filter(Boolean);
+
+  const columnCount = Math.min(Math.max(renderedSections.length, 1), 3);
+  // Both `column-count` and `column-width` are set: per spec the count then
+  // acts as a *maximum*, so a narrow viewport still drops to fewer columns.
+  // The max-width stops those columns stretching to fill the row — a
+  // two-column panel keeps ~400px columns instead of two 700px ones, which is
+  // what pulls the label/value rows back together.
+  const columnCountStyle = {
+    '--annotation-columns': columnCount
+  } as CSSProperties;
+
   return (
     <div className={styles.detail}>
       {/* The toolbar sits outside the multi-column section list: an interactive
@@ -440,14 +476,11 @@ const VepResultsAnnotationDetail = (props: {
         </div>
       )}
 
-      <div className={styles.sections}>
-        {(panels ?? []).map(renderPanel)}
-        {/* Older jobs pinned their panels before allele frequencies were one,
-            and some callers pass no panels at all. Both still get the block —
-            appended, as it always was. Only its position moves when the panel
-            is there to place it. */}
-        {!(panels ?? []).some((panel) => panel.id === 'allele_frequencies') &&
-          renderFrequencies()}
+      {/* Sections are rendered once, up front, so the count below is of the
+          sections that actually survived rather than of the panels that might
+          have produced one. */}
+      <div className={styles.sections} style={columnCountStyle}>
+        {renderedSections}
       </div>
 
       {/* Collapse control at the bottom-right — the same blue close (cross) used

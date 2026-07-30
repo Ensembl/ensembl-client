@@ -674,7 +674,7 @@ describe('renderDisplayOption', () => {
       'Target Gene',
       'Lead variant p-value',
       'beta',
-      'Locus2Gene score',
+      'Locus to Gene (L2G) Score',
       'BioSample',
       'Target Gene',
       'Lead variant p-value',
@@ -1455,5 +1455,89 @@ describe('the link icon always leads its text', () => {
     const firstChildren = firstChildOfEachLink(container);
     expect(firstChildren.length).toBeGreaterThan(0);
     expect(firstChildren).toEqual(firstChildren.map(() => 'svg'));
+  });
+});
+
+describe('table column alignment', () => {
+  /**
+   * The house rule is by data type: numbers right so a column of figures lines
+   * up on its digits, text left. Derived from the format, so a spec normally
+   * says nothing — `align` is only for a number the source publishes as a
+   * string (OpenTargets' p-value).
+   */
+  const alignmentOf = (container: HTMLElement, selector: string) =>
+    [...container.querySelectorAll(selector)].map((cell) =>
+      cell.className.includes('alignRight') ? 'right' : 'left'
+    );
+
+  it('right-aligns numeric columns and their headers (SpliceAI deltas)', () => {
+    const { container } = renderOption('spliceai', {
+      consequence: [
+        annotation('spliceai', 'transcript', {
+          symbol: 'BRCA2',
+          events: [{ event: 'DG', delta: 0.9, position: 12 }]
+        })
+      ]
+    });
+    // Splicing event | ΔS | ΔP
+    expect(alignmentOf(container, 'th')).toEqual(['left', 'right', 'right']);
+    expect(alignmentOf(container, 'tbody tr:first-child td')).toEqual([
+      'left',
+      'right',
+      'right'
+    ]);
+  });
+
+  it('right-aligns a p-value stated by `align`, not by its format', () => {
+    const { container } = renderOption('opentargets', {
+      allele: [
+        annotation('opentargets', 'allele', {
+          gwas_associations: [
+            {
+              disease: 'EFO_1',
+              disease_label: 'a disease',
+              gene_id: 'ENSG_A',
+              l2g_score: 0.42,
+              p_value: '3.32e-28',
+              beta: 0.0125
+            }
+          ],
+          qtl_associations: []
+        })
+      ],
+      openTargetsVariantId: '1_1_A_G'
+    });
+    // Disease association | Target Gene | Lead variant p-value | beta | L2G
+    expect(alignmentOf(container, 'th')).toEqual([
+      'left',
+      'left',
+      'right',
+      'right',
+      'right'
+    ]);
+    expect(alignmentOf(container, 'tbody tr:first-child td')).toEqual([
+      'left',
+      'left',
+      'right',
+      'right',
+      'right'
+    ]);
+  });
+
+  it('right-aligns a count (ClinVar submitters)', () => {
+    const { container } = renderOption('clinvar', {
+      subOptionRan: (id: string) => id === 'clinvar_short',
+      allele: [
+        annotation('clinvar', 'allele', {
+          significance: ['Conflicting_classifications_of_pathogenicity'],
+          conflicting_breakdown: [
+            { significance: 'Likely_benign', count: 3 },
+            { significance: 'Pathogenic', count: 1 }
+          ]
+        })
+      ]
+    });
+    // Classification | Submitters reporting
+    expect(alignmentOf(container, 'th')).toEqual(['left', 'right']);
   });
 });

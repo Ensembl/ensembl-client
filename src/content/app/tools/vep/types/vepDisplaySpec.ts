@@ -235,6 +235,14 @@ export type DisplayTableColumnSpec = {
   from?: string | null;
   format?: DisplayRowFormat | null;
   mono?: boolean;
+  /**
+   * Which way the column's values and header align. Normally absent: the house
+   * rule derives it from the data type, so a numeric `format` reads right and
+   * everything else reads left. It is stated only where the format cannot say so
+   * — a number the source publishes pre-formatted as a string, like
+   * OpenTargets' p-value.
+   */
+  align?: 'left' | 'right' | null;
   /** Present only when its sub-option ran, so a table's width follows what the
    * user selected. Same gate the rows use. */
   sub_option?: { id: string; default?: boolean } | null;
