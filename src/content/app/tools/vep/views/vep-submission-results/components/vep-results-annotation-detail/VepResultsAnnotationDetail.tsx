@@ -25,7 +25,12 @@ import {
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { Row, OptionBlock, withOptionHelp } from './annotationRows';
+import {
+  Row,
+  OptionBlock,
+  CategoryBlock,
+  withOptionHelp
+} from './annotationRows';
 import { renderDisplayOption } from './displaySpecRenderer';
 
 import type {
@@ -270,10 +275,15 @@ const VepResultsAnnotationDetail = (props: {
       <Section key={panel.id} title={panel.label}>
         {renderedGroups.map((group, index) => (
           <Fragment key={group.category ?? index}>
-            {group.category && (
-              <div className={styles.categoryLabel}>{group.category}</div>
+            {group.category ? (
+              <CategoryBlock label={group.category}>
+                {group.nodes}
+              </CategoryBlock>
+            ) : (
+              // A panel whose options carry no category: they are the section's
+              // own content, so they stay flush with its heading.
+              group.nodes
             )}
-            {group.nodes}
           </Fragment>
         ))}
       </Section>

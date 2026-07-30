@@ -101,18 +101,62 @@ export const Row = (props: {
     </div>
   );
 
-// An option whose output is more than a single value: renders the option's own
-// label as a sub-heading (below its panel/category) with its values beneath, so
-// the panel -> category -> option -> values hierarchy from the form_config
-// contract is preserved (e.g. "Dosage sensitivity" over pHaplo / pTriplo).
-//
-// `level` is the heading's nesting depth within the option (0 = the top-level
-// option heading, 1 = an intermediate sub-option, 2+ = a bottom sub-option), so
-// a sub-section reads as subordinate rather than a sibling: the label weight
-// steps down (bold -> semi-bold -> normal). The heading's *children* indent one
-// step (not the heading itself), and because a nested OptionBlock's children
-// wrap in another indented container the indent compounds — a level-2 block's
-// content sits two steps in.
+/**
+ * The one place the annotation panel's indent step is applied.
+ *
+ * Everything that sits beneath a heading goes through here, so "a heading
+ * indents its content" is a property of the code rather than a rule each call
+ * site has to remember — which is how the category headings ended up flat.
+ * `className` carries the container's own layout (the gap differs by context);
+ * the indent itself is never restated.
+ */
+export const Indented = (props: {
+  className?: string;
+  children: ReactNode;
+}) => (
+  <div
+    className={
+      props.className
+        ? `${props.className} ${styles.indented}`
+        : styles.indented
+    }
+  >
+    {props.children}
+  </div>
+);
+
+/**
+ * A heading with its content indented beneath it — the shape shared by an
+ * option heading and a category heading. They differ only in the label's
+ * typography and the gap between the children, so those are the only knobs.
+ */
+const HeadingWithChildren = (props: {
+  label: ReactNode;
+  blockClass: string;
+  labelClass: string;
+  childrenClass: string;
+  children: ReactNode;
+}) => (
+  <div className={props.blockClass}>
+    <span className={props.labelClass}>{props.label}</span>
+    <Indented className={props.childrenClass}>{props.children}</Indented>
+  </div>
+);
+
+/**
+ * An option whose output is more than a single value: the option's own label as
+ * a sub-heading (below its panel/category) with its values beneath, so the
+ * panel -> category -> option -> values hierarchy from the form_config contract
+ * is preserved (e.g. "Dosage sensitivity" over pHaplo / pTriplo).
+ *
+ * `level` is the heading's nesting depth within the option (0 = the top-level
+ * option heading, 1 = an intermediate sub-option, 2+ = a bottom sub-option), so
+ * a sub-section reads as subordinate rather than a sibling: the label weight
+ * steps down (bold -> semi-bold -> normal). The heading's *children* indent one
+ * step, not the heading itself, and because a nested OptionBlock's children wrap
+ * in another indented container the indent compounds — a level-2 block's content
+ * sits two steps in.
+ */
 export const OptionBlock = (props: {
   /** ReactNode rather than string for the same reason as `Row`: a heading may
    *  carry an inline help (?) control. */
@@ -128,12 +172,38 @@ export const OptionBlock = (props: {
         ? styles.optionLabelIntermediate
         : styles.optionLabelPlain;
   return (
-    <div className={styles.optionBlock}>
-      <span className={labelClass}>{props.label}</span>
-      <div className={styles.optionChildren}>{props.children}</div>
-    </div>
+    <HeadingWithChildren
+      label={props.label}
+      blockClass={styles.optionBlock}
+      labelClass={labelClass}
+      childrenClass={styles.optionChildren}
+    >
+      {props.children}
+    </HeadingWithChildren>
   );
 };
+
+/**
+ * A panel's category heading (Locations, Missense, …) with its options beneath.
+ *
+ * The tier above OptionBlock: a category groups whole options, where an
+ * OptionBlock groups one option's values. Its children keep the section body's
+ * spacing rather than the tighter within-option gap, so grouping the options
+ * changes their indent and nothing else.
+ */
+export const CategoryBlock = (props: {
+  label: ReactNode;
+  children: ReactNode;
+}) => (
+  <HeadingWithChildren
+    label={props.label}
+    blockClass={styles.categoryBlock}
+    labelClass={styles.categoryLabel}
+    childrenClass={styles.categoryChildren}
+  >
+    {props.children}
+  </HeadingWithChildren>
+);
 
 export type RowFormat =
   | 'text'

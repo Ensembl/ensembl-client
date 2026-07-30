@@ -31,6 +31,7 @@ import {
   withOptionHelp,
   Row,
   OptionBlock,
+  Indented,
   type RowSpec
 } from './annotationRows';
 
@@ -760,8 +761,8 @@ const tableHead = (columns: DisplayTableBlockSpec['columns']): ReactNode => (
 );
 
 /**
- * A heading indents its children by wrapping them in `.optionChildren`. A table
- * marked `indent` gets that container without the heading, so an unheaded table
+ * A heading indents its children (see `Indented` in annotationRows). A table
+ * marked `indent` takes the same wrapper without a heading, so an unheaded table
  * lines up with the headed sections it sits beside instead of standing a step out
  * from them (the ClinVar phenotype table beside the grouped ones).
  */
@@ -782,7 +783,7 @@ const withHeading = (
     );
   }
   return block.indent ? (
-    <div className={styles.optionChildren}>{table}</div>
+    <Indented className={styles.optionChildren}>{table}</Indented>
   ) : (
     table
   );

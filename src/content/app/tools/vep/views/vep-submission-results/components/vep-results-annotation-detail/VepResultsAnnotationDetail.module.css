@@ -134,21 +134,52 @@
   color: var(--color-dark-grey);
 }
 
-/* Category sub-heading within a panel section (e.g. Missense / Splicing).
-   Slightly larger than option rows and with extra space below to set the
-   subsection apart from the options under it. */
+/* THE indent rule for this panel: one declaration of the step, applied by the
+   `Indented` wrapper in annotationRows.tsx to everything that sits beneath a
+   heading. Nesting compounds because each level wraps again.
+
+   Deliberately separate from the layout classes below. When these two were one
+   class, the only way to indent a context that needed a different gap was to
+   copy the padding into a second class — which is how the category headings
+   came to be the one kind of heading that did not indent its content. */
+.indented {
+  padding-left: var(--annotation-indent-step);
+}
+
+/* Category sub-heading within a panel section (e.g. Locations / Missense).
+   Slightly larger than option rows, and set apart from the category above it. */
+.categoryBlock {
+  display: flex;
+  flex-direction: column;
+
+  /* Between the heading and its first option. */
+  gap: 4px;
+  margin-top: 10px;
+}
+
+/* The space belongs to the block, not the label: the label is no longer the
+   section body's first child (it sits inside this wrapper), so a `:first-child`
+   rule on the label would match every category and collapse the gap between
+   them all. */
+.categoryBlock:first-child {
+  margin-top: 0;
+}
+
 .categoryLabel {
   font-weight: var(--font-weight-bold);
   color: var(--color-dark-grey);
 
   /* A category groups options within a section. */
   font-size: 14px;
-  margin-top: 10px;
-  margin-bottom: 4px;
 }
 
-.categoryLabel:first-child {
-  margin-top: 0;
+/* A category's options. Same layout as `.sectionBody`, which is what held them
+   before they were grouped, so grouping them changes their indent and nothing
+   about their spacing. */
+.categoryChildren {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* A multi-value option: its own label above its values (e.g. Dosage
@@ -159,13 +190,13 @@
   gap: 2px;
 }
 
-/* The heading's content, indented one step beneath it. A nested OptionBlock's
-   own children wrap in another of these, so the indent compounds with depth. */
+/* Layout for an option heading's content; the indent comes from `.indented`,
+   which `Indented` composes with this. A nested OptionBlock's children wrap in
+   another of these, so the indent compounds with depth. */
 .optionChildren {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding-left: var(--annotation-indent-step);
 }
 
 .optionLabel {
@@ -281,6 +312,8 @@
 
 .section,
 .sectionBody,
+.categoryBlock,
+.categoryChildren,
 .optionBlock,
 .optionChildren {
   min-width: 0;
