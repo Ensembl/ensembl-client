@@ -91,11 +91,11 @@ export const FeatureSearchResults = (props: {
         <thead>
           <tr>
             <th>
-              Found in
+              Found in{' '}
               <span className={styles.speciesCount}>
                 {groupedSearchMatches.length}
-              </span>
-              species
+              </span>{' '}
+              genomes
             </th>
             <th>Release date</th>
             <th>Release type</th>
