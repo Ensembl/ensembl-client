@@ -16,9 +16,11 @@
 
 import {
   planLeadingCells,
-  detailBearingRowIndices
+  detailBearingRowIndices,
+  hasAnySelectedOption
 } from './VepSubmissionResults';
 import type { VepResultsTableRowData } from './useVepVariantTabularData';
+import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 
 // planLeadingCells only reads the variant/allele/gene "markers"; the consequence
 // is irrelevant to it, so build minimal rows carrying just those markers.
@@ -215,5 +217,56 @@ describe('detailBearingRowIndices', () => {
     // of an allele; a follow-on row has none and offers no detail toggle.
     const rows = [intergenicRow('T'), intergenicRow()];
     expect(detailBearingRowIndices(rows, () => true)).toEqual([0]);
+  });
+});
+
+describe('hasAnySelectedOption', () => {
+  const panels = [
+    {
+      id: 'genes_and_transcripts',
+      label: 'Genes & transcripts',
+      options: [
+        { id: 'tss_distance', label: 'Distance to TSS', type: 'boolean' },
+        { id: 'gerp', label: 'GERP conservation score', type: 'boolean' }
+      ]
+    },
+    {
+      id: 'variant_impact_predictions',
+      label: 'Variant impact predictions',
+      options: [{ id: 'cadd', label: 'CADD', type: 'boolean' }]
+    }
+  ] as unknown as FormPanel[];
+
+  it('is false when the job ran no annotation option', () => {
+    // A submission with nothing ticked: every detail section is gated on an
+    // option, so the panel would open empty -- no chevron is offered.
+    expect(hasAnySelectedOption(panels, {})).toBe(false);
+    expect(
+      hasAnySelectedOption(panels, { tss_distance: false, cadd: false })
+    ).toBe(false);
+  });
+
+  it('is true when any option in any panel ran', () => {
+    expect(hasAnySelectedOption(panels, { cadd: true })).toBe(true);
+    expect(hasAnySelectedOption(panels, { gerp: true })).toBe(true);
+  });
+
+  it('ignores parameters that are not options of a panel', () => {
+    // `parameters` also carries settings that produce no annotation -- the
+    // up/downstream distance value, and the sub-option values of an option that
+    // is itself off. Neither should make the panel look worth opening.
+    expect(
+      hasAnySelectedOption(panels, {
+        updownstream_distance_bp: 5000,
+        clinvar_short: true,
+        species: 'homo_sapiens'
+      })
+    ).toBe(false);
+  });
+
+  it('keeps the chevron for a job with no pinned panels', () => {
+    // Submitted before panels were pinned: the options it ran cannot be
+    // enumerated, so it behaves as it always did rather than losing its detail.
+    expect(hasAnySelectedOption(undefined, {})).toBe(true);
   });
 });

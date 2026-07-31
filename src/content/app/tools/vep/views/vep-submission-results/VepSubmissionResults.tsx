@@ -231,6 +231,13 @@ const VepSubmissionResults = () => {
     livePanels: formConfig?.panels
   });
 
+  // Computed once here rather than per row, so the table and the "Expand all"
+  // control agree about whether there is anything to expand.
+  const hasSelectedOptions = hasAnySelectedOption(
+    resultsPanels,
+    submission?.parameters ?? {}
+  );
+
   useEffect(() => {
     // When user views a VEP submission for the first time, mark it as seen
     if (vepResults && submission && !submission.resultsSeen) {
@@ -318,6 +325,7 @@ const VepSubmissionResults = () => {
           onToggleFilters={() => setIsFiltersOpen((open) => !open)}
           allDetailsExpanded={detailExpansion.action === 'expand'}
           onToggleAllDetails={toggleAllDetails}
+          canExpandDetails={hasSelectedOptions}
         />
         {isFiltersOpen && (
           <VepResultsFilters
@@ -345,6 +353,7 @@ const VepSubmissionResults = () => {
               genomeId={genomeIdForUrl}
               variants={vepResults.variants}
               parameters={submission.parameters}
+              hasSelectedOptions={hasSelectedOptions}
               panels={resultsPanels}
               display={vepResults.metadata.display}
               availableAfSources={
@@ -373,7 +382,8 @@ const VepResultsHeader = ({
   isFiltersOpen,
   onToggleFilters,
   allDetailsExpanded,
-  onToggleAllDetails
+  onToggleAllDetails,
+  canExpandDetails
 }: {
   submission: VepSubmissionWithoutInputFile;
   page: number;
@@ -385,6 +395,8 @@ const VepResultsHeader = ({
   onToggleFilters: () => void;
   allDetailsExpanded: boolean;
   onToggleAllDetails: () => void;
+  /** False when the job ran no annotation option — nothing to expand. */
+  canExpandDetails: boolean;
 }) => {
   const { species } = submission;
   const perPageOptions = PER_PAGE_OPTIONS.map((option) => ({
@@ -422,14 +434,19 @@ const VepResultsHeader = ({
         lastPageNumber={maxPage}
         className={styles.pagination}
       />
-      <button
-        type="button"
-        className={styles.expandAllToggle}
-        aria-pressed={allDetailsExpanded}
-        onClick={onToggleAllDetails}
-      >
-        {allDetailsExpanded ? 'Collapse all' : 'Expand all'}
-      </button>
+      {/* Nothing to expand when the job ran no annotation option, so the
+          control is not offered rather than left to flip its own label over an
+          unchanged table. */}
+      {canExpandDetails && (
+        <button
+          type="button"
+          className={styles.expandAllToggle}
+          aria-pressed={allDetailsExpanded}
+          onClick={onToggleAllDetails}
+        >
+          {allDetailsExpanded ? 'Collapse all' : 'Expand all'}
+        </button>
+      )}
       <div>
         <ShowHide
           className={styles.filtersToggle}
@@ -450,6 +467,8 @@ const VepResultsTable = (props: {
   display: DisplaySpec | null | undefined;
   availableAfSources: AfSource[];
   detailExpansion: DetailExpansion;
+  /** False when the job ran no annotation option — see hasAnySelectedOption. */
+  hasSelectedOptions: boolean;
 }) => {
   const {
     variants,
@@ -458,7 +477,8 @@ const VepResultsTable = (props: {
     panels,
     display,
     availableAfSources,
-    detailExpansion
+    detailExpansion,
+    hasSelectedOptions
   } = props;
 
   return (
@@ -482,6 +502,7 @@ const VepResultsTable = (props: {
             variant={variant}
             genomeId={genomeId}
             parameters={parameters}
+            hasSelectedOptions={hasSelectedOptions}
             panels={panels}
             display={display}
             availableAfSources={availableAfSources}
@@ -521,6 +542,31 @@ type LeadingCells = {
 };
 
 const toRowSpanAttr = (rowSpan: number) => (rowSpan > 1 ? rowSpan : undefined);
+
+/**
+ * Whether this submission ran any annotation option at all.
+ *
+ * A job submitted with nothing ticked in Job options has nothing to show on any
+ * row: every section of the detail panel is gated on an option having run, so
+ * opening one gives an empty box. When that is the case the rows get no expand
+ * chevron and "Expand all" is not offered, rather than inviting the reader to
+ * open nothing.
+ *
+ * Judged from the pinned panels rather than from `parameters` alone: the panels
+ * are exactly the options the form offered, while `parameters` also carries
+ * settings that produce no annotation (the up/downstream distance, the
+ * sub-option values of an option that is itself off). A job with no pinned
+ * panels — one submitted before they were pinned — cannot be judged this way and
+ * keeps the chevron it has always had.
+ */
+export const hasAnySelectedOption = (
+  panels: FormPanel[] | undefined,
+  parameters: Record<string, unknown>
+): boolean =>
+  !panels ||
+  panels.some((panel) =>
+    panel.options.some((option) => Boolean(parameters[option.id]))
+  );
 
 // The indices of the rows that have an annotation detail to open: a row whose
 // allele carries annotations. The allele comes from the transcript consequence,
@@ -634,6 +680,8 @@ const VariantRow = (props: {
   display: DisplaySpec | null | undefined;
   availableAfSources: AfSource[];
   detailExpansion: DetailExpansion;
+  /** False when the job ran no annotation option — see hasAnySelectedOption. */
+  hasSelectedOptions: boolean;
 }) => {
   const {
     genomeId,
@@ -642,7 +690,8 @@ const VariantRow = (props: {
     panels,
     display,
     availableAfSources,
-    detailExpansion
+    detailExpansion,
+    hasSelectedOptions
   } = props;
   const [expandedTranscriptPaths, setExpandedTranscriptPaths] = useState<
     ExpandedTranscriptsPath[]
@@ -752,7 +801,8 @@ const VariantRow = (props: {
     // The annotation detail is available for any consequence that has an allele
     // with annotations — including intergenic variants (SPDI, HGVSg, CADD,
     // frequencies…), which have no transcript row.
-    const hasDetail = Boolean(allele);
+    // No annotation option ran -> nothing this row could show, so no chevron.
+    const hasDetail = Boolean(allele) && hasSelectedOptions;
     // ProtVar link for this allele, built from the allele's HGVSg — VEP's
     // canonical minimal representation, which is exactly what ProtVar expects.
     // (When ProtVar is selected the backend forces HGVSg to be computed.)
