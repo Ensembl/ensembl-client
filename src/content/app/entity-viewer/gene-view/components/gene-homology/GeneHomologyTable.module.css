@@ -1,4 +1,6 @@
 .table {
+  --table-height: calc(100% - 28px); /* the calc is a hack: apparently, the data table isn't laid out as a grid, so the height of the table portion isn't calculated automatically */
+  height: 100%;
   margin-left: var(--standard-gutter);
 }
 

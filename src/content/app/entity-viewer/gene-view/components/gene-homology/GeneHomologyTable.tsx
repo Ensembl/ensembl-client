@@ -38,25 +38,23 @@ const GeneHomologyTable = (props: Props) => {
   const { homologies } = props;
 
   return (
-    <div>
-      <DataTable
-        state={{
-          rowsPerPage: Infinity,
-          data: prepareTableData(homologies),
-          sortingOptions: {
-            columnId: 'protein_similarity',
-            sortingOrder: SortingOrder.DESC
-          }
-        }}
-        columns={tableColumns}
-        disabledActions={[
-          TableAction.FILTERS,
-          TableAction.FIND_IN_TABLE,
-          TableAction.DOWNLOAD_SHOWN_DATA
-        ]}
-        className={styles.table}
-      />
-    </div>
+    <DataTable
+      state={{
+        rowsPerPage: Infinity,
+        data: prepareTableData(homologies),
+        sortingOptions: {
+          columnId: 'protein_similarity',
+          sortingOrder: SortingOrder.DESC
+        }
+      }}
+      columns={tableColumns}
+      disabledActions={[
+        TableAction.FILTERS,
+        TableAction.FIND_IN_TABLE,
+        TableAction.DOWNLOAD_SHOWN_DATA
+      ]}
+      className={styles.table}
+    />
   );
 };
 

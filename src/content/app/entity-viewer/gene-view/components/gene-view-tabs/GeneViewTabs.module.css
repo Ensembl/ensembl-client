@@ -9,10 +9,6 @@
   align-items: center;
 }
 
-.geneTab::after {
-  border: none;
-}
-
 .geneViewTabs {
   padding: 0;
   height: auto;
@@ -28,26 +24,4 @@
   background-color: transparent;
   border: 1px solid var(--color-blue);
   cursor: default;
-}
-
-.selectedGeneTab::after {
-  content: '';
-  width: 12px;
-  height: 12px;
-  background-color: var(--color-black);
-  box-shadow: 0 0 4px rgb(0 0 0 / 0.8);
-  box-sizing: border-box;
-  position: absolute;
-  left: calc(50% - 8px);
-  transform-origin: 0 0;
-  transform: rotate(-45deg);
-  top: 28px;
-}
-
-.selectedGeneTab.withOpenFilter::after {
-  display: none;
-}
-
-.geneTab:first-of-type::after {
-  display: none;
 }

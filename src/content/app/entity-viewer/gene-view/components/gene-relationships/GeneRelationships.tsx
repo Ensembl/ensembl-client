@@ -14,100 +14,20 @@
  * limitations under the License.
  */
 
-import { useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router';
-
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
-import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
-
-import {
-  GeneViewTabMap,
-  GeneViewTabName,
-  GeneRelationshipsTabName,
-  View
-} from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
-
-import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
-import Panel from 'src/shared/components/panel/Panel';
+import { Panel, PanelHead, PanelBody } from 'src/shared/components/panel/Panel';
 import GeneHomology from 'src/content/app/entity-viewer/gene-view/components/gene-homology/GeneHomology';
 
 import styles from './GeneRelationships.module.css';
 
-const shouldDisableTab = (tabName: View) => {
-  return tabName !== View.HOMOLOGY;
-};
-
-const tabsData = [...GeneViewTabMap.values()]
-  .filter(({ primaryTab }) => primaryTab === GeneViewTabName.GENE_RELATIONSHIPS)
-  .map((item) => ({
-    title: item.secondaryTab,
-    isDisabled: shouldDisableTab(item.view) // TODO Use real data for tab availability if it becomes available
-  })) as Tab[];
-
-const tabClassNames = {
-  selected: styles.selectedTabName
-};
-
 const GeneRelationships = () => {
-  const navigate = useNavigate();
-  const { genomeId, entityId } = useParams() as { [key: string]: string };
-  const selectedTabNameFromRedux = useSelector(getSelectedGeneViewTabs)
-    .secondaryTab as GeneRelationshipsTabName;
-
-  const changeTab = (tab: string) => {
-    const match = [...GeneViewTabMap.entries()].find(
-      ([, { secondaryTab }]) => secondaryTab === tab
-    );
-    if (!match) {
-      return;
-    }
-    const [view] = match;
-    const url = urlFor.entityViewer({
-      genomeId,
-      entityId,
-      view
-    });
-
-    navigate(url);
-  };
-
-  // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab
-  const selectedTab =
-    tabsData.find(
-      (tab) => tab.title === selectedTabNameFromRedux && !tab.isDisabled
-    ) || tabsData.find((tab) => !tab.isDisabled);
-  const selectedTabName = selectedTab?.title || null;
-
-  const TabWrapper = () => {
-    return (
-      <Tabs
-        tabs={tabsData}
-        selectedTab={selectedTabName}
-        classNames={tabClassNames}
-        onTabChange={changeTab}
-      />
-    );
-  };
-
-  const getCurrentTabContent = () => {
-    switch (selectedTabName) {
-      case GeneRelationshipsTabName.HOMOLOGY:
-        return <GeneHomology />;
-      default:
-        return <>No data</>;
-    }
-  };
-
   return (
-    <Panel
-      header={<TabWrapper />}
-      classNames={{
-        panel: styles.panel,
-        body: styles.panelBody
-      }}
-    >
-      {getCurrentTabContent()}
+    <Panel className={styles.panel}>
+      <PanelHead className={styles.panelHead}>
+        <span className={styles.selectedTabName}>Homology</span>
+      </PanelHead>
+      <PanelBody className={styles.panelBody}>
+        <GeneHomology />
+      </PanelBody>
     </Panel>
   );
 };
