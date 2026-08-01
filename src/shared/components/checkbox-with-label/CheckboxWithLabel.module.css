@@ -3,18 +3,16 @@
   .grid {
     display: inline-grid;
     grid-template-columns: auto 1fr;
-    font-size: 0;
   }
   
   .grid input[type="checkbox"] {
-    margin-top: var(--checkbox-margin-top, 8px);
+    margin-top: calc((1.5em - 13px) / 2);
   }
   
   .label {
     color: var(--checkbox-label-color, var(--color-black));
     font-size: var(--checkbox-label-font-size, 13px);
     font-weight: var(--checkbox-label-font-weight, var(--font-weight-normal));
-    line-height: var(--checkbox-label-line-height, 30px);
     padding-left: 12px;
     cursor: pointer;
     user-select: none;
