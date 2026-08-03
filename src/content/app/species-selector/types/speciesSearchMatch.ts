@@ -31,6 +31,7 @@ export type SpeciesSearchMatch = Pick<
   GenomeInfo,
   SearchMatchFieldsFromGenomeInfo
 > & {
+  ftp_url: string;
   coding_genes_count: number;
   contig_n50: number | null; // E.coli doesn't have contig n50 in species stats
   has_variation: boolean;

@@ -159,6 +159,8 @@ const SpeciesSearchResultsTable = (props: Props) => {
             Assembly accession
           </ColumnHead>
 
+          <ColumnHead>Get data</ColumnHead>
+
           <ColumnHead
             sortOrder={getSortOrderForColumn('coding_genes_count', sortRule)}
             onSortOrderChange={(newOrder) =>
@@ -257,6 +259,15 @@ const SpeciesSearchResultsTable = (props: Props) => {
                   <AssemblyAccessionId {...searchMatch} />
                 </DisabledExternalLink>
               )}
+            </td>
+
+            <td>
+              <ExternalLink
+                to={searchMatch.ftp_url}
+                className={styles.externalLink}
+              >
+                FTP
+              </ExternalLink>
             </td>
 
             <td>{formatNumber(searchMatch.coding_genes_count)}</td>
