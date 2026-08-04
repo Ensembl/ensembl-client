@@ -603,7 +603,7 @@ export const displaySpecFixture: DisplaySpec = {
                           link: {
                             kind: 'external',
                             template:
-                              'http://europepmc.org/abstract/MED/{value}'
+                              'https://europepmc.org/article/MED/{value}'
                           },
                           split: '+',
                           nowrap: true
@@ -758,7 +758,7 @@ export const displaySpecFixture: DisplaySpec = {
                           link: {
                             kind: 'external',
                             template:
-                              'http://europepmc.org/abstract/MED/{value}'
+                              'https://europepmc.org/article/MED/{value}'
                           },
                           split: '+',
                           nowrap: true
@@ -1369,7 +1369,7 @@ export const displaySpecFixture: DisplaySpec = {
               mono: false,
               link: {
                 kind: 'external',
-                template: 'http://europepmc.org/abstract/MED/{value}'
+                template: 'https://europepmc.org/article/MED/{value}'
               },
               nowrap: false,
               label: 'PubMed Links',

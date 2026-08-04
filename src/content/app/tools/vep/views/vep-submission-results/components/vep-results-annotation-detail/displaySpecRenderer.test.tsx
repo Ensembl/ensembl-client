@@ -1590,11 +1590,11 @@ describe('renderDisplayOption', () => {
     // Each PMID is its own paper, so each is its own link.
     const first = screen.getByRole('link', { name: /22729224/ });
     expect(first.getAttribute('href')).toBe(
-      'http://europepmc.org/abstract/MED/22729224'
+      'https://europepmc.org/article/MED/22729224'
     );
     expect(
       screen.getByRole('link', { name: /25599672/ }).getAttribute('href')
-    ).toBe('http://europepmc.org/abstract/MED/25599672');
+    ).toBe('https://europepmc.org/article/MED/25599672');
     // A submission citing nothing adds no links of its own.
     expect(screen.getAllByRole('link').length).toBe(2);
   });
@@ -1921,7 +1921,7 @@ describe('IntAct interactions table', () => {
     ).toBe('https://www.ebi.ac.uk/intact/details/interaction/EBI-27104114');
     expect(
       screen.getByText('27348587').closest('a')?.getAttribute('href')
-    ).toBe('http://europepmc.org/abstract/MED/27348587');
+    ).toBe('https://europepmc.org/article/MED/27348587');
   });
 
   it('splits packed participants into a link each, without the prefix', () => {
