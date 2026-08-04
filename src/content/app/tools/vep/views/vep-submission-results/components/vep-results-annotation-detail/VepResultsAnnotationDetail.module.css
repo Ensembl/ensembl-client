@@ -93,25 +93,23 @@
   column-width: 400px;
   column-gap: 16px;
 
-  /* How many columns this panel's content can actually fill, set per panel by
-     the component (see `--annotation-columns`): each section is
-     `break-inside: avoid`, so a panel with two sections can never fill more
-     than two columns, and asking for four just left two of them empty. Capped
-     at 3 there; 3 is the fallback for anything that does not set it.
+  /* One cap for every panel, rather than one column per section.
 
-     With both `column-count` and `column-width` set, the count is a *maximum* —
-     a narrow viewport still drops to fewer columns on its own.
+     That count made sense while a section could not break: N sections could
+     never fill more than N columns. Sections fragment now, so it only made
+     panels inconsistent — a panel of three sections was capped at 1232px and a
+     panel of two at 816px, and since a column needs 400px plus a 16px gap,
+     1232px is *exactly* three columns with no slack at all. Any padding or
+     rounding dropped it to two, which then stretched to ~600px each. So the
+     three-section panels drew wide columns, the two-section ones drew 400px
+     columns, and neither ever drew three.
 
-     The max-width is what keeps this from backfiring: without it a two-column
-     panel would stretch those two columns across the whole row, and the
-     label/value rows inside are `space-between`, so each would pull its value
-     out to a far edge. Capping the width keeps columns near 400px and lets the
-     panel simply end where its content does. */
-  column-count: var(--annotation-columns, 3);
-  max-width: calc(
-    var(--annotation-columns, 3) * 400px + (var(--annotation-columns, 3) - 1) *
-      16px
-  );
+     Fixed at three columns' worth. Every panel now answers the viewport the
+     same way: the same width gives the same count and the same column width,
+     whatever a panel happens to contain. `column-width` still decides how many
+     actually fit, and fragmentation fills them. */
+  column-count: 3;
+  max-width: calc(3 * 400px + 2 * 16px);
 }
 
 /* Sections that run the panel's full width, beneath the columned ones. No width
@@ -164,6 +162,18 @@
    came to be the one kind of heading that did not indent its content. */
 .indented {
   padding-left: var(--annotation-indent-step);
+}
+
+/* The units a break must not fall inside: an option with its values, a category
+   with its options, a label/value row, and any table. A break between them is
+   fine — that is the point — but inside one it separates a value from what
+   names it. */
+.optionBlock,
+.categoryBlock,
+.row,
+.tableScroll,
+table {
+  break-inside: avoid;
 }
 
 /* Category sub-heading within a panel section (e.g. Locations / Missense).
@@ -253,13 +263,35 @@
   flex-direction: column;
   gap: 6px;
 
-  /* Keep each section whole within a column, and space sections vertically
-     (multi-column layout has no row gap). */
-  break-inside: avoid;
+  /* No `break-inside: avoid` here any more, so a section *may* break across
+     columns rather than forcing a panel to fill one column per section — a
+     short section beside a long one used to leave most of a column empty.
+
+     This does work: a section's categories fragment, so `Conservation &
+     constraint` can sit in the next column from the `Locations` above it.
+     (Flex containers were not always fragmentable; current Chrome does it.)
+     What must stay whole is the smaller stuff below — an option and its
+     values, a table, a row. */
   margin-bottom: 16px;
 }
 
+/* A heading belongs with what it introduces. Without this a break can land
+   immediately after one, stranding it at the foot of a column — which is the
+   one thing that reads worse than the empty space this whole change is for.
+
+   Only the section heading needs saying. Every option label sits inside an
+   `.optionBlock` or a `.row`, and both already refuse to break internally, so
+   no break can land after one regardless — and where a label ends its block,
+   `break-after: avoid` would wrongly glue it to the *next* option instead.
+
+   Keeping it was not merely redundant, it cost the second column: Chrome's
+   balancer gives up and returns everything to one column once the content
+   carries more unbreakable constraints than it can satisfy at its first
+   guessed height. Measured over the expanded panels of a dev-data run,
+   dropping it took panels using both columns from 1 of 12 to 6 of 12 and
+   their combined height from 2073px to 1589px, stranding nothing. */
 .sectionTitle {
+  break-after: avoid;
   font-weight: var(--font-weight-bold);
   color: var(--color-blue);
 

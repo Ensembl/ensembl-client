@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  useState,
-  useMemo,
-  Fragment,
-  type ReactNode,
-  type CSSProperties
-} from 'react';
+import { useState, useMemo, Fragment, type ReactNode } from 'react';
 
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -258,7 +252,16 @@ const VepResultsAnnotationDetail = (props: {
     // annotations alike, and appending this block after the loop put it last
     // whatever that order said.
     if (panel.id === 'allele_frequencies') {
-      return <Fragment key={panel.id}>{renderFrequencies()}</Fragment>;
+      // Null when there is nothing, not an empty Fragment: a Fragment is truthy
+      // whatever it renders, so `renderedSections` counted this panel whether
+      // or not the variant had frequencies — and that count is what asks for
+      // columns. A variant with no frequency data was silently claiming one,
+      // which is why wrapping looked arbitrary: it followed data the reader
+      // cannot see.
+      const frequencies = renderFrequencies();
+      return frequencies ? (
+        <Fragment key={panel.id}>{frequencies}</Fragment>
+      ) : null;
     }
     const groups = groupByCategory(panel.options);
     const renderedGroups = groups
@@ -477,18 +480,6 @@ const VepResultsAnnotationDetail = (props: {
     (section) => section.id === FULL_WIDTH_PANEL_ID
   );
 
-  // Of the columned sections only: counting the full-width one would ask for a
-  // column it never fills.
-  const columnCount = Math.min(Math.max(columned.length, 1), 3);
-  // Both `column-count` and `column-width` are set: per spec the count then
-  // acts as a *maximum*, so a narrow viewport still drops to fewer columns.
-  // The max-width stops those columns stretching to fill the row — a
-  // two-column panel keeps ~400px columns instead of two 700px ones, which is
-  // what pulls the label/value rows back together.
-  const columnCountStyle = {
-    '--annotation-columns': columnCount
-  } as CSSProperties;
-
   return (
     <div className={styles.detail}>
       {/* The toolbar sits outside the multi-column section list: an interactive
@@ -507,7 +498,7 @@ const VepResultsAnnotationDetail = (props: {
       {/* Sections are rendered once, up front, so the count below is of the
           sections that actually survived rather than of the panels that might
           have produced one. */}
-      <div className={styles.sections} style={columnCountStyle}>
+      <div className={styles.sections}>
         {columned.map((section) => (
           <Fragment key={section.id}>{section.node}</Fragment>
         ))}

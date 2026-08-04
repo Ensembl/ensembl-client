@@ -894,11 +894,12 @@ const COLUMNED_SECTIONS = '[class*="sections"]:not([class*="ullWidth"])';
 const columnedSections = (container: HTMLElement) =>
   container.querySelector(COLUMNED_SECTIONS) as HTMLElement;
 
-describe('VepResultsAnnotationDetail column count', () => {
-  const columnsOf = (container: HTMLElement) =>
-    columnedSections(container)?.style.getPropertyValue('--annotation-columns');
+describe('VepResultsAnnotationDetail columns', () => {
+  // The per-panel column count is gone: it capped a panel at one column per
+  // section, which only made sense while a section could not break. Every panel
+  // is laid out by the stylesheet the same way now.
 
-  it('asks for one column when only one section survives', () => {
+  it('leaves the column layout entirely to the stylesheet', () => {
     const { container } = render(
       <VepResultsAnnotationDetail
         genomeId="grch38"
@@ -910,49 +911,44 @@ describe('VepResultsAnnotationDetail column count', () => {
       />
     );
 
-    expect(columnsOf(container)).toBe('1');
+    expect(columnedSections(container).getAttribute('style')).toBeNull();
   });
 
-  it('never asks for more than three, however much there is', () => {
+  it('does not count a frequencies panel that renders nothing', () => {
+    // The allele-frequencies panel rendered as a Fragment, which is truthy
+    // whatever is inside it — so a variant with no frequency data still counted
+    // towards the column count, and asked for a column nothing filled. That is
+    // what made wrapping look arbitrary: it followed data the reader cannot
+    // see.
     const { container } = render(
       <VepResultsAnnotationDetail
         genomeId="grch38"
-        consequence={withAnnotations([
-          transcriptAnnotation('cadd', { phred: 0.09, raw: -0.64 }),
-          transcriptAnnotation('revel', { score: 0.157 }),
-          transcriptAnnotation('loeuf', { score: 1.282 })
-        ])}
+        consequence={transcriptConsequence}
         allele={makeAllele({
           annotations: [alleleAnnotation('spdi', { spdi: '1:230710047:A:G' })]
         })}
-        parameters={{
-          hgvs: true,
-          spdi: true,
-          cadd: true,
-          revel: true,
-          loeuf: true
-        }}
-        panels={panels}
+        parameters={{ spdi: true }}
+        panels={[
+          {
+            id: 'representation',
+            label: 'Variant representation',
+            options: [option('spdi', 'SPDI')]
+          },
+          {
+            id: 'allele_frequencies',
+            label: 'Allele frequencies',
+            options: [option('gnomad_sv', 'gnomAD SV')]
+          }
+        ]}
         display={displaySpecFixture}
       />
     );
 
-    expect(Number(columnsOf(container))).toBeLessThanOrEqual(3);
-  });
-
-  it('never asks for zero, even with nothing to show', () => {
-    const { container } = render(
-      <VepResultsAnnotationDetail
-        genomeId="grch38"
-        consequence={intergenicConsequence}
-        allele={makeAllele({ annotations: [] })}
-        parameters={{}}
-        panels={panels}
-        display={displaySpecFixture}
-      />
+    // One section renders, so one section is drawn — the empty panel adds none.
+    expect(container.querySelectorAll('[class*="sectionTitle"]').length).toBe(
+      1
     );
-
-    expect(Number(columnsOf(container))).toBeGreaterThanOrEqual(1);
+    expect(columnedSections(container).children.length).toBe(1);
   });
 
   describe('the full-width phenotypes section', () => {
@@ -1002,14 +998,6 @@ describe('VepResultsAnnotationDetail column count', () => {
       expect(columns.contains(heading)).toBe(false);
       expect(columns.textContent).toContain('Variant representation');
       expect(columns.textContent).not.toContain('ClinVar');
-    });
-
-    it('is not counted towards the column count it never fills', () => {
-      const { container } = renderWithPhenotypes();
-      const columns = columnedSections(container);
-      // One columned section survives, so one column — two would leave an
-      // empty one beside it.
-      expect(columns.style.getPropertyValue('--annotation-columns')).toBe('1');
     });
   });
 });
