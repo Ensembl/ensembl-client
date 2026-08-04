@@ -29,6 +29,7 @@ import { fetchExampleObjectsForGenome } from 'src/shared/state/genome/genomeApiS
 
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { VepFormConfig } from 'src/content/app/tools/vep/types/vepFormConfig';
+import { resolveAnnotationPool } from 'src/content/app/tools/vep/utils/annotationPool';
 import type {
   VepSubmissionPayload,
   VepSelectedSpecies
@@ -167,7 +168,8 @@ const vepApiSlice = restApiSlice.injectEndpoints({
           url += `&filters=${encodeURIComponent(serializedFilters)}`;
         }
         return { url };
-      }
+      },
+      transformResponse: resolveAnnotationPool
     })
   })
 });

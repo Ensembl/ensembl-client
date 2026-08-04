@@ -82,6 +82,13 @@ export type Variant = {
   };
   reference_allele: ReferenceVariantAllele;
   alternative_alleles: AlternativeVariantAllele[];
+  // Every distinct annotation payload on this variant, once; the alleles and
+  // consequences below point into it by index. VEP repeats a plugin's value on
+  // every CSQ row it applies to, so sending a copy per consequence made the
+  // payload grow with annotations *times* transcripts. `resolveAnnotationPool`
+  // rebuilds `annotations` from this as the response arrives, so nothing
+  // downstream sees the difference. Absent on responses from before pooling.
+  annotation_pool?: Annotation[];
 };
 
 export type ReferenceVariantAllele = {
@@ -113,7 +120,10 @@ export type AlternativeVariantAllele = {
   predicted_molecular_consequences: PredictedMolecularConsequence[];
   // Allele-scoped plugin output (also the only annotations available for
   // intergenic variants, which have no transcript consequences).
+  // Filled in by `resolveAnnotationPool` from `annotation_refs`; on the wire
+  // only the refs arrive.
   annotations?: Annotation[];
+  annotation_refs?: number[];
   // TODO(unspecced tail): the backend still emits `colocated_variants`
   // (Existing_variation); untyped here as nothing renders it yet — convert to a
   // plugin annotation like the rest when sample data arrives.
@@ -244,6 +254,7 @@ export type PredictedTranscriptConsequence = {
   // Transcript-scoped plugin output (protein & functional annotations, HGVS,
   // pathogenicity predictions, gene constraint, ...).
   annotations?: Annotation[];
+  annotation_refs?: number[];
   // TODO(unspecced tail): the backend still emits sift / polyphen / uniprot /
   // protein_matches here as typed fields; untyped here as nothing renders them
   // yet — convert to plugin annotations (like the `protein` plugin, read via
