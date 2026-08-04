@@ -326,7 +326,7 @@ describe('renderDisplayOption', () => {
               rating_scale: 'clinvar_aggregate'
             }
           ],
-          conditions: [
+          records: [
             {
               names: [
                 {
@@ -336,9 +336,9 @@ describe('renderDisplayOption', () => {
                   id_curie: 'MedGen:C5676913'
                 }
               ],
-              type: 'Germline',
+              classification_type: 'Germline',
               classifications: [],
-              records: []
+              rcv: null
             }
           ]
         })
@@ -1083,7 +1083,7 @@ describe('renderDisplayOption', () => {
               submissions: 1
             }
           ],
-          conditions: [
+          records: [
             {
               names: [
                 {
@@ -1093,14 +1093,27 @@ describe('renderDisplayOption', () => {
                   id_curie: 'MedGen:C5676913'
                 }
               ],
-              type: 'Germline',
+              classification_type: 'Germline',
               classifications: [
                 { classification: 'Pathogenic', count: 3 },
                 { classification: 'Uncertain_significance', count: 1 }
               ],
-              // a condition can be covered by more than one RCV record; they
-              // stack in the cell rather than running together
-              records: [{ rcv: 'RCV001836831' }, { rcv: 'RCV006249379' }]
+              rcv: 'RCV001836831'
+            },
+            {
+              // A second RCV covering the same condition is its own row now:
+              // an RCV *is* the aggregate, so it cannot share one.
+              names: [
+                {
+                  name: 'Parkinsonism-dystonia_3,_childhood-onset',
+                  ids: 'MONDO:MONDO:0030676,MedGen:C5676913',
+                  id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C5676913',
+                  id_curie: 'MedGen:C5676913'
+                }
+              ],
+              classification_type: 'Germline',
+              classifications: [{ classification: 'Benign', count: 1 }],
+              rcv: 'RCV006249379'
             },
             {
               // ClinVar has no usable ontology id for this one, so the name
@@ -1113,9 +1126,9 @@ describe('renderDisplayOption', () => {
                   id_curie: null
                 }
               ],
-              type: 'Germline',
+              classification_type: 'Germline',
               classifications: [],
-              records: []
+              rcv: null
             }
           ]
         })
@@ -1167,7 +1180,7 @@ describe('renderDisplayOption', () => {
     expect(notes[0].className).toMatch(/columnNoteMuted/);
     expect(notes[0].textContent).toContain('not contributing');
 
-    const linked = screen.getByRole('link', {
+    const [linked] = screen.getAllByRole('link', {
       name: /Parkinsonism-dystonia 3, childhood-onset/
     });
     expect(linked.getAttribute('href')).toBe(
@@ -1178,7 +1191,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('Pathogenic (3)')).toBeDefined();
     expect(screen.getByText('Uncertain significance (1)')).toBeDefined();
 
-    // both RCV records render, each linked to its own ClinVar page
+    // each RCV is its own row, linked to its own ClinVar page
     const rcv = screen.getByRole('link', { name: /RCV006249379/ });
     expect(rcv.getAttribute('href')).toBe(
       'https://www.ncbi.nlm.nih.gov/clinvar/RCV006249379/'
@@ -1219,7 +1232,7 @@ describe('renderDisplayOption', () => {
               rating_scale: 'clinvar_aggregate'
             }
           ],
-          conditions: [
+          records: [
             {
               names: [
                 {
@@ -1231,9 +1244,9 @@ describe('renderDisplayOption', () => {
                   id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C0432317'
                 }
               ],
-              type: 'Germline',
+              classification_type: 'Germline',
               classifications: [{ classification: 'Likely_benign', count: 1 }],
-              records: [{ rcv: 'RCV000648657' }]
+              rcv: 'RCV000648657'
             }
           ]
         })
@@ -1281,7 +1294,7 @@ describe('renderDisplayOption', () => {
               submissions: 5
             }
           ],
-          conditions: []
+          rcv: null
         })
       ]
     });
@@ -1321,7 +1334,7 @@ describe('renderDisplayOption', () => {
               submissions: 5
             }
           ],
-          conditions: []
+          rcv: null
         })
       ]
     });
@@ -1351,7 +1364,7 @@ describe('renderDisplayOption', () => {
               submissions: 5
             }
           ],
-          conditions: [
+          records: [
             {
               names: [
                 {
@@ -1360,7 +1373,7 @@ describe('renderDisplayOption', () => {
                   id_url: null
                 }
               ],
-              type: 'Germline',
+              classification_type: 'Germline',
               classifications: [
                 {
                   classification: 'Pathogenic',
@@ -1375,7 +1388,7 @@ describe('renderDisplayOption', () => {
                   ]
                 }
               ],
-              records: []
+              rcv: null
             }
           ]
         })
@@ -1406,7 +1419,7 @@ describe('renderDisplayOption', () => {
               submissions: 1
             }
           ],
-          conditions: [
+          records: [
             {
               names: [
                 {
@@ -1415,7 +1428,7 @@ describe('renderDisplayOption', () => {
                   id_url: null
                 }
               ],
-              type: 'Germline',
+              classification_type: 'Germline',
               classifications: [
                 {
                   classification: 'Pathogenic',
@@ -1429,7 +1442,7 @@ describe('renderDisplayOption', () => {
                   ]
                 }
               ],
-              records: []
+              rcv: null
             }
           ]
         })
@@ -1456,7 +1469,7 @@ describe('renderDisplayOption', () => {
               submissions: 1
             }
           ],
-          conditions: [
+          records: [
             {
               names: [
                 {
@@ -1465,7 +1478,7 @@ describe('renderDisplayOption', () => {
                   id_url: null
                 }
               ],
-              type: 'Germline',
+              classification_type: 'Germline',
               classifications: [
                 {
                   classification: 'Pathogenic',
@@ -1495,7 +1508,7 @@ describe('renderDisplayOption', () => {
                   ]
                 }
               ],
-              records: []
+              rcv: null
             }
           ]
         })
@@ -1546,7 +1559,7 @@ describe('renderDisplayOption', () => {
               submissions: 1
             }
           ],
-          conditions: [
+          records: [
             {
               names: [
                 {
@@ -1555,7 +1568,7 @@ describe('renderDisplayOption', () => {
                   id_url: null
                 }
               ],
-              type: 'Germline',
+              classification_type: 'Germline',
               classifications: [
                 {
                   classification: 'Pathogenic',
@@ -1577,7 +1590,7 @@ describe('renderDisplayOption', () => {
                   ]
                 }
               ],
-              records: []
+              rcv: null
             }
           ]
         })
@@ -1615,7 +1628,7 @@ describe('renderDisplayOption', () => {
               submissions: 1
             }
           ],
-          conditions: [
+          records: [
             {
               names: [
                 {
@@ -1624,7 +1637,7 @@ describe('renderDisplayOption', () => {
                   id_url: null
                 }
               ],
-              type: 'Germline',
+              classification_type: 'Germline',
               classifications: [
                 {
                   classification: 'Pathogenic',
@@ -1645,7 +1658,7 @@ describe('renderDisplayOption', () => {
                   ]
                 }
               ],
-              records: []
+              rcv: null
             }
           ]
         })
@@ -1680,7 +1693,7 @@ describe('renderDisplayOption', () => {
               submissions: 1
             }
           ],
-          conditions: [
+          records: [
             {
               names: [
                 {
@@ -1689,11 +1702,11 @@ describe('renderDisplayOption', () => {
                   id_url: null
                 }
               ],
-              type: 'Germline',
+              classification_type: 'Germline',
               classifications: [
                 { classification: 'Pathogenic', count: 1, submitters: [] }
               ],
-              records: []
+              rcv: null
             }
           ]
         })

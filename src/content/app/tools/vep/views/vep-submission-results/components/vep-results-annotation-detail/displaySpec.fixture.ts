@@ -163,22 +163,22 @@ export const displaySpecFixture: DisplaySpec = {
               columns: [
                 {
                   mono: false,
-                  nowrap: false,
                   label: 'Splicing event',
+                  nowrap: false,
                   lift_when_invariant: false
                 },
                 {
                   format: 'num',
                   mono: false,
-                  nowrap: false,
                   label: 'ΔS',
+                  nowrap: false,
                   lift_when_invariant: false
                 },
                 {
                   format: 'num',
                   mono: false,
-                  nowrap: false,
                   label: 'ΔP',
+                  nowrap: false,
                   lift_when_invariant: false
                 }
               ],
@@ -421,16 +421,16 @@ export const displaySpecFixture: DisplaySpec = {
                       from: 'phenotype',
                       format: 'phenotype',
                       mono: false,
-                      nowrap: false,
                       label: 'Phenotype',
+                      nowrap: false,
                       lift_when_invariant: false
                     },
                     {
                       from: 'source',
                       format: 'humanize',
                       mono: false,
-                      nowrap: false,
                       label: 'Source',
+                      nowrap: false,
                       lift_when_invariant: false
                     }
                   ],
@@ -457,16 +457,16 @@ export const displaySpecFixture: DisplaySpec = {
                       from: 'phenotype',
                       format: 'phenotype',
                       mono: false,
-                      nowrap: false,
                       label: 'Phenotype',
+                      nowrap: false,
                       lift_when_invariant: false
                     },
                     {
                       from: 'source',
                       format: 'humanize',
                       mono: false,
-                      nowrap: false,
                       label: 'Source',
+                      nowrap: false,
                       lift_when_invariant: false
                     }
                   ],
@@ -553,17 +553,17 @@ export const displaySpecFixture: DisplaySpec = {
             },
             {
               when: {
-                present: 'clinvar.conditions'
+                present: 'clinvar.records'
               },
               kind: 'table',
               indent: true,
-              from: 'clinvar.conditions',
+              from: 'clinvar.records',
               columns: [
                 {
                   from: 'classifications',
                   mono: false,
-                  nowrap: false,
                   label: 'Classification',
+                  nowrap: false,
                   notes: [
                     {
                       text: 'Submissions not contributing to the aggregate classification shown in light text',
@@ -607,6 +607,13 @@ export const displaySpecFixture: DisplaySpec = {
                           },
                           split: '+',
                           nowrap: true
+                        },
+                        {
+                          from: 'filed_as',
+                          format: 'phenotype',
+                          mono: false,
+                          label: 'filed as',
+                          nowrap: false
                         }
                       ],
                       emphasis: {
@@ -620,8 +627,8 @@ export const displaySpecFixture: DisplaySpec = {
                 {
                   from: 'names',
                   mono: false,
-                  nowrap: false,
                   label: 'Condition',
+                  nowrap: false,
                   items: {
                     from: 'name',
                     format: 'phenotype',
@@ -636,24 +643,19 @@ export const displaySpecFixture: DisplaySpec = {
                   lift_when_invariant: false
                 },
                 {
-                  from: 'records',
+                  from: 'rcv',
                   mono: false,
-                  nowrap: false,
-                  label: 'ClinVar record',
-                  items: {
-                    from: 'rcv',
-                    mono: false,
-                    link: {
-                      kind: 'external',
-                      template: 'https://www.ncbi.nlm.nih.gov/clinvar/{value}/'
-                    },
-                    nowrap: true
+                  link: {
+                    kind: 'external',
+                    template: 'https://www.ncbi.nlm.nih.gov/clinvar/{value}/'
                   },
+                  label: 'ClinVar record',
+                  nowrap: true,
                   lift_when_invariant: false
                 }
               ],
               where: {
-                field: 'type',
+                field: 'classification_type',
                 equals: 'Germline'
               },
               truncate: {
@@ -708,17 +710,17 @@ export const displaySpecFixture: DisplaySpec = {
             },
             {
               when: {
-                present: 'clinvar.conditions'
+                present: 'clinvar.records'
               },
               kind: 'table',
               indent: true,
-              from: 'clinvar.conditions',
+              from: 'clinvar.records',
               columns: [
                 {
                   from: 'classifications',
                   mono: false,
-                  nowrap: false,
                   label: 'Classification',
+                  nowrap: false,
                   notes: [
                     {
                       text: 'Submissions not contributing to the aggregate classification shown in light text',
@@ -762,6 +764,13 @@ export const displaySpecFixture: DisplaySpec = {
                           },
                           split: '+',
                           nowrap: true
+                        },
+                        {
+                          from: 'filed_as',
+                          format: 'phenotype',
+                          mono: false,
+                          label: 'filed as',
+                          nowrap: false
                         }
                       ],
                       emphasis: {
@@ -775,8 +784,8 @@ export const displaySpecFixture: DisplaySpec = {
                 {
                   from: 'names',
                   mono: false,
-                  nowrap: false,
                   label: 'Condition',
+                  nowrap: false,
                   items: {
                     from: 'name',
                     format: 'phenotype',
@@ -791,24 +800,19 @@ export const displaySpecFixture: DisplaySpec = {
                   lift_when_invariant: false
                 },
                 {
-                  from: 'records',
+                  from: 'rcv',
                   mono: false,
-                  nowrap: false,
-                  label: 'ClinVar record',
-                  items: {
-                    from: 'rcv',
-                    mono: false,
-                    link: {
-                      kind: 'external',
-                      template: 'https://www.ncbi.nlm.nih.gov/clinvar/{value}/'
-                    },
-                    nowrap: true
+                  link: {
+                    kind: 'external',
+                    template: 'https://www.ncbi.nlm.nih.gov/clinvar/{value}/'
                   },
+                  label: 'ClinVar record',
+                  nowrap: true,
                   lift_when_invariant: false
                 }
               ],
               where: {
-                field: 'type',
+                field: 'classification_type',
                 not_equals: 'Germline'
               },
               truncate: {
@@ -1044,22 +1048,22 @@ export const displaySpecFixture: DisplaySpec = {
             {
               from: 'disease_label',
               mono: false,
-              nowrap: false,
               label: 'Disease association',
+              nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'gene_id',
               mono: true,
-              nowrap: false,
               label: 'Target Gene',
+              nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'p_value',
               mono: false,
-              nowrap: false,
               label: 'Lead variant p-value',
+              nowrap: false,
               align: 'right',
               lift_when_invariant: false
             },
@@ -1067,16 +1071,16 @@ export const displaySpecFixture: DisplaySpec = {
               from: 'beta',
               format: 'num',
               mono: false,
-              nowrap: false,
               label: 'beta',
+              nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'l2g_score',
               format: 'num',
               mono: false,
-              nowrap: false,
               label: 'Locus to Gene (L2G) Score',
+              nowrap: false,
               lift_when_invariant: false
             }
           ],
@@ -1093,22 +1097,22 @@ export const displaySpecFixture: DisplaySpec = {
             {
               from: 'biosample',
               mono: false,
-              nowrap: false,
               label: 'BioSample',
+              nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'gene_id',
               mono: true,
-              nowrap: false,
               label: 'Target Gene',
+              nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'p_value',
               mono: false,
-              nowrap: false,
               label: 'Lead variant p-value',
+              nowrap: false,
               align: 'right',
               lift_when_invariant: false
             },
@@ -1116,8 +1120,8 @@ export const displaySpecFixture: DisplaySpec = {
               from: 'beta',
               format: 'num',
               mono: false,
-              nowrap: false,
               label: 'beta',
+              nowrap: false,
               lift_when_invariant: false
             }
           ],
@@ -1309,15 +1313,15 @@ export const displaySpecFixture: DisplaySpec = {
                 template:
                   'https://www.ebi.ac.uk/intact/details/interaction/{value}'
               },
-              nowrap: false,
               label: 'Interaction AC',
+              nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'feature_type',
               mono: false,
-              nowrap: false,
               label: 'Feature Type',
+              nowrap: false,
               lift_when_invariant: false
             },
             {
@@ -1329,8 +1333,8 @@ export const displaySpecFixture: DisplaySpec = {
               },
               split: '_and_',
               link_prefix: 'uniprotkb:',
-              nowrap: false,
               label: 'Interaction Participants',
+              nowrap: false,
               sub_option: {
                 id: 'intact_interaction_participants',
                 default: false
@@ -1340,8 +1344,8 @@ export const displaySpecFixture: DisplaySpec = {
             {
               from: 'feature_short_label',
               mono: false,
-              nowrap: false,
               label: 'Feature short label',
+              nowrap: false,
               sub_option: {
                 id: 'intact_feature_short_label',
                 default: false
@@ -1356,8 +1360,8 @@ export const displaySpecFixture: DisplaySpec = {
                 template: 'https://www.uniprot.org/uniprotkb/{value}/entry'
               },
               link_prefix: 'uniprotkb:',
-              nowrap: false,
               label: 'Affected Protein',
+              nowrap: false,
               sub_option: {
                 id: 'intact_ap_ac',
                 default: false
@@ -1371,8 +1375,8 @@ export const displaySpecFixture: DisplaySpec = {
                 kind: 'external',
                 template: 'https://europepmc.org/article/MED/{value}'
               },
-              nowrap: false,
               label: 'PubMed Links',
+              nowrap: false,
               sub_option: {
                 id: 'intact_pmid',
                 default: false

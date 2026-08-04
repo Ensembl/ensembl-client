@@ -928,7 +928,9 @@ const columnItem = (
   if (resolved === null) {
     return '';
   }
-  const { text: label, value, fields: record, stars } = resolved;
+  const { text, value, fields: record, stars } = resolved;
+  // An optional prefix, as a cell has: "filed as <condition>".
+  const label = items.label ? `${items.label} ${text}` : text;
   // An identifier's link is one thing: its icon must not be left on the line
   // above. Declared per item, never assumed — a linked condition *name* is
   // prose and has to wrap.
@@ -1114,6 +1116,11 @@ const tableCellContent = (
     return '';
   }
   const { text } = resolved;
+  // A column can ask to stay on one line as an item can — an accession's icon
+  // and its id are one thing.
+  const linkClass = column.nowrap
+    ? `${styles.listLink} ${styles.nowrap}`
+    : undefined;
 
   const template =
     column.link?.kind === 'external' ? column.link.template : undefined;
@@ -1132,7 +1139,11 @@ const tableCellContent = (
       return text;
     }
     return (
-      <ExternalLink template={template} fields={{ value: href }}>
+      <ExternalLink
+        template={template}
+        fields={{ value: href }}
+        className={linkClass}
+      >
         {text}
       </ExternalLink>
     );
@@ -1152,7 +1163,11 @@ const tableCellContent = (
     return (
       <Fragment key={index}>
         {separator}
-        <ExternalLink template={template} fields={{ value }}>
+        <ExternalLink
+          template={template}
+          fields={{ value }}
+          className={linkClass}
+        >
           {value}
         </ExternalLink>
       </Fragment>

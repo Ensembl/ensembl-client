@@ -133,6 +133,10 @@ export type DisplayLinkSpec = {
  */
 export type DisplayValuePiece = {
   from?: string | null;
+  /** A prefix before the value — OpenTargets' "L2G 0.42", or a ClinVar
+   *  submitter's own wording ("filed as ..."). On the shared type because
+   *  prefixing is a thing a value does, whichever renderer draws it. */
+  label?: string | null;
   format?: DisplayRowFormat | null;
   mono?: boolean | null;
   link?: DisplayLinkSpec | null;
@@ -185,10 +189,10 @@ export type DisplayValuePiece = {
   nowrap?: boolean | null;
 };
 
-/** One cell of a repeated list item: a value, plus a `label` prefixing it. */
-export type DisplayCellSpec = DisplayValuePiece & {
-  label?: string | null;
-};
+/** One cell of a repeated list item. Everything a value can do, and nothing
+ *  more — its last own field, `label`, moved to the base once an item line
+ *  needed one too. */
+export type DisplayCellSpec = DisplayValuePiece;
 
 /**
  * The label of a list element rendered as a label/value row. `from` reads one
