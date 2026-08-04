@@ -566,10 +566,6 @@ export const displaySpecFixture: DisplaySpec = {
                   label: 'Classification',
                   notes: [
                     {
-                      text: 'Expand for: submitter, last evaluation date, review status and associated publications',
-                      muted: false
-                    },
-                    {
                       text: 'Submissions not contributing to the aggregate classification shown in light text',
                       muted: true
                     }
@@ -719,10 +715,6 @@ export const displaySpecFixture: DisplaySpec = {
                   nowrap: false,
                   label: 'Classification',
                   notes: [
-                    {
-                      text: 'Expand for: submitter, last evaluation date, review status and associated publications',
-                      muted: false
-                    },
                     {
                       text: 'Submissions not contributing to the aggregate classification shown in light text',
                       muted: true

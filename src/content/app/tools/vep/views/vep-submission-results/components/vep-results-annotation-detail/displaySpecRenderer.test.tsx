@@ -1146,14 +1146,14 @@ describe('renderDisplayOption', () => {
       'ClinVar record'
     ]);
 
-    // The classification header explains itself over three lines rather than
-    // one long string wrapping wherever the width ran out.
+    // The classification header carries the one note that says something the
+    // table cannot show for itself. What a row expands to is not it -- the
+    // chevron says that already.
     const notes = headers[0].querySelectorAll('[class*="columnNote"]');
-    expect(notes.length).toBe(2);
-    expect(notes[0].textContent).toContain('Expand for:');
+    expect(notes.length).toBe(1);
     // The line about light text is itself in that light text.
-    expect(notes[1].className).toMatch(/columnNoteMuted/);
-    expect(notes[1].textContent).toContain('not contributing');
+    expect(notes[0].className).toMatch(/columnNoteMuted/);
+    expect(notes[0].textContent).toContain('not contributing');
 
     const linked = screen.getByRole('link', {
       name: /Parkinsonism-dystonia 3, childhood-onset/
