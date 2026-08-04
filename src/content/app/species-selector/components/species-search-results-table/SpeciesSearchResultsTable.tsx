@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import classNames from 'classnames';
-
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
@@ -23,7 +21,6 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import SolidDot from 'src/shared/components/table/dot/SolidDot';
 import EmptyDot from 'src/shared/components/table/dot/EmptyDot';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
-import DisabledExternalLink from 'src/shared/components/external-link/DisabledExternalLink';
 import {
   CommonName,
   ScientificName,
@@ -213,12 +210,7 @@ const SpeciesSearchResultsTable = (props: Props) => {
       </thead>
       <tbody>
         {results.map((searchMatch) => (
-          <tr
-            key={searchMatch.genome_id}
-            className={classNames({
-              [styles.disabled]: shouldDisableRow(searchMatch, canAddToStaged)
-            })}
-          >
+          <tr key={searchMatch.genome_id}>
             <td>
               <Checkbox
                 disabled={shouldDisableRow(searchMatch, canAddToStaged)}
@@ -247,18 +239,12 @@ const SpeciesSearchResultsTable = (props: Props) => {
               <GenomeReleaseType release={searchMatch.release} />
             </td>
             <td className={styles.assemblyAccessionId}>
-              {!shouldDisableRow(searchMatch, canAddToStaged) ? (
-                <ExternalLink
-                  to={searchMatch.assembly.url}
-                  className={styles.externalLink}
-                >
-                  <AssemblyAccessionId {...searchMatch} />
-                </ExternalLink>
-              ) : (
-                <DisabledExternalLink>
-                  <AssemblyAccessionId {...searchMatch} />
-                </DisabledExternalLink>
-              )}
+              <ExternalLink
+                to={searchMatch.assembly.url}
+                className={styles.externalLink}
+              >
+                <AssemblyAccessionId {...searchMatch} />
+              </ExternalLink>
             </td>
 
             <td>

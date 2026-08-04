@@ -25,11 +25,6 @@
   font-style: italic;
 }
 
-.disabled {
-  --dot-solid-color: var(--color-medium-light-grey);
-  color: var(--color-medium-dark-grey);
-}
-
 .centered {
   text-align: center;
 }
