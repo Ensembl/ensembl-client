@@ -328,11 +328,15 @@ describe('renderDisplayOption', () => {
           ],
           conditions: [
             {
-              name: 'Parkinsonism-dystonia_3,_childhood-onset',
+              names: [
+                {
+                  name: 'Parkinsonism-dystonia_3,_childhood-onset',
+                  ids: 'MedGen:C5676913',
+                  id_url: 'javascript:alert(1)',
+                  id_curie: 'MedGen:C5676913'
+                }
+              ],
               type: 'Germline',
-              ids: 'MedGen:C5676913',
-              id_url: 'javascript:alert(1)',
-              id_curie: 'MedGen:C5676913',
               classifications: [],
               records: []
             }
@@ -1081,11 +1085,15 @@ describe('renderDisplayOption', () => {
           ],
           conditions: [
             {
-              name: 'Parkinsonism-dystonia_3,_childhood-onset',
+              names: [
+                {
+                  name: 'Parkinsonism-dystonia_3,_childhood-onset',
+                  ids: 'MONDO:MONDO:0030676,MedGen:C5676913',
+                  id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C5676913',
+                  id_curie: 'MedGen:C5676913'
+                }
+              ],
               type: 'Germline',
-              ids: 'MONDO:MONDO:0030676,MedGen:C5676913',
-              id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C5676913',
-              id_curie: 'MedGen:C5676913',
               classifications: [
                 { classification: 'Pathogenic', count: 3 },
                 { classification: 'Uncertain_significance', count: 1 }
@@ -1097,11 +1105,15 @@ describe('renderDisplayOption', () => {
             {
               // ClinVar has no usable ontology id for this one, so the name
               // must still show — as plain text, not a dead link
-              name: 'WARS2-related_disorder',
+              names: [
+                {
+                  name: 'WARS2-related_disorder',
+                  ids: null,
+                  id_url: null,
+                  id_curie: null
+                }
+              ],
               type: 'Germline',
-              ids: null,
-              id_url: null,
-              id_curie: null,
               classifications: [],
               records: []
             }
@@ -1185,6 +1197,72 @@ describe('renderDisplayOption', () => {
     expect(
       screen.queryByRole('link', { name: /WARS2-related disorder/ })
     ).toBeNull();
+  });
+
+  it('ClinVar: one row per finding, with its conditions stacked in the cell', () => {
+    // ClinVar files one submission against several conditions at once, so five
+    // rows could be one classification by one submitter under five disease
+    // names — identical in every column but the condition. The parse collapses
+    // them (see the `collapse` post-op); this is the cell that results.
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          id: '387010',
+          significance: ['Likely_benign'],
+          review_status: 'criteria_provided,_multiple_submitters,_no_conflicts',
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Likely_benign',
+              review_status:
+                'criteria_provided,_multiple_submitters,_no_conflicts',
+              rating_scale: 'clinvar_aggregate'
+            }
+          ],
+          conditions: [
+            {
+              names: [
+                {
+                  name: 'Epidermolysis_bullosa_simplex_with_nail_dystrophy',
+                  id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C4225309'
+                },
+                {
+                  name: 'Epidermolysis_bullosa_simplex,_Ogna_type',
+                  id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C0432317'
+                }
+              ],
+              type: 'Germline',
+              classifications: [{ classification: 'Likely_benign', count: 1 }],
+              records: [{ rcv: 'RCV000648657' }]
+            }
+          ]
+        })
+      ]
+    });
+
+    // One body row, not two.
+    const rows = screen.getAllByRole('row');
+    const bodyRows = rows.filter((r) => r.querySelectorAll('td').length > 0);
+    expect(bodyRows.length).toBe(1);
+
+    // ...carrying both conditions, each linked in its own right.
+    const first = screen.getByRole('link', {
+      name: /Epidermolysis bullosa simplex with nail dystrophy/
+    });
+    const second = screen.getByRole('link', {
+      name: /Epidermolysis bullosa simplex, Ogna type/
+    });
+    expect(first.getAttribute('href')).toBe(
+      'https://www.ncbi.nlm.nih.gov/medgen/C4225309'
+    );
+    expect(second.getAttribute('href')).toBe(
+      'https://www.ncbi.nlm.nih.gov/medgen/C0432317'
+    );
+    // ...and the classification and record are stated once between them.
+    expect(screen.getAllByText('Likely benign (1)').length).toBe(1);
+    expect(screen.getAllByRole('link', { name: /RCV000648657/ }).length).toBe(
+      1
+    );
   });
 
   it('ClinVar: the review status shows its star rating and cites ClinVar', async () => {
@@ -1275,10 +1353,14 @@ describe('renderDisplayOption', () => {
           ],
           conditions: [
             {
-              name: 'WARS2-related_disorder',
+              names: [
+                {
+                  name: 'WARS2-related_disorder',
+                  ids: null,
+                  id_url: null
+                }
+              ],
               type: 'Germline',
-              ids: null,
-              id_url: null,
               classifications: [
                 {
                   classification: 'Pathogenic',
@@ -1326,10 +1408,14 @@ describe('renderDisplayOption', () => {
           ],
           conditions: [
             {
-              name: 'WARS2-related_disorder',
+              names: [
+                {
+                  name: 'WARS2-related_disorder',
+                  ids: null,
+                  id_url: null
+                }
+              ],
               type: 'Germline',
-              ids: null,
-              id_url: null,
               classifications: [
                 {
                   classification: 'Pathogenic',
@@ -1372,10 +1458,14 @@ describe('renderDisplayOption', () => {
           ],
           conditions: [
             {
-              name: 'Parkinsonism-dystonia_3,_childhood-onset',
+              names: [
+                {
+                  name: 'Parkinsonism-dystonia_3,_childhood-onset',
+                  ids: null,
+                  id_url: null
+                }
+              ],
               type: 'Germline',
-              ids: null,
-              id_url: null,
               classifications: [
                 {
                   classification: 'Pathogenic',
@@ -1458,10 +1548,14 @@ describe('renderDisplayOption', () => {
           ],
           conditions: [
             {
-              name: 'CLAPO_syndrome',
+              names: [
+                {
+                  name: 'CLAPO_syndrome',
+                  ids: null,
+                  id_url: null
+                }
+              ],
               type: 'Germline',
-              ids: null,
-              id_url: null,
               classifications: [
                 {
                   classification: 'Pathogenic',
@@ -1523,10 +1617,14 @@ describe('renderDisplayOption', () => {
           ],
           conditions: [
             {
-              name: 'CLAPO_syndrome',
+              names: [
+                {
+                  name: 'CLAPO_syndrome',
+                  ids: null,
+                  id_url: null
+                }
+              ],
               type: 'Germline',
-              ids: null,
-              id_url: null,
               classifications: [
                 {
                   classification: 'Pathogenic',
@@ -1584,10 +1682,14 @@ describe('renderDisplayOption', () => {
           ],
           conditions: [
             {
-              name: 'WARS2-related_disorder',
+              names: [
+                {
+                  name: 'WARS2-related_disorder',
+                  ids: null,
+                  id_url: null
+                }
+              ],
               type: 'Germline',
-              ids: null,
-              id_url: null,
               classifications: [
                 { classification: 'Pathogenic', count: 1, submitters: [] }
               ],

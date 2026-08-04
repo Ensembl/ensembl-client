@@ -618,16 +618,21 @@ export const displaySpecFixture: DisplaySpec = {
                   lift_when_invariant: false
                 },
                 {
-                  from: 'name',
-                  format: 'phenotype',
+                  from: 'names',
                   mono: false,
-                  link: {
-                    kind: 'external',
-                    template: '{value}'
-                  },
-                  link_from: 'id_url',
                   nowrap: false,
                   label: 'Condition',
+                  items: {
+                    from: 'name',
+                    format: 'phenotype',
+                    mono: false,
+                    link: {
+                      kind: 'external',
+                      template: '{value}'
+                    },
+                    link_from: 'id_url',
+                    nowrap: false
+                  },
                   lift_when_invariant: false
                 },
                 {
@@ -768,16 +773,21 @@ export const displaySpecFixture: DisplaySpec = {
                   lift_when_invariant: false
                 },
                 {
-                  from: 'name',
-                  format: 'phenotype',
+                  from: 'names',
                   mono: false,
-                  link: {
-                    kind: 'external',
-                    template: '{value}'
-                  },
-                  link_from: 'id_url',
                   nowrap: false,
                   label: 'Condition',
+                  items: {
+                    from: 'name',
+                    format: 'phenotype',
+                    mono: false,
+                    link: {
+                      kind: 'external',
+                      template: '{value}'
+                    },
+                    link_from: 'id_url',
+                    nowrap: false
+                  },
                   lift_when_invariant: false
                 },
                 {
