@@ -81,6 +81,20 @@ export const humanizeJoin = (
   values && values.length ? values.map(humanizeClass).join(', ') : null;
 
 /**
+ * One value that packs several terms, humanised and read as a list.
+ *
+ * The enriched ClinVar VCF uses `+` where the source had a list, so a single
+ * aggregate classification can arrive as
+ * `Conflicting_classifications_of_pathogenicity+risk_factor` — two terms in one
+ * value, which `humanize` alone would show with the separator still in it.
+ *
+ * Null when nothing survives, as every sibling formatter does: a value of just
+ * separators would otherwise render an empty row instead of dropping it.
+ */
+export const humanizeTerms = (value: string): string | null =>
+  value.split('+').map(humanizeClass).filter(Boolean).join(', ') || null;
+
+/**
  * The number of items in a list, or in a `&`-delimited string (IntAct packs its
  * columns that way); null when there are none, so a zero count drops / dashes
  * its row like an absent value — matching the old ProtVar / IntAct summaries.

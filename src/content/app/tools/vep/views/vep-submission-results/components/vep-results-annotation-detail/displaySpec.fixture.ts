@@ -31,51 +31,29 @@ export const displaySpecFixture: DisplaySpec = {
   options: [
     {
       option_id: 'hgvs',
-      heading: null,
       blocks: [
         {
           heading: 'HGVS',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'group',
           blocks: [
             {
-              heading: null,
               requires_selected: {
                 id: 'hgvs',
                 default: false
               },
-              when: null,
-              view: null,
               kind: 'rows',
-              requires: null,
               rows: [
                 {
                   key: 'c',
                   label: 'HGVSc',
                   from: 'hgvs.transcript',
-                  compose: null,
-                  format: null,
-                  mono: true,
-                  placeholder: null,
-                  help: null,
-                  help_link: null,
-                  sub_option: null,
-                  link: null
+                  mono: true
                 },
                 {
                   key: 'p',
                   label: 'HGVSp',
                   from: 'hgvs.protein',
-                  compose: null,
-                  format: null,
-                  mono: true,
-                  placeholder: null,
-                  help: null,
-                  help_link: null,
-                  sub_option: null,
-                  link: null
+                  mono: true
                 }
               ]
             }
@@ -85,28 +63,14 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'spdi',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'SPDI',
               from: 'spdi.spdi',
-              compose: null,
-              format: null,
-              mono: true,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: true
             }
           ]
         }
@@ -114,32 +78,18 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'alphamissense',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'AlphaMissense',
-              from: null,
               compose: {
                 format: 'with_score',
                 classification: 'alphamissense.classification',
                 score: 'alphamissense.score'
               },
-              format: null,
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
@@ -147,28 +97,15 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'revel',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'REVEL',
               from: 'revel.score',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
@@ -176,28 +113,15 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'clinpred',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'ClinPred',
               from: 'clinpred.score',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
@@ -205,41 +129,21 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'cadd',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'CADD (PHRED)',
               from: 'cadd.phred',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             },
             {
-              key: null,
               label: 'CADD (RAW)',
               from: 'cadd.raw',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
@@ -247,65 +151,37 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'spliceai',
-      heading: null,
       blocks: [
         {
           heading: 'SpliceAI',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'group',
           blocks: [
             {
-              heading: null,
-              requires_selected: null,
-              when: null,
-              view: null,
               kind: 'table',
               requires: 'spliceai',
               indent: false,
-              from: null,
               columns: [
                 {
+                  mono: false,
+                  nowrap: false,
                   label: 'Splicing event',
-                  from: null,
-                  format: null,
-                  mono: false,
-                  sub_option: null,
-                  link: null,
-                  split: null,
-                  link_prefix: null,
-                  align: null,
                   lift_when_invariant: false
                 },
                 {
+                  format: 'num',
+                  mono: false,
+                  nowrap: false,
                   label: 'ΔS',
-                  from: null,
-                  format: 'num',
-                  mono: false,
-                  sub_option: null,
-                  link: null,
-                  split: null,
-                  link_prefix: null,
-                  align: null,
                   lift_when_invariant: false
                 },
                 {
-                  label: 'ΔP',
-                  from: null,
                   format: 'num',
                   mono: false,
-                  sub_option: null,
-                  link: null,
-                  split: null,
-                  link_prefix: null,
-                  align: null,
+                  nowrap: false,
+                  label: 'ΔP',
                   lift_when_invariant: false
                 }
               ],
-              group_by: null,
-              where: null,
-              truncate: null,
               rows: [
                 {
                   label: 'Acceptor gain',
@@ -337,84 +213,51 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'eve',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
               key: 'eve',
               label: 'EVE',
-              from: null,
               compose: {
                 format: 'with_score',
                 classification: 'eve.classification',
                 score: 'eve.score'
               },
-              format: null,
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         },
         {
           heading: 'popEVE',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
               key: 'score',
               label: 'Score',
               from: 'popeve.score',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             },
             {
               key: 'pop',
               label: 'Population-adjusted EVE',
               from: 'popeve.pop_adjusted_eve',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             },
             {
               key: 'gap',
               label: 'Gap frequency',
               from: 'popeve.gap_frequency',
-              compose: null,
               format: 'num',
               mono: false,
-              placeholder: null,
               help: 'Authors recommend filtering if > 0.5',
               help_link: {
                 href: 'https://www.nature.com/articles/s41588-025-02400-1',
                 label: 'popEVE paper'
-              },
-              sub_option: null,
-              link: null
+              }
             }
           ]
         }
@@ -422,28 +265,15 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'gerp',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'GERP conservation score',
               from: 'gerp.score',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
@@ -451,28 +281,15 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'loeuf',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'LOEUF',
               from: 'loeuf.score',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
@@ -480,28 +297,15 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'nmd',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'NMD',
               from: 'nmd.prediction',
-              compose: null,
               format: 'humanize',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
@@ -509,41 +313,24 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'dosage_sensitivity',
-      heading: null,
       blocks: [
         {
           heading: 'Dosage sensitivity',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
               key: 'ph',
               label: 'pHaplo',
               from: 'dosage_sensitivity.phaplo',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             },
             {
               key: 'pt',
               label: 'pTriplo',
               from: 'dosage_sensitivity.ptriplo',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
@@ -551,67 +338,34 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'utrannotator',
-      heading: null,
       blocks: [
         {
           heading: 'UTRAnnotator',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
               key: 'cons',
               label: 'Consequence',
               from: 'utr_annotation.consequence',
-              compose: null,
-              format: null,
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             },
             {
               key: 'uorf',
               label: 'Existing uORFs',
               from: 'utr_annotation.existing_uorfs',
-              compose: null,
-              format: null,
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             },
             {
               key: 'inf',
               label: 'In-frame oORFs',
               from: 'utr_annotation.existing_inframe_oorfs',
-              compose: null,
-              format: null,
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             },
             {
               key: 'oof',
               label: 'Out-of-frame oORFs',
               from: 'utr_annotation.existing_outofframe_oorfs',
-              compose: null,
-              format: null,
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
@@ -619,54 +373,29 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'riboseqorfs',
-      heading: null,
       blocks: [
         {
           heading: 'RiboSeqORFs',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
               key: 'id',
               label: 'ORF',
               from: 'riboseq_orfs.orf_id',
-              compose: null,
-              format: null,
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             },
             {
               key: 'cons',
               label: 'Consequences',
               from: 'riboseq_orfs.consequences',
-              compose: null,
               format: 'join',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             },
             {
               key: 'imp',
               label: 'Impact',
               from: 'riboseq_orfs.impact',
-              compose: null,
-              format: null,
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
@@ -674,166 +403,415 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'phenotypes',
-      heading: null,
       blocks: [
         {
           heading: 'Phenotypes',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'group',
           blocks: [
             {
               heading: 'Gene associated',
-              requires_selected: null,
-              when: null,
-              view: null,
               kind: 'group',
               blocks: [
                 {
-                  heading: null,
-                  requires_selected: null,
-                  when: null,
-                  view: null,
                   kind: 'table',
-                  requires: null,
                   indent: false,
                   from: 'phenotype_data.phenotypes',
                   columns: [
                     {
-                      label: 'Phenotype',
                       from: 'phenotype',
                       format: 'phenotype',
                       mono: false,
-                      sub_option: null,
-                      link: null,
-                      split: null,
-                      link_prefix: null,
-                      align: null,
+                      nowrap: false,
+                      label: 'Phenotype',
                       lift_when_invariant: false
                     },
                     {
-                      label: 'Source',
                       from: 'source',
                       format: 'humanize',
                       mono: false,
-                      sub_option: null,
-                      link: null,
-                      split: null,
-                      link_prefix: null,
-                      align: null,
+                      nowrap: false,
+                      label: 'Source',
                       lift_when_invariant: false
                     }
                   ],
-                  group_by: null,
                   where: {
                     field: 'type',
-                    equals: 'Gene',
-                    not_equals: null
+                    equals: 'Gene'
                   },
                   truncate: {
                     visible_count: 3
-                  },
-                  rows: null
+                  }
                 }
               ]
             },
             {
               heading: 'Variant associated',
-              requires_selected: null,
-              when: null,
-              view: null,
               kind: 'group',
               blocks: [
                 {
-                  heading: null,
-                  requires_selected: null,
-                  when: null,
-                  view: null,
                   kind: 'table',
-                  requires: null,
                   indent: false,
                   from: 'phenotype_data.phenotypes',
                   columns: [
                     {
-                      label: 'Phenotype',
                       from: 'phenotype',
                       format: 'phenotype',
                       mono: false,
-                      sub_option: null,
-                      link: null,
-                      split: null,
-                      link_prefix: null,
-                      align: null,
+                      nowrap: false,
+                      label: 'Phenotype',
                       lift_when_invariant: false
                     },
                     {
-                      label: 'Source',
                       from: 'source',
                       format: 'humanize',
                       mono: false,
-                      sub_option: null,
-                      link: null,
-                      split: null,
-                      link_prefix: null,
-                      align: null,
+                      nowrap: false,
+                      label: 'Source',
                       lift_when_invariant: false
                     }
                   ],
-                  group_by: null,
                   where: {
                     field: 'type',
-                    equals: null,
                     not_equals: 'Gene'
                   },
                   truncate: {
                     visible_count: 3
-                  },
-                  rows: null
-                },
-                {
-                  heading: null,
-                  requires_selected: null,
-                  when: null,
-                  view: null,
-                  kind: 'table',
-                  requires: null,
-                  indent: false,
-                  from: 'phenotype_data.clinvar_phenotypes',
-                  columns: [
-                    {
-                      label: 'Phenotype (ClinVar)',
-                      from: 'phenotype',
-                      format: 'phenotype',
-                      mono: false,
-                      sub_option: null,
-                      link: null,
-                      split: null,
-                      link_prefix: null,
-                      align: null,
-                      lift_when_invariant: false
-                    },
-                    {
-                      label: 'Classification',
-                      from: 'clinvar_clin_sig',
-                      format: 'humanize',
-                      mono: false,
-                      sub_option: null,
-                      link: null,
-                      split: null,
-                      link_prefix: null,
-                      align: null,
-                      lift_when_invariant: false
-                    }
-                  ],
-                  group_by: null,
-                  where: null,
-                  truncate: {
-                    visible_count: 3
-                  },
-                  rows: null
+                  }
                 }
               ]
+            }
+          ]
+        },
+        {
+          heading: 'ClinVar',
+          when: {
+            present: 'clinvar.classification_summary'
+          },
+          kind: 'group',
+          blocks: [
+            {
+              kind: 'rows',
+              rows: [
+                {
+                  label: 'ClinVar variant ID',
+                  from: 'clinvar.id',
+                  mono: false,
+                  link: {
+                    kind: 'external',
+                    template:
+                      'https://www.ncbi.nlm.nih.gov/clinvar/variation/{value}/'
+                  }
+                },
+                {
+                  label: 'Classification',
+                  from: 'clinvar.classification_summary',
+                  mono: false,
+                  help: "For more detail regarding ClinVar's calculation of review status see",
+                  help_link: {
+                    href: 'https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/',
+                    label: 'ClinVar review status'
+                  },
+                  item: {
+                    cells: [
+                      {
+                        from: 'type',
+                        mono: false,
+                        labels: {
+                          SomaticClinicalImpact: 'Somatic Clinical Impact'
+                        },
+                        nowrap: true
+                      },
+                      {
+                        from: 'classification',
+                        format: 'humanize_terms',
+                        mono: false,
+                        stars_from: 'rating_scale',
+                        stars_of: 'review_status',
+                        nowrap: false
+                      },
+                      {
+                        from: 'review_status',
+                        format: 'humanize',
+                        mono: false,
+                        nowrap: false
+                      },
+                      {
+                        from: 'supporting',
+                        mono: false,
+                        template:
+                          '{supporting}/{submissions} submission(s) contribute to aggregate classification',
+                        nowrap: false
+                      }
+                    ]
+                  },
+                  where: {
+                    field: 'type',
+                    equals: 'Germline'
+                  }
+                }
+              ]
+            },
+            {
+              when: {
+                present: 'clinvar.conditions'
+              },
+              kind: 'table',
+              indent: true,
+              from: 'clinvar.conditions',
+              columns: [
+                {
+                  from: 'classifications',
+                  mono: false,
+                  nowrap: false,
+                  label: 'Classification',
+                  notes: [
+                    {
+                      text: 'Expand for: submitter, last evaluation date, review status and associated publications',
+                      muted: false
+                    },
+                    {
+                      text: 'Submissions not contributing to the aggregate classification shown in light text',
+                      muted: true
+                    }
+                  ],
+                  items: {
+                    from: 'classification',
+                    format: 'humanize',
+                    mono: false,
+                    nowrap: false,
+                    count_from: 'count',
+                    expand: {
+                      from: 'submitters',
+                      cells: [
+                        {
+                          from: 'submitter',
+                          format: 'humanize',
+                          mono: false,
+                          nowrap: false
+                        },
+                        {
+                          from: 'date_last_evaluated',
+                          mono: false,
+                          nowrap: false
+                        },
+                        {
+                          from: 'review_status',
+                          format: 'humanize',
+                          mono: false,
+                          stars: 'clinvar_submission',
+                          nowrap: false
+                        },
+                        {
+                          from: 'pmid',
+                          mono: false,
+                          link: {
+                            kind: 'external',
+                            template:
+                              'http://europepmc.org/abstract/MED/{value}'
+                          },
+                          split: '+',
+                          nowrap: true
+                        }
+                      ],
+                      emphasis: {
+                        field: 'contributes',
+                        equals: '1'
+                      }
+                    }
+                  },
+                  lift_when_invariant: false
+                },
+                {
+                  from: 'name',
+                  format: 'phenotype',
+                  mono: false,
+                  link: {
+                    kind: 'external',
+                    template: '{value}'
+                  },
+                  link_from: 'id_url',
+                  nowrap: false,
+                  label: 'Condition',
+                  lift_when_invariant: false
+                },
+                {
+                  from: 'records',
+                  mono: false,
+                  nowrap: false,
+                  label: 'ClinVar record',
+                  items: {
+                    from: 'rcv',
+                    mono: false,
+                    link: {
+                      kind: 'external',
+                      template: 'https://www.ncbi.nlm.nih.gov/clinvar/{value}/'
+                    },
+                    nowrap: true
+                  },
+                  lift_when_invariant: false
+                }
+              ],
+              where: {
+                field: 'type',
+                equals: 'Germline'
+              },
+              truncate: {
+                visible_count: 3
+              }
+            },
+            {
+              kind: 'rows',
+              rows: [
+                {
+                  from: 'clinvar.classification_summary',
+                  mono: false,
+                  item: {
+                    cells: [
+                      {
+                        from: 'type',
+                        mono: false,
+                        labels: {
+                          SomaticClinicalImpact: 'Somatic Clinical Impact'
+                        },
+                        nowrap: true
+                      },
+                      {
+                        from: 'classification',
+                        format: 'humanize_terms',
+                        mono: false,
+                        stars_from: 'rating_scale',
+                        stars_of: 'review_status',
+                        nowrap: false
+                      },
+                      {
+                        from: 'review_status',
+                        format: 'humanize',
+                        mono: false,
+                        nowrap: false
+                      },
+                      {
+                        from: 'supporting',
+                        mono: false,
+                        template:
+                          '{supporting}/{submissions} submission(s) contribute to aggregate classification',
+                        nowrap: false
+                      }
+                    ]
+                  },
+                  where: {
+                    field: 'type',
+                    not_equals: 'Germline'
+                  }
+                }
+              ]
+            },
+            {
+              when: {
+                present: 'clinvar.conditions'
+              },
+              kind: 'table',
+              indent: true,
+              from: 'clinvar.conditions',
+              columns: [
+                {
+                  from: 'classifications',
+                  mono: false,
+                  nowrap: false,
+                  label: 'Classification',
+                  notes: [
+                    {
+                      text: 'Expand for: submitter, last evaluation date, review status and associated publications',
+                      muted: false
+                    },
+                    {
+                      text: 'Submissions not contributing to the aggregate classification shown in light text',
+                      muted: true
+                    }
+                  ],
+                  items: {
+                    from: 'classification',
+                    format: 'humanize',
+                    mono: false,
+                    nowrap: false,
+                    count_from: 'count',
+                    expand: {
+                      from: 'submitters',
+                      cells: [
+                        {
+                          from: 'submitter',
+                          format: 'humanize',
+                          mono: false,
+                          nowrap: false
+                        },
+                        {
+                          from: 'date_last_evaluated',
+                          mono: false,
+                          nowrap: false
+                        },
+                        {
+                          from: 'review_status',
+                          format: 'humanize',
+                          mono: false,
+                          stars: 'clinvar_submission',
+                          nowrap: false
+                        },
+                        {
+                          from: 'pmid',
+                          mono: false,
+                          link: {
+                            kind: 'external',
+                            template:
+                              'http://europepmc.org/abstract/MED/{value}'
+                          },
+                          split: '+',
+                          nowrap: true
+                        }
+                      ],
+                      emphasis: {
+                        field: 'contributes',
+                        equals: '1'
+                      }
+                    }
+                  },
+                  lift_when_invariant: false
+                },
+                {
+                  from: 'name',
+                  format: 'phenotype',
+                  mono: false,
+                  link: {
+                    kind: 'external',
+                    template: '{value}'
+                  },
+                  link_from: 'id_url',
+                  nowrap: false,
+                  label: 'Condition',
+                  lift_when_invariant: false
+                },
+                {
+                  from: 'records',
+                  mono: false,
+                  nowrap: false,
+                  label: 'ClinVar record',
+                  items: {
+                    from: 'rcv',
+                    mono: false,
+                    link: {
+                      kind: 'external',
+                      template: 'https://www.ncbi.nlm.nih.gov/clinvar/{value}/'
+                    },
+                    nowrap: true
+                  },
+                  lift_when_invariant: false
+                }
+              ],
+              where: {
+                field: 'type',
+                not_equals: 'Germline'
+              },
+              truncate: {
+                visible_count: 3
+              }
             }
           ]
         }
@@ -841,15 +819,10 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'go',
-      heading: null,
       blocks: [
         {
           heading: 'Gene Ontology',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'list',
-          requires: null,
           from: 'go.go_terms',
           group_by: {
             field: 'namespace',
@@ -863,115 +836,82 @@ export const displaySpecFixture: DisplaySpec = {
             visible_count: 3
           },
           item: {
-            label: null,
             cells: [
               {
-                label: null,
                 from: 'name',
-                format: null,
                 mono: false,
                 link: {
                   kind: 'external',
-                  template: 'https://amigo.geneontology.org/amigo/term/{id}',
-                  builder: null
-                }
+                  template: 'https://amigo.geneontology.org/amigo/term/{id}'
+                },
+                nowrap: false
               }
-            ],
-            rows: null,
-            link: null
+            ]
           }
         }
       ]
     },
     {
       option_id: 'nearest_gene',
-      heading: null,
       blocks: [
         {
           heading: 'Nearest gene',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'list',
-          requires: null,
           from: 'nearest_gene.nearest_genes',
-          group_by: null,
           truncate: {
             visible_count: 3
           },
           item: {
-            label: null,
             cells: [
               {
-                label: null,
                 from: 'gene_id',
-                format: null,
                 mono: false,
-                link: null
+                nowrap: false
               },
               {
-                label: null,
                 from: 'distance',
-                format: null,
                 mono: false,
-                link: null
+                nowrap: false
               },
               {
-                label: null,
                 from: 'direction',
-                format: null,
                 mono: false,
-                link: null
+                nowrap: false
               }
-            ],
-            rows: null,
-            link: null
+            ]
           }
         }
       ]
     },
     {
       option_id: 'nearest_exon_jb',
-      heading: null,
       blocks: [
         {
           heading: 'Nearest exon junction boundary',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'list',
-          requires: null,
           from: 'nearest_exon_jb.boundaries',
-          group_by: null,
           truncate: {
             visible_count: 3
           },
           item: {
-            label: null,
-            cells: null,
             rows: [
               {
                 label: 'Exon',
-                from: 'exon_id',
-                format: null
+                from: 'exon_id'
               },
               {
                 label: 'Distance to exon boundary',
-                from: 'distance',
-                format: null
+                from: 'distance'
               },
               {
                 label: 'Boundary type',
-                from: 'boundary_type',
-                format: null
+                from: 'boundary_type'
               },
               {
                 label: 'Exon length',
-                from: 'exon_length',
-                format: null
+                from: 'exon_length'
               }
-            ],
-            link: null
+            ]
           }
         }
       ]
@@ -981,143 +921,94 @@ export const displaySpecFixture: DisplaySpec = {
       heading: 'MaveDB',
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
               key: 'variant',
               label: 'Variant',
               from: 'mavedb.protein_variant',
-              compose: null,
-              format: null,
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         },
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'list',
-          requires: null,
           from: 'mavedb.assays',
-          group_by: null,
           truncate: {
             visible_count: 3
           },
           item: {
-            label: null,
             cells: [
               {
-                label: null,
                 from: 'urn',
-                format: null,
                 mono: false,
                 link: {
                   kind: 'external',
-                  template: 'https://www.mavedb.org/score-sets/{urn}',
-                  builder: null
-                }
+                  template: 'https://www.mavedb.org/score-sets/{urn}'
+                },
+                nowrap: false
               },
               {
-                label: null,
                 from: 'score',
                 format: 'num',
                 mono: false,
-                link: null
+                nowrap: false
               }
-            ],
-            rows: null,
-            link: null
+            ]
           }
         }
       ]
     },
     {
       option_id: 'mutfunc',
-      heading: null,
       blocks: [
         {
           heading: 'mutfunc',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
               key: 'motif',
               label: 'Linear motifs',
               from: 'mutfunc.linear_motifs',
-              compose: null,
               format: 'num',
               mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
               sub_option: {
                 id: 'mutfunc_motif',
                 default: true
-              },
-              link: null
+              }
             },
             {
               key: 'int',
               label: 'Protein interactions',
               from: 'mutfunc.protein_interactions',
-              compose: null,
               format: 'num',
               mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
               sub_option: {
                 id: 'mutfunc_int',
                 default: true
-              },
-              link: null
+              }
             },
             {
               key: 'mod',
               label: 'Protein structure',
               from: 'mutfunc.protein_structure',
-              compose: null,
               format: 'num',
               mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
               sub_option: {
                 id: 'mutfunc_mod',
                 default: true
-              },
-              link: null
+              }
             },
             {
               key: 'exp',
               label: 'Protein structure (exp.)',
               from: 'mutfunc.protein_structure_experimental',
-              compose: null,
               format: 'num',
               mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
               sub_option: {
                 id: 'mutfunc_exp',
                 default: true
-              },
-              link: null
+              }
             }
           ]
         }
@@ -1129,26 +1020,14 @@ export const displaySpecFixture: DisplaySpec = {
       blocks: [
         {
           heading: 'Variant link',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
           requires: 'opentargets',
           rows: [
             {
-              key: null,
               label: '',
-              from: null,
-              compose: null,
-              format: null,
               mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
               link: {
                 kind: 'external',
-                template: null,
                 builder: 'opentargets_variant'
               }
             }
@@ -1156,305 +1035,122 @@ export const displaySpecFixture: DisplaySpec = {
         },
         {
           heading: 'GWAS gene associations',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'table',
-          requires: null,
           indent: false,
           from: 'opentargets.gwas_associations',
           columns: [
             {
-              label: 'Disease association',
               from: 'disease_label',
-              format: null,
               mono: false,
-              sub_option: null,
-              link: null,
-              split: null,
-              link_prefix: null,
-              align: null,
+              nowrap: false,
+              label: 'Disease association',
               lift_when_invariant: false
             },
             {
-              label: 'Target Gene',
               from: 'gene_id',
-              format: null,
               mono: true,
-              sub_option: null,
-              link: null,
-              split: null,
-              link_prefix: null,
-              align: null,
+              nowrap: false,
+              label: 'Target Gene',
               lift_when_invariant: false
             },
             {
-              label: 'Lead variant p-value',
               from: 'p_value',
-              format: null,
               mono: false,
-              sub_option: null,
-              link: null,
-              split: null,
-              link_prefix: null,
+              nowrap: false,
+              label: 'Lead variant p-value',
               align: 'right',
               lift_when_invariant: false
             },
             {
-              label: 'beta',
               from: 'beta',
               format: 'num',
               mono: false,
-              sub_option: null,
-              link: null,
-              split: null,
-              link_prefix: null,
-              align: null,
+              nowrap: false,
+              label: 'beta',
               lift_when_invariant: false
             },
             {
-              label: 'Locus to Gene (L2G) Score',
               from: 'l2g_score',
               format: 'num',
               mono: false,
-              sub_option: null,
-              link: null,
-              split: null,
-              link_prefix: null,
-              align: null,
+              nowrap: false,
+              label: 'Locus to Gene (L2G) Score',
               lift_when_invariant: false
             }
           ],
-          group_by: null,
-          where: null,
           truncate: {
             visible_count: 3
-          },
-          rows: null
+          }
         },
         {
           heading: 'QTL gene associations',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'table',
-          requires: null,
           indent: false,
           from: 'opentargets.qtl_associations',
           columns: [
             {
-              label: 'BioSample',
               from: 'biosample',
-              format: null,
               mono: false,
-              sub_option: null,
-              link: null,
-              split: null,
-              link_prefix: null,
-              align: null,
+              nowrap: false,
+              label: 'BioSample',
               lift_when_invariant: false
             },
             {
-              label: 'Target Gene',
               from: 'gene_id',
-              format: null,
               mono: true,
-              sub_option: null,
-              link: null,
-              split: null,
-              link_prefix: null,
-              align: null,
+              nowrap: false,
+              label: 'Target Gene',
               lift_when_invariant: false
             },
             {
-              label: 'Lead variant p-value',
               from: 'p_value',
-              format: null,
               mono: false,
-              sub_option: null,
-              link: null,
-              split: null,
-              link_prefix: null,
+              nowrap: false,
+              label: 'Lead variant p-value',
               align: 'right',
               lift_when_invariant: false
             },
             {
-              label: 'beta',
               from: 'beta',
               format: 'num',
               mono: false,
-              sub_option: null,
-              link: null,
-              split: null,
-              link_prefix: null,
-              align: null,
+              nowrap: false,
+              label: 'beta',
               lift_when_invariant: false
             }
           ],
-          group_by: null,
-          where: null,
           truncate: {
             visible_count: 3
-          },
-          rows: null
+          }
         }
       ]
     },
     {
       option_id: 'clinvar',
-      heading: null,
       blocks: [
-        {
-          heading: null,
-          requires_selected: {
-            id: 'clinvar_short',
-            default: true
-          },
-          when: null,
-          view: null,
-          kind: 'group',
-          blocks: [
-            {
-              heading: null,
-              requires_selected: null,
-              when: null,
-              view: null,
-              kind: 'rows',
-              requires: null,
-              rows: [
-                {
-                  key: null,
-                  label: 'ClinVar variant ID',
-                  from: 'clinvar.id',
-                  compose: null,
-                  format: null,
-                  mono: false,
-                  placeholder: null,
-                  help: null,
-                  help_link: null,
-                  sub_option: null,
-                  link: {
-                    kind: 'external',
-                    template:
-                      'https://www.ncbi.nlm.nih.gov/clinvar/variation/{value}/',
-                    builder: null
-                  }
-                }
-              ]
-            },
-            {
-              heading: null,
-              requires_selected: null,
-              when: null,
-              view: null,
-              kind: 'rows',
-              requires: null,
-              rows: [
-                {
-                  key: null,
-                  label: 'Clinical significance',
-                  from: 'clinvar.significance',
-                  compose: null,
-                  format: 'humanize_join',
-                  mono: false,
-                  placeholder: null,
-                  help: null,
-                  help_link: null,
-                  sub_option: null,
-                  link: null
-                }
-              ]
-            },
-            {
-              heading: null,
-              requires_selected: null,
-              when: {
-                present: 'clinvar.conflicting_breakdown',
-                empty: null
-              },
-              view: null,
-              kind: 'table',
-              requires: null,
-              indent: true,
-              from: 'clinvar.conflicting_breakdown',
-              columns: [
-                {
-                  label: 'Classification',
-                  from: 'significance',
-                  format: 'humanize',
-                  mono: false,
-                  sub_option: null,
-                  link: null,
-                  split: null,
-                  link_prefix: null,
-                  align: null,
-                  lift_when_invariant: false
-                },
-                {
-                  label: 'Submitters reporting',
-                  from: 'count',
-                  format: 'num',
-                  mono: false,
-                  sub_option: null,
-                  link: null,
-                  split: null,
-                  link_prefix: null,
-                  align: null,
-                  lift_when_invariant: false
-                }
-              ],
-              group_by: null,
-              where: null,
-              truncate: {
-                visible_count: 3
-              },
-              rows: null
-            }
-          ]
-        },
         {
           heading: 'Structural variant',
           requires_selected: {
             id: 'clinvar_sv',
             default: false
           },
-          when: null,
-          view: null,
           kind: 'group',
           blocks: [
             {
-              heading: null,
-              requires_selected: null,
-              when: null,
-              view: null,
               kind: 'rows',
               requires: 'clinvar_sv',
               rows: [
                 {
-                  key: null,
                   label: 'Clinical significance',
                   from: 'clinvar_sv.significance',
-                  compose: null,
                   format: 'humanize_join',
-                  mono: false,
-                  placeholder: null,
-                  help: null,
-                  help_link: null,
-                  sub_option: null,
-                  link: null
+                  mono: false
                 },
                 {
-                  key: null,
                   label: 'Origin',
                   from: 'clinvar_sv.origin',
-                  compose: null,
                   format: 'humanize_join',
-                  mono: false,
-                  placeholder: null,
-                  help: null,
-                  help_link: null,
-                  sub_option: null,
-                  link: null
+                  mono: false
                 }
               ]
             }
@@ -1467,30 +1163,19 @@ export const displaySpecFixture: DisplaySpec = {
       heading: 'ProtVar',
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'Protein Structure Stability',
               from: 'protvar.structure_stability_score',
-              compose: null,
               format: 'num',
               mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
               sub_option: {
                 id: 'protvar_stability',
                 default: true
               },
               link: {
                 kind: 'external',
-                template: null,
                 builder: 'protvar'
               }
             }
@@ -1498,131 +1183,89 @@ export const displaySpecFixture: DisplaySpec = {
         },
         {
           heading: 'Protein Pockets',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'list',
-          requires: null,
           from: 'protvar.pockets',
-          group_by: null,
           truncate: {
             visible_count: 3
           },
           item: {
             label: {
-              from: null,
-              template: 'Pocket {pocket_id}',
-              format: null,
-              wrap: null
+              template: 'Pocket {pocket_id}'
             },
             cells: [
               {
-                label: null,
                 from: 'score',
                 format: 'num',
                 mono: false,
-                link: null
+                nowrap: false
               }
             ],
-            rows: null,
             link: {
               kind: 'external',
-              template: null,
               builder: 'protvar'
             }
           }
         },
         {
-          heading: null,
-          requires_selected: null,
           when: {
-            present: null,
             empty: 'protvar.pockets'
           },
           view: 'show_all',
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'Protein Pockets',
               from: 'protvar.pockets',
-              compose: null,
               format: 'count',
               mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
               sub_option: {
                 id: 'protvar_pocket',
                 default: true
-              },
-              link: null
+              }
             }
           ]
         },
         {
           heading: 'Protein-Protein Interaction Interface',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'list',
-          requires: null,
           from: 'protvar.interaction_interfaces',
-          group_by: null,
           truncate: {
             visible_count: 3
           },
           item: {
             label: {
-              from: null,
-              template: 'Interface {partner}',
-              format: null,
-              wrap: null
+              template: 'Interface {partner}'
             },
             cells: [
               {
-                label: null,
                 from: 'score',
                 format: 'num',
                 mono: false,
-                link: null
+                nowrap: false
               }
             ],
-            rows: null,
             link: {
               kind: 'external',
-              template: null,
               builder: 'protvar'
             }
           }
         },
         {
-          heading: null,
-          requires_selected: null,
           when: {
-            present: null,
             empty: 'protvar.interaction_interfaces'
           },
           view: 'show_all',
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'Protein-Protein Interaction Interface',
               from: 'protvar.interaction_interfaces',
-              compose: null,
               format: 'count',
               mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
               sub_option: {
                 id: 'protvar_int',
                 default: true
-              },
-              link: null
+              }
             }
           ]
         }
@@ -1630,30 +1273,16 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'protein',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'Protein ID',
               from: 'protein.ensembl_protein_id',
-              compose: null,
-              format: null,
               mono: true,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
               link: {
                 kind: 'app_popup',
-                template: null,
                 builder: 'protein_popup'
               }
             }
@@ -1663,166 +1292,114 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'intact',
-      heading: null,
       blocks: [
         {
           heading: 'IntAct',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'table',
-          requires: null,
           indent: false,
           from: 'intact.interactions',
           columns: [
             {
-              label: 'Interaction AC',
               from: 'interaction_ac',
-              format: null,
               mono: false,
-              sub_option: null,
               link: {
                 kind: 'external',
                 template:
-                  'https://www.ebi.ac.uk/intact/details/interaction/{value}',
-                builder: null
+                  'https://www.ebi.ac.uk/intact/details/interaction/{value}'
               },
-              split: null,
-              link_prefix: null,
-              align: null,
+              nowrap: false,
+              label: 'Interaction AC',
               lift_when_invariant: false
             },
             {
-              label: 'Feature Type',
               from: 'feature_type',
-              format: null,
               mono: false,
-              sub_option: null,
-              link: null,
-              split: null,
-              link_prefix: null,
-              align: null,
+              nowrap: false,
+              label: 'Feature Type',
               lift_when_invariant: false
             },
             {
-              label: 'Interaction Participants',
               from: 'interaction_participants',
-              format: null,
               mono: false,
+              link: {
+                kind: 'external',
+                template: 'https://www.uniprot.org/uniprotkb/{value}/entry'
+              },
+              split: '_and_',
+              link_prefix: 'uniprotkb:',
+              nowrap: false,
+              label: 'Interaction Participants',
               sub_option: {
                 id: 'intact_interaction_participants',
                 default: false
               },
-              link: {
-                kind: 'external',
-                template: 'https://www.uniprot.org/uniprotkb/{value}/entry',
-                builder: null
-              },
-              split: '_and_',
-              link_prefix: 'uniprotkb:',
-              align: null,
               lift_when_invariant: false
             },
             {
-              label: 'Feature short label',
               from: 'feature_short_label',
-              format: null,
               mono: false,
+              nowrap: false,
+              label: 'Feature short label',
               sub_option: {
                 id: 'intact_feature_short_label',
                 default: false
               },
-              link: null,
-              split: null,
-              link_prefix: null,
-              align: null,
               lift_when_invariant: true
             },
             {
-              label: 'Affected Protein',
               from: 'ap_ac',
-              format: null,
               mono: false,
+              link: {
+                kind: 'external',
+                template: 'https://www.uniprot.org/uniprotkb/{value}/entry'
+              },
+              link_prefix: 'uniprotkb:',
+              nowrap: false,
+              label: 'Affected Protein',
               sub_option: {
                 id: 'intact_ap_ac',
                 default: false
               },
-              link: {
-                kind: 'external',
-                template: 'https://www.uniprot.org/uniprotkb/{value}/entry',
-                builder: null
-              },
-              split: null,
-              link_prefix: 'uniprotkb:',
-              align: null,
               lift_when_invariant: true
             },
             {
-              label: 'PubMed Links',
               from: 'pmid',
-              format: null,
               mono: false,
+              link: {
+                kind: 'external',
+                template: 'http://europepmc.org/abstract/MED/{value}'
+              },
+              nowrap: false,
+              label: 'PubMed Links',
               sub_option: {
                 id: 'intact_pmid',
                 default: false
               },
-              link: {
-                kind: 'external',
-                template: 'http://europepmc.org/abstract/MED/{value}',
-                builder: null
-              },
-              split: null,
-              link_prefix: null,
-              align: null,
               lift_when_invariant: false
             }
           ],
-          group_by: null,
-          where: null,
           truncate: {
             visible_count: 3
-          },
-          rows: null
+          }
         }
       ]
     },
     {
       option_id: 'gencode_promoters',
-      heading: null,
       blocks: [
         {
           heading: 'GENCODE promoter',
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
-              key: null,
               label: 'Region',
               from: 'gencode_promoter.region',
-              compose: null,
-              format: null,
-              mono: true,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: true
             },
             {
-              key: null,
               label: 'Feature ID',
               from: 'gencode_promoter.feature_id',
-              compose: null,
-              format: null,
-              mono: true,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: true
             }
           ]
         }
@@ -1830,39 +1407,64 @@ export const displaySpecFixture: DisplaySpec = {
     },
     {
       option_id: 'tss_distance',
-      heading: null,
       blocks: [
         {
-          heading: null,
-          requires_selected: null,
-          when: null,
-          view: null,
           kind: 'rows',
-          requires: null,
           rows: [
             {
               key: 'tss_distance',
               label: 'Distance to TSS',
               from: 'tss_distance.distance',
-              compose: null,
               format: 'num',
-              mono: false,
-              placeholder: null,
-              help: null,
-              help_link: null,
-              sub_option: null,
-              link: null
+              mono: false
             }
           ]
         }
       ]
     }
   ],
+  rating_scales: {
+    clinvar_aggregate: {
+      out_of: 4,
+      ratings: {
+        'practice guideline': 4,
+        'reviewed by expert panel': 3,
+        'criteria provided, multiple submitters, no conflicts': 2,
+        'criteria provided, conflicting classifications': 1,
+        'criteria provided, single submitter': 1,
+        'no assertion criteria provided': 0,
+        'no classification provided': 0,
+        'no classification for the individual variant': 0
+      }
+    },
+    clinvar_submission: {
+      out_of: 4,
+      ratings: {
+        'practice guideline': 4,
+        'reviewed by expert panel': 3,
+        'criteria provided, single submitter': 1,
+        'no assertion criteria provided': 0,
+        'no classification provided': 0
+      }
+    },
+    clinvar_somatic: {
+      out_of: 4,
+      ratings: {
+        'practice guideline': 4,
+        'reviewed by expert panel': 3,
+        'criteria provided, multiple submitters': 2,
+        'criteria provided, single submitter': 1,
+        'no assertion criteria provided': 0,
+        'no classification provided': 0,
+        'no classification for the individual variant': 0
+      }
+    }
+  },
   plugin_scopes: {
     mutfunc: 'transcript',
     mavedb: 'transcript',
     protvar: 'transcript',
-    clinvar: 'allele',
+    clinvar: 'transcript',
     clinvar_sv: 'allele',
     gencode_promoter: 'allele',
     gnomad_exomes: 'allele',

@@ -20,12 +20,14 @@
  *
  * It says how each option's parsed annotation is laid out — the labels, order,
  * headings, formats and placeholders that used to be a `case` body per option
- * in VepResultsAnnotationDetail. Every field maps 1:1 onto the row primitives in
- * `annotationRows.tsx`; nothing here describes rendering those cannot already
- * do.
+ * in VepResultsAnnotationDetail. The spec now owns every option's layout: the
+ * override registry is empty, and ClinVar — once the example of what could not
+ * be expressed — is the largest thing it describes.
  *
- * Options whose output is interactive or derived (ClinVar, OpenTargets,
- * ProtVar, …) are deliberately not expressible and stay as frontend overrides.
+ * The rendering primitives live in two places: `annotationRows.tsx` for rows
+ * and blocks, and `displaySpecRenderer.tsx` for the rest (cells, tables,
+ * ratings, expanders). The frontend still owns named `builder` links, which
+ * need job context no annotation field carries.
  */
 
 /** Mirrors `RowFormat` in annotationRows.tsx. */
@@ -36,7 +38,9 @@ export type DisplayRowFormat =
   | 'phenotype'
   | 'join'
   | 'humanize_join'
-  | 'count';
+  | 'count'
+  /** One value packing several `+`-joined terms, humanised and comma-joined. */
+  | 'humanize_terms';
 
 /** Which view a block belongs to; absent = both (the common case). */
 export type DisplayBlockView = 'default' | 'show_all';
@@ -53,7 +57,10 @@ export type DisplayCompose = {
 
 export type DisplayRowSpec = {
   key?: string | null;
-  label: string;
+  /** Optional only for a row that stacks a list: ClinVar's somatic
+   *  classifications sit directly above the table they describe, where their
+   *  position says what a repeated label would. */
+  label?: string | null;
   /**
    * `<plugin>.<field>` into the parsing spec. Which entity the plugin is read
    * from is *not* stated here — that is the parser's `scope`, and arrives
@@ -85,6 +92,18 @@ export type DisplayRowSpec = {
   sub_option?: { id: string; default?: boolean } | null;
   /** A trailing link on the value (a named builder — ProtVar's icon per row). */
   link?: DisplayLinkSpec | null;
+  /** A star rating in front of the value, using this named scale. The value
+   *  itself still renders. */
+  stars?: string | null;
+  /**
+   * A row whose `from` is a *list*: one rendered line per element, stacked as
+   * the row's value under a single label. The same element shape a list block
+   * repeats — ClinVar's classification is one line per classification type.
+   */
+  item?: DisplayItemSpec | null;
+  /** Keep only some of the stacked list, so one list can be shown in two
+   *  places. The same filter a table block takes. */
+  where?: DisplayWhereSpec | null;
 };
 
 /**
@@ -100,16 +119,75 @@ export type DisplayLinkSpec = {
 };
 
 /**
- * One cell of a repeated list item. `from` is a field *of the list element* (not
- * `plugin.field`); omit it for a scalar list whose elements are the value
- * themselves (phenotype strings).
+ * One rendered value, wherever it appears.
+ *
+ * A cell of a repeated item and a line of a list-valued table cell are the same
+ * idea, and they had drifted: `labels` and `template` on one, `count_from` and
+ * `split` on the other, a rating named by a field here and stated outright
+ * there — differences that came from the order the two grew rather than from
+ * anything about the values. A capability belongs to *a value*; what is
+ * genuinely particular stays on the subtype.
+ *
+ * `from` is a field *of the element* (not `plugin.field`); omit it for a scalar
+ * list whose elements are the value themselves (phenotype strings).
  */
-export type DisplayCellSpec = {
-  label?: string | null;
+export type DisplayValuePiece = {
   from?: string | null;
   format?: DisplayRowFormat | null;
   mono?: boolean | null;
   link?: DisplayLinkSpec | null;
+  /** Build the link from a *sibling* field rather than from the value's own
+   *  text: the reader sees a condition's name, the href is the URL the parse
+   *  resolved for it. */
+  link_from?: string | null;
+  /** One value packing several, each linked in its own right — a ClinVar
+   *  submission cites its publications as one `+`-joined list of PMIDs, and
+   *  IntAct joins interaction participants with `_and_`. */
+  split?: string | null;
+  /** Only link a value carrying this prefix, and strip it before filling the
+   *  template: IntAct writes `uniprotkb:P37840` where UniProt's URL wants the
+   *  bare accession. A value without the prefix is not an accession, so it
+   *  renders as plain text rather than becoming a broken link. */
+  link_prefix?: string | null;
+  /** A star rating in front of the value, on this named scale... */
+  stars?: string | null;
+  /**
+   * ...or on the scale *named by this field of the element*, so sibling lines
+   * can be rated differently: ClinVar reads the same review-status wording one
+   * way for a germline classification and another for a somatic one, so which
+   * scale applies is data.
+   */
+  stars_from?: string | null;
+  /** Which field the rating is *of*, when not this value itself: the stars lead
+   *  the classification but rate the review status behind it. */
+  stars_of?: string | null;
+  /**
+   * The text as a `{field}` template over the element, for a value that only
+   * means something said in words ("1/44 submissions contribute to aggregate
+   * classification"). `from` still says which field must be present for it to
+   * render at all.
+   */
+  template?: string | null;
+  /**
+   * Value -> what to show for it. For a value whose wording is the source's
+   * rather than a reader's: ClinVar's classification type is the key a join
+   * matches on, so it stays "SomaticClinicalImpact" in the data while reading
+   * as three words here. An unmapped value keeps the data's own wording.
+   */
+  labels?: Record<string, string> | null;
+  /**
+   * Keep the value on one line, so its column is never sized below it. For an
+   * identifier: a link's icon and its id are one thing, and a break between
+   * them strands the icon on the row above. Opt-in, never a blanket rule for
+   * links, because the same table links a condition *name* — prose, which must
+   * be free to wrap.
+   */
+  nowrap?: boolean | null;
+};
+
+/** One cell of a repeated list item: a value, plus a `label` prefixing it. */
+export type DisplayCellSpec = DisplayValuePiece & {
+  label?: string | null;
 };
 
 /**
@@ -146,6 +224,17 @@ export type DisplayItemSpec = {
   rows?: DisplayItemFieldRowSpec[] | null;
   /** A trailing link on a label/value item's value (ProtVar's per-pocket icon). */
   link?: DisplayLinkSpec | null;
+};
+
+/**
+ * Keep only the list elements whose `field` equals (or does not equal) a value.
+ * `not_equals` is the complement, so a pair of blocks can divide a list
+ * exhaustively rather than the second naming the values it wants.
+ */
+export type DisplayWhereSpec = {
+  field: string;
+  equals?: string | null;
+  not_equals?: string | null;
 };
 
 export type DisplayTruncateSpec = { visible_count: number };
@@ -227,42 +316,80 @@ export type DisplayGroupBy = {
   labels?: Record<string, string> | null;
 };
 
+/** One line of a list-valued cell: `from` names the element field to show,
+ * `count_from` a companion count rendered in brackets, and `link`/`link_from`
+ * work as on the column itself. */
+export type DisplayColumnItems = DisplayValuePiece & {
+  /** Required here, unlike on a cell: a line of a list of *objects* has to say
+   *  which field of them it shows. */
+  from: string;
+  /** A companion count rendered after the value: "Pathogenic (5)". */
+  count_from?: string | null;
+  /** Opens this one line onto its own detail. */
+  expand?: DisplayColumnExpand | null;
+};
+
+/** A summary line's collapsed detail. `from` is read from the same element the
+ *  line came from — a cell of several summaries opens one at a time — and
+ *  `cells` are the fields shown for each element of it. */
+export type DisplayColumnExpand = {
+  from: string;
+  cells: DisplayColumnItems[];
+  /**
+   * Which of these lines to set apart. The detail is a long list of much the
+   * same thing and only some of it bears on the classification above: a ClinVar
+   * submission that counts toward the aggregate reads at full weight, one that
+   * does not stays quiet rather than being hidden — it is still a real
+   * submission somebody made. Tested by value, not truthiness, because the flag
+   * is a code and "0" is a perfectly true-looking string.
+   */
+  emphasis?: DisplayWhereSpec | null;
+};
+
+/**
+ * A further line of a column's heading. A column that needs explaining ends up
+ * with a heading longer than the values beneath it, and as one string it wrapped
+ * wherever the width ran out. `muted` sets a line in the same quiet text as the
+ * thing it describes, so the heading demonstrates its own convention.
+ */
+export type DisplayColumnNote = {
+  text: string;
+  muted?: boolean;
+};
+
 /** One column of a `table` block: a header `label`. In list mode the value
  * comes from the list element's `from`; in fixed mode the columns are headers
  * only (the value columns' `format` applies to each row's `values`). */
-export type DisplayTableColumnSpec = {
+/**
+ * One column of a table block: a heading over a rendered value.
+ *
+ * A column *is* a value, so it is a `DisplayValuePiece`. What stays here is
+ * what a column has and a value does not — a heading, and how the column
+ * behaves within its table.
+ */
+export type DisplayTableColumnSpec = DisplayValuePiece & {
   label: string;
-  from?: string | null;
-  format?: DisplayRowFormat | null;
-  mono?: boolean;
-  /**
-   * Which way the column's values and header align. Normally absent: the house
-   * rule derives it from the data type, so a numeric `format` reads right and
-   * everything else reads left. It is stated only where the format cannot say so
-   * — a number the source publishes pre-formatted as a string, like
-   * OpenTargets' p-value.
-   */
-  align?: 'left' | 'right' | null;
+  /** Further heading lines beneath the label. */
+  notes?: DisplayColumnNote[] | null;
   /** Present only when its sub-option ran, so a table's width follows what the
    * user selected. Same gate the rows use. */
   sub_option?: { id: string; default?: boolean } | null;
-  /** Links the cell value out, `{value}` being the cell's own text (after
-   * `split` and `link_prefix` have been applied). */
-  link?: DisplayLinkSpec | null;
-  /** Some sources pack several values into one column — IntAct joins
-   * interaction participants with `_and_`. Splitting renders them as separate
-   * items, each linked in its own right. */
-  split?: string | null;
-  /** Only link a value carrying this prefix, and strip it before filling the
-   * template: IntAct writes `uniprotkb:P37840` where UniProt's URL wants the
-   * bare accession. A value without the prefix is not an accession, so it
-   * renders as plain text rather than becoming a broken link. */
-  link_prefix?: string | null;
+  /** How to render a cell whose value is a list of objects: one line per
+   *  element. `count_from` renders a companion count in brackets. */
+  items?: DisplayColumnItems | null;
+  /**
+   * Which way the column's values and header align. Normally absent: the house
+   * rule derives it from the data type, so a numeric `format` reads right and
+   * everything else reads left. It is stated only where the format cannot say
+   * so — a number the source publishes pre-formatted as a string, like
+   * OpenTargets' p-value.
+   */
+  align?: 'left' | 'right' | null;
   /** When every row shares one value for this column, show it once above the
    * table rather than repeating it down a column — IntAct's affected protein is
    * usually the same for every interaction a variant takes part in. It stays a
    * column the moment the value differs anywhere. */
-  lift_when_invariant?: boolean;
+  lift_when_invariant?: boolean | null;
 };
 
 /** One row of a fixed (matrix) table: a text `label` for the first column, then
@@ -303,11 +430,7 @@ export type DisplayTableBlockSpec = {
    * it builds a heading per table, so a second table repeats the heading rather
    * than joining it.
    */
-  where?: {
-    field: string;
-    equals?: string | null;
-    not_equals?: string | null;
-  } | null;
+  where?: DisplayWhereSpec | null;
   /** list mode: show this many rows, the rest behind a show-more toggle (per
    *  section when grouped). */
   truncate?: DisplayTruncateSpec | null;
@@ -347,8 +470,25 @@ export type DisplayOptionSpec = {
   blocks: DisplayBlockSpec[];
 };
 
+/**
+ * A term -> rating table, drawn as a row of filled and empty stars.
+ *
+ * Which phrase earns which rating is source knowledge, so it is authored in the
+ * spec and served rather than known here: ClinVar reads the same review-status
+ * wording differently for a variant's aggregate classification and for a single
+ * submission, which is why scales are named. Terms are matched loosely — case,
+ * and `_` as a space — so the scale can be written as the phrase a reader would
+ * recognise while the data keeps the source's own punctuation.
+ */
+export type DisplayRatingScale = {
+  out_of: number;
+  ratings: Record<string, number>;
+};
+
 export type DisplaySpec = {
   options: DisplayOptionSpec[];
   /** plugin id -> "allele" | "transcript", derived by the backend from `parsing`. */
   plugin_scopes: Record<string, string>;
+  /** Scales a row's or item's `stars` names. */
+  rating_scales?: Record<string, DisplayRatingScale>;
 };

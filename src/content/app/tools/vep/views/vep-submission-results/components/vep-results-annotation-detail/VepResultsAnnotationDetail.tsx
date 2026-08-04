@@ -450,18 +450,36 @@ const VepResultsAnnotationDetail = (props: {
   // Capped at 3 as well: beyond that the columns are narrower than the widest
   // tables want (see `.sections`), and a very long panel gains little from a
   // fourth.
-  const renderedSections = [
-    ...(panels ?? []).map(renderPanel),
+  const renderedSections: { id: string; node: ReactNode }[] = [
+    ...(panels ?? []).map((panel) => ({
+      id: panel.id,
+      node: renderPanel(panel)
+    })),
     // Older jobs pinned their panels before allele frequencies were one, and
     // some callers pass no panels at all. Both still get the block — appended,
     // as it always was. Only its position moves when the panel is there to
     // place it.
     !(panels ?? []).some((panel) => panel.id === 'allele_frequencies')
-      ? renderFrequencies()
+      ? { id: 'allele_frequencies', node: renderFrequencies() }
       : null
-  ].filter(Boolean);
+  ].filter((section): section is { id: string; node: ReactNode } =>
+    Boolean(section?.node)
+  );
 
-  const columnCount = Math.min(Math.max(renderedSections.length, 1), 3);
+  // Phenotypes drops out of the column flow and takes the panel's full width at
+  // the bottom. Its conditions tables are the widest thing here — four columns
+  // of prose and links — and a ~400px column left every one of them wrapping.
+  // The rest of the annotations are label/value rows that read better narrow.
+  const columned = renderedSections.filter(
+    (section) => section.id !== FULL_WIDTH_PANEL_ID
+  );
+  const fullWidth = renderedSections.filter(
+    (section) => section.id === FULL_WIDTH_PANEL_ID
+  );
+
+  // Of the columned sections only: counting the full-width one would ask for a
+  // column it never fills.
+  const columnCount = Math.min(Math.max(columned.length, 1), 3);
   // Both `column-count` and `column-width` are set: per spec the count then
   // acts as a *maximum*, so a narrow viewport still drops to fewer columns.
   // The max-width stops those columns stretching to fill the row — a
@@ -490,8 +508,18 @@ const VepResultsAnnotationDetail = (props: {
           sections that actually survived rather than of the panels that might
           have produced one. */}
       <div className={styles.sections} style={columnCountStyle}>
-        {renderedSections}
+        {columned.map((section) => (
+          <Fragment key={section.id}>{section.node}</Fragment>
+        ))}
       </div>
+
+      {fullWidth.length > 0 && (
+        <div className={styles.fullWidthSections}>
+          {fullWidth.map((section) => (
+            <Fragment key={section.id}>{section.node}</Fragment>
+          ))}
+        </div>
+      )}
 
       {/* Collapse control at the bottom-right — the same blue close (cross) used
           at the bottom of an expanded transcript list — so a long panel can be
@@ -504,6 +532,17 @@ const VepResultsAnnotationDetail = (props: {
     </div>
   );
 };
+
+/**
+ * The one panel that leaves the column flow and runs the panel's full width,
+ * beneath the rest.
+ *
+ * Named by its form-panel id, which arrives with the job's pinned panels — the
+ * same contract that orders the sections. Its ClinVar conditions tables are the
+ * widest thing the results detail draws, and in a ~400px column every column of
+ * them wrapped.
+ */
+const FULL_WIDTH_PANEL_ID = 'phenotype_and_disease_associations';
 
 const Section = (props: { title: ReactNode; children: ReactNode }) => (
   <div className={styles.section}>

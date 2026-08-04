@@ -156,3 +156,41 @@ describe('TruncatedList', () => {
     });
   });
 });
+
+/**
+ * The collapsed-detail shape: `visibleCount: 0` plus `toggleFirst` turns the
+ * same primitive into a summary that opens onto its detail. Without the
+ * ordering the summary would sit underneath what it summarises.
+ */
+describe('toggleFirst', () => {
+  const renderDetail = (toggleFirst: boolean) =>
+    render(
+      <TruncatedList
+        items={['first', 'second']}
+        visibleCount={0}
+        toggleFirst={toggleFirst}
+        renderItem={(item) => <span key={item}>{item}</span>}
+        renderToggle={({ toggle }) => <button onClick={toggle}>summary</button>}
+      />
+    );
+
+  it('renders the toggle before the items', async () => {
+    const { container } = renderDetail(true);
+    await userEvent.click(screen.getByRole('button'));
+    expect(
+      Array.from(container.firstChild!.parentElement!.querySelectorAll('*'))
+        .map((n) => n.textContent)
+        .slice(0, 3)
+    ).toEqual(['summary', 'first', 'second']);
+  });
+
+  it('renders it after them without the flag', async () => {
+    const { container } = renderDetail(false);
+    await userEvent.click(screen.getByRole('button'));
+    expect(
+      Array.from(container.firstChild!.parentElement!.querySelectorAll('*'))
+        .map((n) => n.textContent)
+        .slice(0, 3)
+    ).toEqual(['first', 'second', 'summary']);
+  });
+});

@@ -24,6 +24,7 @@ import OptionHelpText from 'src/content/app/tools/vep/views/vep-form/vep-form-op
 import {
   num,
   humanizeClass,
+  humanizeTerms,
   normalizePhenotype,
   joinList,
   humanizeJoin,
@@ -83,6 +84,13 @@ export const Row = (props: {
    * `space-between` (the OpenTargets variant link).
    */
   plain?: boolean;
+  /**
+   * A value too wide to sit opposite its label: the label takes a line of its
+   * own and the value goes beneath it, indented. Opposite a label there is only
+   * ever a fraction of the panel's width, which is not enough for a value that
+   * is itself several columns (ClinVar's classification per type).
+   */
+  stacked?: boolean;
 }) =>
   props.plain ? (
     <div className={`${styles.row} ${styles.plainRow}`}>
@@ -91,11 +99,30 @@ export const Row = (props: {
       </span>
     </div>
   ) : (
-    <div className={styles.row}>
-      <span className={props.emphasis ? styles.optionLabel : styles.rowLabel}>
-        {props.label}
-      </span>
-      <span className={props.mono ? styles.mono : undefined}>
+    <div
+      className={[
+        styles.row,
+        props.stacked ? styles.stackedRow : null,
+        // A stack with nothing to label stands on its own, so it carries the
+        // space a label would otherwise have given it.
+        props.stacked && !props.label ? styles.standaloneStack : null
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      {props.label ? (
+        <span className={props.emphasis ? styles.optionLabel : styles.rowLabel}>
+          {props.label}
+        </span>
+      ) : null}
+      <span
+        className={[
+          props.mono ? styles.mono : null,
+          props.stacked ? styles.stackedRowValue : null
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         {props.value}
       </span>
     </div>
@@ -212,7 +239,8 @@ export type RowFormat =
   | 'phenotype'
   | 'join'
   | 'humanize_join'
-  | 'count';
+  | 'count'
+  | 'humanize_terms';
 
 export type RowSpec = {
   /**
@@ -233,6 +261,8 @@ export type RowSpec = {
   key?: string;
   /** See `Row.plain`: the row is its value alone, left-aligned. */
   plain?: boolean;
+  /** See `Row.stacked`: the value goes beneath its label, indented. */
+  stacked?: boolean;
   /**
    * A trailing element on the value — ProtVar's link icon. Shown only next to a
    * real value, never on a placeholder/dash row (as the old summary did).
@@ -261,6 +291,8 @@ export const formatValue = (
       return num(value as number);
     case 'humanize':
       return humanizeClass(String(value));
+    case 'humanize_terms':
+      return humanizeTerms(String(value));
     case 'phenotype':
       return normalizePhenotype(String(value));
     case 'join':
@@ -312,6 +344,7 @@ export const renderRows = (
             mono={row.mono}
             emphasis={emphasis}
             plain={row.plain}
+            stacked={row.stacked}
           />
         );
       }

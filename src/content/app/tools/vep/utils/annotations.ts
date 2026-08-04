@@ -78,8 +78,11 @@ export type PluginDataMap = {
   loeuf: LoeufScore;
   nmd: NmdData;
   nearest_exon_jb: NearestExonJbData;
-  // allele-scoped
+  // ClinVar is transcript-scoped: its record is about a gene, and `applies_to`
+  // narrows it to the CSQ rows whose SYMBOL that gene names. Its structural
+  // sibling is a plain allele overlap, hence the different side of the line.
   clinvar: ClinVarAnnotation;
+  // allele-scoped
   clinvar_sv: ClinVarSvAnnotation;
   nearest_gene: NearestGeneData;
   gencode_promoter: GencodePromoterData;

@@ -114,6 +114,25 @@
   );
 }
 
+/* Sections that run the panel's full width, beneath the columned ones. No width
+   of its own: `.detail`'s padding already sets the margins, and the point is to
+   give the widest tables everything that is left. */
+.fullWidthSections {
+  margin-top: 4px;
+}
+
+/* ...but only the *tables* want that width. A label/value row is `space-between`,
+   so across 1500px it strands its value at the far edge with a metre of nothing
+   in between — the same trap `.sections`' max-width exists to avoid. Capping the
+   rows keeps them reading as pairs while the tables beside them run wide.
+
+   A stacked row is exempt: its value is a grid of its own, not a pair, and
+   capping it squeezed ClinVar's classification lines into a quarter of the
+   panel while the space beside them went unused. */
+.fullWidthSections .row:not(.stackedRow) {
+  max-width: 400px;
+}
+
 /* Full-width toolbar row above the annotation sections (outside the multicol). */
 .detailToolbar {
   display: flex;
@@ -130,13 +149,14 @@
   margin-top: 12px;
 }
 
-.noOptions {
-  color: var(--color-dark-grey);
-}
+/* The indent rule for this panel: the wrapper form of the step, applied by
+   `Indented` in annotationRows.tsx to everything that sits beneath a heading.
+   Nesting compounds because each level wraps again.
 
-/* THE indent rule for this panel: one declaration of the step, applied by the
-   `Indented` wrapper in annotationRows.tsx to everything that sits beneath a
-   heading. Nesting compounds because each level wraps again.
+   The step itself is `--annotation-indent-step`, declared once at the top and
+   read directly by the two rules that cannot take a wrapper — a stacked row's
+   value and an expanded submitter line, where an extra element would break the
+   grid it sits in. Those apply the same step, not another one.
 
    Deliberately separate from the layout classes below. When these two were one
    class, the only way to indent a context that needed a different gap was to
@@ -182,18 +202,24 @@
   gap: 4px;
 }
 
-/* A multi-value option: its own label above its values (e.g. Dosage
-   sensitivity over pHaplo / pTriplo). */
-.optionBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+/* Everything that stacks its contents one per line, at the panel's line gap:
 
-/* Layout for an option heading's content; the indent comes from `.indented`,
-   which `Indented` composes with this. A nested OptionBlock's children wrap in
-   another of these, so the indent compounds with depth. */
-.optionChildren {
+   - `.optionBlock`   a multi-value option, its label above its values (Dosage
+                      sensitivity over pHaplo / pTriplo);
+   - `.optionChildren` an option heading's content — the indent comes from
+                      `.indented`, which `Indented` composes with this, so a
+                      nested block's indent compounds with depth;
+   - `.stackedValue`  a row whose value is several lines, one per ClinVar
+                      classification type, under the single label;
+   - `.cellItems`     a table cell holding several values — a condition's
+                      classifications, or the RCV records covering it.
+
+   Four different things, but one rule: each had its own identical copy, and a
+   change to the gap had to find all four. */
+.optionBlock,
+.optionChildren,
+.stackedValue,
+.cellItems {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -267,6 +293,41 @@
   color: var(--color-dark-grey);
 }
 
+/* A row whose value is several columns of its own. Opposite a label there is
+   only a fraction of the panel's width, and ClinVar's classification wrapped
+   every one of its columns into it. The label takes a line, the value the full
+   width beneath. */
+.stackedRow {
+  flex-direction: column;
+  align-items: stretch;
+
+  /* The gap above belongs to the value, which sets its own (see below). */
+  gap: 0;
+
+  /* ...and a line below, between the stack and whatever it introduces — the
+     germline classification sits directly above the germline table. */
+  margin-bottom: 1.4em;
+}
+
+/* Half a line between the label and the stack — enough to read as its own
+   thing, where a full one left them looking unrelated — plus the panel's own
+   indent step, the same one every heading gives its content. */
+.stackedRowValue {
+  margin-top: 0.7em;
+  padding-left: var(--annotation-indent-step);
+}
+
+/* A stack with no label of its own — ClinVar's somatic classifications, which
+   sit directly above the table they describe. It takes its space above from the
+   block rather than from a label; below, from `.stackedRow` as any stack does. */
+.standaloneStack {
+  margin-top: 1.4em;
+}
+
+.standaloneStack .stackedRowValue {
+  margin-top: 0;
+}
+
 .mono {
   font-family: 'IBM Plex Mono', monospace;
 }
@@ -277,6 +338,14 @@
    them. Only between siblings, so the first section stays tight to its parent
    heading. */
 .optionChildren > .optionBlock + .optionBlock {
+  margin-top: 10px;
+}
+
+/* A table that draws no heading of its own still needs air above what it
+   follows: the heading used to be the separation, so dropping it (ClinVar's
+   conditions) would otherwise butt the header row straight onto the rows above.
+   Only when something precedes it — a table that opens a block needs no gap. */
+.optionChildren > * + .tableScroll {
   margin-top: 10px;
 }
 
@@ -345,6 +414,37 @@
   padding-right: 0;
 }
 
+/* Keep a value on one line, so its column is never sized below it: a
+   classification type is a name, not a sentence, and a link's icon and its id
+   are one thing. A cell's `nowrap` and an item's meant exactly this same thing
+   and had each grown their own identical rule.
+
+   Never applied to a link whose text is prose — a condition name has to wrap. */
+.nowrap {
+  white-space: nowrap;
+}
+
+/* A heading's further lines, each on its own (see ColumnNote). Regular weight:
+   they explain the column rather than name it, so they should not compete with
+   the label above them. */
+.columnNote {
+  display: block;
+  font-weight: var(--font-weight-normal);
+
+  /* Each line stays one line. That is the whole point of stating them: it also
+     sizes the column, since a table takes its width from its widest unbreakable
+     content. The table scrolls in its own box if a narrow panel cannot give it
+     that (see `.tableScroll`). */
+  white-space: nowrap;
+}
+
+/* The quiet text a non-contributing submission is set in — the heading says so
+   in the very style it is describing. */
+.columnNoteMuted {
+  color: var(--color-dark-grey);
+  font-size: 10px;
+}
+
 .breakdownTable th {
   font-weight: var(--font-weight-semibold);
   color: var(--color-dark-grey);
@@ -362,27 +462,6 @@
 
 .rowHelpIcon {
   flex: none;
-}
-
-/* Phenotype association: a plain text line under the Phenotypes option block. */
-.phenotypeItem {
-  overflow-wrap: anywhere;
-}
-
-/* A Gene Ontology term: the linked GO id followed by its name. */
-.goItem {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 3px 8px;
-}
-
-.goLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  color: var(--color-blue);
-  white-space: nowrap;
 }
 
 /* A spec-driven `list` item: its cells laid out in a wrapping row. */
@@ -447,4 +526,109 @@
   cursor: pointer;
   color: var(--color-blue);
   font-size: inherit;
+}
+
+/* The same stack, where the lines share a cell shape: the cells line up in
+   columns down the stack, so a type, its stars and its term each read as one
+   column rather than the lines all starting at different places.
+
+   Columns take their content's width but may shrink to their longest word: the
+   annotation panel is narrow, and a column that refused to give way would push
+   the line off it. The floor is `min-content` rather than 0 because a word
+   cannot wrap — at 0 a narrow panel sized the column below "Pathogenic" and
+   drew it straight over the review status beside it. If even the words will not
+   fit, the grid scrolls rather than overlapping itself. The column count comes
+   from the spec, hence the custom property. */
+.stackedGrid {
+  display: grid;
+  grid-template-columns: repeat(
+    var(--stacked-columns, 1),
+    minmax(min-content, max-content)
+  );
+  align-items: baseline;
+  column-gap: 10px;
+  row-gap: 3px;
+  overflow-x: auto;
+}
+
+/* A value led by its star rating (ClinVar's review status).
+
+   A flex row, so the rating and the value are separate boxes: in plain inline
+   flow the value's second line wrapped back to the start of the cell, i.e.
+   underneath the stars ("Tier I -" / "Strong"). As its own box the value wraps
+   within itself, and the wrapped line sits under the first. */
+.ratedValue {
+  display: inline-flex;
+  align-items: baseline;
+  column-gap: 6px;
+}
+
+/* Opted out of baseline alignment on purpose, for two reasons at once. A flex
+   container takes its baseline from its first baseline-aligned item, and stars
+   are replaced elements whose baseline is their bottom edge — so leaving them
+   in would drop the whole cell a shade below its unrated neighbours in the same
+   line. Out of it, the value supplies the baseline, and the stars sit on the
+   value's *first* line rather than centred over a value that wrapped. */
+.inlineRating {
+  flex: none;
+  align-self: flex-start;
+  margin-top: 0.15em;
+}
+
+/* A detail line that bears on the classification above it: a ClinVar
+   submission counted toward the aggregate. Full weight and the panel's own text
+   colour against the muted default, so the ones that count read at a glance
+   without the rest being hidden — a submission that does not count is still a
+   real submission somebody made. */
+.emphasisedDetailRow {
+  color: var(--color-black);
+
+  /* Lato Black, not Bold: at 10px against the muted default, 700 was not
+     telling the two apart at a glance. 900 is loaded (see fonts.css). */
+  font-weight: var(--font-weight-dark);
+}
+
+/* Several links from one packed value (a submission's cited PMIDs). They read
+   as a run rather than a stack — a submission can cite dozens, and one per line
+   would bury the submitters they belong to. */
+.splitLinks {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+}
+
+/* An expandable summary line doubles as its own control, so it is a button that
+   keeps the cell's look: no chrome, text aligned as the column's. Full width so
+   the whole line is the target — a cell can hold several of these, one per
+   classification, and each opens only what it summarises. */
+.expandableCellToggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.cellChevron {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  margin-top: 4px;
+}
+
+/* One submitter, its fields on a line. Indented under the summary so the detail
+   reads as belonging to it, using the panel's one indent rule. */
+.expandedDetailRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  padding-left: var(--annotation-indent-step);
+  color: var(--color-dark-grey);
+  font-size: 10px;
 }

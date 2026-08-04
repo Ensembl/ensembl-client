@@ -291,6 +291,61 @@ describe('renderDisplayOption', () => {
     ).toBeNull();
   });
 
+  it('a GO term missing the accession its link needs stays plain text', () => {
+    // The column reads `name` and links `{id}`, so a term with one and not the
+    // other used to link to `https://amigo.geneontology.org/amigo/term/` --
+    // a URL that goes somewhere, just not anywhere about this term.
+    renderOption('go', {
+      consequence: [
+        annotation('go', 'transcript', {
+          go_terms: [
+            { id: null, name: 'DNA binding', namespace: 'molecular_function' }
+          ]
+        })
+      ]
+    });
+    const term = screen.getByText('DNA binding');
+    expect(term).toBeDefined();
+    expect(term.closest('a')).toBeNull();
+  });
+
+  it('a condition whose resolved URL is not http(s) stays plain text', () => {
+    // `link_from` points at a URL the parse resolved, so its scheme is whatever
+    // came out of the data. Only the two web schemes are rendered as a link.
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          id: '440915',
+          significance: ['Pathogenic'],
+          review_status: 'no_assertion_criteria_provided',
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'no_assertion_criteria_provided',
+              rating_scale: 'clinvar_aggregate'
+            }
+          ],
+          conditions: [
+            {
+              name: 'Parkinsonism-dystonia_3,_childhood-onset',
+              type: 'Germline',
+              ids: 'MedGen:C5676913',
+              id_url: 'javascript:alert(1)',
+              id_curie: 'MedGen:C5676913',
+              classifications: [],
+              records: []
+            }
+          ]
+        })
+      ]
+    });
+    const condition = screen.getByText(
+      'Parkinsonism-dystonia 3, childhood-onset'
+    );
+    expect(condition.closest('a')).toBeNull();
+  });
+
   it('renders NearestGene (allele-scoped): gene id, distance and direction', () => {
     renderOption('nearest_gene', {
       allele: [
@@ -452,69 +507,6 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('Melanoma')).toBeDefined();
     expect(screen.getByText('Variant associated')).toBeDefined();
     expect(screen.queryByText('Gene associated')).toBeNull();
-  });
-
-  it('gives ClinVar associations their own table with a Classification column', () => {
-    renderOption('phenotypes', {
-      allele: [
-        annotation('phenotype_data', 'allele', {
-          phenotypes: [
-            phenotype({
-              type: 'Variation',
-              source: 'NHGRI-EBI_GWAS_catalog',
-              phenotype: 'Atrial_fibrillation',
-              risk_allele: 'A'
-            })
-          ],
-          // parsed into their own target: only ClinVar carries a significance
-          clinvar_phenotypes: [
-            {
-              ...phenotype({
-                type: 'Variation',
-                source: 'ClinVar',
-                phenotype: 'Autosomal_dominant_Parkinson_disease_1',
-                risk_allele: 'T'
-              }),
-              clinvar_clin_sig: 'pathogenic'
-            }
-          ]
-        })
-      ]
-    });
-    // the GWAS rows get a headed section; the ClinVar table is unheaded, its
-    // source carried by the column label instead
-    expect(screen.getByText('Variant associated')).toBeDefined();
-    expect(screen.queryByText('ClinVar')).toBeNull();
-    const tables = screen.getAllByRole('table');
-    expect(tables).toHaveLength(2);
-    // the GWAS table keeps Phenotype | Source; the ClinVar one names its source
-    // in the Phenotype header and swaps Source for Classification, since every
-    // row of it is ClinVar anyway
-    expect(
-      within(tables[0])
-        .getAllByRole('columnheader')
-        .map((c) => c.textContent)
-    ).toEqual(['Phenotype', 'Source']);
-    expect(
-      within(tables[1])
-        .getAllByRole('columnheader')
-        .map((c) => c.textContent)
-    ).toEqual(['Phenotype (ClinVar)', 'Classification']);
-    expect(screen.getByRole('cell', { name: 'pathogenic' })).toBeDefined();
-    // `indent` puts the unheaded ClinVar table in the same indent container a
-    // heading gives its children, so it lines up with the headed table beside it
-    // rather than standing a step out from it.
-    const depth = (table: HTMLElement) => {
-      let steps = 0;
-      for (let el = table.parentElement; el; el = el.parentElement) {
-        if (el.className.includes('optionChildren')) steps += 1;
-      }
-      return steps;
-    };
-    // the count is asserted, not just the equality, so an empty class name
-    // (0 === 0) cannot pass this vacuously
-    expect(depth(tables[0])).toBeGreaterThan(1);
-    expect(depth(tables[1])).toEqual(depth(tables[0]));
   });
 
   it('truncates each grouped table section on its own', () => {
@@ -830,89 +822,199 @@ describe('renderDisplayOption', () => {
 
   // --- conditional (`when`) + group + list-as-rows (ClinVar) ----------------
 
-  // Short and structural variants are independent sub-options under the ClinVar
-  // master; each block gates on its own sub-option via `requires_selected`.
-  const clinvarShortSelected = (id: string) => id === 'clinvar_short';
+  // The germline data is served under Phenotypes now: its blocks sit in that
+  // option and gate on the data (`when: present`), so there is no sub-option to
+  // select. Only the structural custom is still a sub-option of the master.
   const clinvarSvSelected = (id: string) => id === 'clinvar_sv';
 
-  it('ClinVar without a conflicting breakdown: a bare significance row', () => {
-    renderOption('clinvar', {
-      subOptionRan: clinvarShortSelected,
-      allele: [
-        annotation('clinvar', 'allele', {
+  it('ClinVar: one Classification line per classification type', () => {
+    const { container } = renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
           significance: ['Pathogenic'],
-          conflicting_breakdown: []
-        })
-      ]
-    });
-    // `when: empty` picks the bare-row block; the humanize_join formats it
-    expect(screen.getByText('Clinical significance')).toBeDefined();
-    expect(screen.getByText('Pathogenic')).toBeDefined();
-    // the headed / breakdown shape is gated out
-    expect(screen.queryByText('Classification')).toBeNull();
-  });
-
-  it('ClinVar with a conflicting breakdown: the term stays on the significance row, over a table of per-class counts', () => {
-    renderOption('clinvar', {
-      subOptionRan: clinvarShortSelected,
-      allele: [
-        annotation('clinvar', 'allele', {
-          significance: ['Conflicting_classifications_of_pathogenicity'],
-          conflicting_breakdown: [
-            { significance: 'Likely_benign', count: 3 },
-            { significance: 'Pathogenic', count: 1 }
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'reviewed_by_expert_panel',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 39,
+              submissions: 44
+            },
+            {
+              type: 'SomaticClinicalImpact',
+              classification: 'Tier_I_-_Strong',
+              review_status: 'criteria_provided,_single_submitter',
+              rating_scale: 'clinvar_somatic',
+              supporting: 9,
+              submissions: 12
+            }
           ]
         })
       ]
     });
-    // The conflicting case uses the same labelled row as the plain one, so the
-    // term reads on the significance line rather than a line below it. The
-    // label appears once, as a row label -- not as a heading with the value
-    // orphaned underneath.
-    const label = screen.getByText('Clinical significance');
-    const term = screen.getByText(
-      'Conflicting classifications of pathogenicity'
+    expect(screen.getByText('Classification')).toBeDefined();
+
+    // Each line names its type, its classification and its review status, and
+    // counts the submissions asserting that classification.
+    expect(screen.getByText('Germline')).toBeDefined();
+    expect(screen.getByText('Pathogenic')).toBeDefined();
+    expect(screen.getByText('reviewed by expert panel')).toBeDefined();
+    expect(
+      screen.getByText(
+        '39/44 submission(s) contribute to aggregate classification'
+      )
+    ).toBeDefined();
+    // Shown as three words though the data says "SomaticClinicalImpact" — that
+    // spelling is the key the submission join matches on, so it stays put.
+    expect(screen.getByText('Somatic Clinical Impact')).toBeDefined();
+    expect(screen.queryByText('SomaticClinicalImpact')).toBeNull();
+    expect(screen.getByText('Tier I - Strong')).toBeDefined();
+    expect(
+      screen.getByText(
+        '9/12 submission(s) contribute to aggregate classification'
+      )
+    ).toBeDefined();
+
+    // Germline reads on the aggregate scale (expert panel = 3), somatic on its
+    // own (single submitter = 1) — the scales are not interchangeable.
+    expect(screen.getByRole('img', { name: '3 out of 4' })).toBeDefined();
+    expect(screen.getByRole('img', { name: '1 out of 4' })).toBeDefined();
+
+    // The stack takes its own lines beneath the label, indented: opposite the
+    // label there is only a fraction of the panel's width, and four columns of
+    // content wrapped into it.
+    const stacks = container.querySelectorAll('[class*="stackedRowValue"]');
+    // Two blocks: the germline line under its label, the somatic ones on their
+    // own further down, directly above the table they describe.
+    expect(stacks.length).toBe(2);
+    const labelled = stacks[0].parentElement;
+    expect(labelled?.className).toMatch(/stackedRow/);
+    expect(labelled?.firstElementChild?.textContent).toContain(
+      'Classification'
     );
-    expect(screen.getAllByText('Clinical significance').length).toBe(1);
-    expect(label.parentElement).toBe(term.parentElement);
-    // the only "Classification" in the block is the breakdown table's column
-    expect(screen.getAllByText('Classification').length).toBe(1);
-    // the breakdown renders as a table: header columns then a row per class
-    // (the class humanised) with its count
+    // The somatic stack carries no label of its own.
+    expect(stacks[1].parentElement?.className).toMatch(/standaloneStack/);
+
+    // no conditions, so no conditions table
+    expect(screen.queryByText('Condition')).toBeNull();
+  });
+
+  it('ClinVar: the stacked lines share columns, keeping empty slots', () => {
+    // The lines read as a small table, so every cell of every line is a direct
+    // child of one grid — a line that packed its own cells would start each
+    // column wherever its own text happened to end.
+    const { container } = renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Pathogenic'],
+          classification_summary: [
+            {
+              type: 'Oncogenicity',
+              classification: 'Oncogenic',
+              review_status: 'criteria_provided,_single_submitter',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 1,
+              submissions: 1
+            },
+            {
+              // no review status: its cell renders nothing but must still hold
+              // its column, or this line's later cells would drift
+              type: 'SomaticClinicalImpact',
+              classification: 'Tier_I_-_Strong',
+              review_status: null,
+              rating_scale: 'clinvar_somatic',
+              supporting: 2,
+              submissions: 3
+            }
+          ]
+        })
+      ]
+    });
+    // Both are somatic, so both land in the one stack below the germline table.
+    const grid = container.querySelector(
+      '[class*="stackedGrid"]'
+    ) as HTMLElement;
+    expect(grid).toBeTruthy();
+    // Four cells per line, two lines, every slot filled even when empty.
+    expect(grid.style.getPropertyValue('--stacked-columns')).toBe('4');
+    expect(grid.children.length).toBe(8);
+    // The line with no review status still holds that cell, empty.
+    expect(grid.children[6].textContent).toBe('');
+    expect(grid.children[3].textContent).toContain(
+      '1/1 submission(s) contribute'
+    );
+  });
+
+  it('ClinVar: a derived classification no submitter asserts shows no count', () => {
+    // "Conflicting classifications of pathogenicity" is ClinVar's own summary of
+    // the submissions, not any submitter's word, so nothing matches it verbatim.
+    // "(0 of 12)" would read as a measure of support; it is a fact about wording.
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Conflicting_classifications_of_pathogenicity'],
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Conflicting_classifications_of_pathogenicity',
+              review_status: 'criteria_provided,_conflicting_classifications',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 0,
+              submissions: 12
+            }
+          ]
+        })
+      ]
+    });
     expect(
-      screen.getByRole('columnheader', { name: 'Classification' })
+      screen.getByText('Conflicting classifications of pathogenicity')
     ).toBeDefined();
+    expect(screen.queryByText(/of 12/)).toBeNull();
+  });
+
+  it('ClinVar: a classification packing two terms reads as a list', () => {
+    // The enriched VCF joins them with '+', which used to show through.
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Pathogenic'],
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification:
+                'Conflicting_classifications_of_pathogenicity+risk_factor',
+              review_status: 'criteria_provided,_conflicting_classifications',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 0,
+              submissions: 12
+            }
+          ]
+        })
+      ]
+    });
     expect(
-      screen.getByRole('columnheader', { name: 'Submitters reporting' })
-    ).toBeDefined();
-    const likelyBenignRow = screen
-      .getByRole('cell', { name: 'Likely benign' })
-      .closest('tr') as HTMLElement;
-    expect(
-      within(likelyBenignRow).getByRole('cell', { name: '3' })
-    ).toBeDefined();
-    const pathogenicRow = screen
-      .getByRole('cell', { name: 'Pathogenic' })
-      .closest('tr') as HTMLElement;
-    expect(
-      within(pathogenicRow).getByRole('cell', { name: '1' })
+      screen.getByText(
+        'Conflicting classifications of pathogenicity, risk factor'
+      )
     ).toBeDefined();
   });
 
   it('ClinVar renders nothing without an annotation', () => {
-    const { container } = renderOption('clinvar', {
-      subOptionRan: clinvarShortSelected
-    });
+    // The germline group gates on the data (`when: present`), so a variant
+    // ClinVar knows nothing about gets no ClinVar section at all.
+    const { container } = renderOption('phenotypes', {});
     expect(container.innerHTML).toBe('');
   });
 
-  it('ClinVar short block is hidden when only the structural sub-option ran', () => {
-    // The short annotation is present (dev-data leak), but short was not
-    // selected — `requires_selected` keeps it out of the view.
+  it('the ClinVar option carries only the structural block now', () => {
+    // The germline data moved to Phenotypes, so a germline annotation renders
+    // nothing here however the sub-options are set — it is not this option's
+    // to draw any more.
     const { container } = renderOption('clinvar', {
       subOptionRan: clinvarSvSelected,
-      allele: [
-        annotation('clinvar', 'allele', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
           significance: ['Pathogenic'],
           conflicting_breakdown: []
         })
@@ -922,13 +1024,21 @@ describe('renderDisplayOption', () => {
   });
 
   it('ClinVar short: a linked variant-id row above the significance', () => {
-    renderOption('clinvar', {
-      subOptionRan: clinvarShortSelected,
-      allele: [
-        annotation('clinvar', 'allele', {
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
           id: '12345',
           significance: ['Pathogenic'],
-          conflicting_breakdown: []
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'no_assertion_criteria_provided',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 1,
+              submissions: 1
+            }
+          ]
         })
       ]
     });
@@ -941,16 +1051,555 @@ describe('renderDisplayOption', () => {
   });
 
   it('ClinVar short: the variant-id row drops when there is no id', () => {
-    renderOption('clinvar', {
-      subOptionRan: clinvarShortSelected,
-      allele: [
-        annotation('clinvar', 'allele', {
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
           significance: ['Pathogenic'],
           conflicting_breakdown: []
         })
       ]
     });
     expect(screen.queryByText('ClinVar variant ID')).toBeNull();
+  });
+
+  it('ClinVar: the conditions table — linked condition, counted classifications, stacked records', () => {
+    const { container } = renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          id: '440915',
+          significance: ['Conflicting_classifications_of_pathogenicity'],
+          review_status: 'criteria_provided,_conflicting_classifications',
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'no_assertion_criteria_provided',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 1,
+              submissions: 1
+            }
+          ],
+          conditions: [
+            {
+              name: 'Parkinsonism-dystonia_3,_childhood-onset',
+              type: 'Germline',
+              ids: 'MONDO:MONDO:0030676,MedGen:C5676913',
+              id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C5676913',
+              id_curie: 'MedGen:C5676913',
+              classifications: [
+                { classification: 'Pathogenic', count: 3 },
+                { classification: 'Uncertain_significance', count: 1 }
+              ],
+              // a condition can be covered by more than one RCV record; they
+              // stack in the cell rather than running together
+              records: [{ rcv: 'RCV001836831' }, { rcv: 'RCV006249379' }]
+            },
+            {
+              // ClinVar has no usable ontology id for this one, so the name
+              // must still show — as plain text, not a dead link
+              name: 'WARS2-related_disorder',
+              type: 'Germline',
+              ids: null,
+              id_url: null,
+              id_curie: null,
+              classifications: [],
+              records: []
+            }
+          ]
+        })
+      ]
+    });
+    // The conditions are split by classification type, but neither table names
+    // itself: the classification lines above each say which it is, and a
+    // heading repeating them said nothing the position did not. ("Germline"
+    // does appear on the page — as the classification line's type — so this
+    // has to look at headings, not at text.)
+    const headings = Array.from(
+      container.querySelectorAll('[class*="optionLabel"]')
+    ).map((h) => h.textContent);
+    expect(headings).not.toContain('Germline');
+    expect(headings).not.toContain('Somatic');
+    expect(headings).not.toContain('Conditions');
+
+    // The table still sits a step in, under the Classification above it. Two
+    // indent wrappers, not one — the ClinVar group already indents everything
+    // it holds, so counting is what tells the block's own step from its
+    // parent's.
+    const table = screen.getByRole('table');
+    let indents = 0;
+    for (
+      let node = table.parentElement;
+      node && node !== container;
+      node = node.parentElement
+    ) {
+      if (/indented/.test(node.className)) {
+        indents += 1;
+      }
+    }
+    expect(indents).toBe(2);
+
+    // The classification leads, then the condition it is about, then the record.
+    const headers = screen.getAllByRole('columnheader');
+    expect(headers.map((h) => h.textContent?.slice(0, 14))).toEqual([
+      'Classification',
+      'Condition',
+      'ClinVar record'
+    ]);
+
+    // The classification header explains itself over three lines rather than
+    // one long string wrapping wherever the width ran out.
+    const notes = headers[0].querySelectorAll('[class*="columnNote"]');
+    expect(notes.length).toBe(2);
+    expect(notes[0].textContent).toContain('Expand for:');
+    // The line about light text is itself in that light text.
+    expect(notes[1].className).toMatch(/columnNoteMuted/);
+    expect(notes[1].textContent).toContain('not contributing');
+
+    const linked = screen.getByRole('link', {
+      name: /Parkinsonism-dystonia 3, childhood-onset/
+    });
+    expect(linked.getAttribute('href')).toBe(
+      'https://www.ncbi.nlm.nih.gov/medgen/C5676913'
+    );
+
+    // classifications carry their submitter counts
+    expect(screen.getByText('Pathogenic (3)')).toBeDefined();
+    expect(screen.getByText('Uncertain significance (1)')).toBeDefined();
+
+    // both RCV records render, each linked to its own ClinVar page
+    const rcv = screen.getByRole('link', { name: /RCV006249379/ });
+    expect(rcv.getAttribute('href')).toBe(
+      'https://www.ncbi.nlm.nih.gov/clinvar/RCV006249379/'
+    );
+    // An accession is one thing: its icon must not be left on the line above.
+    // The condition beside it is prose, so it must still be free to wrap —
+    // which is why this is declared per item and not a rule for every link.
+    expect(rcv.className).toMatch(/nowrap/);
+    expect(linked.className).not.toMatch(/nowrap/);
+    expect(screen.getByRole('link', { name: /RCV001836831/ })).toBeDefined();
+
+    // the id-less condition shows its name, unlinked
+    expect(
+      screen.getByRole('cell', { name: 'WARS2-related disorder' })
+    ).toBeDefined();
+    expect(
+      screen.queryByRole('link', { name: /WARS2-related disorder/ })
+    ).toBeNull();
+  });
+
+  it('ClinVar: the review status shows its star rating and cites ClinVar', async () => {
+    const { container } = renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Pathogenic'],
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status:
+                'criteria_provided,_multiple_submitters,_no_conflicts',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 3,
+              submissions: 5
+            }
+          ],
+          conditions: []
+        })
+      ]
+    });
+    // The wording stays — the stars summarise it, they don't replace it.
+    expect(
+      screen.getByText('criteria provided, multiple submitters, no conflicts')
+    ).toBeDefined();
+    expect(screen.getByRole('img', { name: '2 out of 4' })).toBeDefined();
+
+    // The (?) beside the label points at ClinVar's own account of how the
+    // status is calculated. (QuestionButton is a div with an onClick, so there
+    // is no button role to query.)
+    await userEvent.click(
+      container.querySelector('[class*="questionButton"]') as HTMLElement
+    );
+    expect(
+      screen.getByText(/For more detail regarding ClinVar's calculation/)
+    ).toBeDefined();
+    const link = screen.getByRole('link', { name: /ClinVar review status/ });
+    expect(link.getAttribute('href')).toBe(
+      'https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/'
+    );
+  });
+
+  it('ClinVar: a review status the scale does not know shows no rating', () => {
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Pathogenic'],
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'some_status_clinvar_has_not_published_yet',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 3,
+              submissions: 5
+            }
+          ],
+          conditions: []
+        })
+      ]
+    });
+    expect(
+      screen.getByText('some status clinvar has not published yet')
+    ).toBeDefined();
+    // No stars rather than none-of-four: an unrated term is not a zero rating.
+    expect(screen.queryByRole('img', { name: /out of 4/ })).toBeNull();
+  });
+
+  it('ClinVar: a submission is rated on the submission scale, not the aggregate one', async () => {
+    // "no classification for the individual variant" is an aggregate-only term:
+    // ClinVar's scale for a single submission does not list it. So the same
+    // wording earns four empty stars at the top and none in the detail — which
+    // is what fails if the two scales are ever crossed.
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Pathogenic'],
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'no_classification_for_the_individual_variant',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 3,
+              submissions: 5
+            }
+          ],
+          conditions: [
+            {
+              name: 'WARS2-related_disorder',
+              type: 'Germline',
+              ids: null,
+              id_url: null,
+              classifications: [
+                {
+                  classification: 'Pathogenic',
+                  count: 1,
+                  submitters: [
+                    {
+                      submitter: 'Baylor_Genetics',
+                      date_last_evaluated: '2022-05-05',
+                      review_status:
+                        'no_classification_for_the_individual_variant'
+                    }
+                  ]
+                }
+              ],
+              records: []
+            }
+          ]
+        })
+      ]
+    });
+    expect(screen.getByRole('img', { name: '0 out of 4' })).toBeDefined();
+
+    await userEvent.click(
+      screen.getByRole('button', { expanded: false, name: /Pathogenic \(1\)/ })
+    );
+    expect(screen.getByText('Baylor Genetics')).toBeDefined();
+    // Still only the aggregate row's rating — the submission has none.
+    expect(screen.getAllByRole('img', { name: /out of 4/ }).length).toBe(1);
+  });
+
+  it('ClinVar: a rated submission shows its own stars in the detail', async () => {
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Pathogenic'],
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'no_assertion_criteria_provided',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 1,
+              submissions: 1
+            }
+          ],
+          conditions: [
+            {
+              name: 'WARS2-related_disorder',
+              type: 'Germline',
+              ids: null,
+              id_url: null,
+              classifications: [
+                {
+                  classification: 'Pathogenic',
+                  count: 1,
+                  submitters: [
+                    {
+                      submitter: 'Baylor_Genetics',
+                      date_last_evaluated: '2022-05-05',
+                      review_status: 'criteria_provided,_single_submitter'
+                    }
+                  ]
+                }
+              ],
+              records: []
+            }
+          ]
+        })
+      ]
+    });
+    await userEvent.click(
+      screen.getByRole('button', { expanded: false, name: /Pathogenic \(1\)/ })
+    );
+    expect(screen.getByRole('img', { name: '1 out of 4' })).toBeDefined();
+  });
+
+  it('ClinVar: each classification expands to its own submitters', async () => {
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Pathogenic'],
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'no_assertion_criteria_provided',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 1,
+              submissions: 1
+            }
+          ],
+          conditions: [
+            {
+              name: 'Parkinsonism-dystonia_3,_childhood-onset',
+              type: 'Germline',
+              ids: null,
+              id_url: null,
+              classifications: [
+                {
+                  classification: 'Pathogenic',
+                  count: 2,
+                  submitters: [
+                    {
+                      submitter: 'Institute_of_Human_Genetics',
+                      date_last_evaluated: '2023-12-01',
+                      review_status: 'criteria_provided,_single_submitter'
+                    },
+                    {
+                      submitter: 'Broad_Center_for_Mendelian_Genomics',
+                      date_last_evaluated: '2025-01-09',
+                      review_status: 'criteria_provided,_single_submitter'
+                    }
+                  ]
+                },
+                {
+                  classification: 'Uncertain_significance',
+                  count: 1,
+                  submitters: [
+                    {
+                      submitter: 'Baylor_Genetics',
+                      date_last_evaluated: '2022-05-05',
+                      review_status: 'criteria_provided,_single_submitter'
+                    }
+                  ]
+                }
+              ],
+              records: []
+            }
+          ]
+        })
+      ]
+    });
+
+    // Collapsed: both summaries show, no submitter does.
+    expect(screen.getByText('Pathogenic (2)')).toBeDefined();
+    expect(screen.getByText('Uncertain significance (1)')).toBeDefined();
+    expect(screen.queryByText('Institute of Human Genetics')).toBeNull();
+    expect(screen.queryByText('Baylor Genetics')).toBeNull();
+
+    await userEvent.click(
+      screen.getByRole('button', { expanded: false, name: /Pathogenic \(2\)/ })
+    );
+
+    // Expanded: a line per submitter, with the fields chosen for the detail —
+    // and only the ones behind *this* count. The other classification stays
+    // shut, which is the whole point of expanding per classification.
+    expect(screen.getByText('Institute of Human Genetics')).toBeDefined();
+    expect(
+      screen.getByText('Broad Center for Mendelian Genomics')
+    ).toBeDefined();
+    expect(screen.getByText('2025-01-09')).toBeDefined();
+    expect(screen.queryByText('Baylor Genetics')).toBeNull();
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        expanded: false,
+        name: /Uncertain significance \(1\)/
+      })
+    );
+    expect(screen.getByText('Baylor Genetics')).toBeDefined();
+  });
+
+  it("ClinVar: a submitter's cited publications each link out", async () => {
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Pathogenic'],
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'no_assertion_criteria_provided',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 1,
+              submissions: 1
+            }
+          ],
+          conditions: [
+            {
+              name: 'CLAPO_syndrome',
+              type: 'Germline',
+              ids: null,
+              id_url: null,
+              classifications: [
+                {
+                  classification: 'Pathogenic',
+                  count: 2,
+                  submitters: [
+                    {
+                      submitter: '3billion',
+                      date_last_evaluated: '2022-05-04',
+                      review_status: 'criteria_provided,_single_submitter',
+                      // ClinVar packs a submission's citations into one value
+                      pmid: '22729224+25599672'
+                    },
+                    {
+                      submitter: 'Baylor_Genetics',
+                      date_last_evaluated: '2022-05-05',
+                      review_status: 'criteria_provided,_single_submitter',
+                      pmid: null
+                    }
+                  ]
+                }
+              ],
+              records: []
+            }
+          ]
+        })
+      ]
+    });
+    await userEvent.click(
+      screen.getByRole('button', { expanded: false, name: /Pathogenic \(2\)/ })
+    );
+
+    // Each PMID is its own paper, so each is its own link.
+    const first = screen.getByRole('link', { name: /22729224/ });
+    expect(first.getAttribute('href')).toBe(
+      'http://europepmc.org/abstract/MED/22729224'
+    );
+    expect(
+      screen.getByRole('link', { name: /25599672/ }).getAttribute('href')
+    ).toBe('http://europepmc.org/abstract/MED/25599672');
+    // A submission citing nothing adds no links of its own.
+    expect(screen.getAllByRole('link').length).toBe(2);
+  });
+
+  it('ClinVar: a submission counting toward the aggregate is set apart', async () => {
+    // Contributing submissions sort first, so the emphasised one leads.
+    const { container } = renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Pathogenic'],
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'no_assertion_criteria_provided',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 1,
+              submissions: 1
+            }
+          ],
+          conditions: [
+            {
+              name: 'CLAPO_syndrome',
+              type: 'Germline',
+              ids: null,
+              id_url: null,
+              classifications: [
+                {
+                  classification: 'Pathogenic',
+                  count: 2,
+                  submitters: [
+                    {
+                      submitter: 'Counted_Lab',
+                      date_last_evaluated: '2024-01-01',
+                      review_status: 'criteria_provided,_single_submitter',
+                      contributes: 1
+                    },
+                    {
+                      submitter: 'Uncounted_Lab',
+                      date_last_evaluated: '2020-01-01',
+                      review_status: 'no_assertion_criteria_provided',
+                      contributes: 0
+                    }
+                  ]
+                }
+              ],
+              records: []
+            }
+          ]
+        })
+      ]
+    });
+    await userEvent.click(
+      screen.getByRole('button', { expanded: false, name: /Pathogenic \(2\)/ })
+    );
+
+    const counted = screen.getByText('Counted Lab').closest('div');
+    const uncounted = screen.getByText('Uncounted Lab').closest('div');
+    expect(counted?.className).toMatch(/emphasisedDetailRow/);
+    expect(uncounted?.className).not.toMatch(/emphasisedDetailRow/);
+    // Both still render — a submission that does not count is not hidden.
+    expect(
+      container.querySelectorAll('[class*="expandedDetailRow"]').length
+    ).toBe(2);
+  });
+
+  it('ClinVar: a classification with no submitters offers nothing to expand', () => {
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
+          significance: ['Pathogenic'],
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'no_assertion_criteria_provided',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 1,
+              submissions: 1
+            }
+          ],
+          conditions: [
+            {
+              name: 'WARS2-related_disorder',
+              type: 'Germline',
+              ids: null,
+              id_url: null,
+              classifications: [
+                { classification: 'Pathogenic', count: 1, submitters: [] }
+              ],
+              records: []
+            }
+          ]
+        })
+      ]
+    });
+    expect(screen.getByText('Pathogenic (1)')).toBeDefined();
+    // no control, rather than one that opens onto nothing
+    expect(screen.queryByRole('button', { name: /Pathogenic/ })).toBeNull();
   });
 
   it('ClinVar structural variants: a headed significance + origin block', () => {
@@ -1336,13 +1985,21 @@ describe('option help on the results heading', () => {
 
   // The whole reason the anchor is claimed rather than assigned: ClinVar's
   // two shapes are different blocks and only one of them draws.
-  it('follows ClinVar to whichever of its two shapes drew', async () => {
-    const { container } = renderOption('clinvar', {
-      subOptionRan: (id: string) => id === 'clinvar_short',
-      allele: [
-        annotation('clinvar', 'allele', {
+  it('follows ClinVar to whichever of its shapes drew', async () => {
+    const { container } = renderOption('phenotypes', {
+      consequence: [
+        annotation('clinvar', 'transcript', {
           significance: ['Pathogenic'],
-          conflicting_breakdown: []
+          classification_summary: [
+            {
+              type: 'Germline',
+              classification: 'Pathogenic',
+              review_status: 'reviewed_by_expert_panel',
+              rating_scale: 'clinvar_aggregate',
+              supporting: 3,
+              submissions: 4
+            }
+          ]
         })
       ],
       help
@@ -1547,22 +2204,5 @@ describe('table column alignment', () => {
       'right',
       'right'
     ]);
-  });
-
-  it('right-aligns a count (ClinVar submitters)', () => {
-    const { container } = renderOption('clinvar', {
-      subOptionRan: (id: string) => id === 'clinvar_short',
-      allele: [
-        annotation('clinvar', 'allele', {
-          significance: ['Conflicting_classifications_of_pathogenicity'],
-          conflicting_breakdown: [
-            { significance: 'Likely_benign', count: 3 },
-            { significance: 'Pathogenic', count: 1 }
-          ]
-        })
-      ]
-    });
-    // Classification | Submitters reporting
-    expect(alignmentOf(container, 'th')).toEqual(['left', 'right']);
   });
 });

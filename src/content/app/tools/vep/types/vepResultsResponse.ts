@@ -119,16 +119,60 @@ export type AlternativeVariantAllele = {
   // plugin annotation like the rest when sample data arrives.
 };
 
-export type ClinVarSignificance = {
-  significance: string;
+/** One submitter's account of a condition, behind the count that summarises it. */
+export type ClinVarSubmission = {
+  submitter: string | null;
+  date_last_evaluated: string | null;
+  review_status: string | null;
+  /** Cited papers, as one `+`-joined list of PubMed ids. */
+  pmid: string | null;
+  /** ClinVar's own flag for whether this submission produced the aggregate
+   *  classification. A code, so "0" is a true-looking string. */
+  contributes: string | null;
+};
+
+/** How many submitters gave one classification for a condition, and who. */
+export type ClinVarClassificationCount = {
+  classification: string;
   count: number;
+  submitters: ClinVarSubmission[];
+};
+
+/**
+ * One condition ClinVar records for this variant: the disease name with the
+ * ontology ids that name it, the classifications its submitters gave, and the
+ * RCV records covering it. `ids` is null where ClinVar has none — it writes '.'
+ * there — and `id_url`/`id_curie` are the one id resolved for linking (see the
+ * `curie_link` post-op), null when none of them resolves.
+ */
+export type ClinVarCondition = {
+  name: string;
+  type: string | null; // the classification type this condition sits under
+  ids: string | null;
+  id_url: string | null;
+  id_curie: string | null;
+  classifications: ClinVarClassificationCount[];
+  records: { rcv: string }[];
+  /** How many submissions contributed to the aggregate, for ordering. */
+  contributing?: number | null;
+};
+
+/** ClinVar's aggregate classification of one type (germline, oncogenicity,
+ *  somatic clinical impact), with the scale its review status is read on. */
+export type ClinVarClassification = {
+  type: string;
+  classification: string | null;
+  review_status: string | null;
+  rating_scale: string | null;
+  supporting: number | null;
+  submissions: number | null;
 };
 
 export type ClinVarAnnotation = {
+  id: string | null; // the ClinVar variation id (the custom's match column)
   significance: string[]; // CLNSIG term(s)
-  // Per-classification submission counts (CLNSIGCONF); only populated when the
-  // classification is conflicting.
-  conflicting_breakdown: ClinVarSignificance[];
+  classification_summary: ClinVarClassification[];
+  conditions: ClinVarCondition[];
 };
 
 // ClinVar structural variants (the ClinVar_SV custom): clinical significance and

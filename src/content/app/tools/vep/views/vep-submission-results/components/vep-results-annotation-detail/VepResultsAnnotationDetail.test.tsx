@@ -126,6 +126,21 @@ const withAnnotations = (
   annotations: [...(transcriptConsequence.annotations ?? []), ...annotations]
 });
 
+// The phenotypes panel leaves the column flow: its ClinVar conditions tables
+// are the widest thing the detail draws.
+const phenotypePanels: FormPanel[] = [
+  {
+    id: 'representation',
+    label: 'Variant representation',
+    options: [option('spdi', 'SPDI')]
+  },
+  {
+    id: 'phenotype_and_disease_associations',
+    label: 'Phenotype & disease associations',
+    options: [option('phenotypes', 'Phenotypes')]
+  }
+];
+
 afterEach(cleanup);
 
 describe('VepResultsAnnotationDetail', () => {
@@ -865,11 +880,23 @@ describe('panel order', () => {
  * left empty columns beside the content, which is what made a variant with few
  * annotations look sparse.
  */
+/**
+ * The columned container, told apart from the full-width one beside it.
+ *
+ * `[class*="sections"]` alone will not do: it is a substring match, and jsdom
+ * disagrees with itself across versions about whether attribute values match
+ * case-insensitively — where they do, it also matches `fullWidthSections` and
+ * these assertions quietly invert. Excluding the full-width class says what is
+ * meant in either.
+ */
+const COLUMNED_SECTIONS = '[class*="sections"]:not([class*="ullWidth"])';
+
+const columnedSections = (container: HTMLElement) =>
+  container.querySelector(COLUMNED_SECTIONS) as HTMLElement;
+
 describe('VepResultsAnnotationDetail column count', () => {
   const columnsOf = (container: HTMLElement) =>
-    (
-      container.querySelector('[class*="sections"]') as HTMLElement
-    )?.style.getPropertyValue('--annotation-columns');
+    columnedSections(container)?.style.getPropertyValue('--annotation-columns');
 
   it('asks for one column when only one section survives', () => {
     const { container } = render(
@@ -926,5 +953,63 @@ describe('VepResultsAnnotationDetail column count', () => {
     );
 
     expect(Number(columnsOf(container))).toBeGreaterThanOrEqual(1);
+  });
+
+  describe('the full-width phenotypes section', () => {
+    const renderWithPhenotypes = () =>
+      render(
+        <VepResultsAnnotationDetail
+          genomeId="grch38"
+          consequence={withAnnotations([
+            {
+              plugin: 'clinvar',
+              scope: 'transcript',
+              data: {
+                id: '13652',
+                significance: ['Pathogenic'],
+                conflicting_breakdown: [],
+                classification_summary: [
+                  {
+                    type: 'Germline',
+                    classification: 'Pathogenic',
+                    review_status: 'reviewed_by_expert_panel',
+                    rating_scale: 'clinvar_aggregate',
+                    supporting: 1,
+                    submissions: 44
+                  }
+                ],
+                conditions: []
+              }
+            }
+          ])}
+          allele={makeAllele({
+            annotations: [
+              alleleAnnotation('spdi', { spdi: 'NC_000019.10:7676153:A:G' })
+            ]
+          })}
+          parameters={{ phenotypes: true, spdi: true }}
+          panels={phenotypePanels}
+          display={displaySpecFixture}
+        />
+      );
+
+    it('sits outside the column flow, not in it', () => {
+      const { container } = renderWithPhenotypes();
+      const heading = screen.getByText('Phenotype & disease associations');
+      expect(heading.closest('[class*="fullWidthSections"]')).toBeTruthy();
+      // the other panel stays in the columns, and this one is not among them
+      const columns = columnedSections(container);
+      expect(columns.contains(heading)).toBe(false);
+      expect(columns.textContent).toContain('Variant representation');
+      expect(columns.textContent).not.toContain('ClinVar');
+    });
+
+    it('is not counted towards the column count it never fills', () => {
+      const { container } = renderWithPhenotypes();
+      const columns = columnedSections(container);
+      // One columned section survives, so one column — two would leave an
+      // empty one beside it.
+      expect(columns.style.getPropertyValue('--annotation-columns')).toBe('1');
+    });
   });
 });

@@ -41,6 +41,17 @@ type Props<Item> = {
    * ShowHide control in others), so each call site keeps its own markup.
    */
   renderToggle: (props: TruncatedListToggleProps) => ReactNode;
+  /**
+   * Put the toggle *before* the items rather than after them.
+   *
+   * The two shapes this serves read in opposite orders. A truncated list shows
+   * some items and offers "n more" underneath. A collapsed detail shows a
+   * summary and reveals the detail beneath it — same expand state, same
+   * collapse-anchoring, but the control has to come first or the summary would
+   * sit under what it summarises. `visibleCount: 0` is what makes it a detail
+   * rather than a truncation.
+   */
+  toggleFirst?: boolean;
 };
 
 /**
@@ -71,7 +82,7 @@ const scrollableAncestor = (element: HTMLElement): HTMLElement | null => {
  * no markup of its own.
  */
 const TruncatedList = <Item,>(props: Props<Item>) => {
-  const { items, visibleCount, renderItem, renderToggle } = props;
+  const { items, visibleCount, renderItem, renderToggle, toggleFirst } = props;
   const [isExpanded, setIsExpanded] = useState(false);
 
   const visible = isExpanded ? items : items.slice(0, visibleCount);
@@ -115,12 +126,17 @@ const TruncatedList = <Item,>(props: Props<Item>) => {
     }
   };
 
+  const toggleNode =
+    hiddenCount > 0 ? renderToggle({ hiddenCount, isExpanded, toggle }) : null;
+  const itemNodes = visible.map((item, index) => (
+    <Fragment key={index}>{renderItem(item, index)}</Fragment>
+  ));
+
   return (
     <>
-      {visible.map((item, index) => (
-        <Fragment key={index}>{renderItem(item, index)}</Fragment>
-      ))}
-      {hiddenCount > 0 && renderToggle({ hiddenCount, isExpanded, toggle })}
+      {toggleFirst ? toggleNode : null}
+      {itemNodes}
+      {toggleFirst ? null : toggleNode}
     </>
   );
 };
