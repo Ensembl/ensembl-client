@@ -24,10 +24,48 @@ export type ResultsFilterField =
   | 'gene_symbol'
   | 'gene_id'
   | 'transcript_group'
-  | 'allele_frequency';
+  | 'allele_frequency'
+  // Every variant-impact prediction is its own field, even where several come
+  // from one tool, because each carries its own scale and a threshold means
+  // nothing without knowing which scale it is on. CADD PHRED is ~0-99 and
+  // scaled for interpretation while CADD RAW is unbounded around -7 to +35;
+  // the missense predictors are 0-1 probabilities except popEVE, which is a
+  // negative log-scale score; and SpliceAI's four delta scores describe four
+  // different events at the same position, so they cannot share one threshold
+  // either.
+  | 'cadd_phred'
+  | 'cadd_raw'
+  | 'alphamissense'
+  | 'revel'
+  | 'clinpred'
+  | 'eve'
+  | 'popeve'
+  | 'spliceai_ag'
+  | 'spliceai_al'
+  | 'spliceai_dg'
+  | 'spliceai_dl'
+  | 'spliceai_any';
 
-// 'in' for set-membership fields; le/eq/ge (<=, ==, >=) for allele frequency.
-export type ResultsFilterOperator = 'in' | 'le' | 'eq' | 'ge';
+// The fields whose editor is a numeric comparison rather than a value list.
+export const SCORE_FILTER_FIELDS: ResultsFilterField[] = [
+  'cadd_phred',
+  'cadd_raw',
+  'alphamissense',
+  'revel',
+  'clinpred',
+  'eve',
+  'popeve',
+  'spliceai_ag',
+  'spliceai_al',
+  'spliceai_dg',
+  'spliceai_dl',
+  'spliceai_any'
+];
+
+// 'in' for set-membership fields; le/ge (<=, >=) for the numeric ones. There is
+// deliberately no '==': these are floats, so equality is a question the data can
+// rarely answer, and it was never the useful test for a frequency or a score.
+export type ResultsFilterOperator = 'in' | 'le' | 'ge';
 
 export type AlleleFrequencyMatch = 'any' | 'all';
 
@@ -38,9 +76,20 @@ export type ResultsFilterCondition = {
   field: ResultsFilterField;
   operator: ResultsFilterOperator;
   values: string[];
-  // Allele-frequency only: comparison threshold (0-1) and any/all match mode.
+  // Numeric fields only: the comparison threshold. Allele frequency also
+  // carries the any/all match mode across its columns; a score filter tests one
+  // column, so it has no equivalent.
   threshold?: number;
   match?: AlleleFrequencyMatch;
+  // Score filters only: whether entries with no score are kept. Defaults to
+  // dropping them, unlike the allele-frequency filter, which always keeps its
+  // unknowns. The paradigm differs: a missing allele frequency implies the
+  // variant is absent from the reference set and so very rare, which is usually
+  // what the query is after, whereas a missing impact score means the variant
+  // was never scored (out of that predictor's scope — a missense predictor has
+  // nothing to say about a synonymous variant) and so implies nothing about how
+  // damaging it is.
+  includeMissing?: boolean;
 };
 
 // Whether a condition would actually filter anything (and so should be applied).
@@ -52,6 +101,13 @@ export const isResultsFilterActive = (
       typeof condition.threshold === 'number' &&
       condition.threshold >= 0 &&
       condition.threshold <= 1
+    );
+  }
+  if (SCORE_FILTER_FIELDS.includes(condition.field)) {
+    // No 0-1 bound here: not every score is a probability. CADD RAW is
+    // unbounded and popEVE is negative throughout.
+    return (
+      typeof condition.threshold === 'number' && !isNaN(condition.threshold)
     );
   }
   return condition.values.length > 0;
@@ -66,20 +122,30 @@ export const isResultsFilterActive = (
 export const serializeResultsFilters = (
   conditions: ResultsFilterCondition[]
 ): string | undefined => {
-  const active = conditions.filter(isResultsFilterActive).map((condition) =>
-    condition.field === 'allele_frequency'
-      ? {
-          field: condition.field,
-          operator: condition.operator,
-          values: condition.values,
-          threshold: condition.threshold,
-          match: condition.match ?? 'any'
-        }
-      : {
-          field: condition.field,
-          operator: condition.operator,
-          values: condition.values
-        }
-  );
+  const active = conditions.filter(isResultsFilterActive).map((condition) => {
+    if (condition.field === 'allele_frequency') {
+      return {
+        field: condition.field,
+        operator: condition.operator,
+        values: condition.values,
+        threshold: condition.threshold,
+        match: condition.match ?? 'any'
+      };
+    }
+    if (SCORE_FILTER_FIELDS.includes(condition.field)) {
+      return {
+        field: condition.field,
+        operator: condition.operator,
+        values: [],
+        threshold: condition.threshold,
+        include_missing: condition.includeMissing ?? false
+      };
+    }
+    return {
+      field: condition.field,
+      operator: condition.operator,
+      values: condition.values
+    };
+  });
   return active.length > 0 ? JSON.stringify(active) : undefined;
 };

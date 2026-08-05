@@ -49,9 +49,10 @@ const SCOPE_OPTIONS = [
   { value: 'specific', label: 'Specific selections' }
 ];
 
+// No '=': frequencies are floats, so equality is a question the data can rarely
+// answer, and it was never the useful test here.
 const OPERATOR_OPTIONS = [
   { value: 'le', label: '≤' },
-  { value: 'eq', label: '=' },
   { value: 'ge', label: '≥' }
 ];
 

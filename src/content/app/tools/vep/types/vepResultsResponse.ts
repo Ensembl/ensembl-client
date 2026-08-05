@@ -33,6 +33,14 @@ export type VepResultsResponseMetadata = {
   // AF columns present in this result set (the AF options chosen at input).
   available_af_sources?: AfSource[];
   /**
+   * Which variant-impact prediction scores this job carries ('cadd_phred',
+   * 'revel', 'spliceai_dl', …), so the query builder offers those filters only
+   * where there is data to filter on. Gated the same way as the AF sources:
+   * present in the output *and* selected at input, since a full cache can carry
+   * columns nobody asked for.
+   */
+  available_scores?: string[];
+  /**
    * The option panels this job was submitted against, pinned by the tools API
    * at submission time. The results view lays itself out from these rather than
    * from the live form config, so a job renders against the options it actually

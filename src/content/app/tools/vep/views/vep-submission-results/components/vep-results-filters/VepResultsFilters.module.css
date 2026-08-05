@@ -152,8 +152,12 @@
   min-width: 56px;
 }
 
+/* Sized in `ch` (the advance of one digit in the monospace face) plus the
+   horizontal padding and borders, since box-sizing is border-box. 9 characters
+   fits the longest placeholder, "e.g. 0.5", with room for a typed value like
+   "-5.4712"; a fixed 80px cut the last character off the decimal placeholders. */
 .afThreshold {
-  width: 80px;
+  width: calc(9ch + 22px);
   padding: 6px 10px;
   background-color: var(--color-white);
   border: 1px solid var(--color-medium-dark-grey);

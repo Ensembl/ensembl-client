@@ -13,9 +13,13 @@
   width: 100%;
   border-radius: 100%;
   border-style: solid;
-  border-color: var(--color-grey);
-  border-top-color: var(--color-red);
-  animation: loader-spin 1.3s linear infinite;  
+
+  /* Colours are overridable in the same way as the diameter and border width
+     above, so a caller can match the loader to its surroundings without
+     reaching into this component's markup. Both default to what they were. */
+  border-color: var(--circle-loader-track-color, var(--color-grey));
+  border-top-color: var(--circle-loader-color, var(--color-red));
+  animation: loader-spin 1.3s linear infinite;
 }
 
 .circleLoaderDefault {

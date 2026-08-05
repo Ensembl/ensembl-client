@@ -55,6 +55,25 @@
   white-space: nowrap;
   cursor: pointer;
   color: var(--color-blue);
+
+  /* Inline-flex so the pending spinner sits beside the label rather than
+     displacing it. */
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Shown only while the bulk expand / collapse is still rendering. Sized to the
+   label's cap height so appearing and disappearing does not move the control —
+   it sits in a grid column shared with the pagination. */
+.expandAllSpinner {
+  width: 11px;
+  height: 11px;
+  flex: none;
+
+  /* The theme blue the control's own label is set in — the loader's default red
+     reads as an error next to it, which this is not. */
+  --circle-loader-color: var(--color-blue);
 }
 
 .perPage {

@@ -18,7 +18,7 @@ import {
   useState,
   useEffect,
   useMemo,
-  useRef,
+  useTransition,
   Fragment,
   type ChangeEvent
 } from 'react';
@@ -88,7 +88,8 @@ import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
 import {
   serializeResultsFilters,
-  type ResultsFilterCondition
+  type ResultsFilterCondition,
+  type ResultsFilterField
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
 import styles from './VepSubmissionResults.module.css';
@@ -149,11 +150,24 @@ const VepSubmissionResults = () => {
     action: 'collapse',
     nonce: 0
   });
+  // Opening every panel on the page is a big synchronous render — measured at
+  // ~1.1s of blocked main thread for 100 variants on a fast machine, and two to
+  // three times that on a modest one, which is long enough that the button
+  // appears not to have worked. Expanding one panel is imperceptible, so it is
+  // only the bulk command that needs this.
+  //
+  // As a transition React renders it in interruptible chunks instead of one
+  // blocking commit: the click responds at once, the page keeps scrolling, and
+  // `isExpansionPending` is true for the duration, which is what the control
+  // shows. It is the same total work — it just stops being a freeze.
+  const [isExpansionPending, startExpansionTransition] = useTransition();
   const toggleAllDetails = () =>
-    setDetailExpansion((prev) => ({
-      action: prev.action === 'expand' ? 'collapse' : 'expand',
-      nonce: prev.nonce + 1
-    }));
+    startExpansionTransition(() => {
+      setDetailExpansion((prev) => ({
+        action: prev.action === 'expand' ? 'collapse' : 'expand',
+        nonce: prev.nonce + 1
+      }));
+    });
 
   const {
     data: vepResults,
@@ -309,6 +323,11 @@ const VepSubmissionResults = () => {
       label: formatAfSourceLabel(source)
     })
   );
+  // The variant-impact prediction scores this job carries, for gating which
+  // scores the impact-prediction filter offers — same rule as the AF sources
+  // above.
+  const scoreFields = (vepResults?.metadata.available_scores ??
+    []) as ResultsFilterField[];
 
   return (
     <div className={styles.container}>
@@ -325,6 +344,7 @@ const VepSubmissionResults = () => {
           onToggleFilters={() => setIsFiltersOpen((open) => !open)}
           allDetailsExpanded={detailExpansion.action === 'expand'}
           onToggleAllDetails={toggleAllDetails}
+          isExpansionPending={isExpansionPending}
           canExpandDetails={hasSelectedOptions}
         />
         {isFiltersOpen && (
@@ -338,6 +358,7 @@ const VepSubmissionResults = () => {
             resultSummary={resultSummary}
             transcriptGroupOptions={transcriptGroupOptions}
             afSources={afSources}
+            scoreFields={scoreFields}
             appliedConditionIds={appliedConditionIds}
             filteredDownload={filteredDownload}
           />
@@ -383,6 +404,7 @@ const VepResultsHeader = ({
   onToggleFilters,
   allDetailsExpanded,
   onToggleAllDetails,
+  isExpansionPending,
   canExpandDetails
 }: {
   submission: VepSubmissionWithoutInputFile;
@@ -395,6 +417,12 @@ const VepResultsHeader = ({
   onToggleFilters: () => void;
   allDetailsExpanded: boolean;
   onToggleAllDetails: () => void;
+  /**
+   * The bulk expand / collapse is still rendering. Its work is proportional to
+   * the page, so on a modest machine it runs for a second or more — long enough
+   * that without a sign of progress the button looks broken.
+   */
+  isExpansionPending: boolean;
   /** False when the job ran no annotation option — nothing to expand. */
   canExpandDetails: boolean;
 }) => {
@@ -442,9 +470,16 @@ const VepResultsHeader = ({
           type="button"
           className={styles.expandAllToggle}
           aria-pressed={allDetailsExpanded}
+          aria-busy={isExpansionPending}
           onClick={onToggleAllDetails}
         >
           {allDetailsExpanded ? 'Collapse all' : 'Expand all'}
+          {/* The label still flips immediately — the transition commits the
+              command straight away and only the panels render behind it — so
+              the spinner is what says the page is still catching up. */}
+          {isExpansionPending && (
+            <CircleLoader size="small" className={styles.expandAllSpinner} />
+          )}
         </button>
       )}
       <div>
@@ -726,24 +761,33 @@ const VariantRow = (props: {
     [tabularData, allelesBySequence]
   );
 
-  // Apply the page-level bulk expand / collapse. Read the current detail rows
-  // through a ref so this reacts only to the control (`detailExpansion`) and to
-  // the variant changing (pagination) — not to the user separately expanding
-  // transcripts, which grows `tabularData` but should leave open panels alone.
-  const detailRowIndicesRef = useRef(detailRowIndices);
-  // Written after commit rather than during render (react-hooks/refs): this
-  // effect is declared first, so it has refreshed the ref by the time the effect
-  // below reads it in the same commit.
-  useEffect(() => {
-    detailRowIndicesRef.current = detailRowIndices;
+  // Apply the page-level bulk expand / collapse, and reset when the variant
+  // changes under us (pagination reuses these row components).
+  //
+  // Done by comparing against the last command applied rather than in an effect,
+  // because the requirement is "react to the control, not to `detailRowIndices`
+  // changing" — the user separately expanding transcripts grows `tabularData`
+  // and so recomputes those indices, but must leave open panels alone. Stating
+  // that as an effect meant either lying in the dependency array or reading the
+  // indices through a ref written during render, which is not allowed: React can
+  // render without committing, so the ref could hold a value the committed UI
+  // never had. Comparing the command itself needs neither. `nonce` makes each
+  // click a new object, so repeating the same action still registers.
+  const [appliedExpansion, setAppliedExpansion] = useState({
+    expansion: detailExpansion,
+    variant
   });
-  useEffect(() => {
+  if (
+    appliedExpansion.expansion !== detailExpansion ||
+    appliedExpansion.variant !== variant
+  ) {
+    setAppliedExpansion({ expansion: detailExpansion, variant });
     setExpandedDetailRows(
       detailExpansion.action === 'expand'
-        ? new Set(detailRowIndicesRef.current)
+        ? new Set(detailRowIndices)
         : new Set()
     );
-  }, [detailExpansion, variant]);
+  }
 
   const toggleDetail = (rowIndex: number) => {
     setExpandedDetailRows((current) => {

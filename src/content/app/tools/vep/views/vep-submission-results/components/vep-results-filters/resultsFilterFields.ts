@@ -40,7 +40,11 @@ export type FilterFieldDefinition = {
   operatorLabel: string;
   // Which value editor to render: the grouped consequence multi-select, a
   // free-text token list, or the (species-dependent) transcript-group choices.
-  editor: 'consequence' | 'text' | 'group' | 'af';
+  editor: 'consequence' | 'text' | 'group' | 'af' | 'score';
+  // Score editors only: what a variant with no score is called. The hint for
+  // the expected range is not here but on the score option, since it differs
+  // from score to score.
+  score?: { missingLabel: string };
   textInput?: TextInputConfig;
   // Fields whose editor is already multi-value (consequence, transcript group):
   // a second condition would be redundant, so only one instance is allowed and
@@ -71,6 +75,109 @@ export const getTranscriptGroupOptions = (
     : ['canonical'];
   return ids.map((value) => ({ value, label: TRANSCRIPT_GROUP_LABELS[value] }));
 };
+
+// The scores the "Variant impact predictions" filter can test. Separate options
+// rather than one field because the scales differ — CADD PHRED is ~0-99 and
+// scaled for interpretation while RAW is unbounded around -7 to +35, the
+// missense predictors are 0-1 probabilities except popEVE, and SpliceAI's four
+// delta scores describe four different splicing events — so a threshold means
+// nothing without knowing which score it is on.
+//
+// For the same reason the placeholder lives on the option rather than on the
+// field definition: it is a real hint at the expected range, taken from the
+// values actually observed in the data, so one shared example would mislead
+// on most of the scores.
+export type ScoreFieldOption = {
+  value: ResultsFilterField;
+  label: string;
+  placeholder: string;
+};
+
+// The scores grouped by what they are predicting, which is also how the
+// submission form's "Variant impact predictions" panel presents them: a
+// genome-wide score, a missense-specific one and a splicing one answer
+// different questions and are rarely swapped for one another.
+export type ScoreFieldOptionGroup = {
+  title: string;
+  options: ScoreFieldOption[];
+};
+
+export const SCORE_FIELD_OPTION_GROUPS: ScoreFieldOptionGroup[] = [
+  {
+    title: 'Genome wide',
+    options: [
+      { value: 'cadd_phred', label: 'CADD (PHRED)', placeholder: 'e.g. 20' },
+      { value: 'cadd_raw', label: 'CADD (RAW)', placeholder: 'e.g. 3' }
+    ]
+  },
+  {
+    title: 'Missense',
+    options: [
+      {
+        value: 'alphamissense',
+        label: 'AlphaMissense',
+        placeholder: 'e.g. 0.5'
+      },
+      { value: 'revel', label: 'REVEL', placeholder: 'e.g. 0.5' },
+      { value: 'clinpred', label: 'ClinPred', placeholder: 'e.g. 0.5' },
+      { value: 'eve', label: 'EVE', placeholder: 'e.g. 0.5' },
+      // popEVE is a negative log-scale score (roughly -5.5 to -2.5 in the data
+      // we have), so its example threshold is negative where every other
+      // missense predictor's is a probability.
+      // TODO(popeve): popEVE also reports a gap frequency alongside the score.
+      // Offering a GAP-frequency filter is wanted, but it is a separate field
+      // with its own meaning rather than another entry in this menu, so it is
+      // deliberately not defined here yet.
+      { value: 'popeve', label: 'popEVE', placeholder: 'e.g. -3' }
+    ]
+  },
+  {
+    title: 'Splicing',
+    options: [
+      {
+        value: 'spliceai_ag',
+        label: 'Delta score (acceptor gain)',
+        placeholder: 'e.g. 0.5'
+      },
+      {
+        value: 'spliceai_al',
+        label: 'Delta score (acceptor loss)',
+        placeholder: 'e.g. 0.5'
+      },
+      {
+        value: 'spliceai_dg',
+        label: 'Delta score (donor gain)',
+        placeholder: 'e.g. 0.5'
+      },
+      {
+        value: 'spliceai_dl',
+        label: 'Delta score (donor loss)',
+        placeholder: 'e.g. 0.5'
+      },
+      {
+        value: 'spliceai_any',
+        label: 'Delta score (any)',
+        placeholder: 'e.g. 0.5'
+      }
+    ]
+  }
+];
+
+export const SCORE_FIELD_OPTIONS: ScoreFieldOption[] =
+  SCORE_FIELD_OPTION_GROUPS.flatMap((group) => group.options);
+
+const SCORE_FIELDS = new Set<ResultsFilterField>(
+  SCORE_FIELD_OPTIONS.map((option) => option.value)
+);
+
+// The placeholder (range hint) for a score, for the row's threshold input.
+export const scoreFieldOption = (
+  field: ResultsFilterField
+): ScoreFieldOption | undefined =>
+  SCORE_FIELD_OPTIONS.find((option) => option.value === field);
+
+export const isScoreField = (field: ResultsFilterField): boolean =>
+  SCORE_FIELDS.has(field);
 
 export const FILTER_FIELDS: FilterFieldDefinition[] = [
   {
@@ -126,6 +233,20 @@ export const FILTER_FIELDS: FilterFieldDefinition[] = [
     label: 'Allele frequency',
     operatorLabel: '',
     editor: 'af'
+  },
+  // One entry for every impact score, not one per score: the field dropdown
+  // offers "Variant impact predictions" (matching the submission form's panel
+  // of that name) and the score itself is chosen inside the row, the way the
+  // allele-frequency filter picks its sources. `field` holds the score actually
+  // chosen, so what goes to the API stays the real field.
+  {
+    field: 'cadd_phred',
+    label: 'Variant impact predictions',
+    operatorLabel: '',
+    editor: 'score',
+    score: {
+      missingLabel: 'Include variants with no score'
+    }
   }
 ];
 
@@ -161,6 +282,20 @@ export const createCondition = (
       threshold: 0.05
     };
   }
+  if (isScoreField(field)) {
+    // `>=` by default: an impact-score filter is nearly always asking for the
+    // damaging end, so the common case needs no change.
+    //
+    // Unscored variants are excluded by default, which is the opposite of the
+    // allele-frequency filter's treatment of missing data — deliberately, because
+    // absence means something different in each. A variant with no allele
+    // frequency is absent from the reference set, which is itself evidence of
+    // rarity and usually the thing being hunted. A variant with no impact score
+    // was simply never scored (out of the predictor's scope, or skipped), which
+    // is not evidence of anything: keeping it would dilute a search for damaging
+    // variants with variants nothing has judged.
+    return { id, field, operator: 'ge', values: [], includeMissing: false };
+  }
   return { id, field, operator: 'in', values: [] };
 };
 
@@ -178,6 +313,54 @@ const usedSingleInstanceFields = (
 
 // Field options available to a given row: hide single-instance fields already
 // used by another row, but always keep the row's own current field.
+/**
+ * The definition to render a condition with. Every score resolves to the one
+ * "Variant impact predictions" entry, since which score it is lives in the row
+ * rather than in the field dropdown.
+ */
+export const definitionForField = (
+  field: ResultsFilterField
+): FilterFieldDefinition | undefined =>
+  isScoreField(field)
+    ? FILTER_FIELDS.find((f) => f.editor === 'score')
+    : FILTER_FIELDS.find((f) => f.field === field);
+
+/**
+ * Which scores this row may offer: those the job carries, minus the ones other
+ * rows have already taken, plus whichever this row is on.
+ *
+ * The result keeps the category grouping, since that is what the row's score
+ * menu renders as <optgroup>s. A group left with no scores is dropped rather
+ * than returned empty, because an empty optgroup still renders its heading and
+ * would advertise a category with nothing under it.
+ */
+export const availableScoresForRow = (
+  conditions: ResultsFilterCondition[],
+  rowIndex: number,
+  offered: ResultsFilterField[]
+): ScoreFieldOptionGroup[] => {
+  const takenElsewhere = new Set(
+    conditions
+      .filter((c, i) => i !== rowIndex && isScoreField(c.field))
+      .map((c) => c.field)
+  );
+  const isAvailable = (option: ScoreFieldOption) =>
+    offered.includes(option.value) &&
+    (!takenElsewhere.has(option.value) ||
+      conditions[rowIndex]?.field === option.value);
+
+  return SCORE_FIELD_OPTION_GROUPS.map((group) => ({
+    title: group.title,
+    options: group.options.filter(isAvailable)
+  })).filter((group) => group.options.length > 0);
+};
+
+// The flat list of scores behind a grouped menu, for the places that only care
+// which scores are on offer rather than how they are presented.
+export const flattenScoreOptions = (
+  groups: ScoreFieldOptionGroup[]
+): ScoreFieldOption[] => groups.flatMap((group) => group.options);
+
 export const availableFieldsForRow = (
   conditions: ResultsFilterCondition[],
   rowIndex: number

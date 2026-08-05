@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useMemo, Fragment, type ReactNode } from 'react';
+import { useState, useEffect, useMemo, Fragment, type ReactNode } from 'react';
 
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -107,6 +107,54 @@ const VepResultsAnnotationDetail = (props: {
     onCollapse
   } = props;
   const [showAll, setShowAll] = useState(false);
+
+  // Build this panel's contents only once it is near the viewport.
+  //
+  // "Expand all" opens one of these per row, and at the default page size of
+  // 100 that was ~14,000 DOM nodes in one go — but the greater cost is the
+  // JavaScript, not the nodes: a trace of it is ~90% scripting, because every
+  // panel walks the display spec for every option of every panel to decide what
+  // it has to show. Almost all of that was for panels the reader never scrolled
+  // to.
+  //
+  // `content-visibility: auto` (see the stylesheet) already stops the *browser*
+  // laying out a panel that is off screen, but React builds it regardless; this
+  // is the same idea carried into the render. The two agree by construction,
+  // since both key off this element being near the viewport, and the panel's
+  // `contain-intrinsic-height: auto 400px` reserves the space in the meantime —
+  // so nothing here has to guess a placeholder height.
+  //
+  // Latched: once a panel has been built it stays built, so scrolling back over
+  // it costs nothing and never discards the "Show all" state.
+  const [detailNode, setDetailNode] = useState<HTMLDivElement | null>(null);
+  // Starts true where there is no IntersectionObserver (jsdom in the unit
+  // tests, very old browsers), so the panel renders everything rather than
+  // nothing. Set as the initial state rather than from the effect below: the
+  // check is a fact about the environment, not something that changes, and
+  // flipping it from inside the effect is a state update React cannot
+  // distinguish from a render loop.
+  const [hasEnteredView, setHasEnteredView] = useState(
+    typeof IntersectionObserver === 'undefined'
+  );
+
+  useEffect(() => {
+    if (!detailNode || hasEnteredView) {
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setHasEnteredView(true);
+          observer.disconnect();
+        }
+      },
+      // Build a screenful ahead of the scroll, so a panel is ready by the time
+      // it is looked at rather than assembling under the reader.
+      { rootMargin: '600px 0px' }
+    );
+    observer.observe(detailNode);
+    return () => observer.disconnect();
+  }, [detailNode, hasEnteredView]);
 
   // Population labels for the AF breakdown come from the backend, keyed by
   // `${source}|${population}` (the same selected columns each variant's
@@ -453,21 +501,27 @@ const VepResultsAnnotationDetail = (props: {
   // Capped at 3 as well: beyond that the columns are narrower than the widest
   // tables want (see `.sections`), and a very long panel gains little from a
   // fourth.
-  const renderedSections: { id: string; node: ReactNode }[] = [
-    ...(panels ?? []).map((panel) => ({
-      id: panel.id,
-      node: renderPanel(panel)
-    })),
-    // Older jobs pinned their panels before allele frequencies were one, and
-    // some callers pass no panels at all. Both still get the block — appended,
-    // as it always was. Only its position moves when the panel is there to
-    // place it.
-    !(panels ?? []).some((panel) => panel.id === 'allele_frequencies')
-      ? { id: 'allele_frequencies', node: renderFrequencies() }
-      : null
-  ].filter((section): section is { id: string; node: ReactNode } =>
-    Boolean(section?.node)
-  );
+  // Gated on `hasEnteredView` here rather than only in the JSX below: this is
+  // where the work actually happens — `renderPanel` walks every option of every
+  // panel through the display spec — so returning early from the markup alone
+  // would have saved nothing.
+  const renderedSections: { id: string; node: ReactNode }[] = !hasEnteredView
+    ? []
+    : [
+        ...(panels ?? []).map((panel) => ({
+          id: panel.id,
+          node: renderPanel(panel)
+        })),
+        // Older jobs pinned their panels before allele frequencies were one,
+        // and some callers pass no panels at all. Both still get the block —
+        // appended, as it always was. Only its position moves when the panel
+        // is there to place it.
+        !(panels ?? []).some((panel) => panel.id === 'allele_frequencies')
+          ? { id: 'allele_frequencies', node: renderFrequencies() }
+          : null
+      ].filter((section): section is { id: string; node: ReactNode } =>
+        Boolean(section?.node)
+      );
 
   // Phenotypes drops out of the column flow and takes the panel's full width at
   // the bottom. Its conditions tables are the widest thing here — four columns
@@ -481,11 +535,14 @@ const VepResultsAnnotationDetail = (props: {
   );
 
   return (
-    <div className={styles.detail}>
+    // The panel element is always here, empty until it comes near the viewport:
+    // it is what the observer watches, and its reserved height is what keeps the
+    // scroll from lurching while the contents are still to come.
+    <div className={styles.detail} ref={setDetailNode}>
       {/* The toolbar sits outside the multi-column section list: an interactive
           control inside a CSS multicol (as a column-span:all element) can have
           its clicks swallowed by an overlapping column, which broke "Show all". */}
-      {panels && parameters && (
+      {hasEnteredView && panels && parameters && (
         <div className={styles.detailToolbar}>
           <CheckboxWithLabel
             label="Show all"
@@ -515,7 +572,7 @@ const VepResultsAnnotationDetail = (props: {
       {/* Collapse control at the bottom-right — the same blue close (cross) used
           at the bottom of an expanded transcript list — so a long panel can be
           closed without scrolling back to the row's expand chevron. */}
-      {onCollapse && (
+      {hasEnteredView && onCollapse && (
         <div className={styles.collapseRow}>
           <CloseButton aria-label="Hide annotations" onClick={onCollapse} />
         </div>
