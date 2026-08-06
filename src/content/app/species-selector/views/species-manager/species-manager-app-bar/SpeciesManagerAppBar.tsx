@@ -16,25 +16,17 @@
 
 import { useNavigate } from 'react-router';
 
-import { useAppSelector } from 'src/store';
-
-import { getCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
-
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
-import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
-import { SelectedSpecies } from 'src/shared/components/selected-species';
-
-import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+import { SelectedGenomes } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
 
 export const SpeciesManagerAppBar = () => {
-  const selectedSpecies = useAppSelector(getCommittedSpecies);
   const navigate = useNavigate();
 
   const onClose = () => navigate(-1);
 
-  const mainContent = <AppBarMainContent selectedSpecies={selectedSpecies} />;
+  const mainContent = <SelectedGenomes />;
 
   const appName = <AppName>Genome selector</AppName>;
 
@@ -45,22 +37,6 @@ export const SpeciesManagerAppBar = () => {
       mainContent={mainContent}
       aside={<HelpPopupButton slug="genome-selector-intro" />}
     />
-  );
-};
-
-const AppBarMainContent = (props: { selectedSpecies: CommittedItem[] }) => {
-  const selectedSpecies = props.selectedSpecies.map((species) => (
-    <SelectedSpecies
-      key={species.genome_id}
-      species={species}
-      disabled={true}
-    />
-  ));
-
-  return (
-    <div>
-      <SpeciesTabsSlider>{selectedSpecies}</SpeciesTabsSlider>
-    </div>
   );
 };
 

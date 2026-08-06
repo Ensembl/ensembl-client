@@ -20,23 +20,14 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
-import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
-import { SelectedSpecies } from 'src/shared/components/selected-species';
 import { PlaceholderMessage } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
+import { SelectedGenomes } from 'src/content/app/species-selector/components/species-selector-app-bar/SpeciesSelectorAppBar';
 
 const SpeciesSearchResultsAppBar = () => {
   const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
 
   const mainContent = enabledCommittedSpecies.length ? (
-    <SpeciesTabsSlider>
-      {enabledCommittedSpecies.map((species) => (
-        <SelectedSpecies
-          key={species.genome_id}
-          species={species}
-          disabled={true}
-        />
-      ))}
-    </SpeciesTabsSlider>
+    <SelectedGenomes />
   ) : (
     <PlaceholderMessage />
   );

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 
 import { useAppSelector } from 'src/store';
@@ -29,7 +30,6 @@ import SpeciesManagerIndicator from 'src/shared/components/species-manager-indic
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
-import { CloseButtonWithLabel } from 'src/shared/components/close-button/CloseButton';
 
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
@@ -42,18 +42,13 @@ export const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
 );
 
-export const SpeciesSelectorAppBar = (props: { isSearchMode?: boolean }) => {
+export const SpeciesSelectorAppBar = () => {
   const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
   const hasEnabledSpecies = enabledCommittedSpecies.length > 0;
 
-  const mainContent = hasEnabledSpecies ? (
-    <AppBarMainContent
-      selectedSpecies={enabledCommittedSpecies}
-      isSearchMode={props.isSearchMode}
-    />
-  ) : (
-    <PlaceholderMessage />
-  );
+  const mainContent = useMemo(() => {
+    return hasEnabledSpecies ? <AppBarMainContent /> : <PlaceholderMessage />;
+  }, [hasEnabledSpecies]);
 
   return (
     <AppBar
@@ -65,65 +60,43 @@ export const SpeciesSelectorAppBar = (props: { isSearchMode?: boolean }) => {
   );
 };
 
-const AppBarMainContent = (props: {
-  selectedSpecies: CommittedItem[];
-  isSearchMode?: boolean;
-}) => {
-  const navigate = useNavigate();
-
-  const onSearchClose = () => {
-    navigate(-1);
-  };
-
+const AppBarMainContent = () => {
   return (
     <div className={styles.grid}>
-      <SelectedSpeciesList
-        selectedSpecies={props.selectedSpecies}
-        isSearchMode={props.isSearchMode}
-      />
+      <SelectedGenomes />
       <div className={styles.aside}>
-        {props.isSearchMode && <CloseButtonWithLabel onClick={onSearchClose} />}
-        {!props.isSearchMode && (
-          <span className={styles.selectTabMessage}>
-            Select a tab to see a Genome home page
-          </span>
-        )}
+        <span className={styles.selectTabMessage}>
+          Select a tab to see a Genome home page
+        </span>
       </div>
     </div>
   );
 };
 
-const SelectedSpeciesList = (props: {
-  selectedSpecies: CommittedItem[];
-  isSearchMode?: boolean;
-}) => {
+export const SelectedGenomes = () => {
+  const enabledCommittedGenomes = useAppSelector(getEnabledCommittedSpecies);
   const navigate = useNavigate();
   const { removeGenome } = useGenomeRemoval();
 
-  const showSpeciesPage = (species: CommittedItem) => {
-    const genomeIdForUrl = species.genome_tag ?? species.genome_id;
-    const speciesPageUrl = urlFor.speciesPage({
+  const openGenomePage = (genome: CommittedItem) => {
+    const genomeIdForUrl = genome.genome_tag ?? genome.genome_id;
+    const genomePageUrl = urlFor.speciesPage({
       genomeId: genomeIdForUrl
     });
 
-    navigate(speciesPageUrl);
+    navigate(genomePageUrl);
   };
 
-  const conditionalSpeciesProps = !props.isSearchMode
-    ? ({ theme: 'blue' } as const)
-    : ({ theme: 'grey', disabled: true } as const);
-
-  const selectedSpecies = props.selectedSpecies.map((species) => (
+  const selectedGenomes = enabledCommittedGenomes.map((genome) => (
     <SelectedSpecies
-      key={species.genome_id}
-      species={species}
-      onClick={() => showSpeciesPage(species)}
-      onRemove={!props.isSearchMode ? removeGenome : undefined}
-      {...conditionalSpeciesProps}
+      key={genome.genome_id}
+      species={genome}
+      onClick={() => openGenomePage(genome)}
+      onRemove={removeGenome}
     />
   ));
 
-  return <SpeciesTabsSlider>{selectedSpecies}</SpeciesTabsSlider>;
+  return <SpeciesTabsSlider>{selectedGenomes}</SpeciesTabsSlider>;
 };
 
 export default SpeciesSelectorAppBar;
