@@ -133,30 +133,37 @@ export const SCORE_FIELD_OPTION_GROUPS: ScoreFieldOptionGroup[] = [
   },
   {
     title: 'Splicing',
+    // Named the way the results name them: the source first, then "ΔS" — the
+    // same column heading the SpliceAI table uses for these very values, which
+    // are its `SpliceAI_pred_DS_*` delta scores. Spelling it "Delta score" here
+    // and "ΔS" there made the reader translate between the filter they set and
+    // the number they were looking at. The source prefix also leaves room for a
+    // second splicing predictor under this heading without either becoming
+    // ambiguous.
     options: [
       {
         value: 'spliceai_ag',
-        label: 'Delta score (acceptor gain)',
+        label: 'SpliceAI ΔS (acceptor gain)',
         placeholder: 'e.g. 0.5'
       },
       {
         value: 'spliceai_al',
-        label: 'Delta score (acceptor loss)',
+        label: 'SpliceAI ΔS (acceptor loss)',
         placeholder: 'e.g. 0.5'
       },
       {
         value: 'spliceai_dg',
-        label: 'Delta score (donor gain)',
+        label: 'SpliceAI ΔS (donor gain)',
         placeholder: 'e.g. 0.5'
       },
       {
         value: 'spliceai_dl',
-        label: 'Delta score (donor loss)',
+        label: 'SpliceAI ΔS (donor loss)',
         placeholder: 'e.g. 0.5'
       },
       {
         value: 'spliceai_any',
-        label: 'Delta score (any)',
+        label: 'SpliceAI ΔS (any)',
         placeholder: 'e.g. 0.5'
       }
     ]
