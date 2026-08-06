@@ -396,16 +396,26 @@ const toRowSpec = (
   // linking to its ClinVar page), interpolating `{value}` into the template. An
   // absent value renders nothing rather than a broken link.
   if (row.link?.kind === 'external' && row.link.template) {
-    const absent = isAbsent(value);
+    // `link_from` points the link at a sibling field: the reader sees the
+    // value, the href is what the parse resolved alongside it — Geno2MP's
+    // count of HPO profiles, linked to that variant's page. No URL there means
+    // the value renders as plain text, never a link to nowhere.
+    const href = row.link_from
+      ? readField(row.link_from, spec, entities)
+      : value;
     return {
       key: row.key ?? undefined,
       label: rowLabel(row),
       value,
       mono: row.mono ?? undefined,
-      valueNode: absent ? null : (
+      // No value drops the row, as an absent scalar always does. A value whose
+      // *href* is missing still has something to say, so it renders unlinked
+      // rather than disappearing — `undefined` leaves the formatting to
+      // renderRows, which is exactly the plain-value path.
+      valueNode: isAbsent(value) ? null : isAbsent(href) ? undefined : (
         <ExternalLink
           template={row.link.template}
-          fields={{ value: String(value) }}
+          fields={{ value: String(href) }}
         >
           {formatValue(value, row.format ?? 'text')}
         </ExternalLink>
@@ -523,13 +533,22 @@ const interpolate = (template: string, item: Record<string, unknown>): string =>
  * accession in a query string loses both it and anything after it. There is no
  * reading of a '#' *inside a value* as anything but a literal, so it is always
  * safe to escape — unlike ':' or '/', which a value may well mean structurally.
+ *
+ * That reasoning holds for a value interpolated *into* a URL, and only there.
+ * A template that is nothing but the placeholder — `{value}`, the `link_from`
+ * shape, where the parse resolved the whole href — is the opposite case: the
+ * value *is* the URL, so a '#' in it is that URL's own structure. Geno2MP's
+ * variant pages are fragment-routed (`.../Geno2MP/#/variant/1/11022/G%3EA/snp`)
+ * and escaping theirs would point every one of them at the site's front page.
  */
 const HASH_IN_VALUE = /#/g;
+const WHOLE_VALUE_TEMPLATE = /^\{\w+\}$/;
 
 const interpolateUrl = (
   template: string,
   item: Record<string, unknown>
 ): string | null => {
+  const valueIsTheUrl = WHOLE_VALUE_TEMPLATE.test(template);
   let usable = true;
   const url = template.replace(/\{(\w+)\}/g, (_match, field) => {
     const value = item[field];
@@ -537,7 +556,8 @@ const interpolateUrl = (
       usable = false;
       return '';
     }
-    return String(value).replace(HASH_IN_VALUE, '%23');
+    const text = String(value);
+    return valueIsTheUrl ? text : text.replace(HASH_IN_VALUE, '%23');
   });
   return usable && /^https?:\/\//i.test(url) ? url : null;
 };

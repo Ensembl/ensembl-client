@@ -92,6 +92,13 @@ export type DisplayRowSpec = {
   sub_option?: { id: string; default?: boolean } | null;
   /** A trailing link on the value (a named builder — ProtVar's icon per row). */
   link?: DisplayLinkSpec | null;
+  /**
+   * Build that link from a *sibling* field rather than from the value's own
+   * text — the same thing a table column or a list item's cell can do. Geno2MP
+   * reports a count of HPO profiles plus the URL of the variant's page, and no
+   * template can derive the second from the first.
+   */
+  link_from?: string | null;
   /** A star rating in front of the value, using this named scale. The value
    *  itself still renders. */
   stars?: string | null;

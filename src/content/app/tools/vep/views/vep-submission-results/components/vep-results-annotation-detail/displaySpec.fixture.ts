@@ -280,6 +280,28 @@ export const displaySpecFixture: DisplaySpec = {
       ]
     },
     {
+      option_id: 'geno2mp',
+      blocks: [
+        {
+          heading: 'Geno2MP',
+          kind: 'rows',
+          rows: [
+            {
+              label: 'HPO profiles',
+              from: 'geno2mp.hpo_profile_count',
+              format: 'num',
+              mono: false,
+              link: {
+                kind: 'external',
+                template: '{value}'
+              },
+              link_from: 'geno2mp.url'
+            }
+          ]
+        }
+      ]
+    },
+    {
       option_id: 'loeuf',
       blocks: [
         {
@@ -1615,6 +1637,7 @@ export const displaySpecFixture: DisplaySpec = {
     eve: 'transcript',
     utr_annotation: 'transcript',
     gerp: 'allele',
+    geno2mp: 'allele',
     loeuf: 'transcript',
     nmd: 'transcript',
     spdi: 'allele',

@@ -633,6 +633,41 @@ describe('renderDisplayOption', () => {
     expect(href).toContain('/score-sets/urn:mavedb:00000045-a-1?');
   });
 
+  it('leaves a # alone when the value IS the URL', () => {
+    // The other half of the rule above, and it has to be the other half: a
+    // template that is nothing but the placeholder means the parse resolved the
+    // whole href, so a '#' in it is that URL's own structure. Geno2MP's variant
+    // pages are fragment-routed, and escaping theirs sends every one of them to
+    // the site's front page instead.
+    renderOption('geno2mp', {
+      allele: [
+        annotation('geno2mp', 'allele', {
+          hpo_profile_count: 107,
+          url: 'https://geno2mp.gs.washington.edu/Geno2MP/#/variant/1/11022/G%3EA/snp'
+        })
+      ]
+    });
+
+    const href = screen.getByText('107').closest('a')?.getAttribute('href');
+    expect(href).toBe(
+      'https://geno2mp.gs.washington.edu/Geno2MP/#/variant/1/11022/G%3EA/snp'
+    );
+    expect(href).not.toContain('%23');
+  });
+
+  it('shows the count unlinked when its href is missing', () => {
+    // A count still says something without somewhere to follow it to, so the
+    // row must not vanish just because the URL did.
+    renderOption('geno2mp', {
+      allele: [
+        annotation('geno2mp', 'allele', { hpo_profile_count: 42, url: null })
+      ]
+    });
+
+    expect(screen.getByText('42')).toBeDefined();
+    expect(screen.getByText('42').closest('a')).toBeNull();
+  });
+
   it('shows the option heading even when only one of its blocks survives', () => {
     // No variant row, but the assays list survives — the "MaveDB" heading spans
     // both blocks, so it still shows.
