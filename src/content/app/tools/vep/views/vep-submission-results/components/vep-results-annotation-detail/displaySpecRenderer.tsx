@@ -496,8 +496,16 @@ const interpolate = (template: string, item: Record<string, unknown>): string =>
  * No link is better than a broken one, so both cases fall back to plain text.
  * Values are *not* percent-encoded: they routinely carry characters that are
  * URL-significant and intended — a MaveDB URN is `urn:mavedb:00000001-a-1` —
- * and encoding them would break links that work today.
+ * and encoding them would break links that work today. `#` is the exception,
+ * and not a matter of taste: a MaveDB *accession* is
+ * `urn:mavedb:00000045-a-1#2010`, and left raw the browser reads everything
+ * from the '#' as a fragment and never sends it, so a template that puts the
+ * accession in a query string loses both it and anything after it. There is no
+ * reading of a '#' *inside a value* as anything but a literal, so it is always
+ * safe to escape — unlike ':' or '/', which a value may well mean structurally.
  */
+const HASH_IN_VALUE = /#/g;
+
 const interpolateUrl = (
   template: string,
   item: Record<string, unknown>
@@ -509,7 +517,7 @@ const interpolateUrl = (
       usable = false;
       return '';
     }
-    return String(value);
+    return String(value).replace(HASH_IN_VALUE, '%23');
   });
   return usable && /^https?:\/\//i.test(url) ? url : null;
 };

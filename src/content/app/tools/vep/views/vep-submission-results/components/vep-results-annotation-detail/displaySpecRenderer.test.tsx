@@ -579,19 +579,58 @@ describe('renderDisplayOption', () => {
         annotation('mavedb', 'transcript', {
           protein_variant: 'p.Arg72Pro',
           assays: [
-            { urn: 'urn:mavedb:1', score: 1.234 },
-            { urn: 'urn:mavedb:2', score: -0.5 }
+            {
+              urn: 'urn:mavedb:00000045-a-1',
+              accession: 'urn:mavedb:00000045-a-1#2010',
+              score: 1.234
+            },
+            {
+              urn: 'urn:mavedb:00000045-b-1',
+              accession: 'urn:mavedb:00000045-b-1#7',
+              score: -0.5
+            }
           ]
         })
       ]
     });
     expect(screen.getByText('MaveDB')).toBeDefined(); // the option heading
     expect(screen.getByText('p.Arg72Pro')).toBeDefined(); // rows block
-    const link = screen.getByText('urn:mavedb:1').closest('a'); // list block
+    // The reader sees the score set; the link also carries the variant within
+    // it, so MaveDB opens on this variant rather than the whole distribution.
+    const link = screen.getByText('urn:mavedb:00000045-a-1').closest('a'); // list block
     expect(link?.getAttribute('href')).toBe(
-      'https://www.mavedb.org/score-sets/urn:mavedb:1'
+      'https://www.mavedb.org/score-sets/urn:mavedb:00000045-a-1' +
+        '?calibration&variant=urn:mavedb:00000045-a-1%232010'
     );
     expect(screen.getByText('1.234')).toBeDefined();
+  });
+
+  it('escapes a # inside a value so it cannot end the URL early', () => {
+    // Raw, the browser reads everything from the '#' as a fragment and never
+    // sends it — so the variant, and the rest of the query with it, is lost.
+    renderOption('mavedb', {
+      consequence: [
+        annotation('mavedb', 'transcript', {
+          protein_variant: null,
+          assays: [
+            {
+              urn: 'urn:mavedb:00000045-a-1',
+              accession: 'urn:mavedb:00000045-a-1#2010',
+              score: 1
+            }
+          ]
+        })
+      ]
+    });
+
+    const href = screen
+      .getByText('urn:mavedb:00000045-a-1')
+      .closest('a')
+      ?.getAttribute('href');
+    expect(href).toContain('%232010');
+    expect(href).not.toContain('#');
+    // The colons are still the source's own and stay as they are.
+    expect(href).toContain('/score-sets/urn:mavedb:00000045-a-1?');
   });
 
   it('shows the option heading even when only one of its blocks survives', () => {
@@ -601,7 +640,7 @@ describe('renderDisplayOption', () => {
       consequence: [
         annotation('mavedb', 'transcript', {
           protein_variant: null,
-          assays: [{ urn: 'urn:x', score: 2 }]
+          assays: [{ urn: 'urn:x', accession: 'urn:x#1', score: 2 }]
         })
       ]
     });

@@ -421,6 +421,11 @@ export const displaySpecFixture: DisplaySpec = {
                       from: 'phenotype',
                       format: 'phenotype',
                       mono: false,
+                      link: {
+                        kind: 'external',
+                        template: '{value}'
+                      },
+                      link_from: 'source_url',
                       label: 'Phenotype',
                       nowrap: false,
                       lift_when_invariant: false
@@ -457,6 +462,11 @@ export const displaySpecFixture: DisplaySpec = {
                       from: 'phenotype',
                       format: 'phenotype',
                       mono: false,
+                      link: {
+                        kind: 'external',
+                        template: '{value}'
+                      },
+                      link_from: 'source_url',
                       label: 'Phenotype',
                       nowrap: false,
                       lift_when_invariant: false
@@ -950,7 +960,8 @@ export const displaySpecFixture: DisplaySpec = {
                 mono: false,
                 link: {
                   kind: 'external',
-                  template: 'https://www.mavedb.org/score-sets/{urn}'
+                  template:
+                    'https://www.mavedb.org/score-sets/{urn}?calibration&variant={accession}'
                 },
                 nowrap: false
               },
