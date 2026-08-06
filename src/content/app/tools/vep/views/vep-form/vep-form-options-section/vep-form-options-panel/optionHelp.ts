@@ -168,12 +168,6 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
     links: [{ href: 'https://www.ebi.ac.uk/research/beltrao/software/' }]
   },
 
-  // --- Conservation & constraint ---
-  gerp: {
-    description: 'Conservation scores calculated using GERP.',
-    links: [{ href: 'https://europepmc.org/article/pmc/2996323' }]
-  },
-
   // --- Variant Impact Predictions ---
   alphamissense: {
     description:
@@ -247,8 +241,12 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       'available here for non-commercial use.',
     links: [{ href: 'https://cadd.bihealth.org/' }]
   },
+  gerp: {
+    description: 'Conservation scores calculated using GERP.',
+    links: [{ href: 'https://europepmc.org/article/pmc/2996323' }]
+  },
 
-  // --- Conservation & constraint ---
+  // --- Constraint ---
   loeuf: {
     description:
       'Annotates variants with the loss-of-function observed/expected upper ' +
