@@ -760,15 +760,15 @@ describe('renderDisplayOption', () => {
       .getAllByRole('columnheader')
       .map((h) => h.textContent);
     expect(headers).toEqual([
-      'Disease association',
-      'Target Gene',
+      'Disease',
+      'Gene',
       'Lead variant p-value',
-      'beta',
+      'beta coefficient',
       'Locus to Gene (L2G) Score',
       'BioSample',
-      'Target Gene',
+      'Gene',
       'Lead variant p-value',
-      'beta'
+      'beta coefficient'
     ]);
 
     // the resolved EFO term, not the accession
@@ -2378,7 +2378,7 @@ describe('table column alignment', () => {
       ],
       openTargetsVariantId: '1_1_A_G'
     });
-    // Disease association | Target Gene | Lead variant p-value | beta | L2G
+    // Disease | Gene | Lead variant p-value | beta coefficient | L2G
     expect(alignmentOf(container, 'th')).toEqual([
       'left',
       'left',

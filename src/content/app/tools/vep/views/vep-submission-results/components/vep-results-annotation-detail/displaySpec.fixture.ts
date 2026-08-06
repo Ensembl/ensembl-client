@@ -1081,14 +1081,14 @@ export const displaySpecFixture: DisplaySpec = {
             {
               from: 'disease_label',
               mono: false,
-              label: 'Disease association',
+              label: 'Disease',
               nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'gene_id',
               mono: true,
-              label: 'Target Gene',
+              label: 'Gene',
               nowrap: false,
               lift_when_invariant: false
             },
@@ -1104,7 +1104,7 @@ export const displaySpecFixture: DisplaySpec = {
               from: 'beta',
               format: 'num',
               mono: false,
-              label: 'beta',
+              label: 'beta coefficient',
               nowrap: false,
               lift_when_invariant: false
             },
@@ -1137,7 +1137,7 @@ export const displaySpecFixture: DisplaySpec = {
             {
               from: 'gene_id',
               mono: true,
-              label: 'Target Gene',
+              label: 'Gene',
               nowrap: false,
               lift_when_invariant: false
             },
@@ -1153,7 +1153,7 @@ export const displaySpecFixture: DisplaySpec = {
               from: 'beta',
               format: 'num',
               mono: false,
-              label: 'beta',
+              label: 'beta coefficient',
               nowrap: false,
               lift_when_invariant: false
             }
