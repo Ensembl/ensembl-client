@@ -26,6 +26,7 @@ import StarRating from 'src/content/app/tools/vep/components/star-rating/StarRat
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 
 import {
+  renderRows,
   renderRowGroup,
   renderRowBlock,
   formatValue,
@@ -54,6 +55,7 @@ import type {
   DisplayItemSpec,
   DisplayLinkSpec,
   DisplayListBlockSpec,
+  DisplayMapRowsBlockSpec,
   DisplayOptionSpec,
   DisplayRowSpec,
   DisplaySpec,
@@ -125,6 +127,24 @@ type Entities = {
    * order within a single synchronous pass, so the claim is deterministic.
    */
   helpAnchor?: { take: () => OptionHelp | null };
+  /**
+   * Row sets a block cannot name up front, keyed by vocabulary name (see
+   * `map_rows`). The allele frequencies are the case that needs it: which
+   * populations a job carries is chosen per submission, and their labels are
+   * decoded by the backend, so neither can be written into the spec.
+   *
+   * Threaded like `linkContext` rather than baked into the DSL — the block says
+   * *which* vocabulary it wants, and knows nothing about where it came from.
+   */
+  vocabularies?: Record<string, VocabularyEntry[]>;
+};
+
+/** One row a `map_rows` block can draw: which slice it belongs to, the key it
+ *  reads from the dict, and what to label it. */
+export type VocabularyEntry = {
+  scope: string;
+  code: string;
+  label: string;
 };
 
 /** One-shot holder: the first level-0 heading or row to draw takes the help. */
@@ -838,6 +858,79 @@ const renderListItem = (
       // linked row has (ProtVar's pocket and interface scores).
       value={linkNode ?? cells}
     />
+  );
+};
+
+/**
+ * A block whose rows come from a vocabulary rather than from the spec.
+ *
+ * The values are read from a dict field, keyed by each vocabulary entry's code
+ * — except the `""` entry, a source's all-ancestry figure, which the parse
+ * keeps as its own scalar beside the dict.
+ *
+ * Every row is built as a `sub_option` RowSpec so the two views need no code
+ * here at all: `renderRows` already drops a value-less sub-option row in the
+ * default view and shows it as a dash under "Show all", which is exactly what
+ * an unpopulated population should do.
+ */
+const renderMapRowsBlock = (
+  block: DisplayMapRowsBlockSpec,
+  spec: DisplaySpec,
+  entities: Entities,
+  level: number
+): ReactNode | null => {
+  const vocabulary = entities.vocabularies?.[block.vocabulary] ?? [];
+  const entries = vocabulary.filter((entry) => entry.scope === block.scope);
+  if (!entries.length) {
+    return null;
+  }
+  const populations = readField(block.from, spec, entities);
+  const byCode =
+    populations && typeof populations === 'object'
+      ? (populations as Record<string, unknown>)
+      : {};
+  const suffixText = block.label_suffix
+    ? readField(block.label_suffix.from, spec, entities)
+    : null;
+
+  const rows: RowSpec[] = entries.map((entry) => {
+    const value = entry.code
+      ? byCode[entry.code]
+      : block.overall_from
+        ? readField(block.overall_from, spec, entities)
+        : null;
+    const formatted = isAbsent(value)
+      ? null
+      : formatValue(value, block.format ?? 'text');
+    // The suffix names where a figure came from, so it belongs to the value and
+    // is dropped with it — a dash must never read "— (European)".
+    const suffixed =
+      formatted !== null &&
+      block.label_suffix &&
+      entry.code === block.label_suffix.key &&
+      !isAbsent(suffixText)
+        ? `${formatted} (${suffixText})`
+        : formatted;
+    return {
+      key: entry.code || 'overall',
+      label: entry.label,
+      value: suffixed,
+      // The `sub_option` row rule, stated directly rather than borrowed: every
+      // entry in the vocabulary was selected — that is what being there means —
+      // so the default view drops the ones with no value, and "Show all" lists
+      // all of them with a dash where the variant had none.
+      placeholder: entities.showAll ? '—' : undefined
+    };
+  });
+
+  const nodes = renderRows(rows);
+  if (!nodes.length) {
+    return null;
+  }
+  return block.heading ? (
+    renderRowBlock(claimHelp(block.heading, entities, level), rows, level)
+  ) : (
+    <>{nodes}</>
   );
 };
 
@@ -1566,6 +1659,9 @@ const renderBlock = (
   if (block.kind === 'list') {
     return renderListBlock(block, spec, entities, level);
   }
+  if (block.kind === 'map_rows') {
+    return renderMapRowsBlock(block, spec, entities, level);
+  }
   if (block.kind === 'table') {
     return renderTableBlock(block, spec, entities, level);
   }
@@ -1608,6 +1704,10 @@ export const renderDisplayOption = (args: {
   // (see Entities.helpAnchor). Optional: an option with no help renders exactly
   // as before.
   help?: OptionHelp;
+  // Row sets a `map_rows` block draws from, keyed by vocabulary name — the AF
+  // populations this job selected. Optional: an option with no such block, and
+  // every existing caller, is unaffected.
+  vocabularies?: Record<string, VocabularyEntry[]>;
 }): ReactNode | null => {
   const {
     option,
@@ -1619,11 +1719,13 @@ export const renderDisplayOption = (args: {
     genomeId = '',
     protvarUrl,
     openTargetsVariantId,
-    help
+    help,
+    vocabularies
   } = args;
   const entities: Entities = {
     consequence,
     allele,
+    vocabularies,
     showAll,
     subOptionRan,
     linkContext: { genomeId, protvarUrl, openTargetsVariantId, consequence },

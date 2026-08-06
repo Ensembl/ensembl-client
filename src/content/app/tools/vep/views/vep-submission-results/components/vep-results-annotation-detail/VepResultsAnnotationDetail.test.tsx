@@ -837,7 +837,14 @@ describe('panel order', () => {
         label: 'Variant representations',
         options: [option('spdi', 'SPDI')]
       },
-      { id: 'allele_frequencies', label: 'Allele frequencies', options: [] },
+      {
+        id: 'allele_frequencies',
+        label: 'Allele frequencies',
+        // The AF panel carries its sources as ordinary options now, and they
+        // render through the display spec like any other — so the panel needs
+        // one for its section to exist at all.
+        options: [option('gnomad_exomes', 'gnomAD Exomes v4.1.1')]
+      },
       {
         id: 'genes_and_transcripts',
         label: 'Genes & transcripts',
@@ -860,6 +867,14 @@ describe('panel order', () => {
         parameters={{ hgvs: true, spdi: true, gnomad_exomes: true }}
         panels={orderedPanels}
         display={displaySpecFixture}
+        availableAfSources={[
+          {
+            key: 'gnomAD_exomes_AF',
+            source: 'gnomad_exomes',
+            population: '',
+            label: 'All'
+          }
+        ]}
       />
     );
     const headings = [

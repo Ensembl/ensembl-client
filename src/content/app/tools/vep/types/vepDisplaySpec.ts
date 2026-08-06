@@ -287,6 +287,50 @@ export type DisplayRowsBlockSpec = {
   rows: DisplayRowSpec[];
 };
 
+/** A parenthesised suffix on one row's value, read from a sibling scalar. */
+export type DisplayMapRowLabelSuffix = {
+  key: string;
+  from: string;
+};
+
+/**
+ * One row per entry of a per-job *vocabulary*, values read from a dict field.
+ *
+ * Every other block names its fields up front. This one cannot: an allele
+ * frequency's populations are a dict whose keys are chosen per submission, and
+ * whose human labels are decoded by the backend rather than carried in the
+ * annotation. So the rows come from a vocabulary the response ships — see
+ * `renderDisplayOption`'s `vocabularies` — gated to what the job selected.
+ *
+ * Taking the rows from the vocabulary rather than the data is what makes both
+ * views work with no second code path: the default view drops a population the
+ * variant has no value for, and "Show all" lists every selected population with
+ * a dash where there is none. That is the `sub_option` row rule applied to a row
+ * set that is discovered instead of written down.
+ */
+export type DisplayMapRowsBlockSpec = {
+  kind: 'map_rows';
+  heading?: string | null;
+  requires?: string | null;
+  requires_selected?: DisplaySelectedGate | null;
+  when?: DisplayWhenSpec | null;
+  view?: DisplayBlockView | null;
+  /** The dict-valued `<plugin>.<field>` the values come from. */
+  from: string;
+  /**
+   * The scalar the vocabulary's "" entry reads. A source's all-ancestry figure
+   * sits beside the population dict rather than inside it, so without this the
+   * "All" row would have nowhere to read from.
+   */
+  overall_from?: string | null;
+  /** Which shipped vocabulary supplies the rows. */
+  vocabulary: string;
+  /** Which slice of it — one AF vocabulary covers every source at once. */
+  scope: string;
+  format?: DisplayRowFormat | null;
+  label_suffix?: DisplayMapRowLabelSuffix | null;
+};
+
 /**
  * A variable-length list: one item (a row of cells, or a label/value row) per
  * element of a list-valued field, optionally truncated behind a show-more
@@ -458,6 +502,7 @@ export type DisplayGroupBlockSpec = {
 
 export type DisplayBlockSpec =
   | DisplayRowsBlockSpec
+  | DisplayMapRowsBlockSpec
   | DisplayListBlockSpec
   | DisplayTableBlockSpec
   | DisplayGroupBlockSpec;

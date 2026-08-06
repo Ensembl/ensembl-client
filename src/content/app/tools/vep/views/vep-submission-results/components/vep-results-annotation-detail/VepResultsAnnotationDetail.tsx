@@ -170,6 +170,20 @@ const VepResultsAnnotationDetail = (props: {
   const populationLabel = (sourceKey: string, code: string) =>
     afLabelByCode.get(`${sourceKey}|${code}`) ?? code;
 
+  // The same list, in the shape a `map_rows` block draws its rows from. The
+  // display spec cannot name these: which populations a job carries is chosen
+  // per submission, and their labels are decoded by the backend.
+  const vocabularies = useMemo(
+    () => ({
+      af_populations: (availableAfSources ?? []).map((af) => ({
+        scope: af.source,
+        code: af.population,
+        label: af.label
+      }))
+    }),
+    [availableAfSources]
+  );
+
   const optionRan = (optionId: string) => Boolean(parameters?.[optionId]);
 
   /**
@@ -231,7 +245,8 @@ const VepResultsAnnotationDetail = (props: {
       protvarUrl,
       openTargetsVariantId,
       // Hung on whichever node turns out to be the option's visible title.
-      help: helpFor(optionId)
+      help: helpFor(optionId),
+      vocabularies
     });
   };
 
@@ -294,12 +309,19 @@ const VepResultsAnnotationDetail = (props: {
   };
 
   const renderPanel = (panel: FormPanel): ReactNode | null => {
-    // Allele frequencies need their own renderer (a per-source population
-    // breakdown, not the generic option rows), but they render *in the panel's
-    // place* — the backend states one panel order for the form and these
-    // annotations alike, and appending this block after the loop put it last
-    // whatever that order said.
-    if (panel.id === 'allele_frequencies') {
+    // Allele frequencies are spec-driven like every other option now. The
+    // fallback below is only for a job pinned before they were, whose display
+    // spec has no AF options at all and would otherwise show no frequencies —
+    // and results are served for a week after submission.
+    //
+    // TODO (safe from 2026-08-14, a week after the spec change): delete this
+    // branch and `renderFrequencies` / `FrequencyBlock` /
+    // `StructuralFrequencyBlock` / `noDataPopulationRows` / `AF_SOURCE_LABELS`
+    // with it. By then no job predating the change is still being served.
+    const afIsSpecDriven = (display?.options ?? []).some(
+      (option) => option.option_id in AF_SOURCE_KEY_BY_OPTION
+    );
+    if (panel.id === 'allele_frequencies' && !afIsSpecDriven) {
       // Null when there is nothing, not an empty Fragment: a Fragment is truthy
       // whatever it renders, so `renderedSections` counted this panel whether
       // or not the variant had frequencies — and that count is what asks for

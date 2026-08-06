@@ -1438,6 +1438,114 @@ export const displaySpecFixture: DisplaySpec = {
           ]
         }
       ]
+    },
+    {
+      option_id: 'gnomad_exomes',
+      heading: 'gnomAD Exomes v4.1.1',
+      blocks: [
+        {
+          kind: 'map_rows',
+          from: 'gnomad_exomes.populations',
+          overall_from: 'gnomad_exomes.overall',
+          vocabulary: 'af_populations',
+          scope: 'gnomad_exomes',
+          format: 'num'
+        }
+      ]
+    },
+    {
+      option_id: 'gnomad_genomes',
+      heading: 'gnomAD Genomes v4.1.1',
+      blocks: [
+        {
+          kind: 'map_rows',
+          from: 'gnomad_genomes.populations',
+          overall_from: 'gnomad_genomes.overall',
+          vocabulary: 'af_populations',
+          scope: 'gnomad_genomes',
+          format: 'num'
+        }
+      ]
+    },
+    {
+      option_id: 'allofus',
+      heading: 'NIH All of Us',
+      blocks: [
+        {
+          kind: 'map_rows',
+          from: 'all_of_us.populations',
+          overall_from: 'all_of_us.overall',
+          vocabulary: 'af_populations',
+          scope: 'all_of_us',
+          format: 'num',
+          label_suffix: {
+            key: 'max',
+            from: 'all_of_us.max_subpopulation_label'
+          }
+        }
+      ]
+    },
+    {
+      option_id: 'gnomad_sv',
+      heading: 'gnomAD SV v4.1',
+      blocks: [
+        {
+          kind: 'rows',
+          rows: [
+            {
+              key: 'sv_id',
+              label: 'Structural variant',
+              from: 'gnomad_sv.id',
+              mono: true
+            },
+            {
+              key: 'sv_type',
+              label: 'Type',
+              from: 'gnomad_sv.svtype',
+              mono: false
+            }
+          ]
+        },
+        {
+          kind: 'map_rows',
+          from: 'gnomad_sv.populations',
+          overall_from: 'gnomad_sv.overall',
+          vocabulary: 'af_populations',
+          scope: 'gnomad_sv',
+          format: 'num'
+        }
+      ]
+    },
+    {
+      option_id: 'gnomad_cnv',
+      heading: 'gnomAD CNV v4.1',
+      blocks: [
+        {
+          kind: 'rows',
+          rows: [
+            {
+              key: 'cnv_id',
+              label: 'Structural variant',
+              from: 'gnomad_cnv.id',
+              mono: true
+            },
+            {
+              key: 'cnv_type',
+              label: 'Type',
+              from: 'gnomad_cnv.svtype',
+              mono: false
+            }
+          ]
+        },
+        {
+          kind: 'map_rows',
+          from: 'gnomad_cnv.populations',
+          overall_from: 'gnomad_cnv.overall',
+          vocabulary: 'af_populations',
+          scope: 'gnomad_cnv',
+          format: 'num'
+        }
+      ]
     }
   ],
   rating_scales: {
