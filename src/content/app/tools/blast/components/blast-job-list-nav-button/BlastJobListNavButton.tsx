@@ -23,6 +23,8 @@ import { getBlastSubmissionsList } from 'src/content/app/tools/blast/state/blast
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
+import styles from './BlastJobListNavButton.module.css';
+
 const BlastJobListNavButton = () => {
   const blastSubmissions = useAppSelector(getBlastSubmissionsList);
 
@@ -30,6 +32,7 @@ const BlastJobListNavButton = () => {
     <ButtonLink
       to={urlFor.blastSubmissionsList()}
       isDisabled={!blastSubmissions.length}
+      className={styles.button}
     >
       Jobs list
     </ButtonLink>
