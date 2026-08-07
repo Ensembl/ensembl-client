@@ -74,7 +74,7 @@ const BlastJobSubmit = () => {
     const payload = createBlastSubmissionData(blastFormData);
     const submission = submitBlast(payload);
     submission.then(() => submission.reset());
-    navigate(urlFor.blastUnviewedSubmissions());
+    navigate(urlFor.blastSubmissionsList());
 
     dispatch(clearBlastForm());
   };

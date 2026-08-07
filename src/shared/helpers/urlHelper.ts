@@ -251,9 +251,6 @@ export const structuralVariantsViewer = (params?: {
 
 export const blastForm = () => '/tools/blast';
 
-export const blastUnviewedSubmissions = () =>
-  '/tools/blast/unviewed-submissions';
-
 export const blastSubmissionsList = () => '/tools/blast/submissions';
 
 export const blastSubmission = (submissionId: string) =>

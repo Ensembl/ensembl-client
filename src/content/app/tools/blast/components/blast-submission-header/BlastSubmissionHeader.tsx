@@ -37,10 +37,7 @@ import {
   type SuccessfulBlastSubmission,
   type BlastSubmission
 } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
-import {
-  getUnviewedBlastSubmissions,
-  getViewedBlastSubmissions
-} from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import { getBlastSubmissionsList } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 import { getBlastView } from 'src/content/app/tools/blast/state/general/blastGeneralSelectors';
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
@@ -74,8 +71,7 @@ export const BlastSubmissionHeader = (props: Props) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
-  const viewedBlastSubmissions = useAppSelector(getViewedBlastSubmissions);
+  const blastSubmissions = useAppSelector(getBlastSubmissionsList);
   const blastView = useAppSelector(getBlastView);
 
   const blastProgram =
@@ -109,9 +105,7 @@ export const BlastSubmissionHeader = (props: Props) => {
     //if nothing more is left on the page after the submission is deleted, go to the new BLAST form (This might change depending on UX)
     if (
       blastView === 'submission-results' ||
-      (blastView === 'unviewed-submissions' &&
-        unviewedBlastSubmissions.length === 1) ||
-      (blastView === 'submissions-list' && viewedBlastSubmissions.length === 1)
+      (blastView === 'submissions-list' && blastSubmissions.length === 1)
     ) {
       navigate(urlFor.blastForm());
     }

@@ -15,34 +15,21 @@
  */
 
 import { createSelector } from '@reduxjs/toolkit';
-import {
-  isSuccessfulBlastSubmission,
-  isFailedBlastSubmission
-} from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 
 import type { RootState } from 'src/store';
 import type { BlastSubmission } from 'src/content/app/tools/blast/state/blast-results/blastResultsSlice';
 
+// returns an object { [submissionId: string]: BlastSubmission; }
 export const getBlastSubmissions = (state: RootState) =>
   state.blast.blastResults.submissions;
 
 export const getBlastSubmissionsUi = (state: RootState) =>
   state.blast.blastResults.ui;
 
-export const getUnviewedBlastSubmissions = createSelector(
+// returns an array of BLAST submissions
+export const getBlastSubmissionsList = createSelector(
   (state: RootState) => getBlastSubmissions(state),
-  (submissions) =>
-    Object.values(submissions).filter(
-      (submission) => isFailedBlastSubmission(submission) || !submission.seen
-    )
-);
-
-export const getViewedBlastSubmissions = createSelector(
-  (state: RootState) => getBlastSubmissions(state),
-  (submissions) =>
-    Object.values(submissions).filter(
-      (submission) => isSuccessfulBlastSubmission(submission) && submission.seen
-    )
+  (submissions) => Object.values(submissions)
 );
 
 export const getBlastSubmissionById = (

@@ -17,10 +17,7 @@
 import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import {
-  getViewedBlastSubmissions,
-  getUnviewedBlastSubmissions
-} from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import { getBlastSubmissionsList } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
@@ -32,16 +29,12 @@ type Props = {
 };
 
 const MissingBlastSubmissionError = (props: Props) => {
-  const viewedBlastSubmissions = useAppSelector(getViewedBlastSubmissions);
-  const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
-  const hasUnviewedBlastSubmissions = unviewedBlastSubmissions.length > 0;
-  const hasViewedBlastSubmissions = viewedBlastSubmissions.length > 0;
+  const blastSubmissions = useAppSelector(getBlastSubmissionsList);
+  const hasBlastSubmissions = blastSubmissions.length > 0;
 
   let buttonLink: string;
 
-  if (hasUnviewedBlastSubmissions) {
-    buttonLink = urlFor.blastUnviewedSubmissions();
-  } else if (hasViewedBlastSubmissions) {
+  if (hasBlastSubmissions) {
     buttonLink = urlFor.blastSubmissionsList();
   } else {
     buttonLink = urlFor.blastForm();
