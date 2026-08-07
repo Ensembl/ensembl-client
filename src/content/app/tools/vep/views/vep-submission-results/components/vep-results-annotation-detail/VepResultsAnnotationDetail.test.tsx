@@ -785,14 +785,18 @@ describe('VepResultsAnnotationDetail', () => {
     expect(screen.getByText('0.0012')).toBeDefined();
   });
 
-  it('renders the phenotype list from phenotype_data', () => {
+  it('renders gene-associated phenotypes from the consequence, not the allele', () => {
+    // A gene association is narrowed to the gene its `id` names, so it hangs off
+    // the transcript consequence rather than the allele — a variant overlapping
+    // two genes served both genes' phenotypes against each of them otherwise.
     render(
       <VepResultsAnnotationDetail
         genomeId="grch38"
-        consequence={transcriptConsequence}
-        allele={makeAllele({
+        consequence={{
+          ...transcriptConsequence,
           annotations: [
-            alleleAnnotation('phenotype_data', {
+            ...(transcriptConsequence.annotations ?? []),
+            transcriptAnnotation('phenotype_gene', {
               phenotypes: [
                 {
                   type: 'Gene',
@@ -804,7 +808,8 @@ describe('VepResultsAnnotationDetail', () => {
               ]
             })
           ]
-        })}
+        }}
+        allele={makeAllele({ annotations: [] })}
         parameters={{ phenotypes: true }}
         panels={[
           {

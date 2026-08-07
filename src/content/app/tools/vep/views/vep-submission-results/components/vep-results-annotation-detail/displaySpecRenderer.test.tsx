@@ -443,16 +443,25 @@ describe('renderDisplayOption', () => {
   });
 
   it('groups table rows into headed sections driven by the data', () => {
+    // Gene-associated phenotypes are narrowed to the gene their `id` names, so
+    // they arrive on the transcript consequence; variant-associated ones are
+    // narrowed by risk allele and stay on the allele.
     renderOption('phenotypes', {
-      allele: [
-        annotation('phenotype_data', 'allele', {
+      consequence: [
+        annotation('phenotype_gene', 'transcript', {
           phenotypes: [
             phenotype({
               type: 'Gene',
               source: 'GenCC',
               phenotype: 'Li-Fraumeni_syndrome',
               id: 'ENSG00000141510'
-            }),
+            })
+          ]
+        })
+      ],
+      allele: [
+        annotation('phenotype_data', 'allele', {
+          phenotypes: [
             phenotype({
               type: 'Variation',
               source: 'ClinVar',
@@ -502,12 +511,12 @@ describe('renderDisplayOption', () => {
         })
       ]
     });
-    // The two phenotype tables divide the list exhaustively — one takes `Gene`,
-    // the other everything else — so a type the pipeline starts emitting is
-    // still shown. It no longer gets a heading of its own (the sections are
-    // named in the spec now, not built from the data), but being filed under
-    // "Variant associated" beats vanishing between two tables that each name
-    // what they want.
+    // A type the pipeline starts emitting is still shown. The gene-associated
+    // table reads a plugin that takes only `Gene`, and everything else falls to
+    // `phenotype_data` and so to the variant-associated table — which is why
+    // that one has no filter: whatever reaches it belongs there. It gets no
+    // heading of its own, but being filed under "Variant associated" beats
+    // vanishing between two tables that each name what they want.
     expect(screen.getByText('Melanoma')).toBeDefined();
     expect(screen.getByText('Variant associated')).toBeDefined();
     expect(screen.queryByText('Gene associated')).toBeNull();
@@ -523,10 +532,12 @@ describe('renderDisplayOption', () => {
       })
     );
     renderOption('phenotypes', {
+      consequence: [
+        annotation('phenotype_gene', 'transcript', { phenotypes: genes })
+      ],
       allele: [
         annotation('phenotype_data', 'allele', {
           phenotypes: [
-            ...genes,
             phenotype({
               type: 'Variation',
               source: 'ClinVar',

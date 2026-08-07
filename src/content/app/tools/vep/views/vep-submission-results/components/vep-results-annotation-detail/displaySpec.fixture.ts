@@ -437,7 +437,7 @@ export const displaySpecFixture: DisplaySpec = {
                 {
                   kind: 'table',
                   indent: false,
-                  from: 'phenotype_data.phenotypes',
+                  from: 'phenotype_gene.phenotypes',
                   columns: [
                     {
                       from: 'phenotype',
@@ -461,10 +461,6 @@ export const displaySpecFixture: DisplaySpec = {
                       lift_when_invariant: false
                     }
                   ],
-                  where: {
-                    field: 'type',
-                    equals: 'Gene'
-                  },
                   truncate: {
                     visible_count: 3
                   }
@@ -502,10 +498,6 @@ export const displaySpecFixture: DisplaySpec = {
                       lift_when_invariant: false
                     }
                   ],
-                  where: {
-                    field: 'type',
-                    not_equals: 'Gene'
-                  },
                   truncate: {
                     visible_count: 3
                   }
@@ -1627,6 +1619,7 @@ export const displaySpecFixture: DisplaySpec = {
     riboseq_orfs: 'transcript',
     hgvs: 'transcript',
     phenotype_data: 'allele',
+    phenotype_gene: 'transcript',
     dosage_sensitivity: 'transcript',
     intact: 'transcript',
     popeve: 'transcript',
