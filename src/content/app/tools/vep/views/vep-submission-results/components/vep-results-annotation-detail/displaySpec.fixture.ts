@@ -443,11 +443,6 @@ export const displaySpecFixture: DisplaySpec = {
                       from: 'phenotype',
                       format: 'phenotype',
                       mono: false,
-                      link: {
-                        kind: 'external',
-                        template: '{value}'
-                      },
-                      link_from: 'source_url',
                       label: 'Phenotype',
                       nowrap: false,
                       lift_when_invariant: false
@@ -456,6 +451,11 @@ export const displaySpecFixture: DisplaySpec = {
                       from: 'source',
                       format: 'humanize',
                       mono: false,
+                      link: {
+                        kind: 'external',
+                        template: '{value}'
+                      },
+                      link_from: 'source_url',
                       label: 'Source',
                       nowrap: false,
                       lift_when_invariant: false
@@ -480,11 +480,6 @@ export const displaySpecFixture: DisplaySpec = {
                       from: 'phenotype',
                       format: 'phenotype',
                       mono: false,
-                      link: {
-                        kind: 'external',
-                        template: '{value}'
-                      },
-                      link_from: 'source_url',
                       label: 'Phenotype',
                       nowrap: false,
                       lift_when_invariant: false
@@ -493,6 +488,11 @@ export const displaySpecFixture: DisplaySpec = {
                       from: 'source',
                       format: 'humanize',
                       mono: false,
+                      link: {
+                        kind: 'external',
+                        template: '{value}'
+                      },
+                      link_from: 'source_url',
                       label: 'Source',
                       nowrap: false,
                       lift_when_invariant: false

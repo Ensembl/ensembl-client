@@ -497,6 +497,54 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByText('A')).toBeNull();
   });
 
+  it('links the phenotype source, not the phenotype', () => {
+    // The URL identifies the record in the source's own database, so it belongs
+    // on the source's name; the phenotype is what the reader is scanning for and
+    // reads better as plain text.
+    renderOption('phenotypes', {
+      consequence: [
+        annotation('phenotype_gene', 'transcript', {
+          phenotypes: [
+            phenotype({
+              type: 'Gene',
+              source: 'MIM_morbid',
+              phenotype: 'Li-Fraumeni_syndrome',
+              id: 'ENSG00000141510',
+              source_url: 'https://omim.org/entry/151623'
+            })
+          ]
+        })
+      ],
+      allele: [
+        annotation('phenotype_data', 'allele', {
+          phenotypes: [
+            phenotype({
+              type: 'Variation',
+              source: 'NHGRI-EBI_GWAS_catalog',
+              phenotype: 'BREAST_CANCER',
+              id: 'rs699',
+              risk_allele: 'A',
+              source_url: 'https://www.ebi.ac.uk/gwas/variants/rs699'
+            })
+          ]
+        })
+      ]
+    });
+
+    const links = screen.getAllByRole('link');
+    expect(links.map((link) => link.getAttribute('href'))).toEqual([
+      'https://omim.org/entry/151623',
+      'https://www.ebi.ac.uk/gwas/variants/rs699'
+    ]);
+    // Both tables, gene-associated and variant-associated.
+    expect(links.map((link) => link.textContent)).toEqual([
+      'MIM morbid',
+      'NHGRI-EBI GWAS catalog'
+    ]);
+    // …and the phenotype itself carries no link of its own.
+    expect(screen.getByText('Li-Fraumeni syndrome').closest('a')).toBeNull();
+  });
+
   it('shows a type nobody anticipated rather than dropping it', () => {
     renderOption('phenotypes', {
       allele: [
