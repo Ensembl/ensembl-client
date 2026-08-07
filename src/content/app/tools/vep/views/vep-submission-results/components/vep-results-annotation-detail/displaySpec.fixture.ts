@@ -318,6 +318,22 @@ export const displaySpecFixture: DisplaySpec = {
       ]
     },
     {
+      option_id: 'pli',
+      blocks: [
+        {
+          kind: 'rows',
+          rows: [
+            {
+              label: 'pLI',
+              from: 'pli.score',
+              format: 'num',
+              mono: false
+            }
+          ]
+        }
+      ]
+    },
+    {
       option_id: 'nmd',
       blocks: [
         {
@@ -1632,6 +1648,7 @@ export const displaySpecFixture: DisplaySpec = {
     gerp: 'allele',
     geno2mp: 'allele',
     loeuf: 'transcript',
+    pli: 'transcript',
     nmd: 'transcript',
     spdi: 'allele',
     protein: 'transcript',

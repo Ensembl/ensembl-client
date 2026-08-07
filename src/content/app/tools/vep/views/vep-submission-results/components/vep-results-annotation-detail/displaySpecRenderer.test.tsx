@@ -106,6 +106,19 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByText('9')).toBeNull();
   });
 
+  it('renders the pLI score from the consequence', () => {
+    // pLI is scored per transcript — the plugin's config line passes
+    // `transcript` rather than taking the gene-level default — so it reads from
+    // the consequence, and a same-named entry on the allele must be ignored.
+    renderOption('pli', {
+      consequence: [annotation('pli', 'transcript', { score: 0.9821 })],
+      allele: [annotation('pli', 'allele', { score: 9 })]
+    });
+    expect(screen.getByText('pLI')).toBeDefined();
+    expect(screen.getByText('0.9821')).toBeDefined();
+    expect(screen.queryByText('9')).toBeNull();
+  });
+
   it('renders the GERP conservation score from the allele', () => {
     // GERP is position-based, so it is allele-scoped like CADD: a same-named
     // entry on the consequence must be ignored.

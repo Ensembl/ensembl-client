@@ -254,6 +254,14 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       'constraint metrics, indicating regions less tolerant to mutations.',
     links: [{ href: 'https://gnomad.broadinstitute.org/help/constraint' }]
   },
+  pli: {
+    description:
+      'Probability of being loss-of-function intolerant (pLI). A score closer ' +
+      'to 1 indicates greater likelihood of the transcript being ' +
+      'loss-of-function intolerant. For more detail on the methods see the ' +
+      'supplementary material, section 4.4.',
+    links: [{ href: 'https://doi.org/10.1038/nature19057' }]
+  },
   dosage_sensitivity: {
     description:
       'Annotates variants with haploinsufficiency and triplosensitivity ' +
