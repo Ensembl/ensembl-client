@@ -32,7 +32,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 type BlastView =
   | 'blast-form' //new job form - form for submitting a new batch of BLASTS jobs
-  | 'submissions-list' //list of viewed BLAST submissions
+  | 'submissions-list' // list of BLAST submissions
   | 'submission-results'; //results of BLAST jobs in a single submission
 
 type BlastGeneralState = {

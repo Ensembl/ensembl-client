@@ -64,9 +64,7 @@ const ErrorMessage = (props: { hasSubmissionParameters: boolean }) => {
       <p className={styles.errorText}>
         There are no results for this BLAST submission
       </p>
-      <p>
-        Any valid submissions can be found in your Unviewed jobs and Jobs lists
-      </p>
+      <p>Any valid submissions can be found in your Jobs list</p>
     </>
   );
 };

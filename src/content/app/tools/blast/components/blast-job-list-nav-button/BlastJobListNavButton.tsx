@@ -23,21 +23,17 @@ import { getBlastSubmissionsList } from 'src/content/app/tools/blast/state/blast
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
-import styles from './BlastJobListsNavigation.module.css';
-
-const BlastJobListsNavigation = () => {
+const BlastJobListNavButton = () => {
   const blastSubmissions = useAppSelector(getBlastSubmissionsList);
 
   return (
-    <div className={styles.actionButtons}>
-      <ButtonLink
-        to={urlFor.blastSubmissionsList()}
-        isDisabled={!blastSubmissions.length}
-      >
-        Jobs list
-      </ButtonLink>
-    </div>
+    <ButtonLink
+      to={urlFor.blastSubmissionsList()}
+      isDisabled={!blastSubmissions.length}
+    >
+      Jobs list
+    </ButtonLink>
   );
 };
 
-export default memo(BlastJobListsNavigation);
+export default memo(BlastJobListNavButton);

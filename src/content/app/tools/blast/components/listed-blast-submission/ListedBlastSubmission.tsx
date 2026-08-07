@@ -45,7 +45,7 @@ const ListedBlastSubmission = (props: Props) => {
   const sequences = submission.submittedData.sequences;
   const allJobs = getBlastJobsFromSubmission(submission);
   const isAnyJobRunning = allJobs.some((job) => job.status === 'RUNNING');
-  const { collapsedSubmissionIds } = uiState.unviewedJobsPage;
+  const { collapsedSubmissionIds } = uiState.submissionsPage;
 
   const isCurrentSubmissionCollapsed = collapsedSubmissionIds.includes(
     submission.id
@@ -81,7 +81,7 @@ const ListedBlastSubmission = (props: Props) => {
     dispatch(
       updateSubmissionUi({
         fragment: {
-          unviewedJobsPage: {
+          submissionsPage: {
             collapsedSubmissionIds: newCollapsedSubmissionIds
           }
         }
