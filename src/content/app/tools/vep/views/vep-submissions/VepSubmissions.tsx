@@ -16,25 +16,14 @@
 
 import { useAppSelector } from 'src/store';
 
-import {
-  getUnviewedVepSubmissions,
-  getViewedVepSubmissions
-} from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
+import { getVepSubmissionsList } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
 import ListedVepSubmission from './listed-vep-submission/ListedVepSubmission';
 
 import styles from './VepSubmissions.module.css';
 
-type Props = {
-  unviewed: boolean;
-};
-
-const VepSubmissions = (props: Props) => {
-  const isUnviewedSubmissionsList = props.unviewed;
-  const submissionsSelector = isUnviewedSubmissionsList
-    ? getUnviewedVepSubmissions
-    : getViewedVepSubmissions;
-  const vepSubmissions = useAppSelector(submissionsSelector);
+const VepSubmissions = () => {
+  const vepSubmissions = useAppSelector(getVepSubmissionsList);
 
   return (
     <div className={styles.scrollContainer}>

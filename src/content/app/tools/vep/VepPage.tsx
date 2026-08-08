@@ -43,7 +43,7 @@ const VepPage = () => {
         description: pageDescription
       })
     );
-  }, []);
+  }, [dispatch]);
 
   return hasMounted ? <VepPageContent /> : null;
 };
