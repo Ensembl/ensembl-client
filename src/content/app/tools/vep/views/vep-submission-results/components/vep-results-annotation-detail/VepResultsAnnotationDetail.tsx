@@ -19,20 +19,13 @@ import { useState, useEffect, useMemo, Fragment, type ReactNode } from 'react';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import {
-  Row,
-  OptionBlock,
-  CategoryBlock,
-  withOptionHelp
-} from './annotationRows';
+import { Row, CategoryBlock, withOptionHelp } from './annotationRows';
 import { renderDisplayOption } from './displaySpecRenderer';
 
 import type {
   PredictedTranscriptConsequence,
   PredictedMolecularConsequence,
   AlternativeVariantAllele,
-  PopulationFrequencies,
-  GnomadStructuralData,
   AfSource
 } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type {
@@ -41,23 +34,9 @@ import type {
 } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
 import { groupByCategory } from 'src/content/app/tools/vep/utils/groupByCategory';
-import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
 import { subOptionRan as didSubOptionRun } from 'src/content/app/tools/vep/utils/subOptionRan';
 import { getOptionHelp } from 'src/content/app/tools/vep/views/vep-form/vep-form-options-section/vep-form-options-panel/optionHelp';
-import { num } from 'src/content/app/tools/vep/utils/annotationFormatters';
 import styles from './VepResultsAnnotationDetail.module.css';
-
-// The `source` value used in metadata.available_af_sources for each allele-
-// frequency option id. Only All of Us differs (option `allofus` vs source
-// `all_of_us`); used to key the population-label lookup and to list a no-data
-// source's selected populations in Show all.
-const AF_SOURCE_KEY_BY_OPTION: Record<string, string> = {
-  gnomad_exomes: 'gnomad_exomes',
-  gnomad_genomes: 'gnomad_genomes',
-  allofus: 'all_of_us',
-  gnomad_sv: 'gnomad_sv',
-  gnomad_cnv: 'gnomad_cnv'
-};
 
 /**
  * The expandable detail panel for one transcript consequence.
@@ -155,20 +134,6 @@ const VepResultsAnnotationDetail = (props: {
     observer.observe(detailNode);
     return () => observer.disconnect();
   }, [detailNode, hasEnteredView]);
-
-  // Population labels for the AF breakdown come from the backend, keyed by
-  // `${source}|${population}` (the same selected columns each variant's
-  // populations are drawn from). `populationLabel` falls back to the raw code for
-  // anything not in the set (e.g. an older job without labelled sources).
-  const afLabelByCode = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const af of availableAfSources ?? []) {
-      map.set(`${af.source}|${af.population}`, af.label);
-    }
-    return map;
-  }, [availableAfSources]);
-  const populationLabel = (sourceKey: string, code: string) =>
-    afLabelByCode.get(`${sourceKey}|${code}`) ?? code;
 
   // The same list, in the shape a `map_rows` block draws its rows from. The
   // display spec cannot name these: which populations a job carries is chosen
@@ -309,30 +274,6 @@ const VepResultsAnnotationDetail = (props: {
   };
 
   const renderPanel = (panel: FormPanel): ReactNode | null => {
-    // Allele frequencies are spec-driven like every other option now. The
-    // fallback below is only for a job pinned before they were, whose display
-    // spec has no AF options at all and would otherwise show no frequencies —
-    // and results are served for a week after submission.
-    //
-    // TODO (safe from 2026-08-14, a week after the spec change): delete this
-    // branch and `renderFrequencies` / `FrequencyBlock` /
-    // `StructuralFrequencyBlock` / `noDataPopulationRows` / `AF_SOURCE_LABELS`
-    // with it. By then no job predating the change is still being served.
-    const afIsSpecDriven = (display?.options ?? []).some(
-      (option) => option.option_id in AF_SOURCE_KEY_BY_OPTION
-    );
-    if (panel.id === 'allele_frequencies' && !afIsSpecDriven) {
-      // Null when there is nothing, not an empty Fragment: a Fragment is truthy
-      // whatever it renders, so `renderedSections` counted this panel whether
-      // or not the variant had frequencies — and that count is what asks for
-      // columns. A variant with no frequency data was silently claiming one,
-      // which is why wrapping looked arbitrary: it followed data the reader
-      // cannot see.
-      const frequencies = renderFrequencies();
-      return frequencies ? (
-        <Fragment key={panel.id}>{frequencies}</Fragment>
-      ) : null;
-    }
     const groups = groupByCategory(panel.options);
     const renderedGroups = groups
       .map((group) => ({
@@ -363,157 +304,6 @@ const VepResultsAnnotationDetail = (props: {
     );
   };
 
-  // The selected populations of an AF source that returned no data, each as a
-  // dash ("—") row — shown in Show all so an empty source mirrors the population
-  // breakdown a populated one gets, rather than collapsing to a single row. An
-  // empty `population` is the source's overall AF (labelled "All", as in
-  // FrequencyBlock). A source with no entries here falls back to a single dash
-  // row.
-  const noDataPopulationRows = (optionId: string): ReactNode[] => {
-    const sourceKey = AF_SOURCE_KEY_BY_OPTION[optionId];
-    if (!sourceKey) {
-      return [];
-    }
-    return (availableAfSources ?? [])
-      .filter((af) => af.source === sourceKey)
-      .map((af) => <Row key={af.key} label={af.label} value="—" />);
-  };
-
-  // Allele frequencies. A selected source shows its
-  // frequencies when this variant has them; a source with no data is hidden in
-  // the default view and surfaced only in Show all (as a dash, broken down by the
-  // selected populations — noDataPopulationRows), like every other option. The
-  // whole section is dropped when nothing survives.
-  const renderFrequencies = (): ReactNode | null => {
-    const sources: {
-      id: string;
-      label: string;
-      data: PopulationFrequencies | null;
-    }[] = [
-      {
-        id: 'gnomad_exomes',
-        label: 'gnomAD exomes',
-        data: getAnnotation(allele, 'gnomad_exomes')
-      },
-      {
-        id: 'gnomad_genomes',
-        label: 'gnomAD genomes',
-        data: getAnnotation(allele, 'gnomad_genomes')
-      },
-      {
-        id: 'allofus',
-        label: 'All of Us',
-        data: getAnnotation(allele, 'all_of_us')
-      }
-    ];
-
-    // Present when either the overall AF or any population survives — a job that
-    // selected specific sub-populations (but not the all-ancestry overall) has a
-    // null `overall` yet real population values, and must still show.
-    const hasData = (data: PopulationFrequencies | null) =>
-      data !== null &&
-      (data.overall !== null || Object.keys(data.populations).length > 0);
-
-    // Show a source only when its option was selected for the run — the same
-    // selection gate every other option uses (renderOption), so an unselected
-    // source can't leak in just because the full-cache VCF carried its column.
-    // A selected source with no frequency for this variant shows a dash ("—").
-    // (The AF options are all default-off, so a plain selection check suffices.)
-    const visible = sources.filter((s) => optionRan(s.id));
-
-    // gnomAD SV / CNV are structural AF sources with a different shape — a variant
-    // id + type above the population frequencies — so they render via their own
-    // block (below).
-    const structuralSources: {
-      id: string;
-      label: string;
-      data: GnomadStructuralData | null;
-    }[] = [
-      {
-        id: 'gnomad_sv',
-        label: 'gnomAD SV',
-        data: getAnnotation(allele, 'gnomad_sv')
-      },
-      {
-        id: 'gnomad_cnv',
-        label: 'gnomAD CNV',
-        data: getAnnotation(allele, 'gnomad_cnv')
-      }
-    ];
-    const structuralVisible = structuralSources.filter((s) => optionRan(s.id));
-
-    if (visible.length === 0 && structuralVisible.length === 0) {
-      return null;
-    }
-
-    // A no-data source is hidden in the default view and shown only in Show all
-    // (as dash rows), so it behaves like every other option.
-    const renderNoData = (id: string, label: string): ReactNode => {
-      if (!showAll) {
-        return null;
-      }
-      const rows = noDataPopulationRows(id);
-      const labelNode = withOptionHelp(label, helpFor(id));
-      return rows.length > 0 ? (
-        <OptionBlock key={id} label={labelNode}>
-          {rows}
-        </OptionBlock>
-      ) : (
-        <Row key={id} label={labelNode} value="—" emphasis />
-      );
-    };
-
-    const renderStructural = (s: {
-      id: string;
-      label: string;
-      data: GnomadStructuralData | null;
-    }): ReactNode => {
-      if (structuralHasData(s.data)) {
-        return (
-          <StructuralFrequencyBlock
-            key={s.id}
-            label={withOptionHelp(s.label, helpFor(s.id))}
-            populationLabel={(code) => populationLabel(s.id, code)}
-            data={s.data}
-          />
-        );
-      }
-      return renderNoData(s.id, s.label);
-    };
-
-    const renderFlat = (s: {
-      id: string;
-      label: string;
-      data: PopulationFrequencies | null;
-    }): ReactNode => {
-      if (hasData(s.data)) {
-        return (
-          <FrequencyBlock
-            key={s.id}
-            label={withOptionHelp(s.label, helpFor(s.id))}
-            populationLabel={(code) =>
-              populationLabel(AF_SOURCE_KEY_BY_OPTION[s.id], code)
-            }
-            data={s.data}
-          />
-        );
-      }
-      return renderNoData(s.id, s.label);
-    };
-
-    const nodes = [
-      ...visible.map(renderFlat),
-      ...structuralVisible.map(renderStructural)
-    ].filter(Boolean);
-
-    // Every selected source had no data in the default view -> no section header.
-    if (nodes.length === 0) {
-      return null;
-    }
-
-    return <Section title="Allele frequencies">{nodes}</Section>;
-  };
-
   // Each section is `break-inside: avoid`, so it is an indivisible unit: a
   // panel with N sections can never usefully fill more than N columns. Without
   // this cap, a variant with only a couple of annotations spread those two
@@ -529,21 +319,11 @@ const VepResultsAnnotationDetail = (props: {
   // would have saved nothing.
   const renderedSections: { id: string; node: ReactNode }[] = !hasEnteredView
     ? []
-    : [
-        ...(panels ?? []).map((panel) => ({
-          id: panel.id,
-          node: renderPanel(panel)
-        })),
-        // Older jobs pinned their panels before allele frequencies were one,
-        // and some callers pass no panels at all. Both still get the block —
-        // appended, as it always was. Only its position moves when the panel
-        // is there to place it.
-        !(panels ?? []).some((panel) => panel.id === 'allele_frequencies')
-          ? { id: 'allele_frequencies', node: renderFrequencies() }
-          : null
-      ].filter((section): section is { id: string; node: ReactNode } =>
-        Boolean(section?.node)
-      );
+    : (panels ?? [])
+        .map((panel) => ({ id: panel.id, node: renderPanel(panel) }))
+        .filter((section): section is { id: string; node: ReactNode } =>
+          Boolean(section.node)
+        );
 
   // Phenotypes drops out of the column flow and takes the panel's full width at
   // the bottom. Its conditions tables are the widest thing here — four columns
@@ -620,78 +400,5 @@ const Section = (props: { title: ReactNode; children: ReactNode }) => (
     <div className={styles.sectionBody}>{props.children}</div>
   </div>
 );
-
-// One allele-frequency source (e.g. gnomAD genomes): the source name as a
-// sub-heading (like SpliceAI), with the selected populations beneath it, each
-// label-left / AF right-justified. `overall` is the all-populations figure.
-const FrequencyBlock = (props: {
-  label: ReactNode;
-  populationLabel: (code: string) => string;
-  data: PopulationFrequencies | null;
-}) => {
-  if (
-    !props.data ||
-    (props.data.overall === null &&
-      Object.keys(props.data.populations).length === 0)
-  ) {
-    return null;
-  }
-  const maxSubpopulationLabel = props.data.max_subpopulation_label;
-  return (
-    <OptionBlock label={props.label}>
-      {/* The all-ancestry "All" row only when its column was selected (the
-          backend nulls `overall` otherwise); the per-population rows follow. */}
-      {props.data.overall !== null && (
-        <Row label="All" value={num(props.data.overall)} />
-      )}
-      {Object.entries(props.data.populations).map(([pop, value]) => {
-        // The "max" AF (All of Us) names the subpopulation it came from; show it
-        // in brackets, e.g. "0.000167 (European)" (label decoded by the backend).
-        const bracket = pop === 'max' ? maxSubpopulationLabel : null;
-        return (
-          <Row
-            key={pop}
-            label={props.populationLabel(pop)}
-            value={bracket ? `${num(value)} (${bracket})` : num(value)}
-          />
-        );
-      })}
-    </OptionBlock>
-  );
-};
-
-// Present when the variant overlaps a gnomAD SV/CNV (the id survives) or carries
-// any frequency for it.
-const structuralHasData = (data: GnomadStructuralData | null): boolean =>
-  data !== null &&
-  (data.id !== null ||
-    data.overall !== null ||
-    Object.keys(data.populations).length > 0);
-
-// A gnomAD SV / CNV source: the overlapping variant's id + type, then its
-// overall / per-population frequencies (like FrequencyBlock, with two identity
-// rows on top). `label` is the source name ("gnomAD SV" / "gnomAD CNV").
-const StructuralFrequencyBlock = (props: {
-  label: ReactNode;
-  populationLabel: (code: string) => string;
-  data: GnomadStructuralData | null;
-}) => {
-  if (!structuralHasData(props.data)) {
-    return null;
-  }
-  const data = props.data as GnomadStructuralData;
-  return (
-    <OptionBlock label={props.label}>
-      {data.id !== null && (
-        <Row label="Structural variant" value={data.id} mono />
-      )}
-      {data.svtype !== null && <Row label="Type" value={data.svtype} />}
-      {data.overall !== null && <Row label="All" value={num(data.overall)} />}
-      {Object.entries(data.populations).map(([pop, value]) => (
-        <Row key={pop} label={props.populationLabel(pop)} value={num(value)} />
-      ))}
-    </OptionBlock>
-  );
-};
 
 export default VepResultsAnnotationDetail;

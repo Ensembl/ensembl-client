@@ -70,6 +70,26 @@ const panels: FormPanel[] = [
   }
 ];
 
+// The allele-frequency panel, as `form_config` serves it. The labels are the
+// versioned ones the form shows, and they are also what the display spec heads
+// each option with — so a populated source and an empty one read the same.
+//
+// Passed explicitly by the AF tests: an option is only rendered if the job's
+// pinned panels carry it, which is how every other option works too.
+const afPanels: FormPanel[] = [
+  {
+    id: 'allele_frequencies',
+    label: 'Allele frequencies',
+    options: [
+      option('gnomad_exomes', 'gnomAD Exomes v4.1.1'),
+      option('gnomad_genomes', 'gnomAD Genomes v4.1.1'),
+      option('allofus', 'NIH All of Us'),
+      option('gnomad_sv', 'gnomAD SV v4.1'),
+      option('gnomad_cnv', 'gnomAD CNV v4.1')
+    ]
+  }
+];
+
 // The pathogenicity-prediction options, which all moved off the deleted nested
 // `pathogenicity` object onto their own plugin entries.
 const pathogenicityPanels: FormPanel[] = [
@@ -257,22 +277,22 @@ describe('VepResultsAnnotationDetail', () => {
         consequence={transcriptConsequence}
         allele={makeAllele()} // no frequency annotations
         parameters={{ gnomad_exomes: true }} // selected, but no data for this variant
-        panels={panels}
+        panels={afPanels}
         display={displaySpecFixture}
       />
     );
 
     // Default view: a source with no data is hidden, like every other option.
-    expect(screen.queryByText('gnomAD exomes')).toBeNull();
+    expect(screen.queryByText('gnomAD Exomes v4.1.1')).toBeNull();
     expect(screen.queryByText('—')).toBeNull();
 
     await user.click(screen.getByRole('checkbox')); // the "Show all" toggle
 
     // Now it appears, as a dash.
-    expect(screen.getByText('gnomAD exomes')).toBeDefined();
+    expect(screen.getByText('gnomAD Exomes v4.1.1')).toBeDefined();
     expect(screen.getByText('—')).toBeDefined();
     // a source that was not selected still does not appear
-    expect(screen.queryByText('All of Us')).toBeNull();
+    expect(screen.queryByText('NIH All of Us')).toBeNull();
   });
 
   it('breaks a no-data AF source into its selected populations (dashes) in "Show all"', async () => {
@@ -283,7 +303,7 @@ describe('VepResultsAnnotationDetail', () => {
         consequence={transcriptConsequence}
         allele={makeAllele()} // no frequency annotations
         parameters={{ gnomad_exomes: true }}
-        panels={panels}
+        panels={afPanels}
         display={displaySpecFixture}
         availableAfSources={[
           {
@@ -309,14 +329,14 @@ describe('VepResultsAnnotationDetail', () => {
     );
 
     // Default view: a source with no data is hidden entirely.
-    expect(screen.queryByText('gnomAD exomes')).toBeNull();
+    expect(screen.queryByText('gnomAD Exomes v4.1.1')).toBeNull();
     expect(screen.queryByText('—')).toBeNull();
 
     await user.click(screen.getByRole('checkbox')); // the "Show all" toggle
 
     // Now the source appears, one dash row per selected population, each labelled
     // by the backend-supplied source label; the overall AF is "All".
-    expect(screen.getByText('gnomAD exomes')).toBeDefined();
+    expect(screen.getByText('gnomAD Exomes v4.1.1')).toBeDefined();
     expect(screen.getByText('All')).toBeDefined();
     expect(screen.getByText('African & African-American')).toBeDefined();
     expect(screen.getByText('Non-Finnish European · Female')).toBeDefined();
@@ -517,7 +537,7 @@ describe('VepResultsAnnotationDetail', () => {
             gnomad_genomes: true,
             allofus: true
           }}
-          panels={panels}
+          panels={afPanels}
           display={displaySpecFixture}
           // population rows are labelled from the metadata's AF sources (the same
           // selected columns each variant's populations are drawn from)
@@ -556,15 +576,15 @@ describe('VepResultsAnnotationDetail', () => {
         />
       );
 
-      expect(screen.getByText('gnomAD exomes')).toBeDefined();
+      expect(screen.getByText('gnomAD Exomes v4.1.1')).toBeDefined();
       expect(screen.getByText('0.4861')).toBeDefined();
       expect(screen.getByText('African & African-American')).toBeDefined();
       expect(screen.getByText('0.1234')).toBeDefined();
 
-      expect(screen.getByText('gnomAD genomes')).toBeDefined();
+      expect(screen.getByText('gnomAD Genomes v4.1.1')).toBeDefined();
       expect(screen.getByText('0.5')).toBeDefined();
 
-      expect(screen.getByText('All of Us')).toBeDefined();
+      expect(screen.getByText('NIH All of Us')).toBeDefined();
       expect(screen.getByText('Maximum subpopulation')).toBeDefined();
       // the max AF names the subpopulation it came from, in brackets
       expect(screen.getByText('0.000167 (European)')).toBeDefined();
@@ -586,13 +606,26 @@ describe('VepResultsAnnotationDetail', () => {
             ]
           })}
           parameters={{ gnomad_genomes: true }}
-          panels={panels}
+          panels={afPanels}
           display={displaySpecFixture}
+          // The rows come from the job's own vocabulary rather than from the
+          // data, so what the submission selected is what can appear — and the
+          // all-ancestry column is not in it here. That is the same fact the
+          // gated `overall` above states, from the other end.
+          availableAfSources={[
+            {
+              key: 'gnomAD_genomes_AF_eas_XX',
+              source: 'gnomad_genomes',
+              population: 'eas_XX',
+              label: 'East Asian · XX'
+            }
+          ]}
         />
       );
 
       // the block still shows (populations are present) with the selected value
-      expect(screen.getByText('gnomAD genomes')).toBeDefined();
+      expect(screen.getByText('gnomAD Genomes v4.1.1')).toBeDefined();
+      expect(screen.getByText('East Asian · XX')).toBeDefined();
       expect(screen.getByText('0.0333')).toBeDefined();
       // ...but there is no all-ancestry "All" row
       expect(screen.queryByText('All')).toBeNull();
@@ -612,12 +645,22 @@ describe('VepResultsAnnotationDetail', () => {
             ]
           })}
           parameters={{}} // gnomAD exomes not selected
-          panels={panels}
+          // The panel carries the option, so the selection gate is the only
+          // thing keeping it off the page — which is what this is about.
+          panels={afPanels}
           display={displaySpecFixture}
+          availableAfSources={[
+            {
+              key: 'gnomAD_exomes_AF',
+              source: 'gnomad_exomes',
+              population: '',
+              label: 'All'
+            }
+          ]}
         />
       );
 
-      expect(screen.queryByText('gnomAD exomes')).toBeNull();
+      expect(screen.queryByText('gnomAD Exomes v4.1.1')).toBeNull();
       expect(screen.queryByText('0.4861')).toBeNull();
     });
   });
@@ -716,7 +759,7 @@ describe('VepResultsAnnotationDetail', () => {
           ]
         })}
         parameters={{ gnomad_sv: true }}
-        panels={panels}
+        panels={afPanels}
         display={displaySpecFixture}
         availableAfSources={[
           {
@@ -735,7 +778,7 @@ describe('VepResultsAnnotationDetail', () => {
       />
     );
 
-    expect(screen.getByText('gnomAD SV')).toBeDefined();
+    expect(screen.getByText('gnomAD SV v4.1')).toBeDefined();
     expect(screen.getByText('gnomAD-SV_v3_DEL_chr1_3c282d6b')).toBeDefined();
     expect(screen.getByText('DEL')).toBeDefined();
     expect(screen.getByText('0.00568')).toBeDefined();
@@ -759,7 +802,7 @@ describe('VepResultsAnnotationDetail', () => {
           ]
         })}
         parameters={{ gnomad_cnv: true }}
-        panels={panels}
+        panels={afPanels}
         display={displaySpecFixture}
         availableAfSources={[
           {
@@ -778,7 +821,7 @@ describe('VepResultsAnnotationDetail', () => {
       />
     );
 
-    expect(screen.getByText('gnomAD CNV')).toBeDefined();
+    expect(screen.getByText('gnomAD CNV v4.1')).toBeDefined();
     expect(screen.getByText('variant_is_80_1844__DEL')).toBeDefined();
     expect(screen.getByText('DEL')).toBeDefined();
     expect(screen.getByText('Remaining')).toBeDefined();
@@ -957,7 +1000,7 @@ describe('VepResultsAnnotationDetail columns', () => {
           {
             id: 'allele_frequencies',
             label: 'Allele frequencies',
-            options: [option('gnomad_sv', 'gnomAD SV')]
+            options: [option('gnomad_sv', 'gnomAD SV v4.1')]
           }
         ]}
         display={displaySpecFixture}
