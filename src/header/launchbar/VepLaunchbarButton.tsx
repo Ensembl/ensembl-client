@@ -41,7 +41,7 @@ const VepLaunchbarButton = () => {
   return (
     <LaunchbarButtonWithNotification
       path={lastVisitedPath}
-      description="VEP"
+      description="Ensembl VEP"
       icon={VepIcon}
       notification={notification}
     />
