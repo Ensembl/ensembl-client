@@ -1,23 +1,33 @@
-/* The download trigger, styled like the sibling results-page buttons (e.g. the
-   "Results" ButtonLink): a blue button with the icon and a "Download" label. */
+/* The wrapper carries the hover state rather than the button, so the tooltip
+   still appears while the control is disabled — a disabled button fires no
+   pointer events. */
+.wrapper {
+  display: inline-flex;
+}
+
+/* The download trigger: the icon alone, named on hover. It keeps the blue of
+   the sibling results-page buttons but drops their word and the padding that
+   sat either side of it — square, so the icon is centred rather than lost in a
+   pill sized for text that is no longer there. */
 .trigger {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 18px;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
   border: 1px solid var(--color-blue);
   border-radius: 4px;
   background-color: var(--color-blue);
   color: var(--color-white);
-  font-weight: var(--font-weight-bold);
   line-height: 1;
   cursor: pointer;
   user-select: none;
 }
 
 .trigger svg {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   flex: none;
   fill: var(--color-white);
 }
@@ -28,27 +38,66 @@
   cursor: default;
 }
 
-/* PointerBox defaults to a dark (tooltip) theme; override to a light surface so
-   the menu's dark option text is legible. */
-.pointerBox {
-  padding: 0;
+/* --- the panel ---------------------------------------------------------- */
 
-  --pointer-box-color: var(--color-white);
-  --pointer-box-text-color: var(--color-black);
-  box-shadow: 0 2px 6px var(--shadow-color, rgb(0 0 0 / 0.25));
+/* Everything beside the panel. It closes on click, as the drawer's own window
+   does on the genome page, and dims what is behind so the panel reads as the
+   active thing rather than as something floating over live content. */
+.panelWindow {
+  position: fixed;
+  inset: 0;
+  background-color: rgb(0 0 0 / 0.15);
+  z-index: 10;
 }
 
-.menu {
+/* A panel down the right-hand side, following the genome page's drawer: white
+   on a left border, the close control in its top-right corner. Fixed rather
+   than absolute so it runs the full height whatever the results table is doing
+   with its own scrolling. */
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 11;
   display: flex;
   flex-direction: column;
-  min-width: 240px;
+
+  /* Wide enough for the format descriptions to sit on one line each, and capped
+     so it never takes the whole viewport on a narrow window. */
+  width: min(420px, 90vw);
+  padding: 15px 30px;
+  border-left: 1px solid var(--color-medium-light-grey);
+  background-color: var(--color-white);
+  box-shadow: -2px 0 6px rgb(0 0 0 / 0.15);
+}
+
+.panelClose {
+  position: absolute;
+  right: 14px;
+  top: 15px;
+}
+
+.panelTitle {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-blue);
+  font-size: 16px;
+
+  /* Clear of the close control, which sits in the same corner. */
+  padding-right: 30px;
+  margin-bottom: 16px;
+}
+
+.panelOptions {
+  display: flex;
+  flex-direction: column;
 }
 
 .option {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 8px 14px;
+  padding: 12px 0;
   text-decoration: none;
   color: var(--color-black);
 }
@@ -57,9 +106,8 @@
   border-top: 1px solid var(--color-medium-light-grey);
 }
 
-.option:hover {
-  background-color: var(--color-blue);
-  color: var(--color-white);
+.option:hover .optionTitle {
+  color: var(--color-blue);
 }
 
 .optionTitle {
@@ -69,8 +117,4 @@
 .optionDetail {
   font-size: 12px;
   color: var(--color-dark-grey);
-}
-
-.option:hover .optionDetail {
-  color: var(--color-white);
 }
