@@ -116,10 +116,11 @@
    of its own: `.detail`'s padding already sets the margins, and the point is to
    give the widest tables everything that is left.
 
-   The gap matches the one between cards. A card's own `margin-bottom` sits
-   *inside* the multicol box and does not extend it, so at the old 4px the
-   full-width section sat visibly tighter to the columns above than any two
-   cards sat to each other — the one place the rhythm broke. */
+   The gap matches the one between the columned groups. A group's own
+   `margin-bottom` sits *inside* the multicol box and does not extend it, so at
+   the old 4px the full-width section sat visibly tighter to the columns above
+   than any two groups sat to each other — the one place the rhythm broke, and
+   it has to be restated here because it is not inherited. */
 .fullWidthSections {
   margin-top: 16px;
 }
@@ -181,8 +182,11 @@ table {
   break-inside: avoid;
 }
 
-/* One category (Locations / Missense / …) = one sub-panel. See the `.section`
-   note below for why the card sits at this level rather than on the panel. */
+/* One category (Locations / Missense / …) is the unit the panel is spaced and
+   broken by. It was briefly drawn as a white card; the boxes are gone, but the
+   spacing they established stays — the separation now comes from the gap rather
+   than an edge. See the `.section` note below for why the *category* is that
+   unit rather than the panel. */
 .categoryBlock {
   display: flex;
   flex-direction: column;
@@ -190,14 +194,10 @@ table {
   /* Between the heading and its first option. */
   gap: 4px;
 
-  background-color: var(--color-white);
-  border: 1px solid var(--color-medium-light-grey);
-  border-radius: 4px;
-  padding: 10px 12px 12px;
-
-  /* The gap between cards, matching the multicol `column-gap` so the vertical
-     rhythm between stacked cards and the horizontal one between columns are the
-     same measure. No `margin-top` as well, or the two would double up. */
+  /* The gap between categories, matching the multicol `column-gap` so the
+     vertical rhythm between stacked groups and the horizontal one between
+     columns are the same measure. No `margin-top` as well, or the two would
+     double up. */
   margin-bottom: 16px;
 }
 .categoryBlock:last-child {
@@ -267,53 +267,28 @@ table {
   color: var(--color-dark-grey);
 }
 
-/* The annotations are drawn as a series of sub-panels — white cards on the
-   detail's grey — so the boundary between one group and the next is an edge
-   rather than an inferred gap. A heading and a hairline used to be the only
-   separation, and adjacent groups read as one continuous block.
+/* The annotation groups were briefly drawn as white cards on the detail's grey.
+   The boxes are gone — separation is a gap and a heading again — but what the
+   cards established stays, because it was never really about the borders:
 
-   ★ The card is the *category*, not the panel, and that is the load-bearing
-   choice. A card cannot fragment across a column boundary: Chrome drops its
-   background and border on the fragments, so a split card loses the very thing
-   that makes it a card. Multicol also preserves order, so with one unbreakable
-   card per panel the only legal split of `[short, short, TALL, short]` puts
-   both short panels in column one and leaves it half empty — which is exactly
-   what a tall Genes & transcripts did.
+   ★ **the category, not the panel, is the unit the panel is spaced and broken
+   by.** Multicol preserves order, so treating a panel as one indivisible unit
+   makes the only legal split of `[short, short, TALL, short]` put both short
+   panels in column one and leave it half empty — which is what a tall Genes &
+   transcripts did. Breaking between categories, where a reader would break it
+   anyway, is what balances the columns. Measured on a Show-all panel: column
+   fill 942/805 as whole panels, 641/688 by category.
 
-   Making the category the card gives the same content more, smaller units to
-   pack, so a panel *can* break — between its categories, where a reader would
-   break it anyway — without any card fragmenting. Measured on a Show-all panel:
-   column fill went from 942/805 to 641/688, with zero fragments either way.
-
-   The cost is ~17% more height from the extra card chrome. That is the trade
-   being made: a taller panel that reads as distinct groups, over a shorter one
-   with a half-empty column. */
+   So `.section` keeps no `break-inside` of its own and each `.categoryBlock`
+   stays unbreakable (see the group near the top of this file), and the spacing
+   between categories is the 16px below. */
 .section {
   display: flex;
   flex-direction: column;
   gap: 6px;
 
-  /* The section itself is now just the panel heading plus its cards, so it
-     carries no card of its own and *may* break — between categories only, since
-     each category card sets `break-inside: avoid`. */
   break-inside: auto;
   margin-bottom: 16px;
-}
-
-/* ...except a panel with no categories at all, whose options are its own direct
-   content (Variant representations, Regulatory, Phenotypes). There is no
-   category to carry the card, so its *body* carries one.
-
-   The body rather than the whole section, so the panel heading sits on the grey
-   in every panel. Carding the section instead put the heading inside the box
-   for these three and outside it for the rest, which was the one thing that
-   read as an inconsistency rather than a hierarchy. */
-.section:not(:has(.categoryBlock)) .sectionBody {
-  break-inside: avoid;
-  background-color: var(--color-white);
-  border: 1px solid var(--color-medium-light-grey);
-  border-radius: 4px;
-  padding: 10px 12px 12px;
 }
 
 /* A heading belongs with what it introduces. Without this a break can land
@@ -336,12 +311,13 @@ table {
   font-weight: var(--font-weight-bold);
   color: var(--color-blue);
 
-  /* The section (panel) heading — top of the annotation hierarchy. The card's
-     own edge now separates one section from the next, so this rule is only
-     dividing the heading from its body and can be lighter than the border that
-     used to do both jobs. */
+  /* The section (panel) heading — top of the annotation hierarchy. With no card
+     edge to separate one section from the next, this rule is doing that job as
+     well as dividing the heading from its body, so it keeps the weight it had
+     before the cards. The extra padding beneath it stays: that was spacing, not
+     decoration. */
   font-size: 16px;
-  border-bottom: 1px solid var(--color-light-grey);
+  border-bottom: 1px solid var(--color-medium-light-grey);
   padding-bottom: 4px;
 }
 
