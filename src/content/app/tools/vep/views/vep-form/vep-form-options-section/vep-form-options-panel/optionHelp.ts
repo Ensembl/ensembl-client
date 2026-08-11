@@ -89,7 +89,7 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
     description:
       'SPDI — Sequence Position Deletion Insertion. An NCBI-developed format ' +
       'to represent and normalise genetic variants.',
-    links: [{ href: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC7523648/' }]
+    links: [{ href: 'https://europepmc.org/article/MED/31738401' }]
   },
 
   // --- Genes & transcripts ---
@@ -175,7 +175,7 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       'pathogenicity scores. AlphaMissense is a deep learning model ' +
       'developed by Google DeepMind, utilising data from the AlphaFold ' +
       'project.',
-    links: [{ href: 'https://doi.org/10.1126/science.adg7492' }]
+    links: [{ href: 'https://europepmc.org/article/MED/37733863' }]
   },
   revel: {
     description:
@@ -189,7 +189,7 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
     description:
       'A prediction tool for the identification of disease-relevant ' +
       'nonsynonymous single nucleotide variants.',
-    links: [{ href: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6174354/' }]
+    links: [{ href: 'https://europepmc.org/article/MED/30220433' }]
   },
   eve: {
     description:
@@ -199,11 +199,11 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       'variant effect (popEVE).',
     links: [
       {
-        href: 'https://www.nature.com/articles/s41586-021-04043-8',
+        href: 'https://europepmc.org/article/MED/34707284',
         label: 'EVE'
       },
       {
-        href: 'https://www.nature.com/articles/s41588-025-02400-1',
+        href: 'https://europepmc.org/article/MED/41286104',
         label: 'popEVE'
       }
     ]
@@ -243,7 +243,7 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
   },
   gerp: {
     description: 'Conservation scores calculated using GERP.',
-    links: [{ href: 'https://europepmc.org/article/pmc/2996323' }]
+    links: [{ href: 'https://europepmc.org/article/MED/21152010' }]
   },
 
   // --- Constraint ---
@@ -260,7 +260,7 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       'to 1 indicates greater likelihood of the transcript being ' +
       'loss-of-function intolerant. For more detail on the methods see the ' +
       'supplementary material, section 4.4.',
-    links: [{ href: 'https://doi.org/10.1038/nature19057' }]
+    links: [{ href: 'https://europepmc.org/article/MED/27535533' }]
   },
   dosage_sensitivity: {
     description:
@@ -269,7 +269,7 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       'catalogue.',
     links: [
       {
-        href: 'https://www.sciencedirect.com/science/article/pii/S0092867422007887'
+        href: 'https://europepmc.org/article/MED/35917817'
       }
     ]
   },
@@ -338,7 +338,7 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       'Allele frequencies from the NIH All of Us Research Program, a diverse ' +
       'cohort of participants from across the United States. ' +
       POPULATION_NAMING,
-    links: [{ href: 'https://www.nature.com/articles/s41586-023-06957-x' }]
+    links: [{ href: 'https://europepmc.org/article/MED/38374255' }]
   },
   // The v4 release announcement does not describe the v2 callset that GRCh37
   // carries, so each assembly's version cites its own reference.
@@ -353,7 +353,7 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
         majorVersion: '4'
       },
       {
-        href: 'https://www.nature.com/articles/s41586-020-2287-8',
+        href: 'https://europepmc.org/article/MED/32461652',
         majorVersion: '2'
       }
     ]

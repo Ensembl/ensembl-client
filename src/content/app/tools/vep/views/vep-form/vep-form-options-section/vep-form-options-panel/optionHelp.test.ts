@@ -130,7 +130,7 @@ describe('getOptionHelp', () => {
       const links = getOptionHelp(option('gnomad_sv', 'gnomAD SV v2.1'))?.links;
       expect(links).toHaveLength(1);
       expect(links?.[0].href).toBe(
-        'https://www.nature.com/articles/s41586-020-2287-8'
+        'https://europepmc.org/article/MED/32461652'
       );
     });
 

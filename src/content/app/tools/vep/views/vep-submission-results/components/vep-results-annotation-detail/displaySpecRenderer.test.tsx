@@ -214,7 +214,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText(/Authors recommend filtering/)).toBeDefined();
     const link = screen.getByRole('link', { name: /popEVE paper/ });
     expect(link.getAttribute('href')).toBe(
-      'https://www.nature.com/articles/s41588-025-02400-1'
+      'https://europepmc.org/article/MED/41286104'
     );
     // opened in a new tab, and without handing the referrer to the target
     expect(link.getAttribute('target')).toBe('_blank');

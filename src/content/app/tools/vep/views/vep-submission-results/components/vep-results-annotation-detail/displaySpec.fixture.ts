@@ -255,7 +255,7 @@ export const displaySpecFixture: DisplaySpec = {
               mono: false,
               help: 'Authors recommend filtering if > 0.5',
               help_link: {
-                href: 'https://www.nature.com/articles/s41588-025-02400-1',
+                href: 'https://europepmc.org/article/MED/41286104',
                 label: 'popEVE paper'
               }
             }
