@@ -2,6 +2,19 @@
   display: grid;
   grid-template-rows: 40px minmax(0, 1fr);
   height: 100%;
+
+  /* This is itself a grid item, in VepPageContent's `max-content 1fr` row. A
+     grid item's automatic minimum size is its content, so without this the row
+     grew to all hundred rows of the table however definite its parent was — and
+     the `height: 100%` above resolved against that, not the window.
+
+     The visible symptom was the results table not scrolling: it *was*
+     overflowing horizontally, but its scroll container was as tall as the whole
+     table, leaving the horizontal scrollbar below the fold, and nothing
+     overflowed vertically because the page just grew instead. Scoped here
+     rather than to the row itself, which the form page shares and which is
+     right to grow. */
+  min-height: 0;
   padding-top: 20px;
   margin-left: var(--double-standard-gutter);
   margin-right: var(--standard-gutter);
