@@ -296,23 +296,21 @@ const VepFormOptionsPanel = (props: Props) => {
             />
           )}
         </div>
+        {/* HGVSc + HGVSp toggle together. They used to be drawn inside a
+            bracket of their own; the rule `.childOptions` already draws down
+            their left says the same thing, so the bracket was a second mark for
+            one relationship. */}
         <div className={styles.childOptions}>
-          {/* HGVSc + HGVSp are linked (bracketed) and toggle together. */}
-          <div className={styles.linkedPair}>
-            <div className={styles.linkedBracket} />
-            <div className={styles.linkedChecks}>
-              <CheckboxWithLabel
-                label="HGVSc"
-                checked={cpChecked}
-                onChange={setCp}
-              />
-              <CheckboxWithLabel
-                label="HGVSp"
-                checked={cpChecked}
-                onChange={setCp}
-              />
-            </div>
-          </div>
+          <CheckboxWithLabel
+            label="HGVSc"
+            checked={cpChecked}
+            onChange={setCp}
+          />
+          <CheckboxWithLabel
+            label="HGVSp"
+            checked={cpChecked}
+            onChange={setCp}
+          />
         </div>
       </div>
     );

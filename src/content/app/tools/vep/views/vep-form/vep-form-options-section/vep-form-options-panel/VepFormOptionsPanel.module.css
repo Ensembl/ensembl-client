@@ -103,29 +103,6 @@
   color: var(--color-dark-grey);
 }
 
-/* Two linked checkboxes (HGVSc + HGVSp) sharing a left bracket to show they
-   toggle together. */
-.linkedPair {
-  display: flex;
-  align-items: stretch;
-  gap: 6px;
-}
-
-.linkedBracket {
-  flex: none;
-  width: 6px;
-  border: 1px solid var(--color-medium-light-grey);
-  border-right: none;
-  border-radius: 3px 0 0 3px;
-}
-
-.linkedChecks {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-}
-
 /* A labelled group of nested options within a parent option's children. */
 .subOptionGroup {
   display: flex;
