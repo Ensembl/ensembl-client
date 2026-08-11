@@ -843,8 +843,12 @@ const renderListItem = (
           return null;
         }
         const text = formatValue(raw, fieldRow.format ?? 'text');
+        // Bold for the same reason `renderRows` bolds its plain values: these
+        // are label/value rows of formatted text, indistinguishable from the
+        // panel's other rows, and being inside a list record is not a reason to
+        // read differently.
         return text === null ? null : (
-          <Row key={fieldRow.from} label={fieldRow.label} value={text} />
+          <Row key={fieldRow.from} label={fieldRow.label} value={text} strong />
         );
       })
       .filter(Boolean);

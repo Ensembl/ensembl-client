@@ -412,6 +412,25 @@ table {
   font-family: 'IBM Plex Mono', monospace;
 }
 
+/* A plain result — a number or a short string — carried in bold, so the answer
+   is what the eye lands on rather than the label naming it.
+
+   Only for values that are text and nothing else. A link brings its own colour,
+   a table and a stacked list bring their own structure, and a dash means "ran,
+   no result" — bolding any of those would emphasise the wrong thing. Which
+   values qualify is decided in `renderRows`, not here. */
+.strongValue {
+  font-weight: var(--font-weight-bold);
+}
+
+/* IBM Plex Mono is loaded at 300/400/600 only (see fonts.css) — there is no 700
+   face, so the rule above would have the browser synthesise one. Semibold is
+   the weight the monospace family actually has, which is what the design token
+   means by "only for the monospace font". */
+.mono.strongValue {
+  font-weight: var(--font-weight-semibold);
+}
+
 /* Space a headed sub-section from whatever sat above it. The phenotype tables
    sit directly under their headings, so "Gene associated" and its table ran
    straight into the "Variant associated" heading below with nothing between

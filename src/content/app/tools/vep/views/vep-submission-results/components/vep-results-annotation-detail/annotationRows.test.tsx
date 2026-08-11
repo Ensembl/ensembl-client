@@ -121,6 +121,53 @@ describe('renderRows', () => {
     expect(screen.getByText('Gap frequency')).toBeDefined();
     expect(screen.getByText('0.6')).toBeDefined();
   });
+
+  // A plain result is bolded so the answer, not the label naming it, is what
+  // the eye lands on. Which values qualify is decided here rather than at each
+  // call site, so these are the tests of that rule.
+  describe('bolding the result', () => {
+    it('bolds a plain formatted value', () => {
+      renderSpecs([
+        { label: 'CADD (PHRED)', value: 7.2915, format: 'num' },
+        { label: 'Consequences', value: ['x', 'y'], format: 'join' }
+      ]);
+
+      expect(screen.getByText('7.292').className).toMatch(/strongValue/);
+      expect(screen.getByText('x, y').className).toMatch(/strongValue/);
+    });
+
+    it('leaves the placeholder dash unbolded — it is an absence, not a result', () => {
+      renderSpecs([{ label: 'ΔP donor loss', value: null, placeholder: '—' }]);
+
+      expect(screen.getByText('—').className).not.toMatch(/strongValue/);
+    });
+
+    it('leaves a pre-rendered value unbolded — a link brings its own colour', () => {
+      renderSpecs([
+        {
+          label: 'Variation ID',
+          value: '12345',
+          valueNode: <a href="https://example.org/12345">12345</a>
+        }
+      ]);
+
+      expect(screen.getByText('12345').closest('span')?.className).not.toMatch(
+        /strongValue/
+      );
+    });
+
+    // The pair the stylesheet keys the monospace weight off: IBM Plex Mono has
+    // no 700 face, so `.mono.strongValue` drops to semibold rather than letting
+    // the browser synthesise one. Both classes have to be on the same element
+    // for that rule to bite.
+    it('carries mono and strong together on one element', () => {
+      renderSpecs([{ label: 'SPDI', value: '1:11021:G:A', mono: true }]);
+
+      const value = screen.getByText('1:11021:G:A');
+      expect(value.className).toMatch(/mono/);
+      expect(value.className).toMatch(/strongValue/);
+    });
+  });
 });
 
 describe('renderRowGroup', () => {

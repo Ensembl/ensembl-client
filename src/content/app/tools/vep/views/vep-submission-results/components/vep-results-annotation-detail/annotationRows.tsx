@@ -91,12 +91,30 @@ export const Row = (props: {
    * is itself several columns (ClinVar's classification per type).
    */
   stacked?: boolean;
-}) =>
-  props.plain ? (
+  /**
+   * The value is a plain result — a number or a short string — so it is set
+   * bold and becomes what the eye lands on in the row.
+   *
+   * Off for everything that already has its own visual weight or its own
+   * structure: a link (blue, and bold links read as emphasis rather than as a
+   * result), a table, a stacked list, a starred rating, and the dash that
+   * stands for "ran, no result". Set by `renderRows` on exactly the path that
+   * produces formatted text, so no call site has to classify its own value.
+   */
+  strong?: boolean;
+}) => {
+  const valueClass =
+    [
+      props.mono ? styles.mono : null,
+      props.strong ? styles.strongValue : null,
+      props.stacked ? styles.stackedRowValue : null
+    ]
+      .filter(Boolean)
+      .join(' ') || undefined;
+
+  return props.plain ? (
     <div className={`${styles.row} ${styles.plainRow}`}>
-      <span className={props.mono ? styles.mono : undefined}>
-        {props.value}
-      </span>
+      <span className={valueClass}>{props.value}</span>
     </div>
   ) : (
     <div
@@ -115,18 +133,10 @@ export const Row = (props: {
           {props.label}
         </span>
       ) : null}
-      <span
-        className={[
-          props.mono ? styles.mono : null,
-          props.stacked ? styles.stackedRowValue : null
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
-        {props.value}
-      </span>
+      <span className={valueClass}>{props.value}</span>
     </div>
   );
+};
 
 /**
  * The one place the annotation panel's indent step is applied.
@@ -370,6 +380,13 @@ export const renderRows = (
       );
       return;
     }
+    // The one path that ends in plain formatted text, so the one path whose
+    // value is bolded as the row's result. Everything with its own structure or
+    // colour left above: a pre-rendered `valueNode` (link, stacked list, stars,
+    // popup) and the placeholder dash both return before this.
+    //
+    // A trailing `link` is still bold, because it is an icon beside the value
+    // rather than the value itself — the text is what was measured.
     nodes.push(
       <Row
         key={row.key ?? index}
@@ -386,6 +403,7 @@ export const renderRows = (
         mono={row.mono}
         emphasis={emphasis}
         plain={row.plain}
+        strong
       />
     );
   });
