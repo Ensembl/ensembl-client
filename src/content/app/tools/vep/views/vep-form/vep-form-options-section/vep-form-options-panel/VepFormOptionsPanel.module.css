@@ -1,7 +1,31 @@
+/* One panel of the Job options box.
+
+   No rule between one panel and the next: the panels sit in a single bordered
+   box and the headings, not a line each, are what separate them. Only the
+   dividers go — the last panel keeps its bottom border, so the box still
+   closes.
+
+   Scoped here rather than on `FormSection` itself, which is shared: the Genome
+   and Variants sections above use the same component and are still divided. */
+.panelSection:not(:last-child) {
+  border-bottom: none;
+}
+
 .panelBody {
+  /* 62px on the left, 20px more than the 42px that matched the panel heading's
+     own inset. Everything a panel reveals is inside this box, so one value
+     steps the whole expanded content in from the heading it opened from —
+     previously the two started within 2px of each other, which read as no
+     relationship at all.
+
+     Stated as a pair rather than one `--padding-side`, since the two sides no
+     longer agree: the right keeps the 42px it shares with the heading. */
   --padding-side: 42px;
   background-color: var(--color-light-grey);
   padding: 12px var(--padding-side) 22px;
+
+  /* After the shorthand above, which would otherwise reset it. */
+  padding-left: 62px;
   display: flex;
   flex-direction: column;
   gap: 18px;

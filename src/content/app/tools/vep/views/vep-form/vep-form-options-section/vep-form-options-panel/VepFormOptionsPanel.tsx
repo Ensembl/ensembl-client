@@ -394,7 +394,7 @@ const VepFormOptionsPanel = (props: Props) => {
   }
 
   return (
-    <FormSection>
+    <FormSection className={styles.panelSection}>
       <div className={commonStyles.sectionTitleContainer}>
         <ShowHide
           label={panel.label}
