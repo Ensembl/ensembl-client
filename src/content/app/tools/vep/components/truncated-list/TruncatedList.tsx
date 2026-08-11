@@ -33,7 +33,14 @@ type Props<Item> = {
   items: Item[];
   /** How many items to show while collapsed. */
   visibleCount: number;
-  renderItem: (item: Item, index: number) => ReactNode;
+  /**
+   * `renderedCount` is how many items are on screen right now — the visible
+   * slice while collapsed, all of them once expanded. Only a caller that draws
+   * *across* items needs it: the annotation tables merge a column's cells down
+   * with a rowspan, and a span reaching past the last rendered row would leave
+   * the cell hanging below the table.
+   */
+  renderItem: (item: Item, index: number, renderedCount: number) => ReactNode;
   /**
    * The toggle control, rendered only when something is hidden. This is a
    * render prop on purpose: the annotation lists deliberately do not share a
@@ -129,7 +136,7 @@ const TruncatedList = <Item,>(props: Props<Item>) => {
   const toggleNode =
     hiddenCount > 0 ? renderToggle({ hiddenCount, isExpanded, toggle }) : null;
   const itemNodes = visible.map((item, index) => (
-    <Fragment key={index}>{renderItem(item, index)}</Fragment>
+    <Fragment key={index}>{renderItem(item, index, visible.length)}</Fragment>
   ));
 
   return (

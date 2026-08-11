@@ -445,6 +445,20 @@ export type DisplayTableColumnSpec = DisplayValuePiece & {
    * usually the same for every interaction a variant takes part in. It stays a
    * column the moment the value differs anywhere. */
   lift_when_invariant?: boolean | null;
+  /**
+   * Merge this column's cells down: one cell per run of consecutive rows
+   * sharing the value of the named *element* field, spanning that run.
+   *
+   * The per-group sibling of `lift_when_invariant` — that lifts a value out of
+   * the table when every row agrees, this keeps it in but draws it once per
+   * group, for a value belonging to something coarser than a row. MaveDB: a
+   * dozen score sets from one experiment share a publication.
+   *
+   * The merged cell shows the group's first *stated* value, because the source
+   * populates the field on only some rows of a group; and a group whose stated
+   * values disagree is not merged at all.
+   */
+  merge_by?: string | null;
 };
 
 /** One row of a fixed (matrix) table: a text `label` for the first column, then

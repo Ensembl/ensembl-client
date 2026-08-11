@@ -967,41 +967,44 @@ export const displaySpecFixture: DisplaySpec = {
       heading: 'MaveDB',
       blocks: [
         {
-          kind: 'rows',
-          rows: [
-            {
-              key: 'variant',
-              label: 'Variant',
-              from: 'mavedb.protein_variant',
-              mono: false
-            }
-          ]
-        },
-        {
-          kind: 'list',
+          kind: 'table',
+          indent: false,
           from: 'mavedb.assays',
+          columns: [
+            {
+              from: 'urn',
+              mono: false,
+              link: {
+                kind: 'external',
+                template: 'https://www.mavedb.org/score-sets/{urn}?calibration'
+              },
+              label: 'Score set',
+              nowrap: false,
+              lift_when_invariant: false
+            },
+            {
+              from: 'score',
+              format: 'num',
+              mono: false,
+              label: 'Score',
+              nowrap: false,
+              lift_when_invariant: false
+            },
+            {
+              from: 'doi',
+              mono: false,
+              link: {
+                kind: 'external',
+                template: 'https://europepmc.org/search?query=DOI:%22{doi}%22'
+              },
+              label: 'Publication',
+              nowrap: false,
+              lift_when_invariant: false,
+              merge_by: 'experiment'
+            }
+          ],
           truncate: {
             visible_count: 3
-          },
-          item: {
-            cells: [
-              {
-                from: 'urn',
-                mono: false,
-                link: {
-                  kind: 'external',
-                  template:
-                    'https://www.mavedb.org/score-sets/{urn}?calibration&variant={accession}'
-                },
-                nowrap: false
-              },
-              {
-                from: 'score',
-                format: 'num',
-                mono: false,
-                nowrap: false
-              }
-            ]
           }
         }
       ]

@@ -646,48 +646,153 @@ describe('renderDisplayOption', () => {
   // --- option-level heading spanning multiple blocks (MaveDB) ---------------
 
   it('wraps a multi-block option under one option-level heading', () => {
+    // ProtVar rather than MaveDB: MaveDB used to be a rows block plus a list,
+    // and is now a single table, so it no longer exercises this at all.
+    renderOption('protvar', {
+      consequence: [
+        annotation('protvar', 'transcript', {
+          structure_stability_score: 1.23,
+          pockets: [{ pocket_id: '1', score: 0.5 }]
+        })
+      ],
+      protvarUrl: 'https://protvar.example/x'
+    });
+    expect(screen.getByText('ProtVar')).toBeDefined(); // the option heading
+    // ...over content drawn from two different blocks beneath it: a rows block
+    // and a headed list.
+    expect(screen.getByText('Protein Structure Stability')).toBeDefined();
+    expect(screen.getByText('1.23')).toBeDefined();
+    expect(screen.getByText('Protein Pockets')).toBeDefined();
+    expect(screen.getByText('Pocket 1')).toBeDefined();
+  });
+
+  it('MaveDB: one row per assay, with the score set linked', () => {
     renderOption('mavedb', {
       consequence: [
         annotation('mavedb', 'transcript', {
-          protein_variant: 'p.Arg72Pro',
-          assays: [
-            {
-              urn: 'urn:mavedb:00000045-a-1',
-              accession: 'urn:mavedb:00000045-a-1#2010',
-              score: 1.234
-            },
-            {
-              urn: 'urn:mavedb:00000045-b-1',
-              accession: 'urn:mavedb:00000045-b-1#7',
-              score: -0.5
-            }
-          ]
+          assays: [mavedbAssay('a', 1.234, null), mavedbAssay('b', -0.5, null)]
         })
       ]
     });
     expect(screen.getByText('MaveDB')).toBeDefined(); // the option heading
-    expect(screen.getByText('p.Arg72Pro')).toBeDefined(); // rows block
-    // The reader sees the score set; the link also carries the variant within
-    // it, so MaveDB opens on this variant rather than the whole distribution.
-    const link = screen.getByText('urn:mavedb:00000045-a-1').closest('a'); // list block
+    // The plugin reports the score set, not the variant within it, so the link
+    // opens the score set's distribution.
+    const link = screen.getByText('urn:mavedb:00000045-a-1').closest('a');
     expect(link?.getAttribute('href')).toBe(
-      'https://www.mavedb.org/score-sets/urn:mavedb:00000045-a-1' +
-        '?calibration&variant=urn:mavedb:00000045-a-1%232010'
+      'https://www.mavedb.org/score-sets/urn:mavedb:00000045-a-1?calibration'
     );
     expect(screen.getByText('1.234')).toBeDefined();
   });
 
+  // --- merge_by: one cell per run of rows sharing an element field ----------
+
+  const mavedbAssay = (letter: string, score: number, doi: string | null) => ({
+    urn: `urn:mavedb:00000045-${letter}-1`,
+    experiment: 'urn:mavedb:00000045',
+    doi,
+    score
+  });
+
+  const publicationCells = (container: HTMLElement) =>
+    [...container.querySelectorAll('tbody tr')].map(
+      (row) => [...row.querySelectorAll('td')].length
+    );
+
+  it('merges a column down the rows that share its group', () => {
+    // The publication belongs to the experiment, not the score set, and MaveDB
+    // states it on only some of an experiment's rows. All three rows here are
+    // one experiment, so the column is one cell spanning all three — drawn from
+    // the row that actually carries the DOI, not the first row.
+    const { container } = renderOption('mavedb', {
+      consequence: [
+        annotation('mavedb', 'transcript', {
+          assays: [
+            mavedbAssay('a', 1, null),
+            mavedbAssay('b', 2, '10.1038/s41589-020-0480-6'),
+            mavedbAssay('c', 3, null)
+          ]
+        })
+      ]
+    });
+
+    const link = screen
+      .getByText('10.1038/s41589-020-0480-6')
+      .closest('a') as HTMLAnchorElement;
+    expect(link.getAttribute('href')).toBe(
+      'https://europepmc.org/search?query=DOI:%2210.1038/s41589-020-0480-6%22'
+    );
+    // One cell, spanning the run...
+    const merged = link.closest('td') as HTMLTableCellElement;
+    expect(merged.getAttribute('rowspan')).toBe('3');
+    // ...so only the first row carries a third cell; the other two are absorbed.
+    expect(publicationCells(container)).toEqual([3, 2, 2]);
+  });
+
+  it('does not merge a group whose stated values disagree', () => {
+    // Two different publications inside one experiment is not something the
+    // data should contain, but if it does, spanning them would present one
+    // row's value as the whole group's. Repetition is the honest fallback.
+    const { container } = renderOption('mavedb', {
+      consequence: [
+        annotation('mavedb', 'transcript', {
+          assays: [
+            mavedbAssay('a', 1, '10.1000/first'),
+            mavedbAssay('b', 2, '10.1000/second')
+          ]
+        })
+      ]
+    });
+
+    expect(screen.getByText('10.1000/first')).toBeDefined();
+    expect(screen.getByText('10.1000/second')).toBeDefined();
+    expect(publicationCells(container)).toEqual([3, 3]);
+    expect(container.querySelector('td[rowspan]')).toBeNull();
+  });
+
+  it('clamps a merged span to the rows actually on screen', () => {
+    // The table truncates at three. A span of five would reach two rows past
+    // the last one rendered and leave the cell hanging below the table.
+    const { container } = renderOption('mavedb', {
+      consequence: [
+        annotation('mavedb', 'transcript', {
+          assays: [
+            mavedbAssay('a', 1, null),
+            mavedbAssay('b', 2, null),
+            mavedbAssay('c', 3, '10.1038/s41589-020-0480-6'),
+            mavedbAssay('d', 4, null),
+            mavedbAssay('e', 5, null)
+          ]
+        })
+      ]
+    });
+
+    const merged = container.querySelector(
+      'td[rowspan]'
+    ) as HTMLTableCellElement;
+    expect(merged.getAttribute('rowspan')).toBe('3');
+    // ...and the value is still the group's, even though the row carrying it is
+    // itself below the fold.
+    expect(screen.getByText('10.1038/s41589-020-0480-6')).toBeDefined();
+  });
+
   it('escapes a # inside a value so it cannot end the URL early', () => {
     // Raw, the browser reads everything from the '#' as a fragment and never
-    // sends it — so the variant, and the rest of the query with it, is lost.
+    // sends it — so the rest of the URL is lost.
+    //
+    // The value is synthetic: MaveDB used to report an accession ending
+    // `#<variant>`, and that is where this rule came from, but the plugin now
+    // reports the bare score set and no live value carries a '#'. The rule is a
+    // property of `interpolateUrl` rather than of MaveDB, and it is one half of
+    // a pair — the other half (leave a '#' alone when the value IS the URL,
+    // below) only makes sense against it — so it keeps its own test.
     renderOption('mavedb', {
       consequence: [
         annotation('mavedb', 'transcript', {
-          protein_variant: null,
           assays: [
             {
-              urn: 'urn:mavedb:00000045-a-1',
-              accession: 'urn:mavedb:00000045-a-1#2010',
+              urn: 'urn:mavedb:00000045-a-1#2010',
+              experiment: 'urn:mavedb:00000045',
+              doi: null,
               score: 1
             }
           ]
@@ -696,13 +801,13 @@ describe('renderDisplayOption', () => {
     });
 
     const href = screen
-      .getByText('urn:mavedb:00000045-a-1')
+      .getByText('urn:mavedb:00000045-a-1#2010')
       .closest('a')
       ?.getAttribute('href');
     expect(href).toContain('%232010');
     expect(href).not.toContain('#');
     // The colons are still the source's own and stay as they are.
-    expect(href).toContain('/score-sets/urn:mavedb:00000045-a-1?');
+    expect(href).toContain('/score-sets/urn:mavedb:00000045-a-1');
   });
 
   it('leaves a # alone when the value IS the URL', () => {

@@ -1039,6 +1039,77 @@ const invariantValue = (
   return values.every((value) => value === first) ? first : null;
 };
 
+/**
+ * Where a `merge_by` column's cells join up: for each run of consecutive rows
+ * sharing the named element field, which row starts the run, how many rows it
+ * covers, and which element the cell should be drawn from.
+ *
+ * Two rules, both taken from what the source actually publishes. MaveDB states
+ * a publication on only *some* of an experiment's score sets, so the cell is
+ * drawn from the run's first **stated** value rather than its first row —
+ * otherwise a run of twelve would show the blank that happens to be first. And
+ * a run whose stated values **disagree** is not merged at all: presenting one
+ * row's value as the whole group's would be a claim the data does not make,
+ * which is worse than repeating it.
+ *
+ * Returns null when the column does not merge, so the caller can skip the work.
+ */
+const mergePlan = (
+  column: DisplayTableColumnSpec,
+  items: unknown[]
+): {
+  spanAt: Map<number, { span: number; element: unknown }>;
+  covered: Set<number>;
+} | null => {
+  const key = column.merge_by;
+  if (!key) {
+    return null;
+  }
+  const groupOf = (item: unknown) =>
+    !!item && typeof item === 'object'
+      ? (item as Record<string, unknown>)[key]
+      : undefined;
+  const valueOf = (item: unknown) => {
+    const isRecord = !!item && typeof item === 'object';
+    const raw =
+      column.from && isRecord
+        ? (item as Record<string, unknown>)[column.from]
+        : item;
+    return isAbsent(raw) ? null : raw;
+  };
+
+  const spanAt = new Map<number, { span: number; element: unknown }>();
+  const covered = new Set<number>();
+  let start = 0;
+  while (start < items.length) {
+    const group = groupOf(items[start]);
+    let end = start;
+    // A row with no group value of its own joins nothing — it is its own run.
+    while (
+      group !== undefined &&
+      group !== null &&
+      end + 1 < items.length &&
+      groupOf(items[end + 1]) === group
+    ) {
+      end++;
+    }
+    const run = items.slice(start, end + 1);
+    const stated = run.filter((item) => valueOf(item) !== null);
+    const distinct = new Set(stated.map((item) => String(valueOf(item))));
+    if (end > start && distinct.size <= 1) {
+      spanAt.set(start, {
+        span: end - start + 1,
+        element: stated[0] ?? items[start]
+      });
+      for (let row = start + 1; row <= end; row++) {
+        covered.add(row);
+      }
+    }
+    start = end + 1;
+  }
+  return { spanAt, covered };
+};
+
 /** One line of a list-valued cell (see ColumnItems in the display spec). */
 const columnItem = (
   items: DisplayColumnItems,
@@ -1286,7 +1357,13 @@ const tableCellContent = (
         {separator}
         <ExternalLink
           template={template}
-          fields={{ value }}
+          // The element's own fields as well as `value`, so a column's template
+          // can name them — `{urn}` and `{accession}` for MaveDB's score set.
+          // An item cell has always been able to do this (it passes the whole
+          // record); a column could only fill `{value}`, which is what made
+          // moving a list block to a table silently drop its link. `value` is
+          // written last so a field of that name cannot shadow the cell's own.
+          fields={{ ...resolved.fields, value }}
           className={linkClass}
         >
           {value}
@@ -1486,13 +1563,44 @@ const renderTableBlock = (
   const columns = selectedColumns.filter((column) => !lifted.includes(column));
 
   const renderTable = (rows: unknown[]) => {
-    const bodyRow = (element: unknown, rowIndex: number) => (
+    // Computed per table rather than per row: the runs are a property of the
+    // whole list, and recomputing them for each row would be quadratic.
+    const merges = columns.map((column) => mergePlan(column, rows));
+
+    const bodyRow = (
+      element: unknown,
+      rowIndex: number,
+      renderedCount = rows.length
+    ) => (
       <tr key={rowIndex}>
-        {columns.map((column, colIndex) => (
-          <td key={colIndex} className={cellClass(column)}>
-            {tableCellContent(column, element, spec)}
-          </td>
-        ))}
+        {columns.map((column, colIndex) => {
+          const merge = merges[colIndex];
+          if (merge?.covered.has(rowIndex)) {
+            // Absorbed into the cell above; the row simply has no cell here.
+            return null;
+          }
+          const span = merge?.spanAt.get(rowIndex);
+          if (!span) {
+            return (
+              <td key={colIndex} className={cellClass(column)}>
+                {tableCellContent(column, element, spec)}
+              </td>
+            );
+          }
+          // Clamped to what is on screen: a truncated table renders the first
+          // few rows, and a span reaching past them would hang the cell below
+          // the last row it has to sit against.
+          const visibleSpan = Math.min(span.span, renderedCount - rowIndex);
+          return (
+            <td
+              key={colIndex}
+              className={cellClass(column)}
+              rowSpan={visibleSpan > 1 ? visibleSpan : undefined}
+            >
+              {tableCellContent(column, span.element, spec)}
+            </td>
+          );
+        })}
       </tr>
     );
     // TruncatedList adds no markup of its own, so the rows and the toggle stay
@@ -1516,7 +1624,9 @@ const renderTableBlock = (
                 )}
               />
             ) : (
-              rows.map(bodyRow)
+              // Not `rows.map(bodyRow)`: map passes the array as a third
+              // argument, which would arrive as the rendered-row count.
+              rows.map((row, index) => bodyRow(row, index))
             )}
           </tbody>
         </table>
