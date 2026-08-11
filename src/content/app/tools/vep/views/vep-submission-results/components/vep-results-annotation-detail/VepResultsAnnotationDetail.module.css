@@ -306,17 +306,20 @@ table {
    guessed height. Measured over the expanded panels of a dev-data run,
    dropping it took panels using both columns from 1 of 12 to 6 of 12 and
    their combined height from 2073px to 1589px, stranding nothing. */
+
+/* The section (panel) heading — top of the annotation hierarchy.
+   Lato 16px regular in Ensembl black. Lato and the black are both what `body`
+   already sets, so this only has to stop overriding them: the weight comes back
+   to 400 and the blue goes, leaving size and the rule beneath to mark the level.
+
+   Still the dominant heading despite the lighter weight — 16px regular reads
+   above the 14px bold of the categories under it. The rule doubles as the
+   separator between one section and the next, so it stays, as does the padding
+   beneath it. */
 .sectionTitle {
   break-after: avoid;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-blue);
-
-  /* The section (panel) heading — top of the annotation hierarchy. With no card
-     edge to separate one section from the next, this rule is doing that job as
-     well as dividing the heading from its body, so it keeps the weight it had
-     before the cards. The extra padding beneath it stays: that was spacing, not
-     decoration. */
   font-size: 16px;
+  font-weight: var(--font-weight-normal);
   border-bottom: 1px solid var(--color-medium-light-grey);
   padding-bottom: 4px;
 }
