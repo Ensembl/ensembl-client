@@ -81,7 +81,7 @@ const twoGeneRows = (): VepResultsTableRowData[] => [
 ];
 
 describe('planLeadingCells', () => {
-  it('spans a single-row group over its row, plus its detail panel when expanded', () => {
+  it('never spans a leading cell over a detail panel', () => {
     const rows = singleGeneRows(1);
 
     const collapsed = planLeadingCells(rows, new Set());
@@ -89,11 +89,12 @@ describe('planLeadingCells', () => {
     expect(collapsed[0].allele?.rowSpan).toBe(1);
     expect(collapsed[0].gene?.rowSpan).toBe(1);
 
-    // The right-aligned panel sits to the right of the identity cells, so the
-    // variant/allele cells span the extra detail row; the gene cell does not.
+    // The panel spans the full row, so nothing can sit beside it: expanding
+    // leaves every leading cell covering its own row only, rather than
+    // stretching over the injected one.
     const expanded = planLeadingCells(rows, new Set([0]));
-    expect(expanded[0].variant?.rowSpan).toBe(2);
-    expect(expanded[0].allele?.rowSpan).toBe(2);
+    expect(expanded[0].variant?.rowSpan).toBe(1);
+    expect(expanded[0].allele?.rowSpan).toBe(1);
     expect(expanded[0].gene?.rowSpan).toBe(1);
   });
 
@@ -112,61 +113,63 @@ describe('planLeadingCells', () => {
     expect(plan[1].gene?.data.stableId).toBe('geneB');
   });
 
-  it('spans variant/allele straight through a panel without repeating them', () => {
-    // Expanding gene-1 injects the panel between the two gene rows. The variant
-    // and allele cells span across it (rowSpan 3: gene-1 + panel + gene-2) and
-    // are NOT re-emitted on the gene-2 row.
+  it('restarts the identity cells below a panel that interrupts their group', () => {
+    // Expanding gene-1 injects the panel between the two gene rows. Every
+    // leading cell stops above it and is re-emitted on the gene-2 row — the
+    // variant is stated twice, which is the price of the full-width panel.
     const plan = planLeadingCells(twoGeneRows(), new Set([0]));
 
-    expect(plan[0].variant?.rowSpan).toBe(3);
-    expect(plan[0].allele?.rowSpan).toBe(3);
+    expect(plan[0].variant?.rowSpan).toBe(1);
+    expect(plan[0].allele?.rowSpan).toBe(1);
     expect(plan[0].gene?.rowSpan).toBe(1);
     expect(plan[0].gene?.data.stableId).toBe('geneA');
 
-    expect(plan[1].variant).toBeNull();
-    expect(plan[1].allele).toBeNull();
+    expect(plan[1].variant?.rowSpan).toBe(1);
+    expect(plan[1].allele?.rowSpan).toBe(1);
     expect(plan[1].gene?.rowSpan).toBe(1);
     expect(plan[1].gene?.data.stableId).toBe('geneB');
   });
 
-  it('spans the identity cells over a panel opened on the last row', () => {
+  it('keeps one identity cell when the panel opens on the group’s last row', () => {
+    // Nothing is interrupted: the panel lands after the group, so the identity
+    // still spans both rows and is emitted once.
     const plan = planLeadingCells(twoGeneRows(), new Set([1]));
 
-    expect(plan[0].variant?.rowSpan).toBe(3);
-    expect(plan[0].allele?.rowSpan).toBe(3);
+    expect(plan[0].variant?.rowSpan).toBe(2);
+    expect(plan[0].allele?.rowSpan).toBe(2);
     expect(plan[1].variant).toBeNull();
     expect(plan[1].allele).toBeNull();
     expect(plan[1].gene?.rowSpan).toBe(1);
   });
 
-  it('restarts the gene cell around a panel opened on a middle transcript', () => {
+  it('splits every leading cell around a panel on a middle transcript', () => {
     // Three transcripts of one gene; expand the middle one.
     const plan = planLeadingCells(singleGeneRows(3), new Set([1]));
 
-    // variant/allele span the whole group including the injected panel (rowSpan
-    // 4 = three transcripts + one detail), emitted once.
-    expect(plan[0].variant?.rowSpan).toBe(4);
-    expect(plan[0].allele?.rowSpan).toBe(4);
-    expect(plan[1].variant).toBeNull();
-    expect(plan[2].variant).toBeNull();
-
-    // the gene cell cannot cover the panel, so it stops above it and restarts
-    // below.
+    // Each cell covers the rows above the panel, then restarts beneath it.
+    // Variant, allele and gene all break at the same place now.
+    expect(plan[0].variant?.rowSpan).toBe(2);
+    expect(plan[0].allele?.rowSpan).toBe(2);
     expect(plan[0].gene?.rowSpan).toBe(2);
+
+    expect(plan[1].variant).toBeNull();
+    expect(plan[1].allele).toBeNull();
     expect(plan[1].gene).toBeNull();
+
+    expect(plan[2].variant?.rowSpan).toBe(1);
+    expect(plan[2].allele?.rowSpan).toBe(1);
     expect(plan[2].gene?.rowSpan).toBe(1);
   });
 
-  it('counts every open panel in the identity span and splits the gene at each', () => {
+  it('splits at each of several open panels', () => {
     const plan = planLeadingCells(singleGeneRows(3), new Set([0, 1]));
 
-    // three transcripts + two detail panels = rowSpan 5.
-    expect(plan[0].variant?.rowSpan).toBe(5);
-    expect(plan[0].allele?.rowSpan).toBe(5);
-
-    expect(plan[0].gene?.rowSpan).toBe(1);
-    expect(plan[1].gene?.rowSpan).toBe(1);
-    expect(plan[2].gene?.rowSpan).toBe(1);
+    // A panel after each of the first two rows leaves every run one row long.
+    for (const index of [0, 1, 2]) {
+      expect(plan[index].variant?.rowSpan).toBe(1);
+      expect(plan[index].allele?.rowSpan).toBe(1);
+      expect(plan[index].gene?.rowSpan).toBe(1);
+    }
   });
 });
 

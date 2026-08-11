@@ -552,12 +552,19 @@ const VepResultsTable = (props: {
 
 const TABLE_COLUMN_COUNT = 8;
 
-// The expanded annotation panel is right-aligned: it occupies the right-hand
-// columns (Genes → Annotations), while the variant-identity columns (Variant,
-// Ref, Location, Alt allele) continue to its left. That identity block is
-// IDENTITY_COLUMN_COUNT wide, so the panel spans the remaining columns.
-const IDENTITY_COLUMN_COUNT = 4;
-const DETAIL_PANEL_COLSPAN = TABLE_COLUMN_COUNT - IDENTITY_COLUMN_COUNT;
+// EXPERIMENT (2026-08-11): the expanded annotation panel spans the whole row.
+//
+// It used to be right-aligned, occupying Genes → Annotations while the
+// variant-identity columns (Variant, Ref, Location, Alt allele) continued down
+// its left side. Those four columns are ~583px of a 1770px container, and the
+// panel was 166px short of fitting three annotation columns — so the identity
+// block was costing more than three times the shortfall.
+//
+// Spanning the full row hands that 583px back: three 384px columns fit with
+// ~417px to spare. The cost is that the identity cells can no longer run down
+// beside the panel; like the gene cell, they now restart below it (see
+// planLeadingCells).
+const DETAIL_PANEL_COLSPAN = TABLE_COLUMN_COUNT;
 
 // The variant/allele/gene "leading" cell to emit on a given row, together with
 // the rowSpan it should carry.
@@ -651,10 +658,9 @@ const splitIntoRuns = (
 };
 
 // Plan which leading cells each row emits and with what rowSpan, given the set
-// of expanded detail rows. The variant and allele cells sit left of the
-// right-aligned panel, so they span straight through any detail rows in their
-// group (a single cell, no repeat); the gene cell is the panel's first column,
-// so it restarts below any panel that interrupts its group.
+// of expanded detail rows. The panel spans the full row, so no leading cell can
+// cover a detail row: every one of them — variant, allele and gene alike —
+// restarts below a panel that interrupts its group.
 export const planLeadingCells = (
   rows: VepResultsTableRowData[],
   expandedDetailRows: Set<number>
@@ -665,32 +671,26 @@ export const planLeadingCells = (
     gene: null
   }));
 
-  // Content rows in [start, start + span) that carry an expanded detail panel:
-  // the variant/allele cells must count these to span past the injected rows.
-  const detailsInSpan = (start: number, span: number) => {
-    let count = 0;
-    for (let row = start; row < start + span; row++) {
-      if (expandedDetailRows.has(row)) {
-        count++;
-      }
-    }
-    return count;
-  };
-
   rows.forEach((row, index) => {
     if (row.variant) {
       const data = row.variant;
-      plan[index].variant = {
-        data,
-        rowSpan: data.rowspan + detailsInSpan(index, data.rowspan)
-      };
+      for (const run of splitIntoRuns(
+        index,
+        data.rowspan,
+        expandedDetailRows
+      )) {
+        plan[run.rowIndex].variant = { data, rowSpan: run.rowSpan };
+      }
     }
     if (row.alternativeAllele) {
       const data = row.alternativeAllele;
-      plan[index].allele = {
-        data,
-        rowSpan: data.rowspan + detailsInSpan(index, data.rowspan)
-      };
+      for (const run of splitIntoRuns(
+        index,
+        data.rowspan,
+        expandedDetailRows
+      )) {
+        plan[run.rowIndex].allele = { data, rowSpan: run.rowSpan };
+      }
     }
     if (row.gene) {
       const data = row.gene;
