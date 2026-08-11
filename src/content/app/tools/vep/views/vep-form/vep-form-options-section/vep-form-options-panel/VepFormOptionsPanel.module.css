@@ -56,9 +56,27 @@
   color: var(--color-dark-grey);
 }
 
+/* Columns of at least 230px, as many as fit — the same shape
+   `.optionsGridSources` below already uses, rather than a fixed four.
+
+   200px was ~30px too narrow for the longest label here: "Nearest exon junction
+   boundary" needs 181.5px on one line, and after the checkbox, its 12px of
+   padding and the help icon beside it, the text was left ~154px and wrapped. It
+   was the only label in the panel that did.
+
+   That wrap is what stranded its help icon. An icon following a wrapped label
+   sits after the label *box* — which is the width the text wrapped at, not the
+   width of any line in it — so it sat 35px from the words where every other
+   option's sits 5px away. No alignment fixes that; only not wrapping does.
+
+   ★ Fixed 230px columns would have overflowed a narrow panel: four of them plus
+   gaps want 992px, and at a 1024px viewport the panel has 847px, so the fourth
+   column ran 132px past its edge (the old 200px overflowed by 12px there, which
+   is how this went unnoticed). `auto-fill` drops to three columns instead —
+   measured: four at 1512px, three at 1024px, and nothing overflows at either. */
 .optionsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 200px);
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   column-gap: 1.5rem;
   row-gap: 10px;
   align-items: start;
@@ -78,10 +96,23 @@
   flex-direction: column;
 }
 
-/* An option's checkbox row + its help (question-mark) icon, side by side. */
+/* An option's checkbox row + its help (question-mark) icon, side by side.
+
+   The help sits on the label's *first* line, not centred against the whole
+   label box.
+
+   It only shows on a label long enough to wrap — "Nearest exon junction
+   boundary" is the one in the 200px option column — and centring put the icon
+   against the middle of the two-line block, which reads as belonging to the
+   second line, adrift from the words it explains.
+
+   `baseline` rather than `flex-start`: it aligns the icon to the first line's
+   baseline, so it lands beside the last word of that line. Measured against
+   every option here, the ten single-line labels do not move by a pixel, where
+   `flex-start` lifted all of them 7px off centre. */
 .optionHeader {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 5px;
 }
 
