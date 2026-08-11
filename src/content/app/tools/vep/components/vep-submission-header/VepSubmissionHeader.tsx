@@ -182,7 +182,7 @@ const DeletionConfirmation = (
   return (
     <div className={styles.deletionConfirmation}>
       <span className={styles.deletionConfirmationMessage}>
-        Delete this submisison?
+        Delete this submission?
       </span>
       <PrimaryButton onClick={onDelete}>Delete</PrimaryButton>
       <TextButton onClick={onCancel}>Do not delete</TextButton>

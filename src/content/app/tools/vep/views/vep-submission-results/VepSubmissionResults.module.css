@@ -1,6 +1,20 @@
 .container {
   display: grid;
-  grid-template-rows: 40px minmax(0, 1fr);
+
+  /* Three rows, because this holds three things: the submission header, the
+     delete confirmation it opens, and the results box.
+
+     The middle row is the one that matters. The confirmation is conditional, so
+     the grid used to declare two rows for what is sometimes three children —
+     the confirmation took the `minmax(0, 1fr)` row meant for the results box,
+     and the box was pushed into an implicit row. `minmax(0, 1fr)` may be zero,
+     and with the box's implicit row taking every pixel there was nothing left
+     to give: the row resolved to 0px and the confirmation's 12px of content
+     spilled over the table beneath it.
+
+     `auto` here collapses to nothing while the confirmation is absent, which is
+     almost always, so the normal layout is unchanged. */
+  grid-template-rows: 40px auto minmax(0, 1fr);
   height: 100%;
 
   /* This is itself a grid item, in VepPageContent's `max-content 1fr` row. A
@@ -34,7 +48,13 @@
   padding-top: 150px;
 }
 
+/* Pinned to the last row rather than left to auto-placement: the row before it
+   belongs to the delete confirmation, which is only sometimes there. Without
+   this the box would slide up into that row whenever the confirmation is
+   absent — which is the usual case — and take `auto` instead of the
+   `minmax(0, 1fr)` its scrolling depends on. */
 .resultsBox {
+  grid-row: 3;
   display: grid;
   grid-template-rows: auto 1fr;
   border: 1px solid var(--color-grey);
