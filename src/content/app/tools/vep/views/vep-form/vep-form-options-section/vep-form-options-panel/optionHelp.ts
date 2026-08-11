@@ -301,12 +301,7 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
     description:
       'Annotates variants with associated phenotypes, diseases and traits ' +
       'curated by Ensembl from sources including ClinVar, OMIM and the GWAS ' +
-      'Catalog.',
-    links: [
-      {
-        href: 'https://www.ensembl.org/info/genome/variation/phenotype/phenotype_annotation.html'
-      }
-    ]
+      'Catalog.'
   },
 
   // --- Regulatory ---
