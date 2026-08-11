@@ -18,7 +18,7 @@
 .transcript rect {
   stroke: var(--color-dark-grey);
   fill: var(--color-dark-grey);
-  opacity: 0.3;
+  opacity: var(--transcript-opacity); /* Set by the javascript code of the component */
 }
 
 .geneId {
