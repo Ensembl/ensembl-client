@@ -341,16 +341,33 @@ const VepResultsAnnotationDetail = (props: {
     // it is what the observer watches, and its reserved height is what keeps the
     // scroll from lurching while the contents are still to come.
     <div className={styles.detail} ref={setDetailNode}>
-      {/* The toolbar sits outside the multi-column section list: an interactive
+      {/* Both of the panel's own controls, on one row above its contents:
+          "Show all" at the left, the collapse cross at the right.
+
+          The toolbar sits outside the multi-column section list: an interactive
           control inside a CSS multicol (as a column-span:all element) can have
-          its clicks swallowed by an overlapping column, which broke "Show all". */}
-      {hasEnteredView && panels && parameters && (
+          its clicks swallowed by an overlapping column, which broke "Show all".
+
+          Each control keeps its own condition — they are not the same one — and
+          the cross is pushed right by the stylesheet rather than by a spacer, so
+          it stays in the corner even when the checkbox is absent. */}
+      {hasEnteredView && ((panels && parameters) || onCollapse) && (
         <div className={styles.detailToolbar}>
-          <CheckboxWithLabel
-            label="Show all"
-            checked={showAll}
-            onChange={setShowAll}
-          />
+          {panels && parameters && (
+            <CheckboxWithLabel
+              className={styles.showAllToggle}
+              label="Show all"
+              checked={showAll}
+              onChange={setShowAll}
+            />
+          )}
+          {onCollapse && (
+            <CloseButton
+              className={styles.toolbarClose}
+              aria-label="Hide annotations"
+              onClick={onCollapse}
+            />
+          )}
         </div>
       )}
 
@@ -368,15 +385,6 @@ const VepResultsAnnotationDetail = (props: {
           {fullWidth.map((section) => (
             <Fragment key={section.id}>{section.node}</Fragment>
           ))}
-        </div>
-      )}
-
-      {/* Collapse control at the bottom-right — the same blue close (cross) used
-          at the bottom of an expanded transcript list — so a long panel can be
-          closed without scrolling back to the row's expand chevron. */}
-      {hasEnteredView && onCollapse && (
-        <div className={styles.collapseRow}>
-          <CloseButton aria-label="Hide annotations" onClick={onCollapse} />
         </div>
       )}
     </div>

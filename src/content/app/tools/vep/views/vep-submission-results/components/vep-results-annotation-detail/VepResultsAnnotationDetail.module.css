@@ -137,20 +137,45 @@
   max-width: 400px;
 }
 
-/* Full-width toolbar row above the annotation sections (outside the multicol). */
+/* The panel's own controls, on one full-width row above the annotation sections
+   and outside the multicol: "Show all" at the left, the collapse cross at the
+   right. */
 .detailToolbar {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
   margin-bottom: 16px;
 }
 
-/* Collapse (blue close cross) control at the bottom-right of the panel — a
-   second, closer affordance to collapse the expanded annotations without
-   scrolling back to the row's expand chevron. */
-.collapseRow {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 12px;
+/* Label before the box, against CheckboxWithLabel's own order.
+
+   That component is a two-column `inline-grid` holding the input and then the
+   label, so the pair is reversed by re-ordering the grid items rather than by
+   forking the component: grid places auto-positioned items in order-modified
+   document order, so `order` on the label alone moves it in front. The 12px
+   the label carried on its inner side moves with it.
+
+   Local to this panel deliberately. Every other checkbox in the app reads
+   box-then-label, and this row is the odd one out because it is a control
+   pinned to a corner rather than an item in a list of options.
+
+   These rules are unlayered and the component's are in `@layer components`, so
+   they win on the layer alone — do not add specificity here expecting it to be
+   what is doing the work. */
+.showAllToggle {
+  grid-template-columns: auto auto;
+}
+
+.showAllToggle span {
+  order: -1;
+  padding-left: 0;
+  padding-right: 12px;
+}
+
+/* Pushed to the right by the margin rather than by `space-between` on the row
+   or by an empty spacer: the checkbox beside it is conditional, and both of
+   those would walk the cross back to the left when it is the only control. */
+.toolbarClose {
+  margin-left: auto;
 }
 
 /* The indent rule for this panel: the wrapper form of the step, applied by
