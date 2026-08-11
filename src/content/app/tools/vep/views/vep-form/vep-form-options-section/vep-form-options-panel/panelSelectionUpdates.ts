@@ -85,13 +85,32 @@ export const areAllPanelsFullySelected = (
   panels.length > 0 &&
   panels.every((panel) => isPanelFullySelected(panel, parameters));
 
-/** The boolean sub-options directly under an option, with their defaults. */
-const booleanSubOptions = (option: FormPanelOption) =>
-  (option.sub_options ?? []).flatMap((subOption) =>
-    subOption.type === 'boolean'
-      ? [{ id: subOption.id, default: subOption.default }]
-      : []
-  );
+/**
+ * The boolean sub-options under an option, with their defaults — **seeing
+ * through a `group`**, which is a heading rather than a control and carries no
+ * parameter of its own.
+ *
+ * That matters for gnomAD v2: an ancestry's sexes sit directly beneath it, but
+ * its sub-populations are nested in a "Sub-populations" group, and a selected
+ * sub-population emits a field on its own. Counting only the direct children
+ * would switch an ancestry off while one of its sub-populations still asked for
+ * a column.
+ */
+const booleanSubOptions = (
+  option: FormPanelOption
+): { id: string; default: boolean }[] =>
+  (option.sub_options ?? []).flatMap((subOption) => {
+    if (subOption.type === 'boolean') {
+      return [{ id: subOption.id, default: subOption.default }];
+    }
+    if (subOption.type === 'group') {
+      return subOption.options.map((nested) => ({
+        id: nested.id,
+        default: nested.default
+      }));
+    }
+    return [];
+  });
 
 /**
  * The parameter updates for toggling one boolean sub-option, honouring an
@@ -129,9 +148,15 @@ export const subOptionToggleUpdates = (
 
 /**
  * The updates for switching an option on or off. For an option that needs at
- * least one sub-option, switching it *on* restores them all — otherwise
- * re-enabling one whose sub-options were all unticked would land straight back
- * in the state that cannot be submitted.
+ * least one sub-option, switching it *on* restores its sub-options **to their
+ * declared defaults** — otherwise re-enabling one whose sub-options were all
+ * unticked would land straight back in the state that cannot be submitted.
+ *
+ * Defaults rather than all-on, because those are two different things for an
+ * allele-frequency ancestry: its sexes default to Combined only, so switching
+ * "All" back on should give the suggested selection, not silently add XX and XY.
+ * For mutfunc — the case this rule was written for — every sub-option defaults
+ * to on, so restoring defaults *is* restoring them all and nothing changes.
  */
 export const optionToggleUpdates = (
   option: FormPanelOption,
@@ -140,7 +165,7 @@ export const optionToggleUpdates = (
   const updates: Record<string, boolean> = { [option.id]: isChecked };
   if (option.requires_any_sub_option && isChecked) {
     for (const subOption of booleanSubOptions(option)) {
-      updates[subOption.id] = true;
+      updates[subOption.id] = subOption.default;
     }
   }
   return updates;

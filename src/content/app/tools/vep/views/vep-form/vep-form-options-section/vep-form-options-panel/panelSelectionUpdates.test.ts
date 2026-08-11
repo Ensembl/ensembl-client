@@ -222,3 +222,131 @@ describe('an option that cannot run with no sub-option (mutfunc)', () => {
     expect(optionToggleUpdates(plain, true)).toEqual({ intact: true });
   });
 });
+
+describe('an allele-frequency ancestry (sexes beneath it)', () => {
+  // gnomAD v4: each ancestry emits one field per *selected sex*, so with none
+  // ticked it contributes no column at all. The backend flags it, exactly as it
+  // flags mutfunc, and the two differ only in what their defaults are.
+  const ancestry = (): FormPanel['options'][number] => ({
+    ...option('gnomad_genomes_all'),
+    requires_any_sub_option: true,
+    sub_options: [
+      {
+        id: 'gnomad_genomes_all_both',
+        label: 'Combined',
+        type: 'boolean',
+        default: true
+      },
+      {
+        id: 'gnomad_genomes_all_female',
+        label: 'XX',
+        type: 'boolean',
+        default: false
+      },
+      {
+        id: 'gnomad_genomes_all_male',
+        label: 'XY',
+        type: 'boolean',
+        default: false
+      }
+    ]
+  });
+
+  it('unticking the last sex switches the ancestry off', () => {
+    // The reported bug: "All" stayed ticked while asking for no column.
+    expect(
+      subOptionToggleUpdates(ancestry(), 'gnomad_genomes_all_both', false, {
+        gnomad_genomes_all_female: false,
+        gnomad_genomes_all_male: false
+      })
+    ).toEqual({
+      gnomad_genomes_all_both: false,
+      gnomad_genomes_all: false
+    });
+  });
+
+  it('leaves the ancestry on while another sex remains', () => {
+    expect(
+      subOptionToggleUpdates(ancestry(), 'gnomad_genomes_all_both', false, {
+        gnomad_genomes_all_female: true
+      })
+    ).toEqual({ gnomad_genomes_all_both: false });
+  });
+
+  it('counts Combined by its default when never clicked', () => {
+    expect(
+      subOptionToggleUpdates(ancestry(), 'gnomad_genomes_all_female', false, {})
+    ).toEqual({ gnomad_genomes_all_female: false });
+  });
+
+  it('switching the ancestry back on restores the DEFAULTS, not every sex', () => {
+    // The one that separates this from mutfunc. Restoring "all" would silently
+    // add XX and XY, which the user never asked for; the suggested selection is
+    // Combined alone. mutfunc is unaffected because its sub-options all default
+    // on, so defaults and all-on are the same thing there.
+    expect(optionToggleUpdates(ancestry(), true)).toEqual({
+      gnomad_genomes_all: true,
+      gnomad_genomes_all_both: true,
+      gnomad_genomes_all_female: false,
+      gnomad_genomes_all_male: false
+    });
+  });
+});
+
+describe('a gnomAD v2 ancestry (sexes AND nested sub-populations)', () => {
+  // v2 divides NFE and EAS further, in a group beneath the sexes. A selected
+  // sub-population emits `<base>_<anc>_<subpop>` on its own, so the ancestry is
+  // still alive with every sex unticked — counting only the direct children
+  // would switch it off while a sub-population still asked for a column.
+  const nfe = (): FormPanel['options'][number] => ({
+    ...option('gnomad_exomes_v2_nfe'),
+    requires_any_sub_option: true,
+    sub_options: [
+      {
+        id: 'gnomad_exomes_v2_nfe_female',
+        label: 'XX',
+        type: 'boolean',
+        default: false
+      },
+      {
+        id: 'gnomad_exomes_v2_nfe_male',
+        label: 'XY',
+        type: 'boolean',
+        default: false
+      },
+      {
+        type: 'group',
+        label: 'Sub-populations',
+        options: [
+          {
+            id: 'gnomad_exomes_v2_nfe_seu',
+            label: 'Southern European',
+            type: 'boolean',
+            default: false
+          }
+        ]
+      }
+    ]
+  });
+
+  it('a selected sub-population keeps the ancestry on', () => {
+    expect(
+      subOptionToggleUpdates(nfe(), 'gnomad_exomes_v2_nfe_male', false, {
+        gnomad_exomes_v2_nfe_female: false,
+        gnomad_exomes_v2_nfe_seu: true
+      })
+    ).toEqual({ gnomad_exomes_v2_nfe_male: false });
+  });
+
+  it('switches off only when the sub-populations are clear too', () => {
+    expect(
+      subOptionToggleUpdates(nfe(), 'gnomad_exomes_v2_nfe_male', false, {
+        gnomad_exomes_v2_nfe_female: false,
+        gnomad_exomes_v2_nfe_seu: false
+      })
+    ).toEqual({
+      gnomad_exomes_v2_nfe_male: false,
+      gnomad_exomes_v2_nfe: false
+    });
+  });
+});
