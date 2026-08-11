@@ -2202,6 +2202,23 @@ describe('IntAct interactions table', () => {
     ).toBe('https://www.uniprot.org/uniprotkb/P37840/entry');
   });
 
+  it('stacks a split column one value per line, in the cell container', () => {
+    renderIntact();
+
+    // The participants share one cell and each takes a line of it, rather than
+    // running on inline: an inline run makes the column claim the width of all
+    // its values at once, which squeezed the accession beside it until it broke
+    // mid-id. They stack in the same container a cell of `items` uses.
+    const cell = screen.getByText('P00520').closest('td');
+    const stack = cell?.firstElementChild;
+
+    expect(stack?.className).toMatch(/cellItems/);
+    expect(stack?.querySelectorAll('a').length).toBeGreaterThan(1);
+
+    // ...and no separator text was left between them.
+    expect(cell?.textContent).toBe('P00520P37840');
+  });
+
   it('leaves values without the uniprotkb prefix as plain text', () => {
     renderIntact();
 

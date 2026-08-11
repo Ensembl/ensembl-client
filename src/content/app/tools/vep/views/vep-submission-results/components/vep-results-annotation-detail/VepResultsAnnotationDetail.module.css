@@ -1,10 +1,25 @@
 .detail {
-  /* 16px, not the 40px it was: the annotation sections are laid out in
-     multi-column, so every pixel of horizontal padding is taken off each
-     column. At 40px the IntAct interactions table was squeezed 11px below its
+  /* 32px at the sides, twice the vertical, to set the columns in from the edges
+     of the panel.
+
+     Horizontal padding here is not free: the sections are laid out in
+     multi-column, so every pixel of it is taken off the columns. This used to be
+     40px, and at 40px the IntAct interactions table was squeezed 11px below its
      own min-content width, which is what made its text collide with the next
-     column. */
-  padding: 16px;
+     column — that is why it was cut to 16px.
+
+     32px is safe now for a reason that has since changed underneath that
+     history: `column-width` went from 320px to 400px, so the narrowest column
+     the panel produces is ~423px against the ~355px IntAct needs. The old
+     failure needed a narrow column *and* wide padding; the columns are no
+     longer narrow. Measured across viewports after this change, the minimum
+     column width is still comfortably clear of that floor.
+
+     The full-width sections beneath the columns (Phenotypes) are a sibling
+     inside this same box, so they take these margins from here and stay aligned
+     with the columns by construction — there is deliberately no second padding
+     rule to keep in step with this one. */
+  padding: 16px 32px;
   background-color: var(--color-light-grey);
 
   /* Do not lay this panel out while it is scrolled out of view.
@@ -85,31 +100,75 @@
      600px-wide column stretches every short label/value row across a wide
      empty gap.
 
-     400px is the compromise. Of 37 sampled widths from 1100 to 2000px, the
-     table fits at 22 and scrolls at the rest, and only 6 of them fall to two
-     columns (all under ~1250px). The narrowest column it ever produces is
-     ~423px, well clear of the 355px IntAct's interactions table needs — the
-     constraint that set the old value. */
-  column-width: 400px;
-  column-gap: 16px;
+     384px, down from 400px. The 400px existed for the OpenTargets GWAS table,
+     which needed ~453px to show its five columns without scrolling; that table
+     now lives in the full-width Phenotypes section below, so the constraint
+     that set this number no longer applies to it.
+
+     What sets it now is the two-column threshold. The panel's own width is
+     capped by the results container (1800px less the gutter), which leaves the
+     sections box at most ~1050px — and on a 1512px-wide screen, ~825px. Two
+     columns need `2 * this + the gap`, so at 400px with a 32px gap the panel
+     wanted 832px and fell to a single column on exactly the commonest laptop
+     width. 384px asks for 800px and leaves ~25px of slack there.
+
+     No table sets a floor here any more. IntAct's interactions table used to —
+     it was the ~355px this comment quoted for a long time — but its display has
+     since been reconfigured: four of its six columns are `sub_option`s that
+     default to off, so it draws two columns unless the reader asks for more.
+     Measured in the panel: ~125px min-content by default, ~272px with every
+     sub-option this job could fill switched on. Both far under a column.
+
+     So 384px is set by the two-column threshold alone, and could go lower if
+     something wanted it to. */
+  column-width: 384px;
+
+  /* 32px, twice what it was, to separate the columns more clearly.
+
+     This costs nothing in column width: the browser packs `column-width` first
+     and the gap comes out of what is left over, so a wider gap only ever moves
+     the point at which another column fits — it never narrows the columns
+     below 400px.
+
+     ★ It does break a rhythm that used to hold: the vertical gap between
+     stacked category blocks was deliberately the same measure as this one
+     (see `.categoryBlock`), so groups sat apart by the same distance whether
+     they were side by side or above one another. That is now 16px vertical
+     against 32px horizontal, on purpose — the columns needed the separation
+     and the vertical spacing did not. */
+  column-gap: 32px;
 
   /* One cap for every panel, rather than one column per section.
 
      That count made sense while a section could not break: N sections could
      never fill more than N columns. Sections fragment now, so it only made
-     panels inconsistent — a panel of three sections was capped at 1232px and a
-     panel of two at 816px, and since a column needs 400px plus a 16px gap,
-     1232px is *exactly* three columns with no slack at all. Any padding or
-     rounding dropped it to two, which then stretched to ~600px each. So the
-     three-section panels drew wide columns, the two-section ones drew 400px
-     columns, and neither ever drew three.
+     panels inconsistent — a panel of three sections was capped at three
+     columns' worth and a panel of two at two, with no slack at all in either.
+     Any padding or rounding dropped the three-column cap to two columns, which
+     then stretched to ~600px each. So the three-section panels drew wide
+     columns, the two-section ones drew 400px columns, and neither ever drew
+     three.
 
      Fixed at three columns' worth. Every panel now answers the viewport the
      same way: the same width gives the same count and the same column width,
      whatever a panel happens to contain. `column-width` still decides how many
-     actually fit, and fragmentation fills them. */
+     actually fit, and fragmentation fills them.
+
+     Stated as the arithmetic rather than as the number it comes to, so it
+     follows the gap and column width above instead of having to be
+     recalculated by hand when either changes — which is exactly what it did
+     when the gap doubled.
+
+     ★ Both this cap and the three-column count are, at present, unreachable:
+     the results container holds the sections box to ~1050px (1800px token less
+     the gutter, then less the table's leading columns), and three columns want
+     1216px. Three columns would need `column-width` at or below ~328px, or the
+     container about 170px wider. Nothing in the panel's content forbids the
+     328px — see the note on `column-width` — so this is purely a question of
+     how narrow a column is worth reading. Kept because it costs nothing and
+     becomes correct the moment the container widens. */
   column-count: 3;
-  max-width: calc(3 * 400px + 2 * 16px);
+  max-width: calc(3 * 384px + 2 * 32px);
 }
 
 /* Sections that run the panel's full width, beneath the columned ones. No width
@@ -219,10 +278,11 @@ table {
   /* Between the heading and its first option. */
   gap: 4px;
 
-  /* The gap between categories, matching the multicol `column-gap` so the
-     vertical rhythm between stacked groups and the horizontal one between
-     columns are the same measure. No `margin-top` as well, or the two would
-     double up. */
+  /* The gap between categories. This used to be the multicol `column-gap`
+     restated, so stacked groups and side-by-side ones sat the same distance
+     apart; the column gap has since doubled and this deliberately did not
+     follow it, so the two are now independent measures. No `margin-top` as
+     well, or the two would double up. */
   margin-bottom: 16px;
 }
 .categoryBlock:last-child {
@@ -549,6 +609,21 @@ table {
   color: var(--color-dark-grey);
   border-bottom: 1px solid var(--color-medium-light-grey);
   padding-bottom: 3px;
+
+  /* A long label should not be what widens its column.
+
+     Table auto-layout sizes a column to the widest thing in it, and that is
+     usually the data — but "Interaction Participants" is wider than any
+     accession beneath it, so the heading was setting the width and taking room
+     from the columns whose *values* needed it. Capping the heading's preferred
+     width makes it wrap instead, and the column falls back to the width its
+     content asks for.
+
+     In `ch` so it tracks the font rather than a pixel guess, and set at the
+     point where only a genuinely long multi-word label breaks: of every heading
+     in these tables the next longest is "Classification" at 14 characters,
+     which still sits on one line. */
+  max-width: 16ch;
 }
 
 /* A row label with an inline help (?) icon, e.g. popEVE gap-frequency guidance. */

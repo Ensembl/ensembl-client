@@ -510,6 +510,17 @@ const MoreToggle = (props: TruncatedListToggleProps) => (
   </button>
 );
 
+/**
+ * How many of a split cell's stacked values show before the "+ n more".
+ *
+ * Not read from the spec, because a column has no `truncate` of its own and
+ * inventing one would add a knob with a single possible setting: every
+ * `truncate` in the annotation library — all seven of them — is
+ * `visible_count: 3`. This is that same house number, stated once. If a column
+ * ever needs its own count, that is the point to make it spec-driven.
+ */
+const SPLIT_CELL_VISIBLE_COUNT = 3;
+
 /** Fill a `{field}` template from an item's fields, for display text. */
 const interpolate = (template: string, item: Record<string, unknown>): string =>
   template.replace(/\{(\w+)\}/g, (_match, field) => String(item[field] ?? ''));
@@ -1346,35 +1357,61 @@ const tableCellContent = (
   }
 
   const parts = column.split ? text.split(column.split) : [text];
-  return parts.map((part, index) => {
-    // Space, not a comma: the values are already visually separate as links,
-    // and in a narrow column each tends to land on its own line anyway.
-    const separator = index > 0 ? ' ' : '';
+  const rendered = parts.map((part, index) => {
     const prefix = column.link_prefix;
     if (prefix && !part.startsWith(prefix)) {
       // Not the identifier this column links to; show it as it came.
-      return <Fragment key={index}>{separator + part}</Fragment>;
+      return <Fragment key={index}>{part}</Fragment>;
     }
     const value = prefix ? part.slice(prefix.length) : part;
     return (
-      <Fragment key={index}>
-        {separator}
-        <ExternalLink
-          template={template}
-          // The element's own fields as well as `value`, so a column's template
-          // can name them — `{urn}` and `{accession}` for MaveDB's score set.
-          // An item cell has always been able to do this (it passes the whole
-          // record); a column could only fill `{value}`, which is what made
-          // moving a list block to a table silently drop its link. `value` is
-          // written last so a field of that name cannot shadow the cell's own.
-          fields={{ ...resolved.fields, value }}
-          className={linkClass}
-        >
-          {value}
-        </ExternalLink>
-      </Fragment>
+      <ExternalLink
+        key={index}
+        template={template}
+        // The element's own fields as well as `value`, so a column's template
+        // can name them — `{urn}` and `{accession}` for MaveDB's score set.
+        // An item cell has always been able to do this (it passes the whole
+        // record); a column could only fill `{value}`, which is what made
+        // moving a list block to a table silently drop its link. `value` is
+        // written last so a field of that name cannot shadow the cell's own.
+        fields={{ ...resolved.fields, value }}
+        className={linkClass}
+      >
+        {value}
+      </ExternalLink>
     );
   });
+
+  if (!column.split) {
+    return rendered;
+  }
+
+  // A split column's values stack, one per line, in the same container a cell
+  // of `items` uses — they are the same thing, several values in one cell, and
+  // they should not have looked different.
+  //
+  // They used to run on inline, separated by a space, on the reasoning that in
+  // a narrow column each would land on its own line anyway. It does not hold:
+  // IntAct's participants reflow raggedly, and worse, the inline run makes the
+  // column claim the width of *all* its values at once — which squeezed the
+  // neighbouring accession column until `EBI-34581068` broke at its hyphen.
+  // Stacking asks for the width of one value, and the table's auto layout hands
+  // the difference back to the columns that need it.
+  //
+  // Stacked, the tall cells are the ones that need a limit: one IntAct
+  // interaction in the dev data carries 42 participants, which as 42 lines
+  // drags the whole row past everything beside it. Truncated to the same few
+  // the table truncates its own rows to, with the same control.
+  return (
+    <div className={styles.cellItems}>
+      <TruncatedList
+        items={rendered}
+        visibleCount={SPLIT_CELL_VISIBLE_COUNT}
+        renderItem={(node) => node}
+        renderToggle={(toggleProps) => <MoreToggle {...toggleProps} />}
+      />
+    </div>
+  );
 };
 
 /**
