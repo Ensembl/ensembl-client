@@ -83,7 +83,10 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
     description:
       'HGVS — Human Genome Variation Society nomenclature. HGVSc (*c*oding ' +
       'DNA) describes changes at the nucleotide level. HGVSp describes the ' +
-      'change at the *p*rotein level.'
+      'change at the *p*rotein level.',
+    // The nomenclature itself rather than a paper, so it stays outside the
+    // Europe PMC convention the citations follow.
+    links: [{ href: 'https://hgvs-nomenclature.org/stable/' }]
   },
   spdi: {
     description:

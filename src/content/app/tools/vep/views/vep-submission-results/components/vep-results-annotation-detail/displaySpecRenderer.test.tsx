@@ -1450,18 +1450,20 @@ describe('renderDisplayOption', () => {
     ).toBeDefined();
     expect(screen.getByRole('img', { name: '2 out of 4' })).toBeDefined();
 
-    // The (?) beside the label points at ClinVar's own account of how the
-    // status is calculated. (QuestionButton is a div with an onClick, so there
+    // The (?) beside the label points at ClinVar's own account of the
+    // classification terms. (QuestionButton is a div with an onClick, so there
     // is no button role to query.)
     await userEvent.click(
       container.querySelector('[class*="questionButton"]') as HTMLElement
     );
     expect(
-      screen.getByText(/For more detail regarding ClinVar's calculation/)
+      screen.getByText(/For more detail regarding ClinVar's clinical/)
     ).toBeDefined();
-    const link = screen.getByRole('link', { name: /ClinVar review status/ });
+    const link = screen.getByRole('link', {
+      name: /ClinVar clinical significance/
+    });
     expect(link.getAttribute('href')).toBe(
-      'https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/'
+      'https://www.ncbi.nlm.nih.gov/clinvar/docs/clinsig/'
     );
   });
 

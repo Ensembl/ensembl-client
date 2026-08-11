@@ -253,7 +253,7 @@ export const displaySpecFixture: DisplaySpec = {
               from: 'popeve.gap_frequency',
               format: 'num',
               mono: false,
-              help: 'Authors recommend filtering if > 0.5',
+              help: 'Authors recommend filtering the scores if the gap frequency > 0.5',
               help_link: {
                 href: 'https://europepmc.org/article/MED/41286104',
                 label: 'popEVE paper'
@@ -546,10 +546,10 @@ export const displaySpecFixture: DisplaySpec = {
                   label: 'Classification',
                   from: 'clinvar.classification_summary',
                   mono: false,
-                  help: "For more detail regarding ClinVar's calculation of review status see",
+                  help: "For more detail regarding ClinVar's clinical significance terms see",
                   help_link: {
-                    href: 'https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/',
-                    label: 'ClinVar review status'
+                    href: 'https://www.ncbi.nlm.nih.gov/clinvar/docs/clinsig/',
+                    label: 'ClinVar clinical significance'
                   },
                   item: {
                     cells: [
