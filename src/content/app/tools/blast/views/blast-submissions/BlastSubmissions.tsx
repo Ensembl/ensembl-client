@@ -18,10 +18,7 @@ import { useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
-import {
-  getUnviewedBlastSubmissions,
-  getViewedBlastSubmissions
-} from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import { getBlastSubmissionsList } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import { useSubmitBlastMutation } from 'src/content/app/tools/blast/state/blast-api/blastApiSlice';
 import { setBlastView } from 'src/content/app/tools/blast/state/general/blastGeneralSlice';
@@ -36,18 +33,24 @@ import type { BlastSubmission } from 'src/content/app/tools/blast/state/blast-re
 
 import styles from './BlastSubmissions.module.css';
 
-type Props = {
-  unviewed: boolean;
-};
-
-const BlastSubmissions = (props: Props) => {
+const BlastSubmissions = () => {
+  const blastSubmissions = useAppSelector(getBlastSubmissionsList);
+  const [, formSubmissionResult] = useSubmitBlastMutation({
+    fixedCacheKey: 'submit-blast-form' // same as in BlastJobSubmit component
+  });
+  const { isLoading } = formSubmissionResult;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(
-      setBlastView(props.unviewed ? 'unviewed-submissions' : 'submissions-list')
-    );
-  }, []);
+    dispatch(setBlastView('submissions-list'));
+  }, [dispatch]);
+
+  // sort the submissions in reverse chronological order
+  const sortedSubmissions = getSortedSubmissions(blastSubmissions);
+
+  const submissionElements = sortedSubmissions.map((submission) => (
+    <ListedBlastSubmission key={submission.id} submission={submission} />
+  ));
 
   return (
     <div className={styles.submissionsContainer}>
@@ -55,54 +58,16 @@ const BlastSubmissions = (props: Props) => {
       <ToolsTopBar>
         <BlastViewsNavigation />
       </ToolsTopBar>
-      {props.unviewed ? (
-        <UnviewedBlastSubmissions />
-      ) : (
-        <ViewedBlastSubmissions />
-      )}
+      <div className={styles.container}>
+        {isLoading && (
+          <div className={styles.loaderContainer}>
+            <CircleLoader />
+          </div>
+        )}
+        {submissionElements}
+      </div>
     </div>
   );
-};
-
-// Notice that the unviewed submissions list also includes showing a spinner
-// if the BLAST form is still being submitted
-const UnviewedBlastSubmissions = () => {
-  const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
-  const [, formSubmissionResult] = useSubmitBlastMutation({
-    fixedCacheKey: 'submit-blast-form' // same as in BlastJobSubmit component
-  });
-  const { isLoading } = formSubmissionResult;
-
-  // sort the submissions in reverse chronological order
-  const sortedSubmissions = getSortedSubmissions(unviewedBlastSubmissions);
-
-  const submissionElements = sortedSubmissions.map((submission) => (
-    <ListedBlastSubmission key={submission.id} submission={submission} />
-  ));
-
-  return (
-    <main className={styles.container}>
-      {isLoading && (
-        <div className={styles.loaderContainer}>
-          <CircleLoader />
-        </div>
-      )}
-      {submissionElements}
-    </main>
-  );
-};
-
-const ViewedBlastSubmissions = () => {
-  const viewedBlastSubmissions = useAppSelector(getViewedBlastSubmissions);
-
-  // sort the submissions in reverse chronological order
-  const sortedSubmissions = getSortedSubmissions(viewedBlastSubmissions);
-
-  const submissionElements = sortedSubmissions.map((submission) => (
-    <ListedBlastSubmission key={submission.id} submission={submission} />
-  ));
-
-  return <main className={styles.container}>{submissionElements}</main>;
 };
 
 const getSortedSubmissions = (submissions: BlastSubmission[]) => {

@@ -19,35 +19,24 @@ import { memo } from 'react';
 import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import {
-  getUnviewedBlastSubmissions,
-  getViewedBlastSubmissions
-} from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import { getBlastSubmissionsList } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
-import styles from './BlastJobListsNavigation.module.css';
+import styles from './BlastJobListNavButton.module.css';
 
-const BlastJobListsNavigation = () => {
-  const unviewedBlastSubmissions = useAppSelector(getUnviewedBlastSubmissions);
-  const viewedBlastSubmissions = useAppSelector(getViewedBlastSubmissions);
+const BlastJobListNavButton = () => {
+  const blastSubmissions = useAppSelector(getBlastSubmissionsList);
 
   return (
-    <div className={styles.actionButtons}>
-      <ButtonLink
-        to={urlFor.blastUnviewedSubmissions()}
-        isDisabled={!unviewedBlastSubmissions.length}
-      >
-        Unviewed jobs
-      </ButtonLink>
-      <ButtonLink
-        to={urlFor.blastSubmissionsList()}
-        isDisabled={!viewedBlastSubmissions.length}
-      >
-        Jobs list
-      </ButtonLink>
-    </div>
+    <ButtonLink
+      to={urlFor.blastSubmissionsList()}
+      isDisabled={!blastSubmissions.length}
+      className={styles.button}
+    >
+      Jobs list
+    </ButtonLink>
   );
 };
 
-export default memo(BlastJobListsNavigation);
+export default memo(BlastJobListNavButton);

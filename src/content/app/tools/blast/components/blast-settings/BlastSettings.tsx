@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react';
+import { useEffect, useState, type InputEvent, type ChangeEvent } from 'react';
 import classNames from 'classnames';
 
 import { useAppSelector } from 'src/store';
@@ -27,7 +27,7 @@ import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/Checkbo
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import BlastJobSubmit from 'src/content/app/tools/blast/components/blast-job-submit/BlastJobSubmit';
-import BlastJobListsNavigation from '../blast-job-lists-navigation/BlastJobListsNavigation';
+import BlastJobListNavButton from '../blast-job-list-nav-button/BlastJobListNavButton';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import {
@@ -205,7 +205,7 @@ const BlastSettings = ({ config }: Props) => {
             <BlastJobSubmit />
           </div>
         </div>
-        <BlastJobListsNavigation />
+        <BlastJobListNavButton />
       </div>
       {parametersExpanded && (
         <div className={styles.bottomLevel}>
@@ -425,7 +425,7 @@ type BlastSelectProps = {
 };
 
 const BlastSelect = (setting: BlastSelectProps) => {
-  const onChange = (e: FormEvent<HTMLSelectElement>) => {
+  const onChange = (e: InputEvent<HTMLSelectElement>) => {
     const value = e.currentTarget.value;
     setting.onChange(value);
   };

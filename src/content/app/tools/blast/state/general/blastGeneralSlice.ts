@@ -26,14 +26,13 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
  * - A BLAST job is the result of running the BLAST program for one query sequence against one species
  *
  * Confusingly, the UI uses the terms "submission" and "job" interchangeably,
- * especially in the buttons "New job", "Unviewed jobs", "Jobs list", in order to save screen space
+ * especially in the buttons "New job" and "Jobs list", in order to save screen space
  *
  */
 
 type BlastView =
   | 'blast-form' //new job form - form for submitting a new batch of BLASTS jobs
-  | 'unviewed-submissions' //unviewed BLAST submissions - once the submission result are viewed they are moved to job list
-  | 'submissions-list' //list of viewed BLAST submissions
+  | 'submissions-list' // list of BLAST submissions
   | 'submission-results'; //results of BLAST jobs in a single submission
 
 type BlastGeneralState = {

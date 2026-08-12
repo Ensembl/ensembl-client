@@ -99,10 +99,7 @@ export type FailedBlastSubmission = {
 export type BlastSubmission = SuccessfulBlastSubmission | FailedBlastSubmission;
 
 export type BlastResultsUI = {
-  unviewedJobsPage: {
-    collapsedSubmissionIds: string[];
-  };
-  viewedJobsPage: {
+  submissionsPage: {
     collapsedSubmissionIds: string[];
   };
 };
@@ -140,10 +137,7 @@ export const markBlastSubmissionAsSeen = createAsyncThunk(
 export const initialBlastResultsState: BlastResultsState = {
   submissions: {},
   ui: {
-    unviewedJobsPage: {
-      collapsedSubmissionIds: []
-    },
-    viewedJobsPage: {
+    submissionsPage: {
       collapsedSubmissionIds: []
     }
   }
