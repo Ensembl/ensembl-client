@@ -32,8 +32,7 @@ import SimpleSelect, {
 import VepSubmitButton from '../vep-submit-button/VepSubmitButton';
 import EnsemblVepLogo from './EnsemblVepLogo';
 import EnsemblVepVersion from './EnsemblVepVersion';
-import VepTopBarNavButtons from './VepTopBarNavButtons';
-import EnsemblMark from './EnsemblMark';
+import VepTopBarNavButton from './VepTopBarNavButton';
 
 import styles from './VepTopBar.module.css';
 
@@ -48,8 +47,7 @@ const VepFormTopBar = () => {
           <VepSubmitButton />
         </div>
         <EnsemblVepVersion />
-        <VepTopBarNavButtons />
-        <EnsemblMark />
+        <VepTopBarNavButton />
       </div>
     </ToolsTopBar>
   );

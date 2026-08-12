@@ -53,18 +53,14 @@ const BlastPage = () => {
         description: pageDescription
       })
     );
-  }, []);
+  }, [dispatch]);
 
   return hasMounted ? (
     <div className={styles.blastPage}>
       <Routes>
         <Route index element={<BlastForm />} />
-        <Route
-          path="unviewed-submissions"
-          element={<BlastSubmissions unviewed={true} />}
-        />
         <Route path="submissions">
-          <Route index={true} element={<BlastSubmissions unviewed={false} />} />
+          <Route index={true} element={<BlastSubmissions />} />
           <Route path=":submissionId" element={<BlastSubmissionResults />} />
         </Route>
         <Route path="*" element={<NotFoundErrorScreen />} />

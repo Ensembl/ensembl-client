@@ -6,9 +6,9 @@
     [form-title] max-content
     [transcript-set-and-submit] 1fr
     [vep-version] max-content
-    [job-lists-navigation] max-content
-    [ensembl-mark] max-content;
-  grid-template-areas: 'vep-logo form-title transcript-set-and-submit vep-version job-lists-navigation ensembl-mark';
+    [job-list-navigation] max-content;
+  grid-template-areas:
+    'vep-logo form-title transcript-set-and-submit vep-version job-list-navigation';
   column-gap: 32px;
   max-width: var(--vep-container-max-width);
   white-space: nowrap;
@@ -45,9 +45,9 @@
     [new-job-button] max-content
     [results-availability] minmax(0, 1fr)
     [vep-version] auto
-    [job-lists-navigation] auto
-    [ensembl-mark] max-content;
-  grid-template-areas: 'vep-logo new-job-button results-availability vep-version job-lists-navigation ensembl-mark';
+    [job-list-navigation] auto;
+  grid-template-areas:
+    'vep-logo new-job-button results-availability vep-version job-list-navigation';
   column-gap: 32px;
   max-width: var(--vep-container-max-width);
   white-space: nowrap;
@@ -117,8 +117,8 @@
   color: var(--color-black);
 }
 
-.jobListsNavigation {
-  grid-area: job-lists-navigation;
+.jobListNavigation {
+  grid-area: job-list-navigation;
   display: flex;
   column-gap: 12px;
   justify-self: end;
@@ -149,11 +149,10 @@
       [vep-logo] max-content
       [form-title] 1fr
       [vep-version] max-content
-      [job-lists-navigation] auto
-      [ensembl-mark] max-content;
+      [job-list-navigation] auto;
     grid-template-areas:
-      'vep-logo form-title vep-version job-lists-navigation ensembl-mark'
-      'transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit ensembl-mark';
+      'vep-logo form-title vep-version job-list-navigation'
+      'transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit';
     row-gap: 8px;
   }
 
@@ -181,11 +180,10 @@
       [vep-logo] max-content
       [new-job-button] 1fr
       [vep-version] auto
-      [job-lists-navigation] auto
-      [ensembl-mark] max-content;
+      [job-list-navigation] auto;
     grid-template-areas:
-      'vep-logo new-job-button vep-version job-lists-navigation ensembl-mark'
-      'results-availability results-availability results-availability . ensembl-mark';
+      'vep-logo new-job-button vep-version job-list-navigation'
+      'results-availability results-availability results-availability .';
     row-gap: 3px;
   }
 

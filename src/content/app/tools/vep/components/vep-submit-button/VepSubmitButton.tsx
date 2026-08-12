@@ -50,7 +50,7 @@ const VepSubmitButton = (props: { className?: string }) => {
 
   const onSubmit = async () => {
     await dispatch(onVepFormSubmission());
-    navigate(urlFor.vepUnviewedSubmissionsList());
+    navigate(urlFor.vepSubmissionsList());
   };
 
   return (

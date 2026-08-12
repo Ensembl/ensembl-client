@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { memo } from 'react';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
-import BlastJobListsNavigation from '../blast-job-lists-navigation/BlastJobListsNavigation';
+import BlastJobListNavButton from '../blast-job-list-nav-button/BlastJobListNavButton';
 
 import styles from './BlastViewsNavigation.module.css';
 
@@ -34,15 +36,15 @@ const BlastViewsNavigation = () => {
       </div>
       <div className={styles.resultsAvailabilityNotice}>
         Results are only available for 7 days from submission. Submissions can
-        be rerun for 28 days.
+        be rerun for 28 days.
       </div>
       <div className={styles.rightColumn}>
         <div className={styles.wrapperRight}>
-          <BlastJobListsNavigation />
+          <BlastJobListNavButton />
         </div>
       </div>
     </div>
   );
 };
 
-export default BlastViewsNavigation;
+export default memo(BlastViewsNavigation);

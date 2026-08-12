@@ -251,9 +251,6 @@ export const structuralVariantsViewer = (params?: {
 
 export const blastForm = () => '/tools/blast';
 
-export const blastUnviewedSubmissions = () =>
-  '/tools/blast/unviewed-submissions';
-
 export const blastSubmissionsList = () => '/tools/blast/submissions';
 
 export const blastSubmission = (submissionId: string) =>
@@ -261,8 +258,7 @@ export const blastSubmission = (submissionId: string) =>
 
 export const vepForm = () => '/tools/vep';
 
-export const vepUnviewedSubmissionsList = () =>
-  '/tools/vep/unviewed-submissions';
+export const vepSpeciesSelector = () => '/tools/vep/genome-selector';
 
 export const vepSubmissionsList = () => '/tools/vep/submissions';
 

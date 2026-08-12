@@ -16,7 +16,7 @@
 
 import { useEffect } from 'react';
 
-import BetaIntroRapidRetirement from './beta-intro-rapid-retirement/BetaIntroRapidRetirement';
+import FirstVisitNotification from './first-visit-notification/FirstVisitNotification';
 
 import type { IncomingNotification } from '../hooks/useNotifications';
 
@@ -45,17 +45,9 @@ const Notification = (props: Props) => {
     props.onNotificationSeen(notification.id);
   });
 
-  const onNotificationDismissed = () => {
-    props.onNotificationDismissed(notification.id);
-    props.onClose();
-  };
-
   return (
     <div className={styles.container} data-nosnippet={true}>
-      <BetaIntroRapidRetirement
-        onClose={props.onClose}
-        onNotificationDismissed={onNotificationDismissed}
-      />
+      <FirstVisitNotification />
     </div>
   );
 };

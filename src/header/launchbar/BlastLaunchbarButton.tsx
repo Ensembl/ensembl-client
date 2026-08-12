@@ -18,7 +18,7 @@ import { useAppSelector } from 'src/store';
 
 import { isSuccessfulBlastSubmission } from 'src/content/app/tools/blast/utils/blastSubmisionTypeNarrowing';
 
-import { getUnviewedBlastSubmissions } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
+import { getBlastSubmissionsList } from 'src/content/app/tools/blast/state/blast-results/blastResultsSelectors';
 
 import useLastVisitedPath from './useLastVisitedPath';
 
@@ -28,22 +28,30 @@ import { BlastIcon } from 'src/shared/components/app-icon';
 const BLAST_APP_ROOT_PATH = '/tools/blast';
 
 const BlastLaunchbarButton = () => {
-  const unviewedSubmissions = useAppSelector(getUnviewedBlastSubmissions);
+  const blastSubmissions = useAppSelector(getBlastSubmissionsList);
   const blastAppPath = useLastVisitedPath({ rootPath: BLAST_APP_ROOT_PATH });
 
   const getNotification = () => {
-    if (unviewedSubmissions.length > 0) {
-      const isAnyJobRunning =
-        unviewedSubmissions.filter(
-          (submission) =>
-            isSuccessfulBlastSubmission(submission) &&
-            submission.results.some((job) => job.status === 'RUNNING')
-        ).length > 0;
+    const isAnyJobRunning = blastSubmissions.some((submission) => {
+      return (
+        isSuccessfulBlastSubmission(submission) &&
+        submission.results.some((job) => job.status === 'RUNNING')
+      );
+    });
 
-      return isAnyJobRunning ? 'red' : 'green';
-    } else {
-      return null;
+    if (isAnyJobRunning) {
+      return 'red';
     }
+
+    const hasUnviewedSubmissions = blastSubmissions.some((submission) => {
+      return isSuccessfulBlastSubmission(submission) && !submission.seen;
+    });
+
+    if (hasUnviewedSubmissions) {
+      return 'green';
+    }
+
+    return null;
   };
 
   return (

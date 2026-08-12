@@ -30,12 +30,12 @@ const EnsemblReleaseVersion = () => {
   );
 
   if (!integratedRelease) {
-    return <div className={styles.release}>Beta</div>;
+    return null;
   }
 
   return (
     <div className={styles.release}>
-      <span className={styles.light}>Beta Release </span>
+      <span className={styles.light}>Release </span>
       {integratedRelease.name}
     </div>
   );

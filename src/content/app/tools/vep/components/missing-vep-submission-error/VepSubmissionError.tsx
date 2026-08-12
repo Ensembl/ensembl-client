@@ -17,10 +17,7 @@
 import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import {
-  getViewedVepSubmissions,
-  getUnviewedVepSubmissions
-} from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
+import { getVepSubmissionsList } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
 import AlertButton from 'src/shared/components/alert-button/AlertButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
@@ -34,16 +31,12 @@ type Props = {
 };
 
 const VepSubmissionError = (props: Props) => {
-  const viewedVepSubmissions = useAppSelector(getViewedVepSubmissions);
-  const unviewedVepSubmissions = useAppSelector(getUnviewedVepSubmissions);
-  const hasUnviewedVepSubmissions = unviewedVepSubmissions.length > 0;
-  const hasViewedVepSubmissions = viewedVepSubmissions.length > 0;
+  const vepSubmissions = useAppSelector(getVepSubmissionsList);
+  const hasVepSubmissions = vepSubmissions.length > 0;
 
   let buttonLink: string;
 
-  if (hasUnviewedVepSubmissions) {
-    buttonLink = urlFor.vepUnviewedSubmissionsList();
-  } else if (hasViewedVepSubmissions) {
+  if (hasVepSubmissions) {
     buttonLink = urlFor.vepSubmissionsList();
   } else {
     buttonLink = urlFor.vepForm();
@@ -87,9 +80,7 @@ const MissingSubmissionMessage = () => {
       <p className={styles.errorText}>
         There are no results for this VEP submission
       </p>
-      <p>
-        Any valid submissions can be found in your Unviewed jobs and Jobs lists
-      </p>
+      <p>Any valid submissions can be found in your Jobs list</p>
     </>
   );
 };

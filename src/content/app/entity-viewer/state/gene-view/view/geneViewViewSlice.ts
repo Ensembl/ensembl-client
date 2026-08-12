@@ -31,15 +31,7 @@ import type { RootState } from 'src/store';
 export enum View {
   TRANSCRIPTS = 'transcripts',
   PROTEIN = 'protein',
-  VARIANTS = 'variants',
-  PHENOTYPES = 'phenotypes',
-  GENE_EXPRESSION = 'gene_expression',
-  GENE_ONTOLOGY = 'gene_ontology',
-  GENE_PATHWAYS = 'gene_pathways',
-  HOMOLOGY = 'homology',
-  GENE_TREES = 'gene_trees',
-  GENE_FAMILIES = 'gene_families',
-  GENE_PANELS = 'gene_panels'
+  HOMOLOGY = 'homology'
 }
 
 export enum GeneViewTabName {
@@ -49,19 +41,11 @@ export enum GeneViewTabName {
 }
 
 export enum GeneFunctionTabName {
-  PROTEINS = 'Proteins',
-  VARIANTS = 'Variants',
-  PHENOTYPES = 'Phenotypes',
-  GENE_EXPRESSION = 'Gene expression',
-  GENE_ONTOLOGY = 'Gene ontology',
-  GENE_PATHWAYS = 'Gene pathways'
+  PROTEINS = 'Proteins'
 }
 
 export enum GeneRelationshipsTabName {
-  HOMOLOGY = 'Homology',
-  GENE_TREES = 'Gene trees',
-  GENE_FAMILIES = 'Gene families',
-  GENE_PANELS = 'Gene panels'
+  HOMOLOGY = 'Homology'
 }
 
 export type GeneViewTabData = {
@@ -82,45 +66,10 @@ GeneViewTabMap.set(View.PROTEIN, {
   primaryTab: GeneViewTabName.GENE_FUNCTION,
   secondaryTab: GeneFunctionTabName.PROTEINS
 });
-GeneViewTabMap.set(View.VARIANTS, {
-  view: View.VARIANTS,
-  primaryTab: GeneViewTabName.GENE_FUNCTION,
-  secondaryTab: GeneFunctionTabName.VARIANTS
-});
-GeneViewTabMap.set(View.PHENOTYPES, {
-  view: View.PHENOTYPES,
-  primaryTab: GeneViewTabName.GENE_FUNCTION,
-  secondaryTab: GeneFunctionTabName.PHENOTYPES
-});
-GeneViewTabMap.set(View.GENE_EXPRESSION, {
-  view: View.GENE_EXPRESSION,
-  primaryTab: GeneViewTabName.GENE_FUNCTION,
-  secondaryTab: GeneFunctionTabName.GENE_EXPRESSION
-});
-GeneViewTabMap.set(View.GENE_ONTOLOGY, {
-  view: View.GENE_ONTOLOGY,
-  primaryTab: GeneViewTabName.GENE_FUNCTION,
-  secondaryTab: GeneFunctionTabName.GENE_ONTOLOGY
-});
-GeneViewTabMap.set(View.GENE_PATHWAYS, {
-  view: View.GENE_PATHWAYS,
-  primaryTab: GeneViewTabName.GENE_FUNCTION,
-  secondaryTab: GeneFunctionTabName.GENE_PATHWAYS
-});
 GeneViewTabMap.set(View.HOMOLOGY, {
   view: View.HOMOLOGY,
   primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
   secondaryTab: GeneRelationshipsTabName.HOMOLOGY
-});
-GeneViewTabMap.set(View.GENE_FAMILIES, {
-  view: View.GENE_FAMILIES,
-  primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
-  secondaryTab: GeneRelationshipsTabName.GENE_FAMILIES
-});
-GeneViewTabMap.set(View.GENE_PANELS, {
-  view: View.GENE_PANELS,
-  primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
-  secondaryTab: GeneRelationshipsTabName.GENE_PANELS
 });
 
 export type SelectedTabViews = Record<
@@ -160,8 +109,8 @@ export const updateView =
       primaryTabName === GeneViewTabName.GENE_FUNCTION
         ? 'geneFunctionTab'
         : primaryTabName === GeneViewTabName.GENE_RELATIONSHIPS
-        ? 'geneRelationshipsTab'
-        : null;
+          ? 'geneRelationshipsTab'
+          : null;
     const tabView: {
       selectedTabViews?: Record<
         'geneFunctionTab' | 'geneRelationshipsTab',

@@ -182,6 +182,32 @@ export const setSortingRule =
     });
   };
 
+export const expandTranscriptInfo =
+  (transcriptId: string): ThunkAction<void, RootState, void, Action<string>> =>
+  (dispatch, getState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
+
+    const expandedIds = new Set<string>(getExpandedTranscriptIds(state));
+    if (expandedIds.has(transcriptId)) {
+      return;
+    } else {
+      expandedIds.add(transcriptId);
+    }
+
+    dispatch(
+      transcriptsSlice.actions.updateExpandedTranscripts({
+        activeGenomeId,
+        activeEntityId,
+        expandedIds: [...expandedIds.values()]
+      })
+    );
+  };
+
 export const toggleTranscriptInfo =
   (transcriptId: string): ThunkAction<void, RootState, void, Action<string>> =>
   (dispatch, getState) => {

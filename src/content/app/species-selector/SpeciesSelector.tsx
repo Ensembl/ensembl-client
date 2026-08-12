@@ -26,27 +26,31 @@ import SpeciesManager from './views/species-manager/SpeciesManager';
 import styles from './SpeciesSelector.module.css';
 
 const SpeciesSelector = () => {
-  const appBar = (
+  return (
+    <div className={styles.grid}>
+      <AppBar />
+      <MainContent />
+    </div>
+  );
+};
+
+const AppBar = () => {
+  return (
     <Routes>
       <Route index element={<SpeciesSelectorAppBar />} />
       <Route path="/search" element={<SpeciesSearchResultsAppBar />} />
       <Route path="/manage" element={<SpeciesManagerAppBar />} />
     </Routes>
   );
+};
 
-  const body = (
+const MainContent = () => {
+  return (
     <Routes>
       <Route index element={<SpeciesSelectorMainView />} />
       <Route path="/search" element={<SpeciesSelectorResultsView />} />
       <Route path="/manage" element={<SpeciesManager />} />
     </Routes>
-  );
-
-  return (
-    <div className={styles.grid}>
-      {appBar}
-      {body}
-    </div>
   );
 };
 

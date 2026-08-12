@@ -14,51 +14,40 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
-import classNamesMerger from 'classnames';
-
-import CloseButton from 'src/shared/components/close-button/CloseButton';
+import type { ReactNode } from 'react';
+import classNames from 'classnames';
 
 import styles from './Panel.module.css';
 
-export type PanelProps = {
-  header?: ReactNode;
+export const Panel = ({
+  children,
+  className
+}: {
   children: ReactNode;
-  classNames?: {
-    panel?: string;
-    header?: string;
-    body?: string;
-    closeButton?: string;
-  };
-  onClose?: () => void;
+  className?: string;
+}) => {
+  const componentClasses = classNames(styles.panel, className);
+  return <div className={componentClasses}>{children}</div>;
 };
 
-const Panel = (props: PanelProps) => {
-  const { header, onClose, classNames } = props;
-
-  const panelClassNames = classNames
-    ? classNamesMerger(styles.panel, classNames.panel)
-    : styles.panel;
-  const headerClassNames = classNames
-    ? classNamesMerger(styles.header, classNames.header)
-    : styles.header;
-  const bodyClassNames = classNames
-    ? classNamesMerger(styles.body, classNames.body)
-    : styles.body;
-
-  const closeButtonClassNames = classNames
-    ? classNamesMerger(styles.closeButton, classNames.closeButton)
-    : styles.closeButton;
-
-  return (
-    <div className={panelClassNames}>
-      {onClose && (
-        <CloseButton className={closeButtonClassNames} onClick={onClose} />
-      )}
-      {props.header && <div className={headerClassNames}>{header}</div>}
-      <div className={bodyClassNames}>{props.children}</div>
-    </div>
-  );
+export const PanelHead = ({
+  children,
+  className
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
+  const componentClasses = classNames(styles.header, className);
+  return <div className={componentClasses}>{children}</div>;
 };
 
-export default Panel;
+export const PanelBody = ({
+  children,
+  className
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
+  const componentClasses = classNames(styles.body, className);
+  return <div className={componentClasses}>{children}</div>;
+};
