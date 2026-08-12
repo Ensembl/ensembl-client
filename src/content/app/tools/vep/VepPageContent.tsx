@@ -19,6 +19,7 @@ import { Route, Routes } from 'react-router';
 import VepAppBar from './components/vep-app-bar/VepAppBar';
 import VepTopBar from './components/vep-top-bar/VepTopBar';
 import VepForm from './views/vep-form/VepForm';
+import VepSpeciesSelector from './views/vep-species-selector/VepSpeciesSelector';
 import VepSubmissions from './views/vep-submissions/VepSubmissions';
 import VepSubmissionResults from './views/vep-submission-results/VepSubmissionResults';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
@@ -26,7 +27,21 @@ import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 import styles from './VepPageContent.module.css';
 
 const VepPageContent = () => {
-  return <MainWrapper />;
+  return (
+    <Routes>
+      <Route path="genome-selector" element={<SpeciesSelectorWrapper />} />
+      <Route path="*" element={<MainWrapper />} />
+    </Routes>
+  );
+};
+
+const SpeciesSelectorWrapper = () => {
+  return (
+    <div className={styles.speciesSelectorGrid}>
+      <VepAppBar />
+      <VepSpeciesSelector />
+    </div>
+  );
 };
 
 const MainWrapper = () => {
