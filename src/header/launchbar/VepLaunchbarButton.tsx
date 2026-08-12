@@ -37,7 +37,6 @@ const VepLaunchbarButton = () => {
 
   const notification = getNotification(unviewedVepSubmissions);
 
-  // TODO: add the code to enable notifications after submissions have been enabled
   return (
     <LaunchbarButtonWithNotification
       path={lastVisitedPath}

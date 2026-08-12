@@ -20,7 +20,7 @@ import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/T
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import EnsemblVepLogo from './EnsemblVepLogo';
 import EnsemblVepVersion from './EnsemblVepVersion';
-import VepTopBarNavButtons from './VepTopBarNavButtons';
+import VepTopBarNavButtons from './VepTopBarNavButton';
 
 import styles from './VepTopBar.module.css';
 

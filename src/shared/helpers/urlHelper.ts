@@ -260,9 +260,6 @@ export const vepForm = () => '/tools/vep';
 
 export const vepSpeciesSelector = () => '/tools/vep/genome-selector';
 
-export const vepUnviewedSubmissionsList = () =>
-  '/tools/vep/unviewed-submissions';
-
 export const vepSubmissionsList = () => '/tools/vep/submissions';
 
 export const vepResults = ({ submissionId }: { submissionId: string }) =>

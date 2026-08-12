@@ -18,34 +18,19 @@ import { useAppSelector } from 'src/store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import {
-  getUnviewedVepSubmissions,
-  getViewedVepSubmissions
-} from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
+import { getVepSubmissionsList } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 
 import styles from './VepTopBar.module.css';
 
 const VepTopBarNavButtons = () => {
-  const unviewedVepSubmissions = useAppSelector(getUnviewedVepSubmissions);
-  const viewedVepSubmissions = useAppSelector(getViewedVepSubmissions);
-
-  const hasUnviewedVepSubmissions = unviewedVepSubmissions.length > 0;
-  const hasViewedVepSubmissions = viewedVepSubmissions.length > 0;
+  const vepSubmissions = useAppSelector(getVepSubmissionsList);
+  const hasSubmissions = vepSubmissions.length > 0;
 
   return (
-    <div className={styles.jobListsNavigation}>
-      <ButtonLink
-        to={urlFor.vepUnviewedSubmissionsList()}
-        isDisabled={!hasUnviewedVepSubmissions}
-      >
-        Unviewed jobs
-      </ButtonLink>
-      <ButtonLink
-        to={urlFor.vepSubmissionsList()}
-        isDisabled={!hasViewedVepSubmissions}
-      >
+    <div className={styles.jobListNavigation}>
+      <ButtonLink to={urlFor.vepSubmissionsList()} isDisabled={!hasSubmissions}>
         Jobs list
       </ButtonLink>
     </div>

@@ -32,7 +32,7 @@ import SimpleSelect, {
 import VepSubmitButton from '../vep-submit-button/VepSubmitButton';
 import EnsemblVepLogo from './EnsemblVepLogo';
 import EnsemblVepVersion from './EnsemblVepVersion';
-import VepTopBarNavButtons from './VepTopBarNavButtons';
+import VepTopBarNavButtons from './VepTopBarNavButton';
 
 import styles from './VepTopBar.module.css';
 
