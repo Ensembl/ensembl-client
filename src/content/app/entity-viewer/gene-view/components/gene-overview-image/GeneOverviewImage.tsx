@@ -15,6 +15,7 @@
  */
 
 import { scaleLinear } from 'd3';
+import type { CSSProperties } from 'react';
 import type { Pick3 } from 'ts-multipick';
 
 import {
@@ -80,6 +81,7 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
 
 export const GeneImage = (props: GeneOverviewImageProps) => {
   const { start: geneStart, end: geneEnd } = getFeatureCoordinates(props.gene);
+  const transcriptsCount = props.gene.transcripts.length || 1; // not that there can be zero transcripts, but why not play it safe
 
   // FIXME: use the "length" property of the gene when it is added to payload;
   // (it will help with drawing genes of circular chromosomes)
@@ -111,11 +113,14 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
 
   const viewBox = `0 0 ${GENE_IMAGE_WIDTH} ${GENE_IMAGE_HEIGHT}`;
 
+  const transcriptOpacity = Math.max(Math.min(1, 1.5 / transcriptsCount), 0.3);
+
   return (
     <svg
       className={styles.containerSVG}
       viewBox={viewBox}
       width={GENE_IMAGE_WIDTH}
+      style={{ '--transcript-opacity': transcriptOpacity } as CSSProperties}
     >
       {renderedTranscripts}
     </svg>
