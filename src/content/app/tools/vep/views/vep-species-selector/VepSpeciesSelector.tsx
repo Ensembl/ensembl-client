@@ -20,6 +20,9 @@ import {
   useCallback,
   type InputEvent
 } from 'react';
+import { useNavigate } from 'react-router';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { useAppDispatch } from 'src/store';
 
@@ -45,6 +48,7 @@ import {
   TableSection
 } from 'src/content/app/species-selector/components/species-search-results-table-wrapper/SpeciesSearchResultsTableWrapper';
 import SpeciesSearchResultsTable from 'src/content/app/species-selector/components/species-search-results-table/SpeciesSearchResultsTable';
+import ModalView from 'src/shared/components/modal-view/ModalView';
 import { CircleLoader } from 'src/shared/components/loader';
 import PaginationWithPerPage from 'src/shared/components/pagination/PaginationWithPerPage';
 
@@ -60,12 +64,7 @@ import styles from './VepSpeciesSelector.module.css';
  * - The view might have a list of popular species if/when we figure out where to get it from
  */
 
-type Props = {
-  /** Close the selector — the caller collapses the panel it is shown in. */
-  onClose: () => void;
-};
-
-const VepSpeciesSelector = ({ onClose }: Props) => {
+const VepSpeciesSelector = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResultsPage, setSearchResultsPage] = useState(1);
   const [searchResultsPerPage, setSearchResultsPerPage] = useState(
@@ -73,6 +72,7 @@ const VepSpeciesSelector = ({ onClose }: Props) => {
   );
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<string | null>(null);
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const { data, isLoading, isError } = useGenomesQuery(
@@ -117,6 +117,10 @@ const VepSpeciesSelector = ({ onClose }: Props) => {
     setSearchResultsPerPage(perPage);
   };
 
+  const onClose = () => {
+    navigate(urlFor.vepForm(), { replace: true });
+  };
+
   const sortRule = getSortRule(sortBy, sortOrder);
 
   const onSortRuleChange = useCallback(
@@ -133,44 +137,46 @@ const VepSpeciesSelector = ({ onClose }: Props) => {
   );
 
   return (
-    <div className={styles.grid}>
-      <TopSection
-        isLoading={isLoading}
-        isError={isError}
-        searchResults={data}
-        canAddGenomes={stagedGenomes.length > 0}
-        onSearchSubmit={onSearchSubmit}
-        onGenomesAdd={onSpeciesAdd}
-        onClose={onClose}
-      />
+    <ModalView onClose={onClose}>
+      <div className={styles.grid}>
+        <TopSection
+          isLoading={isLoading}
+          isError={isError}
+          searchResults={data}
+          canAddGenomes={stagedGenomes.length > 0}
+          onSearchSubmit={onSearchSubmit}
+          onGenomesAdd={onSpeciesAdd}
+          onClose={onClose}
+        />
 
-      {data?.matches.length ? (
-        <SpeciesSearchResultsTableWrapper>
-          <TableControlsSection>
-            <PaginationWithPerPage
-              currentPageNumber={searchResultsPage}
-              lastPageNumber={getSpeciesSearchLastPageNumber({
-                data,
-                perPage: searchResultsPerPage
-              })}
-              onPageChange={onPageNumberChange}
-              perPageValue={searchResultsPerPage}
-              onPerPageChange={onResultsPerPageChange}
-            />
-          </TableControlsSection>
-          <TableSection>
-            <SpeciesSearchResultsTable
-              results={deferredGenomes}
-              maxStagedGenomesNumber={1}
-              sortRule={sortRule}
-              onSortRuleChange={onSortRuleChange}
-              onTableExpandToggle={onTableExpandToggle}
-              onSpeciesSelectToggle={onGenomeStageToggle}
-            />
-          </TableSection>
-        </SpeciesSearchResultsTableWrapper>
-      ) : null}
-    </div>
+        {data?.matches.length ? (
+          <SpeciesSearchResultsTableWrapper>
+            <TableControlsSection>
+              <PaginationWithPerPage
+                currentPageNumber={searchResultsPage}
+                lastPageNumber={getSpeciesSearchLastPageNumber({
+                  data,
+                  perPage: searchResultsPerPage
+                })}
+                onPageChange={onPageNumberChange}
+                perPageValue={searchResultsPerPage}
+                onPerPageChange={onResultsPerPageChange}
+              />
+            </TableControlsSection>
+            <TableSection>
+              <SpeciesSearchResultsTable
+                results={deferredGenomes}
+                maxStagedGenomesNumber={1}
+                sortRule={sortRule}
+                onSortRuleChange={onSortRuleChange}
+                onTableExpandToggle={onTableExpandToggle}
+                onSpeciesSelectToggle={onGenomeStageToggle}
+              />
+            </TableSection>
+          </SpeciesSearchResultsTableWrapper>
+        ) : null}
+      </div>
+    </ModalView>
   );
 };
 
