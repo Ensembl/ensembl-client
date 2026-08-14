@@ -1,225 +1,32 @@
 .detail {
-  /* 32px at the sides, twice the vertical, to set the columns in from the edges
-     of the panel.
-
-     Horizontal padding here is not free: the sections are laid out in
-     multi-column, so every pixel of it is taken off the columns. This used to be
-     40px, and at 40px the IntAct interactions table was squeezed 11px below its
-     own min-content width, which is what made its text collide with the next
-     column — that is why it was cut to 16px.
-
-     32px is safe now for a reason that has since changed underneath that
-     history: `column-width` went from 320px to 400px, so the narrowest column
-     the panel produces is ~423px against the ~355px IntAct needs. The old
-     failure needed a narrow column *and* wide padding; the columns are no
-     longer narrow. Measured across viewports after this change, the minimum
-     column width is still comfortably clear of that floor.
-
-     The full-width sections beneath the columns (Phenotypes) are a sibling
-     inside this same box, so they take these margins from here and stay aligned
-     with the columns by construction — there is deliberately no second padding
-     rule to keep in step with this one. */
+  --annotation-indent-step: 10px;
   padding: 16px 32px;
   background-color: var(--color-light-grey);
-
-  /* Do not lay this panel out while it is scrolled out of view.
-
-     "Expand all" opens a panel per row, and the default page size is 100 — so
-     resizing the window asked the browser to re-balance a hundred multi-column
-     layouts per frame, ninety-odd of them off screen. Multicol balances column
-     heights iteratively, which makes it one of the more expensive layout modes,
-     and that is what made dragging the window edge feel heavy.
-
-     `auto` on the intrinsic size means the browser remembers each panel's real
-     height once it has been rendered and uses that as the placeholder
-     afterwards; the 400px is only the first guess, for a panel that has never
-     been on screen.
-
-     Safe here because everything in this panel that escapes its bounds is
-     portalled to the body — the help tooltips (QuestionButton) and the "View
-     in" popup both are — so the paint containment this implies clips nothing.
-     The one component that renders a box inline (Toolbox, via VepResultsAllele)
-     sits in the table row, outside this panel. */
-  content-visibility: auto;
-
-  /* The panel's width must never feed back into the results table.
-
-     This panel sits in a `td colSpan` of that table, which is
-     `table-layout: auto`, so by default the panel's own contents help size the
-     table's columns — expanding a row squeezed Variant / Ref / Location / Alt
-     allele narrower to give the panel room.
-
-     The skipping above turned that into a ratchet. A skipped panel is sized
-     from its *last-remembered* width, so scrolling through "Expand all" laid
-     each panel out for the first time, recorded whatever width it got, and fed
-     that back as the cell's intrinsic width — widening the spanned columns,
-     which made the next panel render wider still. Measured on a 10-row page at
-     1920px, the four spanned columns went 348/310/372/150 before scrolling to
-     383/342/410/165 after, and stayed there on scrolling back up, because a
-     remembered size only ever grows.
-
-     Inline-size containment does NOT break that loop: the remembered size *is*
-     the size containment substitutes, so the panel keeps quoting its own
-     inflated width back at the table.
-
-     `width: 0` is what breaks it. Percentages are ignored when a table works
-     out its intrinsic column widths, so `min-width: 100%` contributes nothing
-     there and the cell asks for ~0 — the columns are sized by the result rows
-     alone. At layout time the percentage does resolve, so the panel still
-     fills the cell edge to edge. */
-  width: 0;
-  min-width: 100%;
-
-  /* Keeps the placeholder height of a skipped panel honest (`auto` = remember
-     the real height once rendered; 400px is only the first guess). The inline
-     axis is handled by the `width` pair above, so no intrinsic width is
-     asserted here — the `contain-intrinsic-size` shorthand would assert one. */
+  content-visibility: auto; /* to reduce browser work and help with performance */
   contain-intrinsic-height: auto 400px;
-
-  /* Horizontal step each sub-option heading (and its content) is indented by,
-     per level of nesting. Compounds through nested option blocks. */
-  --annotation-indent-step: 10px;
 }
 
-/* The annotation sections are laid out as balanced text columns rather than a
-   grid: their heights vary a lot (e.g. Variant Impact Predictions is tall,
-   Conservation & constraint short), and a grid sizes each row to its tallest
-   item, leaving big empty gaps next to short sections. Multi-column packing
-   avoids that. Kept separate from .detail so the interactive toolbar above can
-   sit in normal flow (an interactive control inside a multicol can lose clicks). */
 .sections {
-  /* A *minimum* column width: the browser packs as many as fit, so a wider
-     viewport gives NARROWER columns, and raising this number widens them by
-     fitting fewer.
-
-     400px, up from 320px. The OpenTargets GWAS table needs ~453px to show its
-     five columns without scrolling, and at 320px it never got it — measured
-     across viewports, 320px produced 327-423px columns and the table scrolled
-     at every one of them. Going far enough to always fit it (460px+) is worse
-     than the problem: it drops to two columns on anything under ~1400px, and a
-     600px-wide column stretches every short label/value row across a wide
-     empty gap.
-
-     384px, down from 400px. The 400px existed for the OpenTargets GWAS table,
-     which needed ~453px to show its five columns without scrolling; that table
-     now lives in the full-width Phenotypes section below, so the constraint
-     that set this number no longer applies to it.
-
-     What sets it now is the two-column threshold. The panel's own width is
-     capped by the results container (1800px less the gutter), which leaves the
-     sections box at most ~1050px — and on a 1512px-wide screen, ~825px. Two
-     columns need `2 * this + the gap`, so at 400px with a 32px gap the panel
-     wanted 832px and fell to a single column on exactly the commonest laptop
-     width. 384px asks for 800px and leaves ~25px of slack there.
-
-     No table sets a floor here any more. IntAct's interactions table used to —
-     it was the ~355px this comment quoted for a long time — but its display has
-     since been reconfigured: four of its six columns are `sub_option`s that
-     default to off, so it draws two columns unless the reader asks for more.
-     Measured in the panel: ~125px min-content by default, ~272px with every
-     sub-option this job could fill switched on. Both far under a column.
-
-     So 384px is set by the two-column threshold alone, and could go lower if
-     something wanted it to. */
   column-width: 384px;
-
-  /* 32px, twice what it was, to separate the columns more clearly.
-
-     This costs nothing in column width: the browser packs `column-width` first
-     and the gap comes out of what is left over, so a wider gap only ever moves
-     the point at which another column fits — it never narrows the columns
-     below 400px.
-
-     ★ It does break a rhythm that used to hold: the vertical gap between
-     stacked category blocks was deliberately the same measure as this one
-     (see `.categoryBlock`), so groups sat apart by the same distance whether
-     they were side by side or above one another. That is now 16px vertical
-     against 32px horizontal, on purpose — the columns needed the separation
-     and the vertical spacing did not. */
-  column-gap: 32px;
-
-  /* One cap for every panel, rather than one column per section.
-
-     That count made sense while a section could not break: N sections could
-     never fill more than N columns. Sections fragment now, so it only made
-     panels inconsistent — a panel of three sections was capped at three
-     columns' worth and a panel of two at two, with no slack at all in either.
-     Any padding or rounding dropped the three-column cap to two columns, which
-     then stretched to ~600px each. So the three-section panels drew wide
-     columns, the two-section ones drew 400px columns, and neither ever drew
-     three.
-
-     Fixed at three columns' worth. Every panel now answers the viewport the
-     same way: the same width gives the same count and the same column width,
-     whatever a panel happens to contain. `column-width` still decides how many
-     actually fit, and fragmentation fills them.
-
-     Stated as the arithmetic rather than as the number it comes to, so it
-     follows the gap and column width above instead of having to be
-     recalculated by hand when either changes — which is exactly what it did
-     when the gap doubled.
-
-     ★ Both this cap and the three-column count are, at present, unreachable:
-     the results container holds the sections box to ~1050px (1800px token less
-     the gutter, then less the table's leading columns), and three columns want
-     1216px. Three columns would need `column-width` at or below ~328px, or the
-     container about 170px wider. Nothing in the panel's content forbids the
-     328px — see the note on `column-width` — so this is purely a question of
-     how narrow a column is worth reading. Kept because it costs nothing and
-     becomes correct the moment the container widens. */
+  column-gap: var(--standard-gutter);
   column-count: 3;
   max-width: calc(3 * 384px + 2 * 32px);
 }
 
-/* Sections that run the panel's full width, beneath the columned ones. No width
-   of its own: `.detail`'s padding already sets the margins, and the point is to
-   give the widest tables everything that is left.
-
-   The gap matches the one between the columned groups. A group's own
-   `margin-bottom` sits *inside* the multicol box and does not extend it, so at
-   the old 4px the full-width section sat visibly tighter to the columns above
-   than any two groups sat to each other — the one place the rhythm broke, and
-   it has to be restated here because it is not inherited. */
 .fullWidthSections {
   margin-top: 16px;
 }
 
-/* ...but only the *tables* want that width. A label/value row is `space-between`,
-   so across 1500px it strands its value at the far edge with a metre of nothing
-   in between — the same trap `.sections`' max-width exists to avoid. Capping the
-   rows keeps them reading as pairs while the tables beside them run wide.
-
-   A stacked row is exempt: its value is a grid of its own, not a pair, and
-   capping it squeezed ClinVar's classification lines into a quarter of the
-   panel while the space beside them went unused. */
 .fullWidthSections .row:not(.stackedRow) {
   max-width: 400px;
 }
 
-/* The panel's own controls, on one full-width row above the annotation sections
-   and outside the multicol: "Show all" at the left, the collapse cross at the
-   right. */
 .detailToolbar {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
 }
 
-/* Label before the box, against CheckboxWithLabel's own order.
-
-   That component is a two-column `inline-grid` holding the input and then the
-   label, so the pair is reversed by re-ordering the grid items rather than by
-   forking the component: grid places auto-positioned items in order-modified
-   document order, so `order` on the label alone moves it in front. The 12px
-   the label carried on its inner side moves with it.
-
-   Local to this panel deliberately. Every other checkbox in the app reads
-   box-then-label, and this row is the odd one out because it is a control
-   pinned to a corner rather than an item in a list of options.
-
-   These rules are unlayered and the component's are in `@layer components`, so
-   they win on the layer alone — do not add specificity here expecting it to be
-   what is doing the work. */
 .showAllToggle {
   grid-template-columns: auto auto;
 }
@@ -230,34 +37,14 @@
   padding-right: 12px;
 }
 
-/* Pushed to the right by the margin rather than by `space-between` on the row
-   or by an empty spacer: the checkbox beside it is conditional, and both of
-   those would walk the cross back to the left when it is the only control. */
 .toolbarClose {
   margin-left: auto;
 }
 
-/* The indent rule for this panel: the wrapper form of the step, applied by
-   `Indented` in annotationRows.tsx to everything that sits beneath a heading.
-   Nesting compounds because each level wraps again.
-
-   The step itself is `--annotation-indent-step`, declared once at the top and
-   read directly by the two rules that cannot take a wrapper — a stacked row's
-   value and an expanded submitter line, where an extra element would break the
-   grid it sits in. Those apply the same step, not another one.
-
-   Deliberately separate from the layout classes below. When these two were one
-   class, the only way to indent a context that needed a different gap was to
-   copy the padding into a second class — which is how the category headings
-   came to be the one kind of heading that did not indent its content. */
 .indented {
   padding-left: var(--annotation-indent-step);
 }
 
-/* The units a break must not fall inside: an option with its values, a category
-   with its options, a label/value row, and any table. A break between them is
-   fine — that is the point — but inside one it separates a value from what
-   names it. */
 .optionBlock,
 .categoryBlock,
 .row,
@@ -266,25 +53,13 @@ table {
   break-inside: avoid;
 }
 
-/* One category (Locations / Missense / …) is the unit the panel is spaced and
-   broken by. It was briefly drawn as a white card; the boxes are gone, but the
-   spacing they established stays — the separation now comes from the gap rather
-   than an edge. See the `.section` note below for why the *category* is that
-   unit rather than the panel. */
 .categoryBlock {
   display: flex;
   flex-direction: column;
-
-  /* Between the heading and its first option. */
   gap: 4px;
-
-  /* The gap between categories. This used to be the multicol `column-gap`
-     restated, so stacked groups and side-by-side ones sat the same distance
-     apart; the column gap has since doubled and this deliberately did not
-     follow it, so the two are now independent measures. No `margin-top` as
-     well, or the two would double up. */
   margin-bottom: 16px;
 }
+
 .categoryBlock:last-child {
   margin-bottom: 0;
 }
@@ -292,34 +67,16 @@ table {
 .categoryLabel {
   font-weight: var(--font-weight-bold);
   color: var(--color-dark-grey);
-
-  /* A category groups options within a section. */
   font-size: 14px;
 }
 
-/* A category's options. Same layout as `.sectionBody`, which is what held them
-   before they were grouped, so grouping them changes their indent and nothing
-   about their spacing. */
+
 .categoryChildren {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-/* Everything that stacks its contents one per line, at the panel's line gap:
-
-   - `.optionBlock`   a multi-value option, its label above its values (Dosage
-                      sensitivity over pHaplo / pTriplo);
-   - `.optionChildren` an option heading's content — the indent comes from
-                      `.indented`, which `Indented` composes with this, so a
-                      nested block's indent compounds with depth;
-   - `.stackedValue`  a row whose value is several lines, one per ClinVar
-                      classification type, under the single label;
-   - `.cellItems`     a table cell holding several values — a condition's
-                      classifications, or the RCV records covering it.
-
-   Four different things, but one rule: each had its own identical copy, and a
-   change to the gap had to find all four. */
 .optionBlock,
 .optionChildren,
 .stackedValue,
@@ -332,16 +89,9 @@ table {
 .optionLabel {
   font-weight: var(--font-weight-bold);
   color: var(--color-dark-grey);
-
-  /* The top-level option heading. Only level 0 uses this class; deeper
-     sub-options keep the 10px body size. */
   font-size: 12px;
 }
 
-/* Sub-option heading weights step down with nesting depth (see OptionBlock's
-   `level`): a top-level option is bold (.optionLabel), an intermediate
-   sub-option semi-bold, a bottom-level one normal — so nested sections read as
-   subordinate to their option instead of as sibling sections. */
 .optionLabelIntermediate {
   font-weight: var(--font-weight-semibold);
   color: var(--color-dark-grey);
@@ -352,55 +102,15 @@ table {
   color: var(--color-dark-grey);
 }
 
-/* The annotation groups were briefly drawn as white cards on the detail's grey.
-   The boxes are gone — separation is a gap and a heading again — but what the
-   cards established stays, because it was never really about the borders:
 
-   ★ **the category, not the panel, is the unit the panel is spaced and broken
-   by.** Multicol preserves order, so treating a panel as one indivisible unit
-   makes the only legal split of `[short, short, TALL, short]` put both short
-   panels in column one and leave it half empty — which is what a tall Genes &
-   transcripts did. Breaking between categories, where a reader would break it
-   anyway, is what balances the columns. Measured on a Show-all panel: column
-   fill 942/805 as whole panels, 641/688 by category.
-
-   So `.section` keeps no `break-inside` of its own and each `.categoryBlock`
-   stays unbreakable (see the group near the top of this file), and the spacing
-   between categories is the 16px below. */
 .section {
   display: flex;
   flex-direction: column;
   gap: 6px;
-
   break-inside: auto;
   margin-bottom: 16px;
 }
 
-/* A heading belongs with what it introduces. Without this a break can land
-   immediately after one, stranding it at the foot of a column — which is the
-   one thing that reads worse than the empty space this whole change is for.
-
-   Only the section heading needs saying. Every option label sits inside an
-   `.optionBlock` or a `.row`, and both already refuse to break internally, so
-   no break can land after one regardless — and where a label ends its block,
-   `break-after: avoid` would wrongly glue it to the *next* option instead.
-
-   Keeping it was not merely redundant, it cost the second column: Chrome's
-   balancer gives up and returns everything to one column once the content
-   carries more unbreakable constraints than it can satisfy at its first
-   guessed height. Measured over the expanded panels of a dev-data run,
-   dropping it took panels using both columns from 1 of 12 to 6 of 12 and
-   their combined height from 2073px to 1589px, stranding nothing. */
-
-/* The section (panel) heading — top of the annotation hierarchy.
-   Lato 16px regular in Ensembl black. Lato and the black are both what `body`
-   already sets, so this only has to stop overriding them: the weight comes back
-   to 400 and the blue goes, leaving size and the rule beneath to mark the level.
-
-   Still the dominant heading despite the lighter weight — 16px regular reads
-   above the 14px bold of the categories under it. The rule doubles as the
-   separator between one section and the next, so it stays, as does the padding
-   beneath it. */
 .sectionTitle {
   break-after: avoid;
   font-size: 16px;
@@ -413,9 +123,6 @@ table {
   display: flex;
   flex-direction: column;
   gap: 4px;
-
-  /* Panel body size — value rows and the sub-option (intermediate/plain)
-     labels that inherit it. */
   font-size: 11px;
 }
 
@@ -423,9 +130,6 @@ table {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-
-  /* A single-value option row pairs a larger emphasised label with a body-size
-     value; align on the baseline so they sit level. */
   align-items: baseline;
 }
 
@@ -433,33 +137,18 @@ table {
   color: var(--color-dark-grey);
 }
 
-/* A row whose value is several columns of its own. Opposite a label there is
-   only a fraction of the panel's width, and ClinVar's classification wrapped
-   every one of its columns into it. The label takes a line, the value the full
-   width beneath. */
 .stackedRow {
   flex-direction: column;
   align-items: stretch;
-
-  /* The gap above belongs to the value, which sets its own (see below). */
   gap: 0;
-
-  /* ...and a line below, between the stack and whatever it introduces — the
-     germline classification sits directly above the germline table. */
   margin-bottom: 1.4em;
 }
 
-/* Half a line between the label and the stack — enough to read as its own
-   thing, where a full one left them looking unrelated — plus the panel's own
-   indent step, the same one every heading gives its content. */
 .stackedRowValue {
   margin-top: 0.7em;
   padding-left: var(--annotation-indent-step);
 }
 
-/* A stack with no label of its own — ClinVar's somatic classifications, which
-   sit directly above the table they describe. It takes its space above from the
-   block rather than from a label; below, from `.stackedRow` as any stack does. */
 .standaloneStack {
   margin-top: 1.4em;
 }
@@ -472,66 +161,26 @@ table {
   font-family: 'IBM Plex Mono', monospace;
 }
 
-/* A plain result — a number or a short string — carried in bold, so the answer
-   is what the eye lands on rather than the label naming it.
-
-   Only for values that are text and nothing else. A link brings its own colour,
-   a table and a stacked list bring their own structure, and a dash means "ran,
-   no result" — bolding any of those would emphasise the wrong thing. Which
-   values qualify is decided in `renderRows`, not here. */
 .strongValue {
   font-weight: var(--font-weight-bold);
 }
 
-/* IBM Plex Mono is loaded at 300/400/600 only (see fonts.css) — there is no 700
-   face, so the rule above would have the browser synthesise one. Semibold is
-   the weight the monospace family actually has, which is what the design token
-   means by "only for the monospace font". */
 .mono.strongValue {
   font-weight: var(--font-weight-semibold);
 }
 
-/* Space a headed sub-section from whatever sat above it. The phenotype tables
-   sit directly under their headings, so "Gene associated" and its table ran
-   straight into the "Variant associated" heading below with nothing between
-   them. Only between siblings, so the first section stays tight to its parent
-   heading. */
 .optionChildren > .optionBlock + .optionBlock {
   margin-top: 10px;
 }
 
-/* A table that draws no heading of its own still needs air above what it
-   follows: the heading used to be the separation, so dropping it (ClinVar's
-   conditions) would otherwise butt the header row straight onto the rows above.
-   Only when something precedes it — a table that opens a block needs no gap. */
 .optionChildren > * + .tableScroll {
   margin-top: 10px;
 }
 
-/* A small breakdown table (ClinVar's conflicting classifications, IntAct's
-   interactions): a header row of column labels over one row per list element.
-   Sized to content, not the full column width.
-
-   No indent of its own: every one of these sits inside a heading's
-   `.optionChildren`, which already applies a step. Adding another indented it
-   twice and cost width the columns need. */
 .breakdownTable {
   border-collapse: collapse;
 }
 
-/* Keeps a table inside its column.
-
-   These tables are sized to content, and the widest of them no longer fits: the
-   OpenTargets GWAS table wants five columns, one of them an unbreakable gene id
-   and another a p-value like `3.3247766e-28`, which is more than a 320px
-   multi-column column can give it. Widening `.sections` would buy it room at
-   the cost of one fewer column for every panel at every width, so the table
-   scrolls within its own box instead.
-
-   `min-width: 0` on the wrapper and its flex ancestors is what makes that work:
-   a flex item defaults to `min-width: auto`, so it refuses to shrink below its
-   content and the overflow escapes the column rather than being caught here —
-   which is why a `max-width` on the table alone did nothing. */
 .tableScroll {
   overflow-x: auto;
   max-width: 100%;
@@ -547,10 +196,6 @@ table {
   min-width: 0;
 }
 
-/* Numbers read right so a column of figures lines up on its digits; text reads
-   left. Applied to the header too, so it sits over the values rather than away
-   from them. Which columns are which is the spec's business — see
-   `alignmentClass` in displaySpecRenderer. */
 .breakdownTable th.alignRight,
 .breakdownTable td.alignRight {
   text-align: right;
@@ -559,11 +204,6 @@ table {
 .breakdownTable th,
 .breakdownTable td {
   text-align: left;
-
-  /* 8px between columns, not 16px. Table auto-layout was giving the Feature
-     Type column less than its longest word needed, so the text ran on into the
-     gutter and closed the gap to the next column to a few pixels — which read
-     as the columns colliding. The narrower gutter buys back the difference. */
   padding: 2px 8px 2px 0;
   vertical-align: top;
 }
@@ -573,32 +213,16 @@ table {
   padding-right: 0;
 }
 
-/* Keep a value on one line, so its column is never sized below it: a
-   classification type is a name, not a sentence, and a link's icon and its id
-   are one thing. A cell's `nowrap` and an item's meant exactly this same thing
-   and had each grown their own identical rule.
-
-   Never applied to a link whose text is prose — a condition name has to wrap. */
 .nowrap {
   white-space: nowrap;
 }
 
-/* A heading's further lines, each on its own (see ColumnNote). Regular weight:
-   they explain the column rather than name it, so they should not compete with
-   the label above them. */
 .columnNote {
   display: block;
   font-weight: var(--font-weight-normal);
-
-  /* Each line stays one line. That is the whole point of stating them: it also
-     sizes the column, since a table takes its width from its widest unbreakable
-     content. The table scrolls in its own box if a narrow panel cannot give it
-     that (see `.tableScroll`). */
   white-space: nowrap;
 }
 
-/* The quiet text a non-contributing submission is set in — the heading says so
-   in the very style it is describing. */
 .columnNoteMuted {
   color: var(--color-dark-grey);
   font-size: 10px;
@@ -609,24 +233,9 @@ table {
   color: var(--color-dark-grey);
   border-bottom: 1px solid var(--color-medium-light-grey);
   padding-bottom: 3px;
-
-  /* A long label should not be what widens its column.
-
-     Table auto-layout sizes a column to the widest thing in it, and that is
-     usually the data — but "Interaction Participants" is wider than any
-     accession beneath it, so the heading was setting the width and taking room
-     from the columns whose *values* needed it. Capping the heading's preferred
-     width makes it wrap instead, and the column falls back to the width its
-     content asks for.
-
-     In `ch` so it tracks the font rather than a pixel guess, and set at the
-     point where only a genuinely long multi-word label breaks: of every heading
-     in these tables the next longest is "Classification" at 14 characters,
-     which still sits on one line. */
   max-width: 16ch;
 }
 
-/* A row label with an inline help (?) icon, e.g. popEVE gap-frequency guidance. */
 .labelWithHelp {
   display: inline-flex;
   align-items: center;
@@ -638,7 +247,6 @@ table {
   flex: none;
 }
 
-/* A spec-driven `list` item: its cells laid out in a wrapping row. */
 .listItem {
   display: flex;
   flex-wrap: wrap;
@@ -647,25 +255,10 @@ table {
   overflow-wrap: anywhere;
 }
 
-/* A list element rendered as a stack of labelled field-rows (NearestExonJB).
-   Consecutive records get a little separation so multiple boundaries read
-   as distinct groups. */
 .listRecord:not(:last-child) {
   margin-bottom: 10px;
 }
 
-/* A linked value inside a list item (a GO term, an OpenTargets disease, a MaveDB
-   urn).
-
-   Deliberately NOT `inline-flex` + `nowrap`, which is what it was while the
-   linked value was always a short identifier. Some of these values are prose —
-   "RNA polymerase II cis-regulatory region sequence-specific DNA binding" — and
-   an unbreakable link that long overflows its column and collides with the next
-   one in the multi-column annotation layout.
-
-   Inline, so the text wraps like any other. The icon leads the text it links —
-   the house rule for every link here — and keeps its gap through a margin
-   rather than flex, so it rides along with the first word. */
 .listLink {
   color: var(--color-blue);
 }
@@ -675,16 +268,10 @@ table {
   vertical-align: -1px;
 }
 
-/* A row that is only its value, sitting under its own heading rather than
-   opposite a label — so it starts at the indent instead of being pushed to the
-   far edge by the label/value `space-between`. */
 .plainRow {
   justify-content: flex-start;
 }
 
-/* A source cited inside a help popup (popEVE's gap-frequency paper). Unlike
-   .listLink it may wrap: the popup is narrow and the citation trails a sentence,
-   so forcing it onto one line would push the popup wider than its content. */
 .helpLink {
   display: inline-flex;
   align-items: center;
@@ -702,17 +289,6 @@ table {
   font-size: inherit;
 }
 
-/* The same stack, where the lines share a cell shape: the cells line up in
-   columns down the stack, so a type, its stars and its term each read as one
-   column rather than the lines all starting at different places.
-
-   Columns take their content's width but may shrink to their longest word: the
-   annotation panel is narrow, and a column that refused to give way would push
-   the line off it. The floor is `min-content` rather than 0 because a word
-   cannot wrap — at 0 a narrow panel sized the column below "Pathogenic" and
-   drew it straight over the review status beside it. If even the words will not
-   fit, the grid scrolls rather than overlapping itself. The column count comes
-   from the spec, hence the custom property. */
 .stackedGrid {
   display: grid;
   grid-template-columns: repeat(
@@ -725,56 +301,29 @@ table {
   overflow-x: auto;
 }
 
-/* A value led by its star rating (ClinVar's review status).
-
-   A flex row, so the rating and the value are separate boxes: in plain inline
-   flow the value's second line wrapped back to the start of the cell, i.e.
-   underneath the stars ("Tier I -" / "Strong"). As its own box the value wraps
-   within itself, and the wrapped line sits under the first. */
 .ratedValue {
   display: inline-flex;
   align-items: baseline;
   column-gap: 6px;
 }
 
-/* Opted out of baseline alignment on purpose, for two reasons at once. A flex
-   container takes its baseline from its first baseline-aligned item, and stars
-   are replaced elements whose baseline is their bottom edge — so leaving them
-   in would drop the whole cell a shade below its unrated neighbours in the same
-   line. Out of it, the value supplies the baseline, and the stars sit on the
-   value's *first* line rather than centred over a value that wrapped. */
 .inlineRating {
   flex: none;
   align-self: flex-start;
   margin-top: 0.15em;
 }
 
-/* A detail line that bears on the classification above it: a ClinVar
-   submission counted toward the aggregate. Full weight and the panel's own text
-   colour against the muted default, so the ones that count read at a glance
-   without the rest being hidden — a submission that does not count is still a
-   real submission somebody made. */
 .emphasisedDetailRow {
   color: var(--color-black);
-
-  /* Lato Black, not Bold: at 10px against the muted default, 700 was not
-     telling the two apart at a glance. 900 is loaded (see fonts.css). */
   font-weight: var(--font-weight-dark);
 }
 
-/* Several links from one packed value (a submission's cited PMIDs). They read
-   as a run rather than a stack — a submission can cite dozens, and one per line
-   would bury the submitters they belong to. */
 .splitLinks {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 2px 8px;
 }
 
-/* An expandable summary line doubles as its own control, so it is a button that
-   keeps the cell's look: no chrome, text aligned as the column's. Full width so
-   the whole line is the target — a cell can hold several of these, one per
-   classification, and each opens only what it summarises. */
 .expandableCellToggle {
   display: flex;
   align-items: flex-start;
@@ -796,8 +345,6 @@ table {
   margin-top: 4px;
 }
 
-/* One submitter, its fields on a line. Indented under the summary so the detail
-   reads as belonging to it, using the panel's one indent rule. */
 .expandedDetailRow {
   display: flex;
   flex-wrap: wrap;
