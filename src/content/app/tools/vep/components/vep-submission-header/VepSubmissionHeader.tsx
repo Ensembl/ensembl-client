@@ -38,11 +38,13 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
-import DownloadOptions from './DownloadOptions';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import UnavailableResults from 'src/content/app/tools/shared/components/help-messages/UnavailableResults';
+import { ControlledDownloadButton } from 'src/shared/components/download-button/DownloadButton';
 
 import { UNAVAILABLE_RESULTS_WARNING } from 'src/content/app/tools/shared/constants/displayedMessages';
+
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from './VepSubmissionHeader.module.css';
 
@@ -57,6 +59,8 @@ type Props = {
 const VepSubmissionHeader = (props: Props) => {
   const { submission } = props;
   const [isDeleting, setIsDeleting] = useState(false);
+  const [shouldShowDownloadOptions, setShouldShowDownloadOptions] =
+    useState(false);
   const submissionTime = submission.submittedAt
     ? getFormattedDateTime(new Date(submission.submittedAt))
     : null;
@@ -65,6 +69,10 @@ const VepSubmissionHeader = (props: Props) => {
 
   const toggleDeletionConfirmation = () => {
     setIsDeleting(!isDeleting);
+  };
+
+  const toggleDownloadOptions = () => {
+    setShouldShowDownloadOptions(!shouldShowDownloadOptions);
   };
 
   const onEditSubmission = () => {
@@ -98,15 +106,19 @@ const VepSubmissionHeader = (props: Props) => {
           {...props}
           isDeleting={isDeleting}
           onDelete={toggleDeletionConfirmation}
+          onDownload={toggleDownloadOptions}
         />
       </div>
       {isDeleting && (
-        <div className={styles.deletionConfirmationContainer}>
+        <div className={styles.confirmationContainer}>
           <DeletionConfirmation
             {...props}
             onCancel={toggleDeletionConfirmation}
           />
         </div>
+      )}
+      {shouldShowDownloadOptions && (
+        <DownloadOptions {...props} onCancel={toggleDownloadOptions} />
       )}
     </>
   );
@@ -124,14 +136,12 @@ const ControlButtons = (
   props: Props & {
     isDeleting: boolean;
     onDelete: () => void;
+    onDownload: () => void;
   }
 ) => {
-  const { submission, isDeleting, onDelete } = props;
+  const { submission, isDeleting, onDelete, onDownload } = props;
 
   const canGetResults = submission.status === 'SUCCEEDED';
-  const downloadLink = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
-  // Flattened, fully-expanded table (spreadsheet-friendly) vs the raw VCF.
-  const tableDownloadLink = `${downloadLink}?format=tsv`;
   const vepResultsLink = urlFor.vepResults({
     submissionId: props.submission.id
   });
@@ -150,12 +160,19 @@ const ControlButtons = (
   } else {
     return (
       <div className={styles.controls}>
-        <DeleteButton onClick={onDelete} disabled={isDeleting} />
-        <DownloadOptions
-          vcfHref={downloadLink}
-          tableHref={tableDownloadLink}
-          disabled={isDeleting || !canGetResults}
+        <DeleteButton
+          onClick={onDelete}
+          disabled={isDeleting}
+          aria-label="Delete this submission"
         />
+
+        <ControlledDownloadButton
+          onClick={onDownload}
+          status={LoadingState.NOT_REQUESTED}
+          disabled={isDeleting}
+          aria-label="Show download options"
+        />
+
         <ButtonLink
           isDisabled={isDeleting || !canGetResults}
           to={vepResultsLink}
@@ -189,5 +206,78 @@ const DeletionConfirmation = (
     </div>
   );
 };
+
+const DownloadOptions = ({
+  submission,
+  onCancel
+}: {
+  submission: Props['submission'];
+  onCancel: () => void;
+}) => {
+  // Raw VCF vs a flattened, fully-expanded table that is spreadsheet-friendly
+  const vcfDownloadLink = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
+  const tsvDownloadLink = `${vcfDownloadLink}?format=tsv`;
+
+  return (
+    <div className={styles.confirmationContainer}>
+      <div className={styles.downloadOptionsWrapper}>
+        <span className={styles.downloadLabel}>Download:</span>
+        <div className={styles.downloadOptions}>
+          <a className={styles.option} href={vcfDownloadLink} download={true}>
+            VCF
+          </a>
+          <a className={styles.option} href={tsvDownloadLink} download={true}>
+            TSV
+          </a>
+        </div>
+
+        <TextButton onClick={onCancel}>Close</TextButton>
+      </div>
+    </div>
+  );
+};
+
+/*
+FIXME: remove this commented block
+
+This is to have download options, but with buttons
+
+
+const DownloadOptions = ({
+  submission,
+  onCancel
+}: {
+  submission: Props['submission'];
+  onCancel: () => void;
+}) => {
+  const vcfDownloadLink = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
+  // Flattened, fully-expanded table (spreadsheet-friendly) vs the raw VCF.
+  const tsvDownloadLink = `${vcfDownloadLink}?format=tsv`;
+
+  return (
+    <div className={styles.confirmationContainer}>
+      <div className={styles.downloadOptionsWrapper}>
+        <span className={styles.downloadLabel}>
+          Download:
+        </span>
+        <div className={styles.downloadOptions}>
+          <ButtonLink to={vcfDownloadLink}>
+            VCF
+          </ButtonLink>
+          <ButtonLink to={tsvDownloadLink}>
+            TSV
+          </ButtonLink>
+        </div>
+
+        <TextButton onClick={onCancel}>
+          Close
+        </TextButton>
+      </div>
+    </div>
+  );
+};
+
+
+*/
 
 export default VepSubmissionHeader;
