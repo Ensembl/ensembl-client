@@ -21,12 +21,7 @@ import { updateSubmission } from 'src/content/app/tools/vep/state/vep-submission
 import type { AppDispatch } from 'src/store';
 import type { SubmissionStatus } from 'src/content/app/tools/vep/types/vepSubmission';
 
-// In production, poll the pipeline status every 15s. In dev (the backend runs in
-// DUMP_INI / LOCAL_RESULTS_VCF mode) there is no real pipeline: the submission
-// writes its config.ini + sidecar JSONs synchronously and the status endpoint
-// reports SUCCEEDED immediately, so poll near-instantly to activate the results
-// button as soon as those files exist rather than waiting a full interval.
-export const POLLING_INTERVAL = config.isDevelopment ? 500 : 15 * 1000;
+export const POLLING_INTERVAL = 15 * 1000;
 
 export type PolledSubmission = {
   id: string;
