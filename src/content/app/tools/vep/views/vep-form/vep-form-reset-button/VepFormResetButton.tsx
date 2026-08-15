@@ -20,7 +20,7 @@ import { getSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vep
 
 import { resetForm } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
-import { DeleteButtonWithLabel } from 'src/shared/components/delete-button/DeleteButton';
+import TextButton from 'src/shared/components/text-button/TextButton';
 
 type Props = {
   className?: string;
@@ -42,12 +42,13 @@ const VepFormResetButton = (props: Props) => {
   };
 
   return (
-    <DeleteButtonWithLabel
-      label="Reset"
+    <TextButton
       onClick={onReset}
       disabled={!shouldEnableReset}
       className={props.className}
-    />
+    >
+      Clear all
+    </TextButton>
   );
 };
 
