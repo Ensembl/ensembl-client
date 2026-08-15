@@ -22,21 +22,6 @@
   justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
 }
 
-/* The form page scrolls as a whole document (nothing inside it is its own
-   scroller), so the bar — which carries the transcript set and the Run button —
-   used to scroll out of reach on a long form. Sticky keeps it in place without
-   taking it out of flow, so the layout below is unchanged and no spacer is
-   needed.
-
-   The bar already has an opaque background, so content passes behind it rather
-   than through it. z-index 10 puts it over the form; the results filter popover
-   sits at 100 and still wins, which is right — it is opened deliberately. */
-.vepFormTopBar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
 .vepGenericGrid {
   display: grid;
   align-items: center;
@@ -61,16 +46,6 @@
   grid-area: vep-logo;
   width: 130px;
   aspect-ratio: 10/1;
-}
-
-.ensemblMark {
-  grid-area: ensembl-mark;
-  justify-self: end;
-  align-self: start;
-  height: 37px;
-
-  /* viewport width/height of the mark svg, so it keeps its aspect ratio */
-  aspect-ratio: 395.70001/373.89998; /* stylelint-disable-line number-max-precision */
 }
 
 .runAJob {
