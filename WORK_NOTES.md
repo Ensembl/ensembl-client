@@ -1,5 +1,13 @@
 # Need to review
 
+## API
+- The vepFormConfig endpoint (`/vep/form_config/:genome_id`) has been updated to take two optional parameters: `species_taxonomy_id` and `assembly_name`, alongside genome_id. But genome_id should be sufficient on its own for the backend to discover all the data that it needs. Also, frontend doesn't store species taxonomy id for genomes.
+==> Can we remove these parameters from this endpoint
+
+
+
+## UI
+
 - Download button behaviour
   - One button or two buttons (one for submission overall; the other in filters section)?
   - If two buttons, should the download button in the filters section also open a row of download options below it when it is pressed?
@@ -7,3 +15,6 @@
     - Consider that the download button in the submission header exists in the list view as well as in the results view
 
 
+## TODO
+- Delete src/content/app/tools/vep/components/vep-submission-header/DownloadOptions.tsx and src/content/app/tools/vep/components/vep-submission-header/DownloadOptions.module.css (at least as they are currently)
+- In VepSubmissionHeader component, there currently is a commented-out implementation of a DownloadOptions component. Remember to delete the commented-out code.
