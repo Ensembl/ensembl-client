@@ -15,15 +15,6 @@
  */
 
 /**
- * The wire shape of the annotation spec's `display` section, served on the
- * results response (`metadata.display`) from the spec pinned to the job.
- *
- * It says how each option's parsed annotation is laid out — the labels, order,
- * headings, formats and placeholders that used to be a `case` body per option
- * in VepResultsAnnotationDetail. The spec now owns every option's layout: the
- * override registry is empty, and ClinVar — once the example of what could not
- * be expressed — is the largest thing it describes.
- *
  * The rendering primitives live in two places: `annotationRows.tsx` for rows
  * and blocks, and `displaySpecRenderer.tsx` for the rest (cells, tables,
  * ratings, expanders). The frontend still owns named `builder` links, which
