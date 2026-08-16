@@ -56,7 +56,6 @@ export type FormPanelSubOption =
       label?: string;
       type: 'number';
       default: number;
-      /** Optional inclusive bounds; the field is clamped to [min, max]. */
       min?: number;
       max?: number;
     }
@@ -117,8 +116,7 @@ export type FormPanelOption = {
   label: string;
   type: 'boolean';
   default: boolean;
-  /** Optional grouping label used to cluster options within a panel. */
-  category?: string;
+  category?: string; // Optional label used to group options within a panel.
   locked_children?: FormPanelLockedChild[];
   sub_options?: FormPanelSubOption[];
   /** Help text for the option. Optional so the API can start supplying it

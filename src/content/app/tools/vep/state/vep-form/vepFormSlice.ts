@@ -49,11 +49,6 @@ import type {
 } from 'src/content/app/tools/vep/types/vepSubmission';
 import type { RootState } from 'src/store';
 
-// Form parameters reach the backend as a JSON object. Keys include the
-// backend form-config parameters plus the client-added annotation options
-// (HGVS and the annotation plugins), so the key type is an open string.
-// Values are booleans (toggles), strings (selects), or numbers (e.g. a
-// nearest-exon search range).
 type VepFormParameters = Record<string, string | boolean | number>;
 
 export type VepFormState = {
@@ -332,9 +327,9 @@ const vepFormSlice = createSlice({
       state,
       action: PayloadAction<{ species: VepSelectedSpecies }>
     ) => {
-      // Selecting (or switching) species starts the rest of the form fresh:
-      // any variants input, uploaded file and option/parameter selections left
-      // over from a previous species should be cleared.
+      // Switching a genome resets the rest of the form,
+      // because different genomes may have incompatible variant notations
+      // or sets of parameters.
       //
       // NOTE: this only clears redux state. A previously uploaded file still
       // lives in browser storage (IndexedDB) under the temporary submission id;
@@ -342,14 +337,6 @@ const vepFormSlice = createSlice({
       // input replaces it), so it is left in place for now. TODO: purge the
       // stored input file here too if orphaned files become a storage concern.
       state.selectedSpecies = action.payload.species;
-      state.inputText = '';
-      state.inputFileName = null;
-      state.isInputCommitted = false;
-      state.parameters = {};
-    },
-    // clear the selected species and the rest of the form tied to it
-    clearSelectedSpecies: (state) => {
-      state.selectedSpecies = null;
       state.inputText = '';
       state.inputFileName = null;
       state.isInputCommitted = false;
@@ -423,7 +410,6 @@ const vepFormSlice = createSlice({
 
 export const {
   setSelectedSpecies,
-  clearSelectedSpecies,
   setDefaultParameters,
   updateParameters,
   updateSubmissionName,
