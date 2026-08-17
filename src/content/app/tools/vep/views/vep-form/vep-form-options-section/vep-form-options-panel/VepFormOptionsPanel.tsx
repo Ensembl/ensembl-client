@@ -271,55 +271,7 @@ const VepFormOptionsPanel = (props: Props) => {
     );
   }
 
-  // HGVS is a single control: linked HGVSc + HGVSp (the `hgvs` param, toggled
-  // together) shown in a bracket, off by default.
-  //
-  // HGVSg (the `hgvsg` param) is deliberately NOT offered here: its genomic
-  // notation names chromosomes in a form we cannot yet map, so it is hidden from
-  // the form and from the results. The param itself stays wired — the backend's
-  // ProtVar entry carries `forces_on: ["hgvsg"]`, silently computing it so the
-  // ProtVar link can be built from it. Restore the checkbox (and the display
-  // row in the annotation spec) once chromosome synonyms are available.
-  function renderHgvsOption(option: FormPanelOption) {
-    const cpChecked = boolValue('hgvs', false);
-    const setCp = (isChecked: boolean) =>
-      dispatch(updateParameters({ hgvs: isChecked }));
-    const help = getOptionHelp(option);
-    return (
-      <div className={styles.optionCell} key="hgvs">
-        <div className={styles.optionHeader}>
-          <span className={styles.optionHeading}>HGVS</span>
-          {help && (
-            <QuestionButton
-              helpText={<OptionHelpText help={help} />}
-              className={{ inline: styles.helpIcon }}
-            />
-          )}
-        </div>
-        {/* HGVSc + HGVSp toggle together. They used to be drawn inside a
-            bracket of their own; the rule `.childOptions` already draws down
-            their left says the same thing, so the bracket was a second mark for
-            one relationship. */}
-        <div className={styles.childOptions}>
-          <CheckboxWithLabel
-            label="HGVSc"
-            checked={cpChecked}
-            onChange={setCp}
-          />
-          <CheckboxWithLabel
-            label="HGVSp"
-            checked={cpChecked}
-            onChange={setCp}
-          />
-        </div>
-      </div>
-    );
-  }
-
   function renderOption(option: FormPanelOption, showAll = true) {
-    if (option.id === 'hgvs') {
-      return renderHgvsOption(option);
-    }
     const checked = boolValue(option.id, option.default);
     const help = getOptionHelp(option);
     // An AF source starts showing only its suggested defaults; everything else

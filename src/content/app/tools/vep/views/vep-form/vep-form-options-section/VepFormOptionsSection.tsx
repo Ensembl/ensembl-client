@@ -39,10 +39,6 @@ import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 
 import styles from './VepFormOptionsSection.module.css';
 
-// The "Job options" panels are driven by the tools-API form config: the
-// `panels` it returns depend on the selected species/assembly (e.g. the human
-// GRCh37/38-only panels), and each option's id is its submission parameter, so
-// selections flow straight into the payload.
 const VepFormOptionsSection = () => {
   const selectedSpecies = useAppSelector(getSelectedSpecies);
   const isVariantsInputCommitted = useAppSelector(getVepFormInputCommittedFlag);
@@ -67,18 +63,12 @@ const VepFormOptionsSection = () => {
   }
 
   if (!isVariantsInputCommitted || !formConfig) {
-    // TODO: should we handle the error state somehow?
-    return null;
+    return <div>The form is in an invalid state. Please clear the form.</div>;
   }
 
   return <OptionsSection panels={formConfig.panels} />;
 };
 
-/**
- * The panels, with a section-level toggle that switches every option on (each
- * with its default sub-options) and opens the panels so the result is visible —
- * or switches them all back off and closes them again.
- */
 const OptionsSection = (props: { panels: FormPanel[] }) => {
   const { panels } = props;
   const dispatch = useAppDispatch();
