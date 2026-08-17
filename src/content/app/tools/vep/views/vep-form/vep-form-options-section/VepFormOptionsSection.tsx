@@ -62,11 +62,13 @@ const VepFormOptionsSection = () => {
     );
   }
 
-  if (!isVariantsInputCommitted || !formConfig) {
+  if (selectedSpecies && isVariantsInputCommitted && !formConfig) {
     return <div>The form is in an invalid state. Please clear the form.</div>;
   }
 
-  return <OptionsSection panels={formConfig.panels} />;
+  if (selectedSpecies && isVariantsInputCommitted && formConfig) {
+    return <OptionsSection panels={formConfig.panels} />;
+  }
 };
 
 const OptionsSection = (props: { panels: FormPanel[] }) => {
