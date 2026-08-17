@@ -305,19 +305,8 @@ const VepFormOptionsPanel = (props: Props) => {
             />
           )}
         </div>
-        {checked && (option.locked_children || option.sub_options) && (
+        {checked && option.sub_options && (
           <div className={styles.childOptions}>
-            {/* Locked children mirror the parent and can't be toggled
-                independently; rendered checked (not disabled) so they show as
-                on rather than greyed out; clicks are no-ops. */}
-            {option.locked_children?.map((child) => (
-              <CheckboxWithLabel
-                key={child.id}
-                label={child.label}
-                checked={true}
-                onChange={noop}
-              />
-            ))}
             {option.sub_options
               ?.filter((subOption) => showChildren || isSuggested(subOption))
               .map((subOption) =>

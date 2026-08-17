@@ -68,13 +68,6 @@ export type FormPanelSubOption =
       options: FormPanelOption[];
     };
 
-/** A child notation that mirrors its parent's state and is not independently
- *  toggleable (e.g. HGVS implying HGVSc/HGVSp). */
-export type FormPanelLockedChild = {
-  id: string;
-  label: string;
-};
-
 /** A resource link shown inside an option's help tooltip. */
 export type OptionHelpLink = {
   href: string;
@@ -117,7 +110,6 @@ export type FormPanelOption = {
   type: 'boolean';
   default: boolean;
   category?: string; // Optional label used to group options within a panel.
-  locked_children?: FormPanelLockedChild[];
   sub_options?: FormPanelSubOption[];
   /** Help text for the option. Optional so the API can start supplying it
    *  without a type change; until then getOptionHelp falls back to a local
