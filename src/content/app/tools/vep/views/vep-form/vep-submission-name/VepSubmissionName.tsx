@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FormEvent } from 'react';
+import { useId, type ChangeEvent } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -24,21 +24,25 @@ import { updateSubmissionName } from 'src/content/app/tools/vep/state/vep-form/v
 
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 
-import commonStyles from '../VepForm.module.css';
+import vepTopBarStyles from 'src/content/app/tools/vep/components/vep-top-bar/VepTopBar.module.css';
 
 const VepSubmissionName = () => {
   const submissionName = useAppSelector(getVepSubmissionName) ?? '';
   const dispatch = useAppDispatch();
+  const inputId = useId();
 
-  const onSubmissionNameChange = (event: FormEvent<HTMLInputElement>) => {
+  const onSubmissionNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newName = event.currentTarget.value;
     dispatch(updateSubmissionName(newName));
   };
 
   return (
-    <div className={commonStyles.submissionName}>
-      <label>Submission name</label>
+    <div className={vepTopBarStyles.submissionName}>
+      <label htmlFor={inputId} className={vepTopBarStyles.submissionNameLabel}>
+        Submission name
+      </label>
       <ShadedInput
+        id={inputId}
         placeholder="Optional"
         value={submissionName}
         onChange={onSubmissionNameChange}

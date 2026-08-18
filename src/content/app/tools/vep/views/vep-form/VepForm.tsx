@@ -28,7 +28,6 @@ import {
 } from './vep-form-species-section/VepFormSpeciesSection';
 import VepFormVariantsSection from './vep-form-variants-section/VepFormVariantsSection';
 import VepFormOptionsSection from './vep-form-options-section/VepFormOptionsSection';
-import VepSubmissionName from './vep-submission-name/VepSubmissionName';
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
 import VepFormResetButton from './vep-form-reset-button/VepFormResetButton';
 
@@ -50,8 +49,7 @@ const VepForm = () => {
   return (
     <div className={styles.outerContainer}>
       <div className={styles.container}>
-        <div className={styles.topmostAreaGrid}>
-          <VepSubmissionName />
+        <div className={styles.topmostArea}>
           <VepFormResetButton className={styles.resetForm} />
         </div>
 
