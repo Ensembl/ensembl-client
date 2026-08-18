@@ -60,7 +60,6 @@ export type DisplayRowSpec = {
   from?: string | null;
   compose?: DisplayCompose | null;
   format?: DisplayRowFormat | null;
-  mono?: boolean | null;
   /** Unset drops an absent row; set keeps it and shows this. */
   placeholder?: string | null;
   /** Help text for a (?) button beside the label. */
@@ -136,7 +135,6 @@ export type DisplayValuePiece = {
    *  prefixing is a thing a value does, whichever renderer draws it. */
   label?: string | null;
   format?: DisplayRowFormat | null;
-  mono?: boolean | null;
   link?: DisplayLinkSpec | null;
   /** Build the link from a *sibling* field rather than from the value's own
    *  text: the reader sees a condition's name, the href is the URL the parse

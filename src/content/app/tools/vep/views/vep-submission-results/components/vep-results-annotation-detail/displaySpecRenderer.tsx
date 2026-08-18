@@ -366,7 +366,6 @@ const toRowSpec = (
       key: row.key ?? undefined,
       label: rowLabel(row),
       value,
-      mono: row.mono ?? undefined,
       valueNode: absent
         ? null
         : renderLink(row.link, entities.linkContext, String(value))
@@ -384,7 +383,6 @@ const toRowSpec = (
       key: row.key ?? undefined,
       label: rowLabel(row),
       value,
-      mono: row.mono ?? undefined,
       valueNode:
         text === null
           ? null
@@ -407,7 +405,6 @@ const toRowSpec = (
       key: row.key ?? undefined,
       label: rowLabel(row),
       value,
-      mono: row.mono ?? undefined,
       // No value drops the row, as an absent scalar always does. A value whose
       // *href* is missing still has something to say, so it renders unlinked
       // rather than disappearing — `undefined` leaves the formatting to
@@ -479,7 +476,6 @@ const toRowSpec = (
       key: row.key ?? undefined,
       label: rowLabel(row),
       value,
-      mono: row.mono ?? undefined,
       valueNode:
         text === null
           ? null
@@ -491,7 +487,6 @@ const toRowSpec = (
     label: rowLabel(row),
     value,
     format: row.format ?? undefined,
-    mono: row.mono ?? undefined,
     placeholder,
     // Shown by renderRows only next to a real value (ProtVar's icon).
     link: row.link ? renderLink(row.link, entities.linkContext) : undefined
@@ -578,9 +573,9 @@ const interpolateUrl = (
  *
  * The house shape in one place — the icon leads, the value is the blue text —
  * and, more to the point, the URL is built here too. Eight call sites had
- * grown their own copy of this anchor and they had drifted: only some passed
- * `mono`, only some added `nowrap`, and only the two newest refused to render a
- * link they could not build.
+ * grown their own copy of this anchor and they had drifted: only some added
+ * `nowrap`, and only the two newest refused to render a link they could not
+ * build.
  */
 const ExternalLink = (props: {
   template: string;
@@ -787,9 +782,7 @@ const renderCell = (
         key={key}
         template={cell.link.template}
         fields={record}
-        className={
-          cell.mono ? `${styles.listLink} ${styles.mono}` : styles.listLink
-        }
+        className={styles.listLink}
       >
         {text}
       </ExternalLink>
@@ -799,15 +792,7 @@ const renderCell = (
   // OpenTargets' "L2G 0.42". (Cell-level builder links are not used — a row's or
   // item's `link` carries the builder ones.)
   return (
-    <span
-      key={key}
-      className={[
-        cell.mono ? styles.mono : null,
-        cell.nowrap ? styles.nowrap : null
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
+    <span key={key} className={cell.nowrap ? styles.nowrap : undefined}>
       {withStars(cellStars, cell.label ? `${cell.label} ${text}` : text)}
     </span>
   );
@@ -1434,17 +1419,9 @@ const alignmentClass = (
   return align === 'right' ? styles.alignRight : undefined;
 };
 
-/** A cell's classes: the alignment rule, plus monospacing when asked for. */
 const cellClass = (
-  column: Pick<DisplayTableColumnSpec, 'format' | 'align' | 'mono'> | undefined
-): string | undefined => {
-  if (!column) {
-    return undefined;
-  }
-  const classes = [alignmentClass(column), column.mono ? styles.mono : null];
-  const used = classes.filter(Boolean);
-  return used.length ? used.join(' ') : undefined;
-};
+  column: Pick<DisplayTableColumnSpec, 'format' | 'align'> | undefined
+): string | undefined => (column ? alignmentClass(column) : undefined);
 
 // The header row shared by both table modes.
 const tableHead = (columns: DisplayTableBlockSpec['columns']): ReactNode => (
@@ -1704,7 +1681,6 @@ const renderTableBlock = (
             key={`lifted-${index}`}
             label={column.label}
             value={tableCellContent(column, items[0], spec)}
-            mono={column.mono ?? undefined}
           />
         ))}
         {body}

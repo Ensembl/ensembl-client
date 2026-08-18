@@ -46,14 +46,12 @@ export const displaySpecFixture: DisplaySpec = {
                 {
                   key: 'c',
                   label: 'HGVSc',
-                  from: 'hgvs.transcript',
-                  mono: true
+                  from: 'hgvs.transcript'
                 },
                 {
                   key: 'p',
                   label: 'HGVSp',
-                  from: 'hgvs.protein',
-                  mono: true
+                  from: 'hgvs.protein'
                 }
               ]
             }
@@ -69,8 +67,7 @@ export const displaySpecFixture: DisplaySpec = {
           rows: [
             {
               label: 'SPDI',
-              from: 'spdi.spdi',
-              mono: true
+              from: 'spdi.spdi'
             }
           ]
         }
@@ -88,8 +85,7 @@ export const displaySpecFixture: DisplaySpec = {
                 format: 'with_score',
                 classification: 'alphamissense.classification',
                 score: 'alphamissense.score'
-              },
-              mono: false
+              }
             }
           ]
         }
@@ -104,8 +100,7 @@ export const displaySpecFixture: DisplaySpec = {
             {
               label: 'REVEL',
               from: 'revel.score',
-              format: 'num',
-              mono: false
+              format: 'num'
             }
           ]
         }
@@ -120,8 +115,7 @@ export const displaySpecFixture: DisplaySpec = {
             {
               label: 'ClinPred',
               from: 'clinpred.score',
-              format: 'num',
-              mono: false
+              format: 'num'
             }
           ]
         }
@@ -136,14 +130,12 @@ export const displaySpecFixture: DisplaySpec = {
             {
               label: 'CADD (PHRED)',
               from: 'cadd.phred',
-              format: 'num',
-              mono: false
+              format: 'num'
             },
             {
               label: 'CADD (RAW)',
               from: 'cadd.raw',
-              format: 'num',
-              mono: false
+              format: 'num'
             }
           ]
         }
@@ -162,21 +154,18 @@ export const displaySpecFixture: DisplaySpec = {
               indent: false,
               columns: [
                 {
-                  mono: false,
                   label: 'Splicing event',
                   nowrap: false,
                   lift_when_invariant: false
                 },
                 {
                   format: 'num',
-                  mono: false,
                   label: 'ΔS',
                   nowrap: false,
                   lift_when_invariant: false
                 },
                 {
                   format: 'num',
-                  mono: false,
                   label: 'ΔP',
                   nowrap: false,
                   lift_when_invariant: false
@@ -224,8 +213,7 @@ export const displaySpecFixture: DisplaySpec = {
                 format: 'with_score',
                 classification: 'eve.classification',
                 score: 'eve.score'
-              },
-              mono: false
+              }
             }
           ]
         },
@@ -237,22 +225,19 @@ export const displaySpecFixture: DisplaySpec = {
               key: 'score',
               label: 'Score',
               from: 'popeve.score',
-              format: 'num',
-              mono: false
+              format: 'num'
             },
             {
               key: 'pop',
               label: 'Population-adjusted EVE',
               from: 'popeve.pop_adjusted_eve',
-              format: 'num',
-              mono: false
+              format: 'num'
             },
             {
               key: 'gap',
               label: 'Gap frequency',
               from: 'popeve.gap_frequency',
               format: 'num',
-              mono: false,
               help: 'Authors recommend filtering the scores if the gap frequency > 0.5',
               help_link: {
                 href: 'https://europepmc.org/article/MED/41286104',
@@ -272,8 +257,7 @@ export const displaySpecFixture: DisplaySpec = {
             {
               label: 'GERP conservation score',
               from: 'gerp.score',
-              format: 'num',
-              mono: false
+              format: 'num'
             }
           ]
         }
@@ -290,7 +274,6 @@ export const displaySpecFixture: DisplaySpec = {
               label: 'HPO profiles',
               from: 'geno2mp.hpo_profile_count',
               format: 'num',
-              mono: false,
               link: {
                 kind: 'external',
                 template: '{value}'
@@ -310,8 +293,7 @@ export const displaySpecFixture: DisplaySpec = {
             {
               label: 'LOEUF',
               from: 'loeuf.score',
-              format: 'num',
-              mono: false
+              format: 'num'
             }
           ]
         }
@@ -326,8 +308,7 @@ export const displaySpecFixture: DisplaySpec = {
             {
               label: 'pLI',
               from: 'pli.score',
-              format: 'num',
-              mono: false
+              format: 'num'
             }
           ]
         }
@@ -342,8 +323,7 @@ export const displaySpecFixture: DisplaySpec = {
             {
               label: 'NMD',
               from: 'nmd.prediction',
-              format: 'humanize',
-              mono: false
+              format: 'humanize'
             }
           ]
         }
@@ -360,15 +340,13 @@ export const displaySpecFixture: DisplaySpec = {
               key: 'ph',
               label: 'pHaplo',
               from: 'dosage_sensitivity.phaplo',
-              format: 'num',
-              mono: false
+              format: 'num'
             },
             {
               key: 'pt',
               label: 'pTriplo',
               from: 'dosage_sensitivity.ptriplo',
-              format: 'num',
-              mono: false
+              format: 'num'
             }
           ]
         }
@@ -384,26 +362,22 @@ export const displaySpecFixture: DisplaySpec = {
             {
               key: 'cons',
               label: 'Consequence',
-              from: 'utr_annotation.consequence',
-              mono: false
+              from: 'utr_annotation.consequence'
             },
             {
               key: 'uorf',
               label: 'Existing uORFs',
-              from: 'utr_annotation.existing_uorfs',
-              mono: false
+              from: 'utr_annotation.existing_uorfs'
             },
             {
               key: 'inf',
               label: 'In-frame oORFs',
-              from: 'utr_annotation.existing_inframe_oorfs',
-              mono: false
+              from: 'utr_annotation.existing_inframe_oorfs'
             },
             {
               key: 'oof',
               label: 'Out-of-frame oORFs',
-              from: 'utr_annotation.existing_outofframe_oorfs',
-              mono: false
+              from: 'utr_annotation.existing_outofframe_oorfs'
             }
           ]
         }
@@ -419,21 +393,18 @@ export const displaySpecFixture: DisplaySpec = {
             {
               key: 'id',
               label: 'ORF',
-              from: 'riboseq_orfs.orf_id',
-              mono: false
+              from: 'riboseq_orfs.orf_id'
             },
             {
               key: 'cons',
               label: 'Consequences',
               from: 'riboseq_orfs.consequences',
-              format: 'join',
-              mono: false
+              format: 'join'
             },
             {
               key: 'imp',
               label: 'Impact',
-              from: 'riboseq_orfs.impact',
-              mono: false
+              from: 'riboseq_orfs.impact'
             }
           ]
         }
@@ -458,7 +429,6 @@ export const displaySpecFixture: DisplaySpec = {
                     {
                       from: 'phenotype',
                       format: 'phenotype',
-                      mono: false,
                       label: 'Phenotype',
                       nowrap: false,
                       lift_when_invariant: false
@@ -466,7 +436,6 @@ export const displaySpecFixture: DisplaySpec = {
                     {
                       from: 'source',
                       format: 'humanize',
-                      mono: false,
                       link: {
                         kind: 'external',
                         template: '{value}'
@@ -495,7 +464,6 @@ export const displaySpecFixture: DisplaySpec = {
                     {
                       from: 'phenotype',
                       format: 'phenotype',
-                      mono: false,
                       label: 'Phenotype',
                       nowrap: false,
                       lift_when_invariant: false
@@ -503,7 +471,6 @@ export const displaySpecFixture: DisplaySpec = {
                     {
                       from: 'source',
                       format: 'humanize',
-                      mono: false,
                       link: {
                         kind: 'external',
                         template: '{value}'
@@ -535,7 +502,6 @@ export const displaySpecFixture: DisplaySpec = {
                 {
                   label: 'ClinVar variant ID',
                   from: 'clinvar.id',
-                  mono: false,
                   link: {
                     kind: 'external',
                     template:
@@ -545,7 +511,6 @@ export const displaySpecFixture: DisplaySpec = {
                 {
                   label: 'Classification',
                   from: 'clinvar.classification_summary',
-                  mono: false,
                   help: "For more detail regarding ClinVar's clinical significance terms see",
                   help_link: {
                     href: 'https://www.ncbi.nlm.nih.gov/clinvar/docs/clinsig/',
@@ -555,7 +520,6 @@ export const displaySpecFixture: DisplaySpec = {
                     cells: [
                       {
                         from: 'type',
-                        mono: false,
                         labels: {
                           SomaticClinicalImpact: 'Somatic Clinical Impact'
                         },
@@ -564,7 +528,6 @@ export const displaySpecFixture: DisplaySpec = {
                       {
                         from: 'classification',
                         format: 'humanize_terms',
-                        mono: false,
                         stars_from: 'rating_scale',
                         stars_of: 'review_status',
                         nowrap: false
@@ -572,12 +535,10 @@ export const displaySpecFixture: DisplaySpec = {
                       {
                         from: 'review_status',
                         format: 'humanize',
-                        mono: false,
                         nowrap: false
                       },
                       {
                         from: 'supporting',
-                        mono: false,
                         template:
                           '{supporting}/{submissions} submission(s) contribute to aggregate classification',
                         nowrap: false
@@ -601,7 +562,6 @@ export const displaySpecFixture: DisplaySpec = {
               columns: [
                 {
                   from: 'classifications',
-                  mono: false,
                   label: 'Classification',
                   nowrap: false,
                   notes: [
@@ -613,7 +573,6 @@ export const displaySpecFixture: DisplaySpec = {
                   items: {
                     from: 'classification',
                     format: 'humanize',
-                    mono: false,
                     nowrap: false,
                     count_from: 'count',
                     expand: {
@@ -622,24 +581,20 @@ export const displaySpecFixture: DisplaySpec = {
                         {
                           from: 'submitter',
                           format: 'humanize',
-                          mono: false,
                           nowrap: false
                         },
                         {
                           from: 'date_last_evaluated',
-                          mono: false,
                           nowrap: false
                         },
                         {
                           from: 'review_status',
                           format: 'humanize',
-                          mono: false,
                           stars: 'clinvar_submission',
                           nowrap: false
                         },
                         {
                           from: 'pmid',
-                          mono: false,
                           link: {
                             kind: 'external',
                             template:
@@ -651,7 +606,6 @@ export const displaySpecFixture: DisplaySpec = {
                         {
                           from: 'filed_as',
                           format: 'phenotype',
-                          mono: false,
                           label: 'filed as',
                           nowrap: false
                         }
@@ -666,13 +620,11 @@ export const displaySpecFixture: DisplaySpec = {
                 },
                 {
                   from: 'names',
-                  mono: false,
                   label: 'Condition',
                   nowrap: false,
                   items: {
                     from: 'name',
                     format: 'phenotype',
-                    mono: false,
                     link: {
                       kind: 'external',
                       template: '{value}'
@@ -684,7 +636,6 @@ export const displaySpecFixture: DisplaySpec = {
                 },
                 {
                   from: 'rcv',
-                  mono: false,
                   link: {
                     kind: 'external',
                     template: 'https://www.ncbi.nlm.nih.gov/clinvar/{value}/'
@@ -707,12 +658,10 @@ export const displaySpecFixture: DisplaySpec = {
               rows: [
                 {
                   from: 'clinvar.classification_summary',
-                  mono: false,
                   item: {
                     cells: [
                       {
                         from: 'type',
-                        mono: false,
                         labels: {
                           SomaticClinicalImpact: 'Somatic Clinical Impact'
                         },
@@ -721,7 +670,6 @@ export const displaySpecFixture: DisplaySpec = {
                       {
                         from: 'classification',
                         format: 'humanize_terms',
-                        mono: false,
                         stars_from: 'rating_scale',
                         stars_of: 'review_status',
                         nowrap: false
@@ -729,12 +677,10 @@ export const displaySpecFixture: DisplaySpec = {
                       {
                         from: 'review_status',
                         format: 'humanize',
-                        mono: false,
                         nowrap: false
                       },
                       {
                         from: 'supporting',
-                        mono: false,
                         template:
                           '{supporting}/{submissions} submission(s) contribute to aggregate classification',
                         nowrap: false
@@ -758,7 +704,6 @@ export const displaySpecFixture: DisplaySpec = {
               columns: [
                 {
                   from: 'classifications',
-                  mono: false,
                   label: 'Classification',
                   nowrap: false,
                   notes: [
@@ -770,7 +715,6 @@ export const displaySpecFixture: DisplaySpec = {
                   items: {
                     from: 'classification',
                     format: 'humanize',
-                    mono: false,
                     nowrap: false,
                     count_from: 'count',
                     expand: {
@@ -779,24 +723,20 @@ export const displaySpecFixture: DisplaySpec = {
                         {
                           from: 'submitter',
                           format: 'humanize',
-                          mono: false,
                           nowrap: false
                         },
                         {
                           from: 'date_last_evaluated',
-                          mono: false,
                           nowrap: false
                         },
                         {
                           from: 'review_status',
                           format: 'humanize',
-                          mono: false,
                           stars: 'clinvar_submission',
                           nowrap: false
                         },
                         {
                           from: 'pmid',
-                          mono: false,
                           link: {
                             kind: 'external',
                             template:
@@ -808,7 +748,6 @@ export const displaySpecFixture: DisplaySpec = {
                         {
                           from: 'filed_as',
                           format: 'phenotype',
-                          mono: false,
                           label: 'filed as',
                           nowrap: false
                         }
@@ -823,13 +762,11 @@ export const displaySpecFixture: DisplaySpec = {
                 },
                 {
                   from: 'names',
-                  mono: false,
                   label: 'Condition',
                   nowrap: false,
                   items: {
                     from: 'name',
                     format: 'phenotype',
-                    mono: false,
                     link: {
                       kind: 'external',
                       template: '{value}'
@@ -841,7 +778,6 @@ export const displaySpecFixture: DisplaySpec = {
                 },
                 {
                   from: 'rcv',
-                  mono: false,
                   link: {
                     kind: 'external',
                     template: 'https://www.ncbi.nlm.nih.gov/clinvar/{value}/'
@@ -885,7 +821,6 @@ export const displaySpecFixture: DisplaySpec = {
             cells: [
               {
                 from: 'name',
-                mono: false,
                 link: {
                   kind: 'external',
                   template: 'https://amigo.geneontology.org/amigo/term/{id}'
@@ -911,17 +846,14 @@ export const displaySpecFixture: DisplaySpec = {
             cells: [
               {
                 from: 'gene_id',
-                mono: false,
                 nowrap: false
               },
               {
                 from: 'distance',
-                mono: false,
                 nowrap: false
               },
               {
                 from: 'direction',
-                mono: false,
                 nowrap: false
               }
             ]
@@ -973,7 +905,6 @@ export const displaySpecFixture: DisplaySpec = {
           columns: [
             {
               from: 'urn',
-              mono: false,
               link: {
                 kind: 'external',
                 template: 'https://www.mavedb.org/score-sets/{urn}?calibration'
@@ -985,14 +916,12 @@ export const displaySpecFixture: DisplaySpec = {
             {
               from: 'score',
               format: 'num',
-              mono: false,
               label: 'Score',
               nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'doi',
-              mono: false,
               link: {
                 kind: 'external',
                 template: 'https://europepmc.org/search?query=DOI:%22{doi}%22'
@@ -1021,7 +950,6 @@ export const displaySpecFixture: DisplaySpec = {
               label: 'Linear motifs',
               from: 'mutfunc.linear_motifs',
               format: 'num',
-              mono: false,
               sub_option: {
                 id: 'mutfunc_motif',
                 default: true
@@ -1032,7 +960,6 @@ export const displaySpecFixture: DisplaySpec = {
               label: 'Protein interactions',
               from: 'mutfunc.protein_interactions',
               format: 'num',
-              mono: false,
               sub_option: {
                 id: 'mutfunc_int',
                 default: true
@@ -1043,7 +970,6 @@ export const displaySpecFixture: DisplaySpec = {
               label: 'Protein structure',
               from: 'mutfunc.protein_structure',
               format: 'num',
-              mono: false,
               sub_option: {
                 id: 'mutfunc_mod',
                 default: true
@@ -1054,7 +980,6 @@ export const displaySpecFixture: DisplaySpec = {
               label: 'Protein structure (exp.)',
               from: 'mutfunc.protein_structure_experimental',
               format: 'num',
-              mono: false,
               sub_option: {
                 id: 'mutfunc_exp',
                 default: true
@@ -1075,7 +1000,6 @@ export const displaySpecFixture: DisplaySpec = {
           rows: [
             {
               label: '',
-              mono: false,
               link: {
                 kind: 'external',
                 builder: 'opentargets_variant'
@@ -1091,21 +1015,18 @@ export const displaySpecFixture: DisplaySpec = {
           columns: [
             {
               from: 'disease_label',
-              mono: false,
               label: 'Disease',
               nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'gene_id',
-              mono: true,
               label: 'Gene',
               nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'p_value',
-              mono: false,
               label: 'Lead variant p-value',
               nowrap: false,
               align: 'right',
@@ -1114,7 +1035,6 @@ export const displaySpecFixture: DisplaySpec = {
             {
               from: 'beta',
               format: 'num',
-              mono: false,
               label: 'beta coefficient',
               nowrap: false,
               lift_when_invariant: false
@@ -1122,7 +1042,6 @@ export const displaySpecFixture: DisplaySpec = {
             {
               from: 'l2g_score',
               format: 'num',
-              mono: false,
               label: 'Locus to Gene (L2G) Score',
               nowrap: false,
               lift_when_invariant: false
@@ -1140,21 +1059,18 @@ export const displaySpecFixture: DisplaySpec = {
           columns: [
             {
               from: 'biosample',
-              mono: false,
               label: 'BioSample',
               nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'gene_id',
-              mono: true,
               label: 'Gene',
               nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'p_value',
-              mono: false,
               label: 'Lead variant p-value',
               nowrap: false,
               align: 'right',
@@ -1163,7 +1079,6 @@ export const displaySpecFixture: DisplaySpec = {
             {
               from: 'beta',
               format: 'num',
-              mono: false,
               label: 'beta coefficient',
               nowrap: false,
               lift_when_invariant: false
@@ -1193,14 +1108,12 @@ export const displaySpecFixture: DisplaySpec = {
                 {
                   label: 'Clinical significance',
                   from: 'clinvar_sv.significance',
-                  format: 'humanize_join',
-                  mono: false
+                  format: 'humanize_join'
                 },
                 {
                   label: 'Origin',
                   from: 'clinvar_sv.origin',
-                  format: 'humanize_join',
-                  mono: false
+                  format: 'humanize_join'
                 }
               ]
             }
@@ -1219,7 +1132,6 @@ export const displaySpecFixture: DisplaySpec = {
               label: 'Protein Structure Stability',
               from: 'protvar.structure_stability_score',
               format: 'num',
-              mono: false,
               sub_option: {
                 id: 'protvar_stability',
                 default: true
@@ -1246,7 +1158,6 @@ export const displaySpecFixture: DisplaySpec = {
               {
                 from: 'score',
                 format: 'num',
-                mono: false,
                 nowrap: false
               }
             ],
@@ -1267,7 +1178,6 @@ export const displaySpecFixture: DisplaySpec = {
               label: 'Protein Pockets',
               from: 'protvar.pockets',
               format: 'count',
-              mono: false,
               sub_option: {
                 id: 'protvar_pocket',
                 default: true
@@ -1290,7 +1200,6 @@ export const displaySpecFixture: DisplaySpec = {
               {
                 from: 'score',
                 format: 'num',
-                mono: false,
                 nowrap: false
               }
             ],
@@ -1311,7 +1220,6 @@ export const displaySpecFixture: DisplaySpec = {
               label: 'Protein-Protein Interaction Interface',
               from: 'protvar.interaction_interfaces',
               format: 'count',
-              mono: false,
               sub_option: {
                 id: 'protvar_int',
                 default: true
@@ -1330,7 +1238,6 @@ export const displaySpecFixture: DisplaySpec = {
             {
               label: 'Protein ID',
               from: 'protein.ensembl_protein_id',
-              mono: true,
               link: {
                 kind: 'app_popup',
                 builder: 'protein_popup'
@@ -1351,7 +1258,6 @@ export const displaySpecFixture: DisplaySpec = {
           columns: [
             {
               from: 'interaction_ac',
-              mono: false,
               link: {
                 kind: 'external',
                 template:
@@ -1363,14 +1269,12 @@ export const displaySpecFixture: DisplaySpec = {
             },
             {
               from: 'feature_type',
-              mono: false,
               label: 'Feature Type',
               nowrap: false,
               lift_when_invariant: false
             },
             {
               from: 'interaction_participants',
-              mono: false,
               link: {
                 kind: 'external',
                 template: 'https://www.uniprot.org/uniprotkb/{value}/entry'
@@ -1387,7 +1291,6 @@ export const displaySpecFixture: DisplaySpec = {
             },
             {
               from: 'feature_short_label',
-              mono: false,
               label: 'Feature short label',
               nowrap: false,
               sub_option: {
@@ -1398,7 +1301,6 @@ export const displaySpecFixture: DisplaySpec = {
             },
             {
               from: 'ap_ac',
-              mono: false,
               link: {
                 kind: 'external',
                 template: 'https://www.uniprot.org/uniprotkb/{value}/entry'
@@ -1414,7 +1316,6 @@ export const displaySpecFixture: DisplaySpec = {
             },
             {
               from: 'pmid',
-              mono: false,
               link: {
                 kind: 'external',
                 template: 'https://europepmc.org/article/MED/{value}'
@@ -1443,13 +1344,11 @@ export const displaySpecFixture: DisplaySpec = {
           rows: [
             {
               label: 'Region',
-              from: 'gencode_promoter.region',
-              mono: true
+              from: 'gencode_promoter.region'
             },
             {
               label: 'Feature ID',
-              from: 'gencode_promoter.feature_id',
-              mono: true
+              from: 'gencode_promoter.feature_id'
             }
           ]
         }
@@ -1465,8 +1364,7 @@ export const displaySpecFixture: DisplaySpec = {
               key: 'tss_distance',
               label: 'Distance to TSS',
               from: 'tss_distance.distance',
-              format: 'num',
-              mono: false
+              format: 'num'
             }
           ]
         }
@@ -1528,14 +1426,12 @@ export const displaySpecFixture: DisplaySpec = {
             {
               key: 'sv_id',
               label: 'Structural variant',
-              from: 'gnomad_sv.id',
-              mono: true
+              from: 'gnomad_sv.id'
             },
             {
               key: 'sv_type',
               label: 'Type',
-              from: 'gnomad_sv.svtype',
-              mono: false
+              from: 'gnomad_sv.svtype'
             }
           ]
         },
@@ -1559,14 +1455,12 @@ export const displaySpecFixture: DisplaySpec = {
             {
               key: 'cnv_id',
               label: 'Structural variant',
-              from: 'gnomad_cnv.id',
-              mono: true
+              from: 'gnomad_cnv.id'
             },
             {
               key: 'cnv_type',
               label: 'Type',
-              from: 'gnomad_cnv.svtype',
-              mono: false
+              from: 'gnomad_cnv.svtype'
             }
           ]
         },
