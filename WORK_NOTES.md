@@ -30,8 +30,13 @@ Note that the `hgvs` option is a single "boolean", but it is rendered as two che
 
 
 ## TODO
-- Revert HGVS to single checkbox; drop custom code
-- Remove monospace (the mono option from display config)
+- Remove `expandCommand` from VepFormOptionsPanel
 
 - Delete src/content/app/tools/vep/components/vep-submission-header/DownloadOptions.tsx and src/content/app/tools/vep/components/vep-submission-header/DownloadOptions.module.css (at least as they are currently)
 - In VepSubmissionHeader component, there currently is a commented-out implementation of a DownloadOptions component. Remember to delete the commented-out code.
+
+
+
+
+## DONE
+- Revert HGVS to single checkbox; drop custom code
