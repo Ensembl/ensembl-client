@@ -15,7 +15,7 @@
  */
 
 import classNames from 'classnames';
-import type { ReactNode } from 'react';
+import type { ReactNode, ButtonHTMLAttributes } from 'react';
 
 import Chevron from '../chevron/Chevron';
 
@@ -29,21 +29,28 @@ import styles from './ShowHide.module.css';
  * is expected to be shown.
  */
 
-type Props = {
+type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   label?: ReactNode;
   isExpanded: boolean;
   onClick: () => void;
-  className?: string;
 };
 
 const ShowHide = (props: Props) => {
-  const wrapperClasses = classNames(styles.showHide, props.className);
+  const {
+    label,
+    isExpanded,
+    onClick,
+    className: classNameFromProps,
+    ...otherProps
+  } = props;
+
+  const wrapperClasses = classNames(styles.showHide, classNameFromProps);
 
   return (
-    <button onClick={props.onClick} className={wrapperClasses}>
-      {props.label && <span className={styles.label}>{props.label}</span>}
+    <button onClick={onClick} className={wrapperClasses} {...otherProps}>
+      {label && <span className={styles.label}>{label}</span>}
       <Chevron
-        direction={props.isExpanded ? 'up' : 'down'}
+        direction={isExpanded ? 'up' : 'down'}
         animate={true}
         className={styles.chevron}
       />
