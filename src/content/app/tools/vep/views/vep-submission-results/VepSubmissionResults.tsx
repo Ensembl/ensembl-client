@@ -24,8 +24,6 @@ import {
 } from 'react';
 import { useParams } from 'react-router';
 
-import config from 'config';
-
 import { useAppSelector, useAppDispatch } from 'src/store';
 import useVepResultsPagination, {
   PER_PAGE_OPTIONS
@@ -183,22 +181,6 @@ const VepSubmissionResults = () => {
     [appliedFilters]
   );
 
-  // Download links restricted to the rows passing the applied filters — they
-  // carry the same `filters` payload the results request uses. The header's own
-  // Download button is deliberately left untouched (it always downloads the whole
-  // result set); this filtered download lives in the filters panel and is
-  // disabled until filters are applied.
-  const filteredDownload = useMemo(() => {
-    const base = `${config.toolsApiBaseUrl}/vep/submissions/${submissionId}/download`;
-    const filtersParam = appliedSerialized
-      ? `&filters=${encodeURIComponent(appliedSerialized)}`
-      : '';
-    return {
-      vcfHref: `${base}?format=vcf${filtersParam}`,
-      tableHref: `${base}?format=tsv${filtersParam}`
-    };
-  }, [submissionId, appliedSerialized]);
-
   const applyFilters = () => {
     setAppliedFilters(draftFilters);
     setPage(1);
@@ -323,7 +305,10 @@ const VepSubmissionResults = () => {
 
   return (
     <div className={styles.container}>
-      <VepSubmissionHeader submission={submission} />
+      <VepSubmissionHeader
+        submission={submission}
+        filtersString={appliedSerialized || undefined}
+      />
       <div className={styles.resultsBox}>
         <VepResultsHeader
           submission={submission}
@@ -352,7 +337,6 @@ const VepSubmissionResults = () => {
             afSources={afSources}
             scoreFields={scoreFields}
             appliedConditionIds={appliedConditionIds}
-            filteredDownload={filteredDownload}
           />
         )}
         <div className={styles.tableViewportWrapper}>

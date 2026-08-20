@@ -35,8 +35,6 @@ export type TextInputConfig = {
 export type FilterFieldDefinition = {
   field: ResultsFilterField;
   label: string;
-  // Human-readable operator shown between field and values (single operator for
-  // now, so it's fixed text rather than a selector).
   operatorLabel: string;
   // Which value editor to render: the grouped consequence multi-select, a
   // free-text token list, or the (species-dependent) transcript-group choices.
@@ -76,27 +74,12 @@ export const getTranscriptGroupOptions = (
   return ids.map((value) => ({ value, label: TRANSCRIPT_GROUP_LABELS[value] }));
 };
 
-// The scores the "Variant impact predictions" filter can test. Separate options
-// rather than one field because the scales differ — CADD PHRED is ~0-99 and
-// scaled for interpretation while RAW is unbounded around -7 to +35, the
-// missense predictors are 0-1 probabilities except popEVE, and SpliceAI's four
-// delta scores describe four different splicing events — so a threshold means
-// nothing without knowing which score it is on.
-//
-// For the same reason the placeholder lives on the option rather than on the
-// field definition: it is a real hint at the expected range, taken from the
-// values actually observed in the data, so one shared example would mislead
-// on most of the scores.
 export type ScoreFieldOption = {
   value: ResultsFilterField;
   label: string;
   placeholder: string;
 };
 
-// The scores grouped by what they are predicting, which is also how the
-// submission form's "Variant impact predictions" panel presents them: a
-// genome-wide score, a missense-specific one and a splicing one answer
-// different questions and are rarely swapped for one another.
 export type ScoreFieldOptionGroup = {
   title: string;
   options: ScoreFieldOption[];
@@ -236,8 +219,8 @@ export const FILTER_FIELDS: FilterFieldDefinition[] = [
   },
   {
     field: 'allele_frequency',
-    // The operator is chosen inside the AF editor, so no fixed operator label.
     label: 'Allele frequency',
+    // The operator is chosen inside the AF editor, so no fixed operator label.
     operatorLabel: '',
     editor: 'af'
   },
@@ -290,17 +273,7 @@ export const createCondition = (
     };
   }
   if (isScoreField(field)) {
-    // `>=` by default: an impact-score filter is nearly always asking for the
-    // damaging end, so the common case needs no change.
-    //
-    // Unscored variants are excluded by default, which is the opposite of the
-    // allele-frequency filter's treatment of missing data — deliberately, because
-    // absence means something different in each. A variant with no allele
-    // frequency is absent from the reference set, which is itself evidence of
-    // rarity and usually the thing being hunted. A variant with no impact score
-    // was simply never scored (out of the predictor's scope, or skipped), which
-    // is not evidence of anything: keeping it would dilute a search for damaging
-    // variants with variants nothing has judged.
+    // `>=` by default
     return { id, field, operator: 'ge', values: [], includeMissing: false };
   }
   return { id, field, operator: 'in', values: [] };
@@ -335,11 +308,6 @@ export const definitionForField = (
 /**
  * Which scores this row may offer: those the job carries, minus the ones other
  * rows have already taken, plus whichever this row is on.
- *
- * The result keeps the category grouping, since that is what the row's score
- * menu renders as <optgroup>s. A group left with no scores is dropped rather
- * than returned empty, because an empty optgroup still renders its heading and
- * would advertise a category with nothing under it.
  */
 export const availableScoresForRow = (
   conditions: ResultsFilterCondition[],

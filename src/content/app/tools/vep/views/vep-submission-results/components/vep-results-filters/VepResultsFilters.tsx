@@ -20,7 +20,6 @@ import {
   SecondaryButton
 } from 'src/shared/components/button/Button';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
-import DownloadOptions from 'src/content/app/tools/vep/components/vep-submission-header/DownloadOptions';
 
 import ConsequenceMultiSelect from './ConsequenceMultiSelect';
 import TokenListInput from './TokenListInput';
@@ -53,8 +52,6 @@ type Props = {
   // The draft conditions being edited (not yet applied).
   conditions: ResultsFilterCondition[];
   onChange: (conditions: ResultsFilterCondition[]) => void;
-  // Commit the draft (triggers a filtered request); disabled unless the draft
-  // differs from what's applied.
   onApply: () => void;
   onClear: () => void;
   isDirty: boolean;
@@ -73,10 +70,6 @@ type Props = {
   // Ids of conditions already applied; their field (query type) select is frozen
   // so the applied filter type can't change — only its values stay editable.
   appliedConditionIds: Set<string>;
-  // Download links (VCF / flattened table) for just the rows passing the applied
-  // filters — carry the same `filters` payload the results request used. The
-  // control is disabled until filters are actually applied.
-  filteredDownload: { vcfHref: string; tableHref: string };
 };
 
 // Every score resolves to the one "Variant impact predictions" entry; which
@@ -101,8 +94,7 @@ const VepResultsFilters = (props: Props) => {
     transcriptGroupOptions,
     afSources,
     scoreFields,
-    appliedConditionIds,
-    filteredDownload
+    appliedConditionIds
   } = props;
 
   const updateCondition = (
@@ -261,7 +253,7 @@ const VepResultsFilters = (props: Props) => {
       </div>
 
       <div className={styles.controls}>
-        <SecondaryButton onClick={addCondition}>+ Add filter</SecondaryButton>
+        <SecondaryButton onClick={addCondition}>Add filter</SecondaryButton>
         <div className={styles.controlsRight}>
           {resultSummary && (
             <span className={styles.summary}>
@@ -269,18 +261,11 @@ const VepResultsFilters = (props: Props) => {
               {resultSummary.total.toLocaleString()}
             </span>
           )}
-          <DownloadOptions
-            vcfHref={filteredDownload.vcfHref}
-            tableHref={filteredDownload.tableHref}
-            disabled={!hasAppliedFilters}
-            label="Download filtered"
-            ariaLabel="Download filtered results"
-          />
           <SecondaryButton
             onClick={onClear}
             disabled={conditions.length === 0 && !hasAppliedFilters}
           >
-            Clear all
+            Clear filters
           </SecondaryButton>
           <PrimaryButton onClick={onApply} disabled={!isDirty}>
             Apply

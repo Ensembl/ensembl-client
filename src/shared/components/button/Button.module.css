@@ -5,17 +5,18 @@
   font-weight: var(--font-weight-bold);
 }
 
-.primaryButton:disabled {
-  --button-border: var(--primary-button-disabled-border, 1px solid var(--color-grey));
-  --button-color: var(--primary-button-disabled-color, transparent);
-  --button-text-color: var(--primary-button-disabled-text-color, var(--color-grey));
-}
-
 .secondaryButton {
   --button-border: var(--secondary-button-color, 1px solid var(--color-blue));
   --button-color: var(--secondary-button-color, var(--color-blue));
   --button-text-color: var(--secondary-button-text-color, var(--color-white));
   font-weight: var(--font-weight-bold);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  --button-border: var(--primary-button-disabled-border, 1px solid var(--color-grey));
+  --button-color: var(--primary-button-disabled-color, transparent);
+  --button-text-color: var(--primary-button-disabled-text-color, var(--color-grey));
 }
 
 .button {

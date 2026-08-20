@@ -54,6 +54,7 @@ type Props = {
     submittedAt: VepSubmission['submittedAt'];
     status: VepSubmission['status'];
   };
+  filtersString?: string; // filters might be applied on the page for submission results; they influence what is downloaded
 };
 
 const VepSubmissionHeader = (props: Props) => {
@@ -105,6 +106,7 @@ const VepSubmissionHeader = (props: Props) => {
         <ControlButtons
           {...props}
           isDeleting={isDeleting}
+          areDownloadOptionsShowing={shouldShowDownloadOptions}
           onDelete={toggleDeletionConfirmation}
           onDownload={toggleDownloadOptions}
         />
@@ -135,11 +137,18 @@ const hasServerSideSubmissionId = (submission: { status: string }) => {
 const ControlButtons = (
   props: Props & {
     isDeleting: boolean;
+    areDownloadOptionsShowing: boolean;
     onDelete: () => void;
     onDownload: () => void;
   }
 ) => {
-  const { submission, isDeleting, onDelete, onDownload } = props;
+  const {
+    submission,
+    isDeleting,
+    areDownloadOptionsShowing,
+    onDelete,
+    onDownload
+  } = props;
 
   const canGetResults = submission.status === 'SUCCEEDED';
   const vepResultsLink = urlFor.vepResults({
@@ -171,6 +180,7 @@ const ControlButtons = (
           status={LoadingState.NOT_REQUESTED}
           disabled={isDeleting}
           aria-label="Show download options"
+          aria-expanded={areDownloadOptionsShowing}
         />
 
         <ButtonLink
@@ -209,14 +219,23 @@ const DeletionConfirmation = (
 
 const DownloadOptions = ({
   submission,
-  onCancel
+  onCancel,
+  filtersString
 }: {
   submission: Props['submission'];
+  filtersString?: Props['filtersString'];
   onCancel: () => void;
 }) => {
   // Raw VCF vs a flattened, fully-expanded table that is spreadsheet-friendly
-  const vcfDownloadLink = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
-  const tsvDownloadLink = `${vcfDownloadLink}?format=tsv`;
+  const vcfDownloadLink = buildDownloadLink({
+    submission,
+    filtersString
+  });
+  const tsvDownloadLink = buildDownloadLink({
+    submission,
+    filtersString,
+    format: 'tsv'
+  });
 
   return (
     <div className={styles.confirmationContainer}>
@@ -235,6 +254,31 @@ const DownloadOptions = ({
       </div>
     </div>
   );
+};
+
+const buildDownloadLink = ({
+  submission,
+  format,
+  filtersString
+}: {
+  submission: Props['submission'];
+  format?: string;
+  filtersString?: string;
+}) => {
+  let url = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
+  const searchParams = new URLSearchParams();
+  if (format) {
+    searchParams.set('format', format);
+  }
+  if (filtersString) {
+    searchParams.set('filters', filtersString);
+  }
+  const queryString = searchParams.toString();
+  if (queryString) {
+    url = `${url}?${queryString}`;
+  }
+
+  return url;
 };
 
 /*
