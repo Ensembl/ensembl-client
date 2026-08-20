@@ -101,14 +101,7 @@
   vertical-align: top;
 }
 
-/* Caps on the results table's own narrow columns: Ref (2nd) and Location (3rd).
-   Scoped with child combinators to this table's own rows, and stated per row
-   group, because the annotation panel nests its own tables inside a `td` of this
-   one: a descendant selector (and the bare `th:nth-child(2)` that used to sit in
-   this list, unscoped, matching every second header cell on the page) capped the
-   second and third column of every breakdown table too. That squeezed the
-   Classifier / ΔP columns below the width their own text needs, and the text
-   then spilled past the panel. */
+/* Narrow columns of the table: Ref (2nd column) and Location (3rd column) */
 .table > thead > tr > th:nth-child(2),
 .table > tbody > tr > td:nth-child(2) {
   max-width: 50px;
@@ -117,6 +110,14 @@
 .table > thead > tr > th:nth-child(3),
 .table > tbody > tr > td:nth-child(3) {
   max-width: 100px;
+}
+
+.table tr:has(.detailCell) {
+  border-top: none;
+
+  td {
+    padding-top: 0;
+  }
 }
 
 /*
