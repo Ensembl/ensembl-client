@@ -30,6 +30,7 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 import useVepResultsPagination, {
   PER_PAGE_OPTIONS
 } from './hooks/useVepResultsPagination';
+import { usePendingUIFlags } from 'src/shared/hooks/usePendingUIFlags';
 
 import {
   getVepSubmissionsRestoredFlag,
@@ -69,7 +70,6 @@ import VepResultsAnnotationDetail from './components/vep-results-annotation-deta
 import VepResultsFilters from './components/vep-results-filters/VepResultsFilters';
 import { getTranscriptGroupOptions } from './components/vep-results-filters/resultsFilterFields';
 
-import Chevron from 'src/shared/components/chevron/Chevron';
 import Pill from 'src/shared/components/pill/Pill';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import SpeciesName from 'src/shared/components/species-name/SpeciesName';
@@ -150,24 +150,16 @@ const VepSubmissionResults = () => {
     action: 'collapse',
     nonce: 0
   });
-  // Opening every panel on the page is a big synchronous render — measured at
-  // ~1.1s of blocked main thread for 100 variants on a fast machine, and two to
-  // three times that on a modest one, which is long enough that the button
-  // appears not to have worked. Expanding one panel is imperceptible, so it is
-  // only the bulk command that needs this.
-  //
-  // As a transition React renders it in interruptible chunks instead of one
-  // blocking commit: the click responds at once, the page keeps scrolling, and
-  // `isExpansionPending` is true for the duration, which is what the control
-  // shows. It is the same total work — it just stops being a freeze.
+
   const [isExpansionPending, startExpansionTransition] = useTransition();
-  const toggleAllDetails = () =>
+  const toggleAllDetails = () => {
     startExpansionTransition(() => {
       setDetailExpansion((prev) => ({
         action: prev.action === 'expand' ? 'collapse' : 'expand',
         nonce: prev.nonce + 1
       }));
     });
+  };
 
   const {
     data: vepResults,
@@ -262,7 +254,7 @@ const VepSubmissionResults = () => {
         })
       );
     }
-  }, [submission, vepResults]);
+  }, [submission, vepResults, dispatch]);
 
   const onPageChange = (page: number) => {
     setPage(page);
@@ -466,21 +458,11 @@ const VepResultsHeader = ({
           control is not offered rather than left to flip its own label over an
           unchanged table. */}
       {canExpandDetails && (
-        <button
-          type="button"
-          className={styles.expandAllToggle}
-          aria-pressed={allDetailsExpanded}
-          aria-busy={isExpansionPending}
+        <ExpandAllAnnotationsToggle
+          isExpanded={allDetailsExpanded}
+          isPending={isExpansionPending}
           onClick={onToggleAllDetails}
-        >
-          {allDetailsExpanded ? 'Collapse all' : 'Expand all'}
-          {/* The label still flips immediately — the transition commits the
-              command straight away and only the panels render behind it — so
-              the spinner is what says the page is still catching up. */}
-          {isExpansionPending && (
-            <CircleLoader size="small" className={styles.expandAllSpinner} />
-          )}
-        </button>
+        />
       )}
       <div>
         <ShowHide
@@ -491,6 +473,37 @@ const VepResultsHeader = ({
         />
       </div>
     </div>
+  );
+};
+
+const ExpandAllAnnotationsToggle = ({
+  isExpanded,
+  isPending,
+  onClick
+}: {
+  isExpanded: boolean;
+  isPending: boolean;
+  onClick: () => void;
+}) => {
+  const {
+    shouldBlockInteraction: shouldDisableButton,
+    shouldDisplayPendingUI
+  } = usePendingUIFlags(isPending);
+
+  return (
+    <button
+      type="button"
+      className={styles.expandAllToggle}
+      aria-pressed={isExpanded}
+      aria-busy={shouldDisableButton}
+      onClick={onClick}
+      disabled={shouldDisableButton}
+    >
+      {isExpanded ? 'Collapse all' : 'Expand all'}
+      {shouldDisplayPendingUI && (
+        <CircleLoader size="small" className={styles.expandAllSpinner} />
+      )}
+    </button>
   );
 };
 
@@ -911,21 +924,15 @@ const VariantRow = (props: {
           </td>
           <td>
             {hasDetail && (
-              <button
-                type="button"
-                className={styles.detailToggle}
+              <ShowHide
+                label={isDetailOpen ? 'Hide' : 'Show'}
+                isExpanded={isDetailOpen}
                 aria-expanded={isDetailOpen}
                 aria-label={
                   isDetailOpen ? 'Hide annotations' : 'Show annotations'
                 }
                 onClick={() => toggleDetail(index)}
-              >
-                <Chevron
-                  direction={isDetailOpen ? 'up' : 'down'}
-                  animate={true}
-                  className={styles.detailChevron}
-                />
-              </button>
+              />
             )}
           </td>
         </tr>

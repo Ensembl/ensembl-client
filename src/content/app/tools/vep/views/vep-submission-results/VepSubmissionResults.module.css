@@ -1,44 +1,12 @@
 .container {
   display: grid;
-
-  /* Three rows, because this holds three things: the submission header, the
-     delete confirmation it opens, and the results box.
-
-     The middle row is the one that matters. The confirmation is conditional, so
-     the grid used to declare two rows for what is sometimes three children —
-     the confirmation took the `minmax(0, 1fr)` row meant for the results box,
-     and the box was pushed into an implicit row. `minmax(0, 1fr)` may be zero,
-     and with the box's implicit row taking every pixel there was nothing left
-     to give: the row resolved to 0px and the confirmation's 12px of content
-     spilled over the table beneath it.
-
-     `auto` here collapses to nothing while the confirmation is absent, which is
-     almost always, so the normal layout is unchanged. */
   grid-template-rows: 40px auto minmax(0, 1fr);
   height: 100%;
-
-  /* This is itself a grid item, in VepPageContent's `max-content 1fr` row. A
-     grid item's automatic minimum size is its content, so without this the row
-     grew to all hundred rows of the table however definite its parent was — and
-     the `height: 100%` above resolved against that, not the window.
-
-     The visible symptom was the results table not scrolling: it *was*
-     overflowing horizontally, but its scroll container was as tall as the whole
-     table, leaving the horizontal scrollbar below the fold, and nothing
-     overflowed vertically because the page just grew instead. Scoped here
-     rather than to the row itself, which the form page shares and which is
-     right to grow. */
   min-height: 0;
   padding-top: 20px;
   margin-left: var(--double-standard-gutter);
   margin-right: var(--standard-gutter);
   max-width: calc(var(--vep-container-max-width) - var(--standard-gutter));
-
-  /* No overflow clip here. The table's own horizontal/vertical scroll is
-     contained by .tableViewport / .tableViewportWrapper, so clipping the
-     container was redundant — and it cut off the filter's consequence dropdown
-     whenever an empty (0-results) table left this container short of the
-     dropdown's height. */
 }
 
 .fullPageSpinnerContainer {
@@ -48,11 +16,6 @@
   padding-top: 150px;
 }
 
-/* Pinned to the last row rather than left to auto-placement: the row before it
-   belongs to the delete confirmation, which is only sometimes there. Without
-   this the box would slide up into that row whenever the confirmation is
-   absent — which is the usual case — and take `auto` instead of the
-   `minmax(0, 1fr)` its scrolling depends on. */
 .resultsBox {
   grid-row: 3;
   display: grid;
@@ -77,7 +40,6 @@
   margin-bottom: 16px;
 }
 
-/* Text button that opens / closes every annotation-detail panel on the page. */
 .expandAllToggle {
   grid-column: expand-toggle;
   appearance: none;
@@ -226,26 +188,6 @@
   font-size: 11px;
 }
 
-.detailToggle {
-  appearance: none;
-  border: none;
-  background: none;
-  cursor: pointer;
-  padding: 4px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.detailChevron,
-.detailChevronOpen {
-  width: 12px;
-  height: 12px;
-  transition: transform 0.15s ease;
-}
-
-.detailChevronOpen {
-  transform: rotate(180deg);
-}
 
 /* The annotation panel spans the full width between the row division lines.
    The shared Table's own `td` rule outranks a plain class selector here (its
