@@ -55,19 +55,19 @@ import { buildOpenTargetsVariantId } from 'src/content/app/tools/vep/utils/openT
 import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
 import { resolveResultsPanels } from 'src/content/app/tools/vep/utils/resultsPanels';
 import { transcriptFeatureExplorerUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
-import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
+import { getTranscriptGroupOptions } from './components/vep-results-filters/resultsFilterFields';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
 import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
-import { Table, ColumnHead } from 'src/shared/components/table';
 import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
 import VepResultsGene from './components/vep-results-gene/VepResultsGene';
 import VepResultsLocation from './components/vep-results-location/VepResultsLocation';
 import VepResultsAllele from './components/vep-results-allele/VepResultsAllele';
 import VepResultsAnnotationDetail from './components/vep-results-annotation-detail/VepResultsAnnotationDetail';
 import VepResultsFilters from './components/vep-results-filters/VepResultsFilters';
-import { getTranscriptGroupOptions } from './components/vep-results-filters/resultsFilterFields';
 
+import { Table, ColumnHead } from 'src/shared/components/table';
+import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 import Pill from 'src/shared/components/pill/Pill';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import SpeciesName from 'src/shared/components/species-name/SpeciesName';
