@@ -1045,11 +1045,7 @@ const VariantTranscript = (props: {
   };
 }) => {
   const { genomeId, transcript } = props;
-  // A transcript can carry several tags at once (e.g. MANE Select + GENCODE
-  // primary + canonical); show all that apply. The order here is only the
-  // left-to-right display order and mirrors the transcript-ranking hierarchy;
-  // it does not suppress the lower tags. (MANE Select and MANE Plus Clinical
-  // are mutually exclusive, so at most one MANE tag ever shows.)
+
   const badges = [
     transcript.is_mane_select && 'MANE Select',
     transcript.is_mane_plus_clinical && 'MANE Plus Clinical',

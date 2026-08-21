@@ -155,18 +155,6 @@ describe('renderRows', () => {
         /strongValue/
       );
     });
-
-    // The pair the stylesheet keys the monospace weight off: IBM Plex Mono has
-    // no 700 face, so `.mono.strongValue` drops to semibold rather than letting
-    // the browser synthesise one. Both classes have to be on the same element
-    // for that rule to bite.
-    it('carries mono and strong together on one element', () => {
-      renderSpecs([{ label: 'SPDI', value: '1:11021:G:A', mono: true }]);
-
-      const value = screen.getByText('1:11021:G:A');
-      expect(value.className).toMatch(/mono/);
-      expect(value.className).toMatch(/strongValue/);
-    });
   });
 });
 

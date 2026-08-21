@@ -15,6 +15,7 @@
  */
 
 import type { ReactNode } from 'react';
+import classNames from 'classnames';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 // The form's help renderer, reused so one OptionHelp renders identically on the
@@ -76,7 +77,6 @@ export const withOptionHelp = (
 export const Row = (props: {
   label: ReactNode;
   value: ReactNode;
-  mono?: boolean;
   emphasis?: boolean;
   /**
    * A row that is only its value — no label opposite it. Rendered left-aligned
@@ -103,37 +103,34 @@ export const Row = (props: {
    */
   strong?: boolean;
 }) => {
-  const valueClass =
-    [
-      props.mono ? styles.mono : null,
-      props.strong ? styles.strongValue : null,
-      props.stacked ? styles.stackedRowValue : null
-    ]
-      .filter(Boolean)
-      .join(' ') || undefined;
+  const contentStyles =
+    classNames({
+      [styles.strongValue]: props.strong,
+      [styles.stackedRowValue]: props.stacked
+    }) ?? undefined;
 
-  return props.plain ? (
-    <div className={`${styles.row} ${styles.plainRow}`}>
-      <span className={valueClass}>{props.value}</span>
-    </div>
-  ) : (
-    <div
-      className={[
-        styles.row,
-        props.stacked ? styles.stackedRow : null,
-        // A stack with nothing to label stands on its own, so it carries the
-        // space a label would otherwise have given it.
-        props.stacked && !props.label ? styles.standaloneStack : null
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
+  if (props.plain) {
+    const rowStyles = classNames(styles.row, styles.plainRow);
+    return (
+      <div className={rowStyles}>
+        <span className={contentStyles}>{props.value}</span>
+      </div>
+    );
+  }
+
+  const rowStyles = classNames(styles.row, {
+    [styles.stackedRow]: props.stacked,
+    [styles.standaloneStack]: props.stacked && !props.label
+  });
+
+  return (
+    <div className={rowStyles}>
       {props.label ? (
         <span className={props.emphasis ? styles.optionLabel : styles.rowLabel}>
           {props.label}
         </span>
       ) : null}
-      <span className={valueClass}>{props.value}</span>
+      <span className={contentStyles}>{props.value}</span>
     </div>
   );
 };
@@ -351,7 +348,6 @@ export const renderRows = (
             key={row.key ?? index}
             label={label(row.label)}
             value={row.valueNode}
-            mono={row.mono}
             emphasis={emphasis}
             plain={row.plain}
             stacked={row.stacked}
@@ -373,7 +369,6 @@ export const renderRows = (
           key={row.key ?? index}
           label={label(row.label)}
           value={row.placeholder}
-          mono={row.mono}
           emphasis={emphasis}
           plain={row.plain}
         />
@@ -400,7 +395,6 @@ export const renderRows = (
             formatted
           )
         }
-        mono={row.mono}
         emphasis={emphasis}
         plain={row.plain}
         strong
