@@ -4,6 +4,7 @@
   background-color: var(--color-light-grey);
   content-visibility: auto; /* to reduce browser work and help with performance */
   contain-intrinsic-height: auto 400px;
+  line-height: 20px;
 }
 
 .sections {
