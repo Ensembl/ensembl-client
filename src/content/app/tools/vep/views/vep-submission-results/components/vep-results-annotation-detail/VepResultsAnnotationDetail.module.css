@@ -245,24 +245,8 @@ table {
   margin-bottom: 10px;
 }
 
-.listLink {
-  color: var(--color-blue);
-}
-
-.listLink svg {
-  margin-right: 5px;
-  vertical-align: -1px;
-}
-
 .plainRow {
   justify-content: flex-start;
-}
-
-.helpLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  color: var(--color-blue);
 }
 
 .phenotypeToggle {

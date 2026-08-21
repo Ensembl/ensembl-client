@@ -17,11 +17,9 @@
 import { Fragment } from 'react';
 import type { ReactNode } from 'react';
 
-import ExternalLinkIcon from 'src/content/app/tools/vep/components/external-link-icon/ExternalLinkIcon';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import type { OptionHelp } from 'src/content/app/tools/vep/types/vepFormConfig';
-
-import styles from './optionHelp.module.css';
 
 const DEFAULT_LINK_LABEL = 'More information';
 
@@ -39,24 +37,6 @@ const renderDescription = (description: string): ReactNode[] =>
       )
     );
 
-const HelpLink = (props: { href: string; label?: string }) => (
-  <a
-    className={styles.helpLink}
-    href={props.href}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    <ExternalLinkIcon />
-    {props.label ?? DEFAULT_LINK_LABEL}
-  </a>
-);
-
-/**
- * Renders structured option help (see the `OptionHelp` API contract) into
- * tooltip content: the description followed by any resource links. Presentation
- * only — it neither knows nor cares whether the help came from the API or the
- * local fallback map.
- */
 const OptionHelpText = (props: { help: OptionHelp }) => {
   const { description, links } = props.help;
   return (
@@ -65,7 +45,9 @@ const OptionHelpText = (props: { help: OptionHelp }) => {
       {links?.map((link) => (
         <Fragment key={link.href}>
           {' '}
-          <HelpLink href={link.href} label={link.label} />
+          <ExternalLink to={link.href}>
+            {link.label ?? DEFAULT_LINK_LABEL}
+          </ExternalLink>
         </Fragment>
       ))}
     </>

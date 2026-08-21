@@ -16,15 +16,8 @@
 
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
 
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
-import TruncatedList, {
-  type TruncatedListToggleProps
-} from 'src/content/app/tools/vep/components/truncated-list/TruncatedList';
-import ExternalLinkIcon from 'src/content/app/tools/vep/components/external-link-icon/ExternalLinkIcon';
-import Chevron from 'src/shared/components/chevron/Chevron';
-import StarRating from 'src/content/app/tools/vep/components/star-rating/StarRating';
-import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
-
+import { withScore } from 'src/content/app/tools/vep/utils/annotationFormatters';
+import { proteinFeatureExplorerUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 import {
   renderRows,
   renderRowGroup,
@@ -37,16 +30,23 @@ import {
   Indented,
   type RowSpec
 } from './annotationRows';
-
-import { withScore } from 'src/content/app/tools/vep/utils/annotationFormatters';
-import { proteinFeatureExplorerUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
-import type { PredictedTranscriptConsequence } from 'src/content/app/tools/vep/types/vepResultsResponse';
-import type { OptionHelp } from 'src/content/app/tools/vep/types/vepFormConfig';
 import {
   getAnnotation,
   type AnnotatedEntity,
   type PluginId
 } from 'src/content/app/tools/vep/utils/annotations';
+
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+import TruncatedList, {
+  type TruncatedListToggleProps
+} from 'src/content/app/tools/vep/components/truncated-list/TruncatedList';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import Chevron from 'src/shared/components/chevron/Chevron';
+import StarRating from 'src/content/app/tools/vep/components/star-rating/StarRating';
+import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
+
+import type { PredictedTranscriptConsequence } from 'src/content/app/tools/vep/types/vepResultsResponse';
+import type { OptionHelp } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type {
   DisplayBlockSpec,
   DisplayCellSpec,
@@ -284,15 +284,9 @@ const rowLabel = (row: DisplayRowSpec): ReactNode =>
           row.help_link ? (
             <>
               {row.help}{' '}
-              <a
-                href={row.help_link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.helpLink}
-              >
-                <ExternalLinkIcon />
+              <ExternalLink to={row.help_link.href}>
                 {row.help_link.label ?? 'Read more'}
-              </a>
+              </ExternalLink>
             </>
           ) : (
             row.help
@@ -401,6 +395,9 @@ const toRowSpec = (
     const href = row.link_from
       ? readField(row.link_from, spec, entities)
       : value;
+    const hrefString = interpolateUrl(row.link.template, {
+      value: String(href)
+    });
     return {
       key: row.key ?? undefined,
       label: rowLabel(row),
@@ -409,14 +406,12 @@ const toRowSpec = (
       // *href* is missing still has something to say, so it renders unlinked
       // rather than disappearing — `undefined` leaves the formatting to
       // renderRows, which is exactly the plain-value path.
-      valueNode: isAbsent(value) ? null : isAbsent(href) ? undefined : (
-        <ExternalLink
-          template={row.link.template}
-          fields={{ value: String(href) }}
-        >
-          {formatValue(value, row.format ?? 'text')}
-        </ExternalLink>
-      )
+      valueNode:
+        isAbsent(value) || !hrefString ? null : (
+          <ExternalLink to={hrefString}>
+            {formatValue(value, row.format ?? 'text')}
+          </ExternalLink>
+        )
     };
   }
   // A row that stacks a list: one rendered line per element under one label,
@@ -568,38 +563,6 @@ const interpolateUrl = (
   return usable && /^https?:\/\//i.test(url) ? url : null;
 };
 
-/**
- * A value linked out, or the value alone when there is no usable URL.
- *
- * The house shape in one place — the icon leads, the value is the blue text —
- * and, more to the point, the URL is built here too. Eight call sites had
- * grown their own copy of this anchor and they had drifted: only some added
- * `nowrap`, and only the two newest refused to render a link they could not
- * build.
- */
-const ExternalLink = (props: {
-  template: string;
-  fields: Record<string, unknown>;
-  className?: string;
-  children: ReactNode;
-}) => {
-  const href = interpolateUrl(props.template, props.fields);
-  if (href === null) {
-    return <>{props.children}</>;
-  }
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={props.className ?? styles.listLink}
-    >
-      <ExternalLinkIcon />
-      {props.children}
-    </a>
-  );
-};
-
 // Named link builders, for links that are not a simple `{field}` template: an
 // algorithmic URL (ProtVar) or an in-app "View in" popup (the protein id). Each
 // gets the job context (genome / ProtVar URL / consequence) so it can build a
@@ -615,31 +578,18 @@ const LINK_BUILDERS: Record<
   // rather than sitting alongside as a bare icon.
   protvar: (context, value) =>
     context.protvarUrl ? (
-      <a
-        href={context.protvarUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.listLink}
-        aria-label="View in ProtVar"
-      >
-        <ExternalLinkIcon />
-        {value}
-      </a>
+      <ExternalLink to={context.protvarUrl}>{value}</ExternalLink>
     ) : null,
   // The variant's OpenTargets page: the link icon, then the variant in
   // OpenTargets' own notation as the link text. Unlike ProtVar's icon-only link
   // this *is* the row's value — there is no annotation field behind it.
   opentargets_variant: (context) =>
     context.openTargetsVariantId ? (
-      <a
-        href={`https://platform.opentargets.org/variant/${context.openTargetsVariantId}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.listLink}
+      <ExternalLink
+        to={`https://platform.opentargets.org/variant/${context.openTargetsVariantId}`}
       >
-        <ExternalLinkIcon />
         {context.openTargetsVariantId}
-      </a>
+      </ExternalLink>
     ) : null,
   // The protein id as an in-app "View in" popup trigger (Entity Viewer), built
   // from the job genome plus the consequence's gene. Unlike an external icon it
@@ -777,16 +727,12 @@ const renderCell = (
     return <span key={key}>{text}</span>;
   }
   if (cell.link?.kind === 'external' && cell.link.template) {
-    return (
-      <ExternalLink
-        key={key}
-        template={cell.link.template}
-        fields={record}
-        className={styles.listLink}
-      >
+    const url = interpolateUrl(cell.link.template, record);
+    return url ? (
+      <ExternalLink key={key} to={url}>
         {text}
       </ExternalLink>
-    );
+    ) : null;
   }
   // Plain value. An optional `label` becomes a prefix, for a meta cell like
   // OpenTargets' "L2G 0.42". (Cell-level builder links are not used — a row's or
@@ -1126,9 +1072,7 @@ const columnItem = (
   // An identifier's link is one thing: its icon must not be left on the line
   // above. Declared per item, never assumed — a linked condition *name* is
   // prose and has to wrap.
-  const linkClass = items.nowrap
-    ? `${styles.listLink} ${styles.nowrap}`
-    : styles.listLink;
+  const linkClass = items.nowrap ? styles.nowrap : undefined;
 
   const template =
     items.link?.kind === 'external' ? items.link.template : undefined;
@@ -1142,16 +1086,14 @@ const columnItem = (
     return withStars(
       stars,
       <span className={styles.splitLinks}>
-        {parts.map((part, index) => (
-          <ExternalLink
-            key={index}
-            template={template}
-            fields={{ value: part }}
-            className={linkClass}
-          >
-            {part}
-          </ExternalLink>
-        ))}
+        {parts.map((part, index) => {
+          const url = interpolateUrl(template, { value: part });
+          return url ? (
+            <ExternalLink key={index} to={url} className={linkClass}>
+              {part}
+            </ExternalLink>
+          ) : null;
+        })}
       </span>
     );
   }
@@ -1159,16 +1101,15 @@ const columnItem = (
   if (typeof href !== 'string' || href === '') {
     return withStars(stars, label);
   }
-  return withStars(
-    stars,
-    <ExternalLink
-      template={template}
-      fields={{ value: href }}
-      className={linkClass}
-    >
-      {label}
-    </ExternalLink>
-  );
+  const url = interpolateUrl(template, { value: href });
+  return url
+    ? withStars(
+        stars,
+        <ExternalLink to={url} className={linkClass}>
+          {label}
+        </ExternalLink>
+      )
+    : null;
 };
 
 /** Whether a list element passes a `where` filter (see DisplayWhereSpec). */
@@ -1320,9 +1261,6 @@ const tableCellContent = (
     return text;
   }
 
-  // `link_from` points the link at a sibling field of the same element: the
-  // reader sees the condition's name, the href is the URL resolved for it in
-  // the parse. No URL there means no link, not a broken one.
   if (column.link_from) {
     const href = isRecord
       ? (element as Record<string, unknown>)[column.link_from]
@@ -1330,15 +1268,12 @@ const tableCellContent = (
     if (typeof href !== 'string' || href === '') {
       return text;
     }
-    return (
-      <ExternalLink
-        template={template}
-        fields={{ value: href }}
-        className={linkClass}
-      >
+    const url = interpolateUrl(template, { value: href });
+    return url ? (
+      <ExternalLink to={url} className={linkClass}>
         {text}
       </ExternalLink>
-    );
+    ) : null;
   }
 
   const parts = column.split ? text.split(column.split) : [text];
@@ -1349,22 +1284,12 @@ const tableCellContent = (
       return <Fragment key={index}>{part}</Fragment>;
     }
     const value = prefix ? part.slice(prefix.length) : part;
-    return (
-      <ExternalLink
-        key={index}
-        template={template}
-        // The element's own fields as well as `value`, so a column's template
-        // can name them — `{urn}` and `{accession}` for MaveDB's score set.
-        // An item cell has always been able to do this (it passes the whole
-        // record); a column could only fill `{value}`, which is what made
-        // moving a list block to a table silently drop its link. `value` is
-        // written last so a field of that name cannot shadow the cell's own.
-        fields={{ ...resolved.fields, value }}
-        className={linkClass}
-      >
+    const url = interpolateUrl(template, { ...resolved.fields, value });
+    return url ? (
+      <ExternalLink key={index} to={url} className={linkClass}>
         {value}
       </ExternalLink>
-    );
+    ) : null;
   });
 
   if (!column.split) {
