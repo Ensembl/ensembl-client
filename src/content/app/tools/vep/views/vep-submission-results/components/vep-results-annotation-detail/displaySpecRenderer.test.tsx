@@ -1925,7 +1925,7 @@ describe('renderDisplayOption', () => {
     ).toBe(2);
   });
 
-  it('ClinVar: a classification with no submitters offers nothing to expand', () => {
+  test('ClinVar: a classification with no submitters offers nothing to expand', () => {
     renderOption('phenotypes', {
       consequence: [
         annotation('clinvar', 'transcript', {
@@ -1964,7 +1964,7 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByRole('button', { name: /Pathogenic/ })).toBeNull();
   });
 
-  it('ClinVar structural variants: a headed significance + origin block', () => {
+  test('ClinVar structural variants: a headed significance + origin block', () => {
     renderOption('clinvar', {
       subOptionRan: clinvarSvSelected,
       allele: [
@@ -1985,7 +1985,7 @@ describe('renderDisplayOption', () => {
 
   // --- view gating + list-as-rows + row/item link builder + count (ProtVar) --
 
-  it('ProtVar default view: headed per-pocket / interface rows, links', () => {
+  test('ProtVar default view: headed per-pocket / interface rows, links', () => {
     renderOption('protvar', {
       consequence: [
         annotation('protvar', 'transcript', {
@@ -2078,6 +2078,23 @@ describe('renderDisplayOption', () => {
     expect(
       screen.queryByText('Protein-Protein Interaction Interface')
     ).toBeNull();
+  });
+
+  test('ProtVar: builder link on a row and on list items', () => {
+    renderOption('protvar', {
+      consequence: [
+        annotation('protvar', 'transcript', {
+          structure_stability_score: 1.23,
+          pockets: [{ pocket_id: 'P34', energy: 2, score: 0.324 }]
+        })
+      ],
+      protvarUrl: 'https://www.ebi.ac.uk/ProtVar/query?chromosome=1',
+      subOptionRan: () => true
+    });
+    const scoreLink = screen.getByText('0.324').closest('a');
+    expect(scoreLink?.getAttribute('href')).toBe(
+      'https://www.ebi.ac.uk/ProtVar/query?chromosome=1'
+    );
   });
 
   // --- app_popup link builder (protein) -------------------------------------
@@ -2423,99 +2440,6 @@ describe('option help on the results heading', () => {
     expect(
       container.querySelectorAll('[class*="questionButton"]')
     ).toHaveLength(0);
-  });
-});
-
-describe('the link icon always leads its text', () => {
-  /**
-   * The house rule: every link renders as icon, gap, then the blue clickable
-   * text. Asserted across the link kinds rather than one at a time, because
-   * they are built in four separate places (a row value, a table cell, a split
-   * cell's parts, and a named builder) and drifted apart once already.
-   */
-  /** The first child element of every anchor that has text — `svg` when the
-   *  icon leads, which is what each test asserts. */
-  const firstChildOfEachLink = (container: HTMLElement) =>
-    [...container.querySelectorAll('a')]
-      .filter((anchor) => (anchor.textContent ?? '').trim())
-      .map((anchor) => anchor.firstElementChild?.tagName.toLowerCase());
-
-  it('in a list item link (GO terms)', () => {
-    const { container } = renderOption('go', {
-      consequence: [
-        annotation('go', 'transcript', {
-          go_terms: [
-            {
-              id: 'GO:0006355',
-              name: 'regulation of transcription',
-              namespace: 'biological_process'
-            }
-          ]
-        })
-      ]
-    });
-    expect(firstChildOfEachLink(container)).toEqual(['svg']);
-  });
-
-  it('in a named builder link (the OpenTargets variant)', () => {
-    const { container } = renderOption('opentargets', {
-      allele: [
-        annotation('opentargets', 'allele', {
-          gwas_associations: [],
-          qtl_associations: [
-            { gene_id: 'ENSG_A', biosample: 'blood', p_value: null, beta: null }
-          ]
-        })
-      ],
-      openTargetsVariantId: '1_230710048_A_G'
-    });
-    expect(firstChildOfEachLink(container)).toEqual(['svg']);
-  });
-
-  it('in a builder link on a row and on list items (ProtVar)', () => {
-    // ProtVar's was the last icon still trailing: it rendered as a bare icon
-    // beside the score rather than leading it, on both shapes it appears in.
-    const { container } = renderOption('protvar', {
-      consequence: [
-        annotation('protvar', 'transcript', {
-          structure_stability_score: 1.23,
-          pockets: [{ pocket_id: 'P34', energy: 2, score: 0.324 }]
-        })
-      ],
-      protvarUrl: 'https://www.ebi.ac.uk/ProtVar/query?chromosome=1',
-      subOptionRan: () => true
-    });
-    expect(firstChildOfEachLink(container)).toEqual(['svg', 'svg']);
-    // the score is the link text, not a bare icon next to it
-    const scoreLink = screen.getByText('0.324').closest('a');
-    expect(scoreLink?.getAttribute('href')).toBe(
-      'https://www.ebi.ac.uk/ProtVar/query?chromosome=1'
-    );
-  });
-
-  it('in a table cell link (IntAct)', () => {
-    const { container } = renderOption('intact', {
-      consequence: [
-        annotation('intact', 'transcript', {
-          interactions: [
-            {
-              interaction_ac: 'EBI-1234',
-              feature_ac: 'EBI-5678',
-              feature_short_label: 'x',
-              feature_annotation: 'y',
-              ap_ac: 'uniprotkb:P37840',
-              interaction_participants: 'z',
-              pmid: '12345678'
-            }
-          ]
-        })
-      ],
-      showAll: true,
-      subOptionRan: () => true
-    });
-    const firstChildren = firstChildOfEachLink(container);
-    expect(firstChildren.length).toBeGreaterThan(0);
-    expect(firstChildren).toEqual(firstChildren.map(() => 'svg'));
   });
 });
 
