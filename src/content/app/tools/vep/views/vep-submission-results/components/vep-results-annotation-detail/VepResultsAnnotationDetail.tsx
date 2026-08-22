@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo, Fragment, type ReactNode } from 'react';
+import { useState, useMemo, Fragment, type ReactNode } from 'react';
 
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -86,54 +86,6 @@ const VepResultsAnnotationDetail = (props: {
     onCollapse
   } = props;
   const [showAll, setShowAll] = useState(false);
-
-  // Build this panel's contents only once it is near the viewport.
-  //
-  // "Expand all" opens one of these per row, and at the default page size of
-  // 100 that was ~14,000 DOM nodes in one go — but the greater cost is the
-  // JavaScript, not the nodes: a trace of it is ~90% scripting, because every
-  // panel walks the display spec for every option of every panel to decide what
-  // it has to show. Almost all of that was for panels the reader never scrolled
-  // to.
-  //
-  // `content-visibility: auto` (see the stylesheet) already stops the *browser*
-  // laying out a panel that is off screen, but React builds it regardless; this
-  // is the same idea carried into the render. The two agree by construction,
-  // since both key off this element being near the viewport, and the panel's
-  // `contain-intrinsic-height: auto 400px` reserves the space in the meantime —
-  // so nothing here has to guess a placeholder height.
-  //
-  // Latched: once a panel has been built it stays built, so scrolling back over
-  // it costs nothing and never discards the "Show all" state.
-  const [detailNode, setDetailNode] = useState<HTMLDivElement | null>(null);
-  // Starts true where there is no IntersectionObserver (jsdom in the unit
-  // tests, very old browsers), so the panel renders everything rather than
-  // nothing. Set as the initial state rather than from the effect below: the
-  // check is a fact about the environment, not something that changes, and
-  // flipping it from inside the effect is a state update React cannot
-  // distinguish from a render loop.
-  const [hasEnteredView, setHasEnteredView] = useState(
-    typeof IntersectionObserver === 'undefined'
-  );
-
-  useEffect(() => {
-    if (!detailNode || hasEnteredView) {
-      return;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setHasEnteredView(true);
-          observer.disconnect();
-        }
-      },
-      // Build a screenful ahead of the scroll, so a panel is ready by the time
-      // it is looked at rather than assembling under the reader.
-      { rootMargin: '600px 0px' }
-    );
-    observer.observe(detailNode);
-    return () => observer.disconnect();
-  }, [detailNode, hasEnteredView]);
 
   // The same list, in the shape a `map_rows` block draws its rows from. The
   // display spec cannot name these: which populations a job carries is chosen
@@ -304,31 +256,12 @@ const VepResultsAnnotationDetail = (props: {
     );
   };
 
-  // Each section is `break-inside: avoid`, so it is an indivisible unit: a
-  // panel with N sections can never usefully fill more than N columns. Without
-  // this cap, a variant with only a couple of annotations spread those two
-  // sections over the three or four columns the viewport had room for, leaving
-  // most of the panel empty — which is what made sparse results look sparse.
-  //
-  // Capped at 3 as well: beyond that the columns are narrower than the widest
-  // tables want (see `.sections`), and a very long panel gains little from a
-  // fourth.
-  // Gated on `hasEnteredView` here rather than only in the JSX below: this is
-  // where the work actually happens — `renderPanel` walks every option of every
-  // panel through the display spec — so returning early from the markup alone
-  // would have saved nothing.
-  const renderedSections: { id: string; node: ReactNode }[] = !hasEnteredView
-    ? []
-    : (panels ?? [])
-        .map((panel) => ({ id: panel.id, node: renderPanel(panel) }))
-        .filter((section): section is { id: string; node: ReactNode } =>
-          Boolean(section.node)
-        );
+  const renderedSections: { id: string; node: ReactNode }[] = (panels ?? [])
+    .map((panel) => ({ id: panel.id, node: renderPanel(panel) }))
+    .filter((section): section is { id: string; node: ReactNode } =>
+      Boolean(section.node)
+    );
 
-  // Phenotypes drops out of the column flow and takes the panel's full width at
-  // the bottom. Its conditions tables are the widest thing here — four columns
-  // of prose and links — and a ~400px column left every one of them wrapping.
-  // The rest of the annotations are label/value rows that read better narrow.
   const columned = renderedSections.filter(
     (section) => section.id !== FULL_WIDTH_PANEL_ID
   );
@@ -337,21 +270,8 @@ const VepResultsAnnotationDetail = (props: {
   );
 
   return (
-    // The panel element is always here, empty until it comes near the viewport:
-    // it is what the observer watches, and its reserved height is what keeps the
-    // scroll from lurching while the contents are still to come.
-    <div className={styles.detail} ref={setDetailNode}>
-      {/* Both of the panel's own controls, on one row above its contents:
-          "Show all" at the left, the collapse cross at the right.
-
-          The toolbar sits outside the multi-column section list: an interactive
-          control inside a CSS multicol (as a column-span:all element) can have
-          its clicks swallowed by an overlapping column, which broke "Show all".
-
-          Each control keeps its own condition — they are not the same one — and
-          the cross is pushed right by the stylesheet rather than by a spacer, so
-          it stays in the corner even when the checkbox is absent. */}
-      {hasEnteredView && ((panels && parameters) || onCollapse) && (
+    <div className={styles.detail}>
+      {((panels && parameters) || onCollapse) && (
         <div className={styles.detailToolbar}>
           {panels && parameters && (
             <CheckboxWithLabel
@@ -391,15 +311,6 @@ const VepResultsAnnotationDetail = (props: {
   );
 };
 
-/**
- * The one panel that leaves the column flow and runs the panel's full width,
- * beneath the rest.
- *
- * Named by its form-panel id, which arrives with the job's pinned panels — the
- * same contract that orders the sections. Its ClinVar conditions tables are the
- * widest thing the results detail draws, and in a ~400px column every column of
- * them wrapped.
- */
 const FULL_WIDTH_PANEL_ID = 'phenotype_and_disease_associations';
 
 const Section = (props: { title: ReactNode; children: ReactNode }) => (
