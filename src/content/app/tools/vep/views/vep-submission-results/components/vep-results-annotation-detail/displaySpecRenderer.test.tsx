@@ -320,7 +320,7 @@ describe('renderDisplayOption', () => {
     expect(term.closest('a')).toBeNull();
   });
 
-  it('a condition whose resolved URL is not http(s) stays plain text', () => {
+  test('a condition whose resolved URL is not http(s) stays plain text', () => {
     // `link_from` points at a URL the parse resolved, so its scheme is whatever
     // came out of the data. Only the two web schemes are rendered as a link.
     renderOption('phenotypes', {
@@ -664,7 +664,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('Pocket 1')).toBeDefined();
   });
 
-  it('MaveDB: one row per assay, with the score set linked', () => {
+  test('MaveDB: one row per assay, with the score set linked', () => {
     renderOption('mavedb', {
       consequence: [
         annotation('mavedb', 'transcript', {
@@ -1076,7 +1076,7 @@ describe('renderDisplayOption', () => {
   // select. Only the structural custom is still a sub-option of the master.
   const clinvarSvSelected = (id: string) => id === 'clinvar_sv';
 
-  it('ClinVar: one Classification line per classification type', () => {
+  test('ClinVar: one Classification line per classification type', () => {
     const { container } = renderOption('phenotypes', {
       consequence: [
         annotation('clinvar', 'transcript', {
@@ -1149,7 +1149,7 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByText('Condition')).toBeNull();
   });
 
-  it('ClinVar: the stacked lines share columns, keeping empty slots', () => {
+  test('ClinVar: the stacked lines share columns, keeping empty slots', () => {
     // The lines read as a small table, so every cell of every line is a direct
     // child of one grid — a line that packed its own cells would start each
     // column wherever its own text happened to end.
@@ -1195,7 +1195,7 @@ describe('renderDisplayOption', () => {
     );
   });
 
-  it('ClinVar: a derived classification no submitter asserts shows no count', () => {
+  test('ClinVar: a derived classification no submitter asserts shows no count', () => {
     // "Conflicting classifications of pathogenicity" is ClinVar's own summary of
     // the submissions, not any submitter's word, so nothing matches it verbatim.
     // "(0 of 12)" would read as a measure of support; it is a fact about wording.
@@ -1222,7 +1222,7 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByText(/of 12/)).toBeNull();
   });
 
-  it('ClinVar: a classification packing two terms reads as a list', () => {
+  test('ClinVar: a classification packing two terms reads as a list', () => {
     // The enriched VCF joins them with '+', which used to show through.
     renderOption('phenotypes', {
       consequence: [
@@ -1249,14 +1249,14 @@ describe('renderDisplayOption', () => {
     ).toBeDefined();
   });
 
-  it('ClinVar renders nothing without an annotation', () => {
+  test('ClinVar renders nothing without an annotation', () => {
     // The germline group gates on the data (`when: present`), so a variant
     // ClinVar knows nothing about gets no ClinVar section at all.
     const { container } = renderOption('phenotypes', {});
     expect(container.innerHTML).toBe('');
   });
 
-  it('the ClinVar option carries only the structural block now', () => {
+  test('the ClinVar option carries only the structural block now', () => {
     // The germline data moved to Phenotypes, so a germline annotation renders
     // nothing here however the sub-options are set — it is not this option's
     // to draw any more.
@@ -1272,7 +1272,7 @@ describe('renderDisplayOption', () => {
     expect(container.innerHTML).toBe('');
   });
 
-  it('ClinVar short: a linked variant-id row above the significance', () => {
+  test('ClinVar short: a linked variant-id row above the significance', () => {
     renderOption('phenotypes', {
       consequence: [
         annotation('clinvar', 'transcript', {
@@ -1299,7 +1299,7 @@ describe('renderDisplayOption', () => {
     );
   });
 
-  it('ClinVar short: the variant-id row drops when there is no id', () => {
+  test('ClinVar short: the variant-id row drops when there is no id', () => {
     renderOption('phenotypes', {
       consequence: [
         annotation('clinvar', 'transcript', {
@@ -1311,7 +1311,7 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByText('ClinVar variant ID')).toBeNull();
   });
 
-  it('ClinVar: the conditions table — linked condition, counted classifications, stacked records', () => {
+  test('ClinVar: the conditions table — linked condition, counted classifications, stacked records', () => {
     const { container } = renderOption('phenotypes', {
       consequence: [
         annotation('clinvar', 'transcript', {
@@ -1457,7 +1457,7 @@ describe('renderDisplayOption', () => {
     ).toBeNull();
   });
 
-  it('ClinVar: one row per finding, with its conditions stacked in the cell', () => {
+  test('ClinVar: one row per finding, with its conditions stacked in the cell', () => {
     // ClinVar files one submission against several conditions at once, so five
     // rows could be one classification by one submitter under five disease
     // names — identical in every column but the condition. The parse collapses
@@ -1523,7 +1523,7 @@ describe('renderDisplayOption', () => {
     );
   });
 
-  it('ClinVar: the review status shows its star rating and cites ClinVar', async () => {
+  test('ClinVar: the review status shows its star rating and cites ClinVar', async () => {
     const { container } = renderOption('phenotypes', {
       consequence: [
         annotation('clinvar', 'transcript', {
@@ -1566,7 +1566,7 @@ describe('renderDisplayOption', () => {
     );
   });
 
-  it('ClinVar: a review status the scale does not know shows no rating', () => {
+  test('ClinVar: a review status the scale does not know shows no rating', () => {
     renderOption('phenotypes', {
       consequence: [
         annotation('clinvar', 'transcript', {
@@ -1592,7 +1592,7 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByRole('img', { name: /out of 4/ })).toBeNull();
   });
 
-  it('ClinVar: a submission is rated on the submission scale, not the aggregate one', async () => {
+  test('ClinVar: a submission is rated on the submission scale, not the aggregate one', async () => {
     // "no classification for the individual variant" is an aggregate-only term:
     // ClinVar's scale for a single submission does not list it. So the same
     // wording earns four empty stars at the top and none in the detail — which
@@ -1651,7 +1651,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getAllByRole('img', { name: /out of 4/ }).length).toBe(1);
   });
 
-  it('ClinVar: a rated submission shows its own stars in the detail', async () => {
+  test('ClinVar: a rated submission shows its own stars in the detail', async () => {
     renderOption('phenotypes', {
       consequence: [
         annotation('clinvar', 'transcript', {
@@ -1701,7 +1701,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getByRole('img', { name: '1 out of 4' })).toBeDefined();
   });
 
-  it('ClinVar: each classification expands to its own submitters', async () => {
+  test('ClinVar: each classification expands to its own submitters', async () => {
     renderOption('phenotypes', {
       consequence: [
         annotation('clinvar', 'transcript', {
@@ -1791,7 +1791,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('Baylor Genetics')).toBeDefined();
   });
 
-  it("ClinVar: a submitter's cited publications each link out", async () => {
+  test("ClinVar: a submitter's cited publications each link out", async () => {
     renderOption('phenotypes', {
       consequence: [
         annotation('clinvar', 'transcript', {
@@ -1859,7 +1859,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getAllByRole('link').length).toBe(2);
   });
 
-  it('ClinVar: a submission counting toward the aggregate is set apart', async () => {
+  test('ClinVar: a submission counting toward the aggregate is set apart', async () => {
     // Contributing submissions sort first, so the emphasised one leads.
     const { container } = renderOption('phenotypes', {
       consequence: [
@@ -2023,7 +2023,7 @@ describe('renderDisplayOption', () => {
     expect(links[0].getAttribute('href')).toBe('https://protvar.example/x');
   });
 
-  it('ProtVar Show-all view: the same itemised detail as the default view', () => {
+  test('ProtVar Show-all view: the same itemised detail as the default view', () => {
     renderOption('protvar', {
       consequence: [
         annotation('protvar', 'transcript', {
@@ -2058,7 +2058,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getAllByRole('link')).toHaveLength(3);
   });
 
-  it('ProtVar Show-all view: an unselected sub-option is dropped, not dashed', () => {
+  test('ProtVar Show-all view: an unselected sub-option is dropped, not dashed', () => {
     renderOption('protvar', {
       consequence: [
         annotation('protvar', 'transcript', {
@@ -2099,7 +2099,7 @@ describe('renderDisplayOption', () => {
 
   // --- app_popup link builder (protein) -------------------------------------
 
-  it('protein: the id as an in-app "View in" popup trigger (a button)', () => {
+  test('protein: the id as an in-app "View in" popup trigger (a button)', () => {
     renderOption('protein', {
       consequence: [
         annotation('protein', 'transcript', {
@@ -2115,7 +2115,7 @@ describe('renderDisplayOption', () => {
     expect(trigger).not.toBeNull();
   });
 
-  it('protein: plain id (no popup) when the consequence has no gene', () => {
+  test('protein: plain id (no popup) when the consequence has no gene', () => {
     renderOption('protein', {
       consequence: [
         annotation('protein', 'transcript', {
@@ -2127,7 +2127,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('ENSP00000269305').closest('button')).toBeNull();
   });
 
-  it('protein: renders nothing without an id', () => {
+  test('protein: renders nothing without an id', () => {
     const { container } = renderOption('protein', {
       consequence: [
         annotation('protein', 'transcript', { ensembl_protein_id: null })
@@ -2139,7 +2139,7 @@ describe('renderDisplayOption', () => {
   // --- IntAct: view + when coalesce + count + sub-option counts --------------
 });
 
-it('IntAct: the interactions table is in the default view, not behind Show all', () => {
+test('IntAct: the interactions table is in the default view, not behind Show all', () => {
   renderOption('intact', {
     consequence: [
       annotation('intact', 'transcript', {
