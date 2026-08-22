@@ -118,11 +118,8 @@ const formatAfSourceLabel = (source: AfSource): string => {
  */
 
 // A page-level command to open or close every annotation-detail panel at once.
-// `nonce` changes on each click so a VariantRow re-applies the action even after
-// individual rows were toggled; `action` is the last bulk choice (also the
-// button label). Deliberately scoped to the top-level transcript / intergenic
-// rows already in the table — it never expands the hidden transcripts, whose
-// annotations could be a lot to render at once.
+// `nonce` changes on each click so row state can react even if the action
+// value stays the same across separate interactions.
 type DetailExpansion = {
   action: 'expand' | 'collapse';
   nonce: number;
