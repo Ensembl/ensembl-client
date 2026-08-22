@@ -37,14 +37,15 @@ import {
   flattenScoreOptions,
   isScoreField,
   nextAvailableField,
-  type FilterFieldDefinition,
-  type TranscriptGroupOption
+  getTranscriptGroupOptions,
+  type FilterFieldDefinition
 } from './resultsFilterFields';
 
 import type {
   ResultsFilterCondition,
   ResultsFilterField
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
+import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 
 import styles from './VepResultsFilters.module.css';
 
@@ -58,8 +59,9 @@ type Props = {
   hasAppliedFilters: boolean;
   // Filtered / total record counts from the last applied request, if any.
   resultSummary: { filtered: number; total: number } | null;
-  // Species-dependent transcript-group choices (e.g. MANE sets for human GRCh38).
-  transcriptGroupOptions: TranscriptGroupOption[];
+  // The `species` property is needed to generate a list of transcript filters (e.g. MANE sets for human GRCh38).
+  // FIXME: this logic should be moved out of the client and to the server
+  species: VepSubmissionWithoutInputFile['species'];
   // Allele-frequency sources chosen at input; the AF filter is only offered when
   // this is non-empty.
   afSources: AfSourceOption[];
@@ -91,7 +93,7 @@ const VepResultsFilters = (props: Props) => {
     isDirty,
     hasAppliedFilters,
     resultSummary,
-    transcriptGroupOptions,
+    species,
     afSources,
     scoreFields,
     appliedConditionIds
@@ -138,6 +140,12 @@ const VepResultsFilters = (props: Props) => {
   const addCondition = () => {
     onChange([...conditions, createCondition(nextAvailableField(conditions))]);
   };
+
+  // FIXME: This logic should not belong on the client; the client should not know anything about specific species or assemblies
+  const isHumanGRCh38 =
+    String(species?.species_taxonomy_id) === '9606' &&
+    (species?.assembly.name ?? '').startsWith('GRCh38');
+  const transcriptGroupOptions = getTranscriptGroupOptions(isHumanGRCh38);
 
   return (
     <div className={styles.panel}>

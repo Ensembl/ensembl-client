@@ -55,7 +55,6 @@ import { buildOpenTargetsVariantId } from 'src/content/app/tools/vep/utils/openT
 import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
 import { resolveResultsPanels } from 'src/content/app/tools/vep/utils/resultsPanels';
 import { transcriptFeatureExplorerUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
-import { getTranscriptGroupOptions } from './components/vep-results-filters/resultsFilterFields';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
 import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
@@ -216,8 +215,6 @@ const VepSubmissionResults = () => {
     livePanels: formConfig?.panels
   });
 
-  // Computed once here rather than per row, so the table and the "Expand all"
-  // control agree about whether there is anything to expand.
   const hasSelectedOptions = hasAnySelectedOption(
     resultsPanels,
     submission?.parameters ?? {}
@@ -276,15 +273,6 @@ const VepSubmissionResults = () => {
       }
     : null;
 
-  // Transcript-group choices depend on the species: human GRCh38 has the MANE
-  // sets, everything else has canonical only. Mirror the backend's check
-  // (form_panels.is_human_grch38): taxonomy 9606 + assembly name starting
-  // "GRCh38" (the name may carry a patch suffix, e.g. "GRCh38.p14").
-  const isHumanGRCh38 =
-    String(submission.species?.species_taxonomy_id) === '9606' &&
-    (submission.species?.assembly.name ?? '').startsWith('GRCh38');
-  const transcriptGroupOptions = getTranscriptGroupOptions(isHumanGRCh38);
-
   // Allele-frequency filter options: the AF columns present in this result set
   // (i.e. the AF options chosen at input), labelled with the same source /
   // population names used elsewhere in the UI.
@@ -330,7 +318,7 @@ const VepSubmissionResults = () => {
             isDirty={isFiltersDirty}
             hasAppliedFilters={hasAppliedFilters}
             resultSummary={resultSummary}
-            transcriptGroupOptions={transcriptGroupOptions}
+            species={submission.species}
             afSources={afSources}
             scoreFields={scoreFields}
             appliedConditionIds={appliedConditionIds}
