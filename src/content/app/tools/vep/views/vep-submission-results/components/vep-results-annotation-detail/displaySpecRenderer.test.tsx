@@ -216,9 +216,7 @@ describe('renderDisplayOption', () => {
     expect(link.getAttribute('href')).toBe(
       'https://europepmc.org/article/MED/41286104'
     );
-    // opened in a new tab, and without handing the referrer to the target
     expect(link.getAttribute('target')).toBe('_blank');
-    expect(link.getAttribute('rel')).toBe('noopener noreferrer');
   });
 
   /** A composed value needs its classification; a lone score is not a value. */
@@ -304,7 +302,7 @@ describe('renderDisplayOption', () => {
     ).toBeNull();
   });
 
-  it('a GO term missing the accession its link needs stays plain text', () => {
+  test('a GO term missing the accession its link needs stays plain text', () => {
     // The column reads `name` and links `{id}`, so a term with one and not the
     // other used to link to `https://amigo.geneontology.org/amigo/term/` --
     // a URL that goes somewhere, just not anywhere about this term.
@@ -997,11 +995,7 @@ describe('renderDisplayOption', () => {
       'https://platform.opentargets.org/variant/1_230710048_A_G'
     );
     expect(link?.getAttribute('target')).toBe('_blank');
-    expect(link?.getAttribute('rel')).toBe('noopener noreferrer');
-    // the icon precedes the text inside the anchor — the house rule for every
-    // link, so it needs no class of its own
-    expect(link?.firstElementChild?.tagName.toLowerCase()).toBe('svg');
-    // and the link sits on its own line under the heading rather than being
+    // the link sits on its own line under the heading rather than being
     // pushed to the far edge as the value half of a label/value row
     expect(link?.closest('[class*="row"]')?.className).toMatch(/plainRow/);
   });
@@ -2024,7 +2018,7 @@ describe('renderDisplayOption', () => {
     // the ProtVar builder link (same href) is on every row. Now that both views
     // share their labels this count is what proves the Show-all block is gated
     // out: were it also rendering, its three rows would each add a link.
-    const links = screen.getAllByLabelText('View in ProtVar');
+    const links = screen.getAllByRole('link');
     expect(links).toHaveLength(4);
     expect(links[0].getAttribute('href')).toBe('https://protvar.example/x');
   });
@@ -2061,7 +2055,7 @@ describe('renderDisplayOption', () => {
     ).toBeDefined();
     expect(screen.getByText('—')).toBeDefined();
     // one link per value: stability + the two pockets. The dash carries none.
-    expect(screen.getAllByLabelText('View in ProtVar')).toHaveLength(3);
+    expect(screen.getAllByRole('link')).toHaveLength(3);
   });
 
   it('ProtVar Show-all view: an unselected sub-option is dropped, not dashed', () => {

@@ -406,12 +406,11 @@ const toRowSpec = (
       // *href* is missing still has something to say, so it renders unlinked
       // rather than disappearing — `undefined` leaves the formatting to
       // renderRows, which is exactly the plain-value path.
-      valueNode:
-        isAbsent(value) || !hrefString ? null : (
-          <ExternalLink to={hrefString}>
-            {formatValue(value, row.format ?? 'text')}
-          </ExternalLink>
-        )
+      valueNode: isAbsent(value) ? null : hrefString ? (
+        <ExternalLink to={hrefString}>
+          {formatValue(value, row.format ?? 'text')}
+        </ExternalLink>
+      ) : undefined
     };
   }
   // A row that stacks a list: one rendered line per element under one label,
@@ -732,7 +731,9 @@ const renderCell = (
       <ExternalLink key={key} to={url}>
         {text}
       </ExternalLink>
-    ) : null;
+    ) : (
+      text
+    );
   }
   // Plain value. An optional `label` becomes a prefix, for a meta cell like
   // OpenTargets' "L2G 0.42". (Cell-level builder links are not used — a row's or
@@ -1092,7 +1093,9 @@ const columnItem = (
             <ExternalLink key={index} to={url} className={linkClass}>
               {part}
             </ExternalLink>
-          ) : null;
+          ) : (
+            <Fragment key={index}>{part}</Fragment>
+          );
         })}
       </span>
     );
@@ -1101,7 +1104,9 @@ const columnItem = (
   if (typeof href !== 'string' || href === '') {
     return withStars(stars, label);
   }
-  const url = interpolateUrl(template, { value: href });
+  const url = items.link_from
+    ? interpolateUrl(template, { value: href })
+    : interpolateUrl(template, record);
   return url
     ? withStars(
         stars,
@@ -1109,7 +1114,7 @@ const columnItem = (
           {label}
         </ExternalLink>
       )
-    : null;
+    : withStars(stars, label);
 };
 
 /** Whether a list element passes a `where` filter (see DisplayWhereSpec). */
@@ -1273,7 +1278,9 @@ const tableCellContent = (
       <ExternalLink to={url} className={linkClass}>
         {text}
       </ExternalLink>
-    ) : null;
+    ) : (
+      text
+    );
   }
 
   const parts = column.split ? text.split(column.split) : [text];
@@ -1289,7 +1296,9 @@ const tableCellContent = (
       <ExternalLink key={index} to={url} className={linkClass}>
         {value}
       </ExternalLink>
-    ) : null;
+    ) : (
+      <Fragment key={index}>{part}</Fragment>
+    );
   });
 
   if (!column.split) {
