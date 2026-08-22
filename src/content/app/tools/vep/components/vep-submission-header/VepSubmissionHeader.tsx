@@ -281,47 +281,4 @@ const buildDownloadLink = ({
   return url;
 };
 
-/*
-FIXME: remove this commented block
-
-This is to have download options, but with buttons
-
-
-const DownloadOptions = ({
-  submission,
-  onCancel
-}: {
-  submission: Props['submission'];
-  onCancel: () => void;
-}) => {
-  const vcfDownloadLink = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
-  // Flattened, fully-expanded table (spreadsheet-friendly) vs the raw VCF.
-  const tsvDownloadLink = `${vcfDownloadLink}?format=tsv`;
-
-  return (
-    <div className={styles.confirmationContainer}>
-      <div className={styles.downloadOptionsWrapper}>
-        <span className={styles.downloadLabel}>
-          Download:
-        </span>
-        <div className={styles.downloadOptions}>
-          <ButtonLink to={vcfDownloadLink}>
-            VCF
-          </ButtonLink>
-          <ButtonLink to={tsvDownloadLink}>
-            TSV
-          </ButtonLink>
-        </div>
-
-        <TextButton onClick={onCancel}>
-          Close
-        </TextButton>
-      </div>
-    </div>
-  );
-};
-
-
-*/
-
 export default VepSubmissionHeader;

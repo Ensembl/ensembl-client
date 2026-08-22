@@ -20,18 +20,6 @@ import StarIcon from 'static/icons/icon_star.svg';
 
 import styles from './StarRating.module.css';
 
-/**
- * A rating as a row of filled and empty stars.
- *
- * The whole row is one image with one label rather than `outOf` separately
- * announced stars: "2 out of 4" is the fact, and a screen reader reading
- * "star star star star" is not it. The stars scale with the surrounding text,
- * so the same component suits a results row and the smaller expanded detail
- * beneath it.
- *
- * Which term earns which rating is the backend's to say (see the spec's
- * `rating_scales`); this only draws the number it is given.
- */
 const StarRating = (props: {
   rating: number;
   outOf: number;
