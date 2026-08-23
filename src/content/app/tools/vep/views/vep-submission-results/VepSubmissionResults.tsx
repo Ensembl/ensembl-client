@@ -20,6 +20,7 @@ import {
   useMemo,
   useTransition,
   Fragment,
+  memo,
   type ChangeEvent
 } from 'react';
 import { useParams } from 'react-router';
@@ -28,7 +29,6 @@ import { useAppSelector, useAppDispatch } from 'src/store';
 import useVepResultsPagination, {
   PER_PAGE_OPTIONS
 } from './hooks/useVepResultsPagination';
-import { usePendingUIFlags } from 'src/shared/hooks/usePendingUIFlags';
 
 import {
   getVepSubmissionsRestoredFlag,
@@ -75,6 +75,7 @@ import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { CircleLoader } from 'src/shared/components/loader';
 import VepSubmissionError from 'src/content/app/tools/vep/components/missing-vep-submission-error/VepSubmissionError';
+import TextButton from 'src/shared/components/text-button/TextButton';
 
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 import type {
@@ -304,7 +305,6 @@ const VepSubmissionResults = () => {
           onPerPageChange={setPerPage}
           isFiltersOpen={isFiltersOpen}
           onToggleFilters={() => setIsFiltersOpen((open) => !open)}
-          allDetailsExpanded={detailExpansion.action === 'expand'}
           onToggleAllDetails={toggleAllDetails}
           isExpansionPending={isExpansionPending}
           canExpandDetails={hasSelectedOptions}
@@ -363,7 +363,6 @@ const VepResultsHeader = ({
   onPerPageChange,
   isFiltersOpen,
   onToggleFilters,
-  allDetailsExpanded,
   onToggleAllDetails,
   isExpansionPending,
   canExpandDetails
@@ -376,7 +375,6 @@ const VepResultsHeader = ({
   onPerPageChange: (page: number) => void;
   isFiltersOpen: boolean;
   onToggleFilters: () => void;
-  allDetailsExpanded: boolean;
   onToggleAllDetails: () => void;
   /**
    * The bulk expand / collapse is still rendering. Its work is proportional to
@@ -428,7 +426,6 @@ const VepResultsHeader = ({
           unchanged table. */}
       {canExpandDetails && (
         <ExpandAllAnnotationsToggle
-          isExpanded={allDetailsExpanded}
           isPending={isExpansionPending}
           onClick={onToggleAllDetails}
         />
@@ -446,33 +443,37 @@ const VepResultsHeader = ({
 };
 
 const ExpandAllAnnotationsToggle = ({
-  isExpanded,
   isPending,
   onClick
 }: {
-  isExpanded: boolean;
   isPending: boolean;
   onClick: () => void;
 }) => {
-  const {
-    shouldBlockInteraction: shouldDisableButton,
-    shouldDisplayPendingUI
-  } = usePendingUIFlags(isPending);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleClick = () => {
+    if (isPending) {
+      return;
+    }
+    setIsExpanded(!isExpanded);
+    onClick();
+  };
 
   return (
-    <button
-      type="button"
-      className={styles.expandAllToggle}
-      aria-pressed={isExpanded}
-      aria-busy={shouldDisableButton}
-      onClick={onClick}
-      disabled={shouldDisableButton}
-    >
-      {isExpanded ? 'Collapse all' : 'Expand all'}
-      {shouldDisplayPendingUI && (
+    <div className={styles.expandAllToggleWrapper}>
+      <TextButton
+        className={styles.expandAllToggle}
+        aria-pressed={isExpanded}
+        aria-busy={isPending}
+        onClick={handleClick}
+        disabled={isPending}
+      >
+        {isExpanded ? 'Collapse all' : 'Expand all'}
+      </TextButton>
+      {isPending && (
         <CircleLoader size="small" className={styles.expandAllSpinner} />
       )}
-    </button>
+    </div>
   );
 };
 
@@ -515,7 +516,7 @@ const VepResultsTable = (props: {
       <tbody>
         {/* Use something more reliable for key than index */}
         {variants.map((variant, index) => (
-          <VariantRow
+          <MemoizedVariantRow
             variant={variant}
             genomeId={genomeId}
             parameters={parameters}
@@ -860,6 +861,11 @@ const VariantRow = (props: {
     );
   });
 };
+
+// Surprisingly, memoising the VariantRow component
+// was crucial for making useTransition work for better responsiveness of ExpandAllAnnotationsToggle
+// (before memoization, table rows re-rendered with the same priority as the toggle, which slowed down its update)
+const MemoizedVariantRow = memo(VariantRow);
 
 const GeneTableCell = (props: {
   row: VepResultsTableRowData;

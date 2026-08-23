@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
@@ -281,4 +281,4 @@ const buildDownloadLink = ({
   return url;
 };
 
-export default VepSubmissionHeader;
+export default memo(VepSubmissionHeader);
