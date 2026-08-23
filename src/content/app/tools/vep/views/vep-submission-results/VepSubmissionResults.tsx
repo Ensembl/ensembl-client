@@ -534,18 +534,6 @@ const VepResultsTable = (props: {
 
 const TABLE_COLUMN_COUNT = 8;
 
-// EXPERIMENT (2026-08-11): the expanded annotation panel spans the whole row.
-//
-// It used to be right-aligned, occupying Genes → Annotations while the
-// variant-identity columns (Variant, Ref, Location, Alt allele) continued down
-// its left side. Those four columns are ~583px of a 1770px container, and the
-// panel was 166px short of fitting three annotation columns — so the identity
-// block was costing more than three times the shortfall.
-//
-// Spanning the full row hands that 583px back: three 384px columns fit with
-// ~417px to spare. The cost is that the identity cells can no longer run down
-// beside the panel; like the gene cell, they now restart below it (see
-// planLeadingCells).
 const DETAIL_PANEL_COLSPAN = TABLE_COLUMN_COUNT;
 
 // The variant/allele/gene "leading" cell to emit on a given row, together with
@@ -567,22 +555,6 @@ type LeadingCells = {
 
 const toRowSpanAttr = (rowSpan: number) => (rowSpan > 1 ? rowSpan : undefined);
 
-/**
- * Whether this submission ran any annotation option at all.
- *
- * A job submitted with nothing ticked in Job options has nothing to show on any
- * row: every section of the detail panel is gated on an option having run, so
- * opening one gives an empty box. When that is the case the rows get no expand
- * chevron and "Expand all" is not offered, rather than inviting the reader to
- * open nothing.
- *
- * Judged from the pinned panels rather than from `parameters` alone: the panels
- * are exactly the options the form offered, while `parameters` also carries
- * settings that produce no annotation (the up/downstream distance, the
- * sub-option values of an option that is itself off). A job with no pinned
- * panels — one submitted before they were pinned — cannot be judged this way and
- * keeps the chevron it has always had.
- */
 export const hasAnySelectedOption = (
   panels: FormPanel[] | undefined,
   parameters: Record<string, unknown>
@@ -592,13 +564,6 @@ export const hasAnySelectedOption = (
     panel.options.some((option) => Boolean(parameters[option.id]))
   );
 
-// The indices of the rows that have an annotation detail to open: a row whose
-// allele carries annotations. The allele comes from the transcript consequence,
-// or (for an intergenic row) the row's own alt-allele marker — the same rule
-// `hasDetail` uses per row when deciding whether to draw the toggle chevron.
-// These are exactly the rows the "Expand all" control opens: the current table
-// rows (the top-level transcript per gene plus intergenic rows), never the
-// collapsed transcripts.
 export const detailBearingRowIndices = (
   rows: VepResultsTableRowData[],
   hasAllele: (sequence: string) => boolean
@@ -616,12 +581,6 @@ export const detailBearingRowIndices = (
   return indices;
 };
 
-// Split a gene's rowSpan group (covering `span` consecutive content rows from
-// `start`) into the runs that survive once expanded detail panels are injected.
-// The gene column is the panel's first column, so a gene cell can never cover a
-// detail row: an expanded row that is not the group's last ends its run (the
-// panel goes below it) and a fresh gene cell starts on the row after. A run
-// never contains a detail row, so its rowSpan equals its content-row count.
 const splitIntoRuns = (
   start: number,
   span: number,
@@ -639,10 +598,6 @@ const splitIntoRuns = (
   return runs;
 };
 
-// Plan which leading cells each row emits and with what rowSpan, given the set
-// of expanded detail rows. The panel spans the full row, so no leading cell can
-// cover a detail row: every one of them — variant, allele and gene alike —
-// restarts below a panel that interrupts its group.
 export const planLeadingCells = (
   rows: VepResultsTableRowData[],
   expandedDetailRows: Set<number>
@@ -733,8 +688,6 @@ const VariantRow = (props: {
     expandedTranscriptPaths
   });
 
-  // The rows the "Expand all" control opens for this variant (see
-  // detailBearingRowIndices).
   const detailRowIndices = useMemo(
     () =>
       detailBearingRowIndices(tabularData, (sequence) =>
@@ -743,18 +696,6 @@ const VariantRow = (props: {
     [tabularData, allelesBySequence]
   );
 
-  // Apply the page-level bulk expand / collapse, and reset when the variant
-  // changes under us (pagination reuses these row components).
-  //
-  // Done by comparing against the last command applied rather than in an effect,
-  // because the requirement is "react to the control, not to `detailRowIndices`
-  // changing" — the user separately expanding transcripts grows `tabularData`
-  // and so recomputes those indices, but must leave open panels alone. Stating
-  // that as an effect meant either lying in the dependency array or reading the
-  // indices through a ref written during render, which is not allowed: React can
-  // render without committing, so the ref could hold a value the committed UI
-  // never had. Comparing the command itself needs neither. `nonce` makes each
-  // click a new object, so repeating the same action still registers.
   const [appliedExpansion, setAppliedExpansion] = useState({
     expansion: detailExpansion,
     variant
@@ -783,11 +724,6 @@ const VariantRow = (props: {
     });
   };
 
-  // An expanded detail is rendered as a right-aligned <td colSpan> row inserted
-  // right after its transcript row: it occupies the columns from Genes across,
-  // while the variant/allele identity cells span down its left side.
-  // `planLeadingCells` computes how each of those leading cells spans past (or
-  // restarts around) the injected detail rows.
   const leadingCells = useMemo(
     () => planLeadingCells(tabularData, expandedDetailRows),
     [tabularData, expandedDetailRows]
@@ -824,10 +760,7 @@ const VariantRow = (props: {
     const allele = alleleSequence
       ? allelesBySequence.get(alleleSequence)
       : undefined;
-    // The annotation detail is available for any consequence that has an allele
-    // with annotations — including intergenic variants (SPDI, HGVSg, CADD,
-    // frequencies…), which have no transcript row.
-    // No annotation option ran -> nothing this row could show, so no chevron.
+
     const hasDetail = Boolean(allele) && hasSelectedOptions;
     // ProtVar link for this allele, built from the allele's HGVSg — VEP's
     // canonical minimal representation, which is exactly what ProtVar expects.
