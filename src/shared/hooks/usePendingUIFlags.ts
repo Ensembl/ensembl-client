@@ -29,7 +29,7 @@ import { useEffect, useRef, useState } from 'react';
 export function usePendingUIFlags(
   isPending: boolean,
   {
-    delayMs = 1,
+    delayMs = 40,
     minimumVisibleMs = 400
   }: {
     delayMs?: number;
