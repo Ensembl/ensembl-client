@@ -20,7 +20,10 @@ import userEvent from '@testing-library/user-event';
 import { renderDisplayOption } from './displaySpecRenderer';
 import { displaySpecFixture } from './displaySpec.fixture';
 
-import type { Annotation } from 'src/content/app/tools/vep/types/vepResultsResponse';
+import type {
+  PredictedTranscriptConsequence,
+  Annotation
+} from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { AnnotatedEntity } from 'src/content/app/tools/vep/utils/annotations';
 import type {
   DisplayOptionSpec,
@@ -42,7 +45,7 @@ const annotation = (
 const renderOption = (
   optionId: string,
   entities: {
-    consequence?: Annotation[];
+    consequence?: AnnotatedEntity;
     allele?: Annotation[];
     spec?: DisplaySpec;
     showAll?: boolean;
@@ -51,9 +54,6 @@ const renderOption = (
     genomeId?: string;
     help?: OptionHelp;
     openTargetsVariantId?: string;
-    // extra typed fields the consequence carries for a link builder (the
-    // protein popup reads gene_stable_id off the consequence).
-    geneStableId?: string;
   }
 ) =>
   render(
@@ -61,10 +61,7 @@ const renderOption = (
       {renderDisplayOption({
         option: optionSpec(optionId),
         spec: entities.spec ?? spec,
-        consequence: {
-          annotations: entities.consequence ?? [],
-          gene_stable_id: entities.geneStableId
-        } as AnnotatedEntity,
+        consequence: entities.consequence,
         allele: { annotations: entities.allele ?? [] },
         showAll: entities.showAll,
         subOptionRan: entities.subOptionRan,
@@ -88,7 +85,9 @@ describe('renderDisplayOption', () => {
     renderOption('cadd', {
       allele: [annotation('cadd', 'allele', { phred: 24.6, raw: 3.21 })],
       // a same-named entry on the consequence must be ignored
-      consequence: [annotation('cadd', 'transcript', { phred: 99, raw: 88 })]
+      consequence: {
+        annotations: [annotation('cadd', 'transcript', { phred: 99, raw: 88 })]
+      }
     });
     // Both CADD scores (PHRED and RAW) render, read from the allele.
     expect(screen.getByText('24.6')).toBeDefined();
@@ -99,7 +98,9 @@ describe('renderDisplayOption', () => {
 
   it('reads a transcript-scoped plugin from the consequence', () => {
     renderOption('loeuf', {
-      consequence: [annotation('loeuf', 'transcript', { score: 0.123 })],
+      consequence: {
+        annotations: [annotation('loeuf', 'transcript', { score: 0.123 })]
+      },
       allele: [annotation('loeuf', 'allele', { score: 9 })]
     });
     expect(screen.getByText('0.123')).toBeDefined();
@@ -111,7 +112,9 @@ describe('renderDisplayOption', () => {
     // `transcript` rather than taking the gene-level default — so it reads from
     // the consequence, and a same-named entry on the allele must be ignored.
     renderOption('pli', {
-      consequence: [annotation('pli', 'transcript', { score: 0.9821 })],
+      consequence: {
+        annotations: [annotation('pli', 'transcript', { score: 0.9821 })]
+      },
       allele: [annotation('pli', 'allele', { score: 9 })]
     });
     expect(screen.getByText('pLI')).toBeDefined();
@@ -124,7 +127,9 @@ describe('renderDisplayOption', () => {
     // entry on the consequence must be ignored.
     renderOption('gerp', {
       allele: [annotation('gerp', 'allele', { score: 2.25 })],
-      consequence: [annotation('gerp', 'transcript', { score: 99 })]
+      consequence: {
+        annotations: [annotation('gerp', 'transcript', { score: 99 })]
+      }
     });
     expect(screen.getByText('GERP conservation score')).toBeDefined();
     expect(screen.getByText('2.25')).toBeDefined();
@@ -150,12 +155,14 @@ describe('renderDisplayOption', () => {
 
   it('renders the SpliceAI event table once the required plugin is present', () => {
     renderOption('spliceai', {
-      consequence: [
-        annotation('spliceai', 'transcript', {
-          symbol: null,
-          ds_acceptor_gain: 0
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('spliceai', 'transcript', {
+            symbol: null,
+            ds_acceptor_gain: 0
+          })
+        ]
+      }
     });
     expect(screen.getByText('SpliceAI')).toBeDefined();
     // The absent gene symbol drops its row; the table still renders.
@@ -175,16 +182,18 @@ describe('renderDisplayOption', () => {
   /** An option can emit a sequence of blocks (EVE plus its popEVE sibling). */
   it('renders each block of a multi-block option', () => {
     renderOption('eve', {
-      consequence: [
-        annotation('eve', 'transcript', {
-          classification: 'likely_pathogenic',
-          score: 0.812
-        }),
-        annotation('popeve', 'transcript', {
-          score: -3.21,
-          gap_frequency: 0.07
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('eve', 'transcript', {
+            classification: 'likely_pathogenic',
+            score: 0.812
+          }),
+          annotation('popeve', 'transcript', {
+            score: -3.21,
+            gap_frequency: 0.07
+          })
+        ]
+      }
     });
     expect(screen.getByText('EVE')).toBeDefined();
     expect(screen.getByText('0.812 (likely pathogenic)')).toBeDefined();
@@ -196,12 +205,14 @@ describe('renderDisplayOption', () => {
    * the popEVE authors', so the help says where to read it. */
   it("renders a help row's cited source as a link", async () => {
     const { container } = renderOption('eve', {
-      consequence: [
-        annotation('popeve', 'transcript', {
-          score: -3.21,
-          gap_frequency: 0.07
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('popeve', 'transcript', {
+            score: -3.21,
+            gap_frequency: 0.07
+          })
+        ]
+      }
     });
     // The help sits behind the (?) control, so open it first. QuestionButton is
     // a div with an onClick rather than a <button>, so there is no button role
@@ -222,24 +233,28 @@ describe('renderDisplayOption', () => {
   /** A composed value needs its classification; a lone score is not a value. */
   it('drops a composed row that has a score but no classification', () => {
     const { container } = renderOption('alphamissense', {
-      consequence: [
-        annotation('alphamissense', 'transcript', {
-          classification: null,
-          score: 0.5
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('alphamissense', 'transcript', {
+            classification: null,
+            score: 0.5
+          })
+        ]
+      }
     });
     expect(container.innerHTML).toBe('');
   });
 
   it('renders a composed row without its score', () => {
     renderOption('alphamissense', {
-      consequence: [
-        annotation('alphamissense', 'transcript', {
-          classification: 'likely_benign',
-          score: null
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('alphamissense', 'transcript', {
+            classification: 'likely_benign',
+            score: null
+          })
+        ]
+      }
     });
     expect(screen.getByText('likely benign')).toBeDefined();
   });
@@ -253,27 +268,29 @@ describe('renderDisplayOption', () => {
 
   it('groups GO terms into a section per aspect, each term linked', () => {
     renderOption('go', {
-      consequence: [
-        annotation('go', 'transcript', {
-          go_terms: [
-            {
-              id: 'GO:0006355',
-              name: 'regulation of transcription',
-              namespace: 'biological_process'
-            },
-            {
-              id: 'GO:0003677',
-              name: 'DNA binding',
-              namespace: 'molecular_function'
-            },
-            {
-              id: 'GO:0005634',
-              name: 'nucleus',
-              namespace: 'cellular_component'
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('go', 'transcript', {
+            go_terms: [
+              {
+                id: 'GO:0006355',
+                name: 'regulation of transcription',
+                namespace: 'biological_process'
+              },
+              {
+                id: 'GO:0003677',
+                name: 'DNA binding',
+                namespace: 'molecular_function'
+              },
+              {
+                id: 'GO:0005634',
+                name: 'nucleus',
+                namespace: 'cellular_component'
+              }
+            ]
+          })
+        ]
+      }
     });
     expect(screen.getByText('Gene Ontology')).toBeDefined();
     // one headed section per aspect, named by the spec's `labels` rather than
@@ -307,13 +324,15 @@ describe('renderDisplayOption', () => {
     // other used to link to `https://amigo.geneontology.org/amigo/term/` --
     // a URL that goes somewhere, just not anywhere about this term.
     renderOption('go', {
-      consequence: [
-        annotation('go', 'transcript', {
-          go_terms: [
-            { id: null, name: 'DNA binding', namespace: 'molecular_function' }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('go', 'transcript', {
+            go_terms: [
+              { id: null, name: 'DNA binding', namespace: 'molecular_function' }
+            ]
+          })
+        ]
+      }
     });
     const term = screen.getByText('DNA binding');
     expect(term).toBeDefined();
@@ -324,36 +343,38 @@ describe('renderDisplayOption', () => {
     // `link_from` points at a URL the parse resolved, so its scheme is whatever
     // came out of the data. Only the two web schemes are rendered as a link.
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          id: '440915',
-          significance: ['Pathogenic'],
-          review_status: 'no_assertion_criteria_provided',
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'no_assertion_criteria_provided',
-              rating_scale: 'clinvar_aggregate'
-            }
-          ],
-          records: [
-            {
-              names: [
-                {
-                  name: 'Parkinsonism-dystonia_3,_childhood-onset',
-                  ids: 'MedGen:C5676913',
-                  id_url: 'javascript:alert(1)',
-                  id_curie: 'MedGen:C5676913'
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [],
-              rcv: null
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            id: '440915',
+            significance: ['Pathogenic'],
+            review_status: 'no_assertion_criteria_provided',
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'no_assertion_criteria_provided',
+                rating_scale: 'clinvar_aggregate'
+              }
+            ],
+            records: [
+              {
+                names: [
+                  {
+                    name: 'Parkinsonism-dystonia_3,_childhood-onset',
+                    ids: 'MedGen:C5676913',
+                    id_url: 'javascript:alert(1)',
+                    id_curie: 'MedGen:C5676913'
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [],
+                rcv: null
+              }
+            ]
+          })
+        ]
+      }
     });
     const condition = screen.getByText(
       'Parkinsonism-dystonia 3, childhood-onset'
@@ -390,18 +411,20 @@ describe('renderDisplayOption', () => {
 
   it('renders NearestExonJB (transcript-scoped) as labelled field-rows', () => {
     renderOption('nearest_exon_jb', {
-      consequence: [
-        annotation('nearest_exon_jb', 'transcript', {
-          boundaries: [
-            {
-              exon_id: 'ENSE00004404283',
-              distance: 53,
-              boundary_type: 'start',
-              exon_length: 117
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('nearest_exon_jb', 'transcript', {
+            boundaries: [
+              {
+                exon_id: 'ENSE00004404283',
+                distance: 53,
+                boundary_type: 'start',
+                exon_length: 117
+              }
+            ]
+          })
+        ]
+      }
     });
     expect(screen.getByText('Nearest exon junction boundary')).toBeDefined();
     // each field is a labelled row (item.rows), not bare inline cells
@@ -417,24 +440,26 @@ describe('renderDisplayOption', () => {
 
   it('renders two NearestExonJB boundaries (intronic) as separate records', () => {
     renderOption('nearest_exon_jb', {
-      consequence: [
-        annotation('nearest_exon_jb', 'transcript', {
-          boundaries: [
-            {
-              exon_id: 'ENSE1',
-              distance: 3744,
-              boundary_type: 'end',
-              exon_length: 144
-            },
-            {
-              exon_id: 'ENSE2',
-              distance: 3169,
-              boundary_type: 'start',
-              exon_length: 86
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('nearest_exon_jb', 'transcript', {
+            boundaries: [
+              {
+                exon_id: 'ENSE1',
+                distance: 3744,
+                boundary_type: 'end',
+                exon_length: 144
+              },
+              {
+                exon_id: 'ENSE2',
+                distance: 3169,
+                boundary_type: 'start',
+                exon_length: 86
+              }
+            ]
+          })
+        ]
+      }
     });
     // both boundaries render; "Exon" label appears once per record
     expect(screen.getByText('ENSE1')).toBeDefined();
@@ -458,18 +483,20 @@ describe('renderDisplayOption', () => {
     // they arrive on the transcript consequence; variant-associated ones are
     // narrowed by risk allele and stay on the allele.
     renderOption('phenotypes', {
-      consequence: [
-        annotation('phenotype_gene', 'transcript', {
-          phenotypes: [
-            phenotype({
-              type: 'Gene',
-              source: 'GenCC',
-              phenotype: 'Li-Fraumeni_syndrome',
-              id: 'ENSG00000141510'
-            })
-          ]
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('phenotype_gene', 'transcript', {
+            phenotypes: [
+              phenotype({
+                type: 'Gene',
+                source: 'GenCC',
+                phenotype: 'Li-Fraumeni_syndrome',
+                id: 'ENSG00000141510'
+              })
+            ]
+          })
+        ]
+      },
       allele: [
         annotation('phenotype_data', 'allele', {
           phenotypes: [
@@ -513,19 +540,21 @@ describe('renderDisplayOption', () => {
     // on the source's name; the phenotype is what the reader is scanning for and
     // reads better as plain text.
     renderOption('phenotypes', {
-      consequence: [
-        annotation('phenotype_gene', 'transcript', {
-          phenotypes: [
-            phenotype({
-              type: 'Gene',
-              source: 'MIM_morbid',
-              phenotype: 'Li-Fraumeni_syndrome',
-              id: 'ENSG00000141510',
-              source_url: 'https://omim.org/entry/151623'
-            })
-          ]
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('phenotype_gene', 'transcript', {
+            phenotypes: [
+              phenotype({
+                type: 'Gene',
+                source: 'MIM_morbid',
+                phenotype: 'Li-Fraumeni_syndrome',
+                id: 'ENSG00000141510',
+                source_url: 'https://omim.org/entry/151623'
+              })
+            ]
+          })
+        ]
+      },
       allele: [
         annotation('phenotype_data', 'allele', {
           phenotypes: [
@@ -591,9 +620,11 @@ describe('renderDisplayOption', () => {
       })
     );
     renderOption('phenotypes', {
-      consequence: [
-        annotation('phenotype_gene', 'transcript', { phenotypes: genes })
-      ],
+      consequence: {
+        annotations: [
+          annotation('phenotype_gene', 'transcript', { phenotypes: genes })
+        ]
+      },
       allele: [
         annotation('phenotype_data', 'allele', {
           phenotypes: [
@@ -617,16 +648,18 @@ describe('renderDisplayOption', () => {
 
   it('truncates a long list behind a show-more toggle (visible_count)', () => {
     renderOption('go', {
-      consequence: [
-        annotation('go', 'transcript', {
-          // one aspect, so this exercises truncation rather than grouping
-          go_terms: [1, 2, 3, 4, 5].map((n) => ({
-            id: `GO:${n}`,
-            name: `term ${n}`,
-            namespace: 'biological_process'
-          }))
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('go', 'transcript', {
+            // one aspect, so this exercises truncation rather than grouping
+            go_terms: [1, 2, 3, 4, 5].map((n) => ({
+              id: `GO:${n}`,
+              name: `term ${n}`,
+              namespace: 'biological_process'
+            }))
+          })
+        ]
+      }
     });
     // visible_count is 3: the first three show, the rest hide behind "+ 2 more".
     expect(screen.getByText('term 3')).toBeDefined();
@@ -636,7 +669,9 @@ describe('renderDisplayOption', () => {
 
   it('renders nothing for an empty list', () => {
     const { container } = renderOption('go', {
-      consequence: [annotation('go', 'transcript', { go_terms: [] })]
+      consequence: {
+        annotations: [annotation('go', 'transcript', { go_terms: [] })]
+      }
     });
     expect(container.innerHTML).toBe('');
   });
@@ -647,12 +682,14 @@ describe('renderDisplayOption', () => {
     // ProtVar rather than MaveDB: MaveDB used to be a rows block plus a list,
     // and is now a single table, so it no longer exercises this at all.
     renderOption('protvar', {
-      consequence: [
-        annotation('protvar', 'transcript', {
-          structure_stability_score: 1.23,
-          pockets: [{ pocket_id: '1', score: 0.5 }]
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('protvar', 'transcript', {
+            structure_stability_score: 1.23,
+            pockets: [{ pocket_id: '1', score: 0.5 }]
+          })
+        ]
+      },
       protvarUrl: 'https://protvar.example/x'
     });
     expect(screen.getByText('ProtVar')).toBeDefined(); // the option heading
@@ -666,11 +703,16 @@ describe('renderDisplayOption', () => {
 
   test('MaveDB: one row per assay, with the score set linked', () => {
     renderOption('mavedb', {
-      consequence: [
-        annotation('mavedb', 'transcript', {
-          assays: [mavedbAssay('a', 1.234, null), mavedbAssay('b', -0.5, null)]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('mavedb', 'transcript', {
+            assays: [
+              mavedbAssay('a', 1.234, null),
+              mavedbAssay('b', -0.5, null)
+            ]
+          })
+        ]
+      }
     });
     expect(screen.getByText('MaveDB')).toBeDefined(); // the option heading
     // The plugin reports the score set, not the variant within it, so the link
@@ -702,15 +744,17 @@ describe('renderDisplayOption', () => {
     // one experiment, so the column is one cell spanning all three — drawn from
     // the row that actually carries the DOI, not the first row.
     const { container } = renderOption('mavedb', {
-      consequence: [
-        annotation('mavedb', 'transcript', {
-          assays: [
-            mavedbAssay('a', 1, null),
-            mavedbAssay('b', 2, '10.1038/s41589-020-0480-6'),
-            mavedbAssay('c', 3, null)
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('mavedb', 'transcript', {
+            assays: [
+              mavedbAssay('a', 1, null),
+              mavedbAssay('b', 2, '10.1038/s41589-020-0480-6'),
+              mavedbAssay('c', 3, null)
+            ]
+          })
+        ]
+      }
     });
 
     const link = screen
@@ -731,14 +775,16 @@ describe('renderDisplayOption', () => {
     // data should contain, but if it does, spanning them would present one
     // row's value as the whole group's. Repetition is the honest fallback.
     const { container } = renderOption('mavedb', {
-      consequence: [
-        annotation('mavedb', 'transcript', {
-          assays: [
-            mavedbAssay('a', 1, '10.1000/first'),
-            mavedbAssay('b', 2, '10.1000/second')
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('mavedb', 'transcript', {
+            assays: [
+              mavedbAssay('a', 1, '10.1000/first'),
+              mavedbAssay('b', 2, '10.1000/second')
+            ]
+          })
+        ]
+      }
     });
 
     expect(screen.getByText('10.1000/first')).toBeDefined();
@@ -751,17 +797,19 @@ describe('renderDisplayOption', () => {
     // The table truncates at three. A span of five would reach two rows past
     // the last one rendered and leave the cell hanging below the table.
     const { container } = renderOption('mavedb', {
-      consequence: [
-        annotation('mavedb', 'transcript', {
-          assays: [
-            mavedbAssay('a', 1, null),
-            mavedbAssay('b', 2, null),
-            mavedbAssay('c', 3, '10.1038/s41589-020-0480-6'),
-            mavedbAssay('d', 4, null),
-            mavedbAssay('e', 5, null)
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('mavedb', 'transcript', {
+            assays: [
+              mavedbAssay('a', 1, null),
+              mavedbAssay('b', 2, null),
+              mavedbAssay('c', 3, '10.1038/s41589-020-0480-6'),
+              mavedbAssay('d', 4, null),
+              mavedbAssay('e', 5, null)
+            ]
+          })
+        ]
+      }
     });
 
     const merged = container.querySelector(
@@ -784,18 +832,20 @@ describe('renderDisplayOption', () => {
     // a pair — the other half (leave a '#' alone when the value IS the URL,
     // below) only makes sense against it — so it keeps its own test.
     renderOption('mavedb', {
-      consequence: [
-        annotation('mavedb', 'transcript', {
-          assays: [
-            {
-              urn: 'urn:mavedb:00000045-a-1#2010',
-              experiment: 'urn:mavedb:00000045',
-              doi: null,
-              score: 1
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('mavedb', 'transcript', {
+            assays: [
+              {
+                urn: 'urn:mavedb:00000045-a-1#2010',
+                experiment: 'urn:mavedb:00000045',
+                doi: null,
+                score: 1
+              }
+            ]
+          })
+        ]
+      }
     });
 
     const href = screen
@@ -847,12 +897,14 @@ describe('renderDisplayOption', () => {
     // No variant row, but the assays list survives — the "MaveDB" heading spans
     // both blocks, so it still shows.
     renderOption('mavedb', {
-      consequence: [
-        annotation('mavedb', 'transcript', {
-          protein_variant: null,
-          assays: [{ urn: 'urn:x', accession: 'urn:x#1', score: 2 }]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('mavedb', 'transcript', {
+            protein_variant: null,
+            assays: [{ urn: 'urn:x', accession: 'urn:x#1', score: 2 }]
+          })
+        ]
+      }
     });
     expect(screen.getByText('MaveDB')).toBeDefined();
     expect(screen.getByText('urn:x')).toBeDefined();
@@ -863,12 +915,14 @@ describe('renderDisplayOption', () => {
 
   it('sub-option rows: default view shows only the ones with a value', () => {
     renderOption('mutfunc', {
-      consequence: [
-        annotation('mutfunc', 'transcript', {
-          linear_motifs: 0.5,
-          protein_interactions: null
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('mutfunc', 'transcript', {
+            linear_motifs: 0.5,
+            protein_interactions: null
+          })
+        ]
+      }
       // showAll defaults false
     });
     expect(screen.getByText('mutfunc')).toBeDefined();
@@ -880,13 +934,15 @@ describe('renderDisplayOption', () => {
 
   it('sub-option rows: Show-all lists selected ones (dash if empty), drops unselected', () => {
     renderOption('mutfunc', {
-      consequence: [
-        annotation('mutfunc', 'transcript', {
-          linear_motifs: 0.5, // selected + value
-          protein_interactions: null, // selected + empty -> dash
-          protein_structure: 0.9 // NOT selected, but has a value -> dropped
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('mutfunc', 'transcript', {
+            linear_motifs: 0.5, // selected + value
+            protein_interactions: null, // selected + empty -> dash
+            protein_structure: 0.9 // NOT selected, but has a value -> dropped
+          })
+        ]
+      },
       showAll: true,
       subOptionRan: (id) => id === 'mutfunc_motif' || id === 'mutfunc_int'
     });
@@ -1078,29 +1134,31 @@ describe('renderDisplayOption', () => {
 
   test('ClinVar: one Classification line per classification type', () => {
     const { container } = renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'reviewed_by_expert_panel',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 39,
-              submissions: 44
-            },
-            {
-              type: 'SomaticClinicalImpact',
-              classification: 'Tier_I_-_Strong',
-              review_status: 'criteria_provided,_single_submitter',
-              rating_scale: 'clinvar_somatic',
-              supporting: 9,
-              submissions: 12
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'reviewed_by_expert_panel',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 39,
+                submissions: 44
+              },
+              {
+                type: 'SomaticClinicalImpact',
+                classification: 'Tier_I_-_Strong',
+                review_status: 'criteria_provided,_single_submitter',
+                rating_scale: 'clinvar_somatic',
+                supporting: 9,
+                submissions: 12
+              }
+            ]
+          })
+        ]
+      }
     });
     expect(screen.getByText('Classification')).toBeDefined();
 
@@ -1154,31 +1212,33 @@ describe('renderDisplayOption', () => {
     // child of one grid — a line that packed its own cells would start each
     // column wherever its own text happened to end.
     const { container } = renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Oncogenicity',
-              classification: 'Oncogenic',
-              review_status: 'criteria_provided,_single_submitter',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 1,
-              submissions: 1
-            },
-            {
-              // no review status: its cell renders nothing but must still hold
-              // its column, or this line's later cells would drift
-              type: 'SomaticClinicalImpact',
-              classification: 'Tier_I_-_Strong',
-              review_status: null,
-              rating_scale: 'clinvar_somatic',
-              supporting: 2,
-              submissions: 3
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Oncogenicity',
+                classification: 'Oncogenic',
+                review_status: 'criteria_provided,_single_submitter',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 1,
+                submissions: 1
+              },
+              {
+                // no review status: its cell renders nothing but must still hold
+                // its column, or this line's later cells would drift
+                type: 'SomaticClinicalImpact',
+                classification: 'Tier_I_-_Strong',
+                review_status: null,
+                rating_scale: 'clinvar_somatic',
+                supporting: 2,
+                submissions: 3
+              }
+            ]
+          })
+        ]
+      }
     });
     // Both are somatic, so both land in the one stack below the germline table.
     const grid = container.querySelector(
@@ -1200,21 +1260,23 @@ describe('renderDisplayOption', () => {
     // the submissions, not any submitter's word, so nothing matches it verbatim.
     // "(0 of 12)" would read as a measure of support; it is a fact about wording.
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Conflicting_classifications_of_pathogenicity'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Conflicting_classifications_of_pathogenicity',
-              review_status: 'criteria_provided,_conflicting_classifications',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 0,
-              submissions: 12
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Conflicting_classifications_of_pathogenicity'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Conflicting_classifications_of_pathogenicity',
+                review_status: 'criteria_provided,_conflicting_classifications',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 0,
+                submissions: 12
+              }
+            ]
+          })
+        ]
+      }
     });
     expect(
       screen.getByText('Conflicting classifications of pathogenicity')
@@ -1225,22 +1287,24 @@ describe('renderDisplayOption', () => {
   test('ClinVar: a classification packing two terms reads as a list', () => {
     // The enriched VCF joins them with '+', which used to show through.
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification:
-                'Conflicting_classifications_of_pathogenicity+risk_factor',
-              review_status: 'criteria_provided,_conflicting_classifications',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 0,
-              submissions: 12
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification:
+                  'Conflicting_classifications_of_pathogenicity+risk_factor',
+                review_status: 'criteria_provided,_conflicting_classifications',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 0,
+                submissions: 12
+              }
+            ]
+          })
+        ]
+      }
     });
     expect(
       screen.getByText(
@@ -1262,34 +1326,38 @@ describe('renderDisplayOption', () => {
     // to draw any more.
     const { container } = renderOption('clinvar', {
       subOptionRan: clinvarSvSelected,
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          conflicting_breakdown: []
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            conflicting_breakdown: []
+          })
+        ]
+      }
     });
     expect(container.innerHTML).toBe('');
   });
 
   test('ClinVar short: a linked variant-id row above the significance', () => {
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          id: '12345',
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'no_assertion_criteria_provided',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 1,
-              submissions: 1
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            id: '12345',
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'no_assertion_criteria_provided',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 1,
+                submissions: 1
+              }
+            ]
+          })
+        ]
+      }
     });
     expect(screen.getByText('ClinVar variant ID')).toBeDefined();
     // the id is a link out to its NCBI ClinVar variation page
@@ -1301,83 +1369,87 @@ describe('renderDisplayOption', () => {
 
   test('ClinVar short: the variant-id row drops when there is no id', () => {
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          conflicting_breakdown: []
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            conflicting_breakdown: []
+          })
+        ]
+      }
     });
     expect(screen.queryByText('ClinVar variant ID')).toBeNull();
   });
 
   test('ClinVar: the conditions table — linked condition, counted classifications, stacked records', () => {
     const { container } = renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          id: '440915',
-          significance: ['Conflicting_classifications_of_pathogenicity'],
-          review_status: 'criteria_provided,_conflicting_classifications',
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'no_assertion_criteria_provided',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 1,
-              submissions: 1
-            }
-          ],
-          records: [
-            {
-              names: [
-                {
-                  name: 'Parkinsonism-dystonia_3,_childhood-onset',
-                  ids: 'MONDO:MONDO:0030676,MedGen:C5676913',
-                  id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C5676913',
-                  id_curie: 'MedGen:C5676913'
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [
-                { classification: 'Pathogenic', count: 3 },
-                { classification: 'Uncertain_significance', count: 1 }
-              ],
-              rcv: 'RCV001836831'
-            },
-            {
-              // A second RCV covering the same condition is its own row now:
-              // an RCV *is* the aggregate, so it cannot share one.
-              names: [
-                {
-                  name: 'Parkinsonism-dystonia_3,_childhood-onset',
-                  ids: 'MONDO:MONDO:0030676,MedGen:C5676913',
-                  id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C5676913',
-                  id_curie: 'MedGen:C5676913'
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [{ classification: 'Benign', count: 1 }],
-              rcv: 'RCV006249379'
-            },
-            {
-              // ClinVar has no usable ontology id for this one, so the name
-              // must still show — as plain text, not a dead link
-              names: [
-                {
-                  name: 'WARS2-related_disorder',
-                  ids: null,
-                  id_url: null,
-                  id_curie: null
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [],
-              rcv: null
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            id: '440915',
+            significance: ['Conflicting_classifications_of_pathogenicity'],
+            review_status: 'criteria_provided,_conflicting_classifications',
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'no_assertion_criteria_provided',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 1,
+                submissions: 1
+              }
+            ],
+            records: [
+              {
+                names: [
+                  {
+                    name: 'Parkinsonism-dystonia_3,_childhood-onset',
+                    ids: 'MONDO:MONDO:0030676,MedGen:C5676913',
+                    id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C5676913',
+                    id_curie: 'MedGen:C5676913'
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [
+                  { classification: 'Pathogenic', count: 3 },
+                  { classification: 'Uncertain_significance', count: 1 }
+                ],
+                rcv: 'RCV001836831'
+              },
+              {
+                // A second RCV covering the same condition is its own row now:
+                // an RCV *is* the aggregate, so it cannot share one.
+                names: [
+                  {
+                    name: 'Parkinsonism-dystonia_3,_childhood-onset',
+                    ids: 'MONDO:MONDO:0030676,MedGen:C5676913',
+                    id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C5676913',
+                    id_curie: 'MedGen:C5676913'
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [{ classification: 'Benign', count: 1 }],
+                rcv: 'RCV006249379'
+              },
+              {
+                // ClinVar has no usable ontology id for this one, so the name
+                // must still show — as plain text, not a dead link
+                names: [
+                  {
+                    name: 'WARS2-related_disorder',
+                    ids: null,
+                    id_url: null,
+                    id_curie: null
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [],
+                rcv: null
+              }
+            ]
+          })
+        ]
+      }
     });
     // The conditions are split by classification type, but neither table names
     // itself: the classification lines above each say which it is, and a
@@ -1463,39 +1535,44 @@ describe('renderDisplayOption', () => {
     // names — identical in every column but the condition. The parse collapses
     // them (see the `collapse` post-op); this is the cell that results.
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          id: '387010',
-          significance: ['Likely_benign'],
-          review_status: 'criteria_provided,_multiple_submitters,_no_conflicts',
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Likely_benign',
-              review_status:
-                'criteria_provided,_multiple_submitters,_no_conflicts',
-              rating_scale: 'clinvar_aggregate'
-            }
-          ],
-          records: [
-            {
-              names: [
-                {
-                  name: 'Epidermolysis_bullosa_simplex_with_nail_dystrophy',
-                  id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C4225309'
-                },
-                {
-                  name: 'Epidermolysis_bullosa_simplex,_Ogna_type',
-                  id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C0432317'
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [{ classification: 'Likely_benign', count: 1 }],
-              rcv: 'RCV000648657'
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            id: '387010',
+            significance: ['Likely_benign'],
+            review_status:
+              'criteria_provided,_multiple_submitters,_no_conflicts',
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Likely_benign',
+                review_status:
+                  'criteria_provided,_multiple_submitters,_no_conflicts',
+                rating_scale: 'clinvar_aggregate'
+              }
+            ],
+            records: [
+              {
+                names: [
+                  {
+                    name: 'Epidermolysis_bullosa_simplex_with_nail_dystrophy',
+                    id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C4225309'
+                  },
+                  {
+                    name: 'Epidermolysis_bullosa_simplex,_Ogna_type',
+                    id_url: 'https://www.ncbi.nlm.nih.gov/medgen/C0432317'
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [
+                  { classification: 'Likely_benign', count: 1 }
+                ],
+                rcv: 'RCV000648657'
+              }
+            ]
+          })
+        ]
+      }
     });
 
     // One body row, not two.
@@ -1525,23 +1602,25 @@ describe('renderDisplayOption', () => {
 
   test('ClinVar: the review status shows its star rating and cites ClinVar', async () => {
     const { container } = renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status:
-                'criteria_provided,_multiple_submitters,_no_conflicts',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 3,
-              submissions: 5
-            }
-          ],
-          rcv: null
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status:
+                  'criteria_provided,_multiple_submitters,_no_conflicts',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 3,
+                submissions: 5
+              }
+            ],
+            rcv: null
+          })
+        ]
+      }
     });
     // The wording stays — the stars summarise it, they don't replace it.
     expect(
@@ -1568,22 +1647,24 @@ describe('renderDisplayOption', () => {
 
   test('ClinVar: a review status the scale does not know shows no rating', () => {
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'some_status_clinvar_has_not_published_yet',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 3,
-              submissions: 5
-            }
-          ],
-          rcv: null
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'some_status_clinvar_has_not_published_yet',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 3,
+                submissions: 5
+              }
+            ],
+            rcv: null
+          })
+        ]
+      }
     });
     expect(
       screen.getByText('some status clinvar has not published yet')
@@ -1598,48 +1679,50 @@ describe('renderDisplayOption', () => {
     // wording earns four empty stars at the top and none in the detail — which
     // is what fails if the two scales are ever crossed.
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'no_classification_for_the_individual_variant',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 3,
-              submissions: 5
-            }
-          ],
-          records: [
-            {
-              names: [
-                {
-                  name: 'WARS2-related_disorder',
-                  ids: null,
-                  id_url: null
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [
-                {
-                  classification: 'Pathogenic',
-                  count: 1,
-                  submitters: [
-                    {
-                      submitter: 'Baylor_Genetics',
-                      date_last_evaluated: '2022-05-05',
-                      review_status:
-                        'no_classification_for_the_individual_variant'
-                    }
-                  ]
-                }
-              ],
-              rcv: null
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'no_classification_for_the_individual_variant',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 3,
+                submissions: 5
+              }
+            ],
+            records: [
+              {
+                names: [
+                  {
+                    name: 'WARS2-related_disorder',
+                    ids: null,
+                    id_url: null
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [
+                  {
+                    classification: 'Pathogenic',
+                    count: 1,
+                    submitters: [
+                      {
+                        submitter: 'Baylor_Genetics',
+                        date_last_evaluated: '2022-05-05',
+                        review_status:
+                          'no_classification_for_the_individual_variant'
+                      }
+                    ]
+                  }
+                ],
+                rcv: null
+              }
+            ]
+          })
+        ]
+      }
     });
     expect(screen.getByRole('img', { name: '0 out of 4' })).toBeDefined();
 
@@ -1653,47 +1736,49 @@ describe('renderDisplayOption', () => {
 
   test('ClinVar: a rated submission shows its own stars in the detail', async () => {
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'no_assertion_criteria_provided',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 1,
-              submissions: 1
-            }
-          ],
-          records: [
-            {
-              names: [
-                {
-                  name: 'WARS2-related_disorder',
-                  ids: null,
-                  id_url: null
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [
-                {
-                  classification: 'Pathogenic',
-                  count: 1,
-                  submitters: [
-                    {
-                      submitter: 'Baylor_Genetics',
-                      date_last_evaluated: '2022-05-05',
-                      review_status: 'criteria_provided,_single_submitter'
-                    }
-                  ]
-                }
-              ],
-              rcv: null
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'no_assertion_criteria_provided',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 1,
+                submissions: 1
+              }
+            ],
+            records: [
+              {
+                names: [
+                  {
+                    name: 'WARS2-related_disorder',
+                    ids: null,
+                    id_url: null
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [
+                  {
+                    classification: 'Pathogenic',
+                    count: 1,
+                    submitters: [
+                      {
+                        submitter: 'Baylor_Genetics',
+                        date_last_evaluated: '2022-05-05',
+                        review_status: 'criteria_provided,_single_submitter'
+                      }
+                    ]
+                  }
+                ],
+                rcv: null
+              }
+            ]
+          })
+        ]
+      }
     });
     await userEvent.click(
       screen.getByRole('button', { expanded: false, name: /Pathogenic \(1\)/ })
@@ -1703,63 +1788,65 @@ describe('renderDisplayOption', () => {
 
   test('ClinVar: each classification expands to its own submitters', async () => {
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'no_assertion_criteria_provided',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 1,
-              submissions: 1
-            }
-          ],
-          records: [
-            {
-              names: [
-                {
-                  name: 'Parkinsonism-dystonia_3,_childhood-onset',
-                  ids: null,
-                  id_url: null
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [
-                {
-                  classification: 'Pathogenic',
-                  count: 2,
-                  submitters: [
-                    {
-                      submitter: 'Institute_of_Human_Genetics',
-                      date_last_evaluated: '2023-12-01',
-                      review_status: 'criteria_provided,_single_submitter'
-                    },
-                    {
-                      submitter: 'Broad_Center_for_Mendelian_Genomics',
-                      date_last_evaluated: '2025-01-09',
-                      review_status: 'criteria_provided,_single_submitter'
-                    }
-                  ]
-                },
-                {
-                  classification: 'Uncertain_significance',
-                  count: 1,
-                  submitters: [
-                    {
-                      submitter: 'Baylor_Genetics',
-                      date_last_evaluated: '2022-05-05',
-                      review_status: 'criteria_provided,_single_submitter'
-                    }
-                  ]
-                }
-              ],
-              rcv: null
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'no_assertion_criteria_provided',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 1,
+                submissions: 1
+              }
+            ],
+            records: [
+              {
+                names: [
+                  {
+                    name: 'Parkinsonism-dystonia_3,_childhood-onset',
+                    ids: null,
+                    id_url: null
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [
+                  {
+                    classification: 'Pathogenic',
+                    count: 2,
+                    submitters: [
+                      {
+                        submitter: 'Institute_of_Human_Genetics',
+                        date_last_evaluated: '2023-12-01',
+                        review_status: 'criteria_provided,_single_submitter'
+                      },
+                      {
+                        submitter: 'Broad_Center_for_Mendelian_Genomics',
+                        date_last_evaluated: '2025-01-09',
+                        review_status: 'criteria_provided,_single_submitter'
+                      }
+                    ]
+                  },
+                  {
+                    classification: 'Uncertain_significance',
+                    count: 1,
+                    submitters: [
+                      {
+                        submitter: 'Baylor_Genetics',
+                        date_last_evaluated: '2022-05-05',
+                        review_status: 'criteria_provided,_single_submitter'
+                      }
+                    ]
+                  }
+                ],
+                rcv: null
+              }
+            ]
+          })
+        ]
+      }
     });
 
     // Collapsed: both summaries show, no submitter does.
@@ -1793,55 +1880,57 @@ describe('renderDisplayOption', () => {
 
   test("ClinVar: a submitter's cited publications each link out", async () => {
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'no_assertion_criteria_provided',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 1,
-              submissions: 1
-            }
-          ],
-          records: [
-            {
-              names: [
-                {
-                  name: 'CLAPO_syndrome',
-                  ids: null,
-                  id_url: null
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [
-                {
-                  classification: 'Pathogenic',
-                  count: 2,
-                  submitters: [
-                    {
-                      submitter: '3billion',
-                      date_last_evaluated: '2022-05-04',
-                      review_status: 'criteria_provided,_single_submitter',
-                      // ClinVar packs a submission's citations into one value
-                      pmid: '22729224+25599672'
-                    },
-                    {
-                      submitter: 'Baylor_Genetics',
-                      date_last_evaluated: '2022-05-05',
-                      review_status: 'criteria_provided,_single_submitter',
-                      pmid: null
-                    }
-                  ]
-                }
-              ],
-              rcv: null
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'no_assertion_criteria_provided',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 1,
+                submissions: 1
+              }
+            ],
+            records: [
+              {
+                names: [
+                  {
+                    name: 'CLAPO_syndrome',
+                    ids: null,
+                    id_url: null
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [
+                  {
+                    classification: 'Pathogenic',
+                    count: 2,
+                    submitters: [
+                      {
+                        submitter: '3billion',
+                        date_last_evaluated: '2022-05-04',
+                        review_status: 'criteria_provided,_single_submitter',
+                        // ClinVar packs a submission's citations into one value
+                        pmid: '22729224+25599672'
+                      },
+                      {
+                        submitter: 'Baylor_Genetics',
+                        date_last_evaluated: '2022-05-05',
+                        review_status: 'criteria_provided,_single_submitter',
+                        pmid: null
+                      }
+                    ]
+                  }
+                ],
+                rcv: null
+              }
+            ]
+          })
+        ]
+      }
     });
     await userEvent.click(
       screen.getByRole('button', { expanded: false, name: /Pathogenic \(2\)/ })
@@ -1862,54 +1951,56 @@ describe('renderDisplayOption', () => {
   test('ClinVar: a submission counting toward the aggregate is set apart', async () => {
     // Contributing submissions sort first, so the emphasised one leads.
     const { container } = renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'no_assertion_criteria_provided',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 1,
-              submissions: 1
-            }
-          ],
-          records: [
-            {
-              names: [
-                {
-                  name: 'CLAPO_syndrome',
-                  ids: null,
-                  id_url: null
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [
-                {
-                  classification: 'Pathogenic',
-                  count: 2,
-                  submitters: [
-                    {
-                      submitter: 'Counted_Lab',
-                      date_last_evaluated: '2024-01-01',
-                      review_status: 'criteria_provided,_single_submitter',
-                      contributes: 1
-                    },
-                    {
-                      submitter: 'Uncounted_Lab',
-                      date_last_evaluated: '2020-01-01',
-                      review_status: 'no_assertion_criteria_provided',
-                      contributes: 0
-                    }
-                  ]
-                }
-              ],
-              rcv: null
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'no_assertion_criteria_provided',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 1,
+                submissions: 1
+              }
+            ],
+            records: [
+              {
+                names: [
+                  {
+                    name: 'CLAPO_syndrome',
+                    ids: null,
+                    id_url: null
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [
+                  {
+                    classification: 'Pathogenic',
+                    count: 2,
+                    submitters: [
+                      {
+                        submitter: 'Counted_Lab',
+                        date_last_evaluated: '2024-01-01',
+                        review_status: 'criteria_provided,_single_submitter',
+                        contributes: 1
+                      },
+                      {
+                        submitter: 'Uncounted_Lab',
+                        date_last_evaluated: '2020-01-01',
+                        review_status: 'no_assertion_criteria_provided',
+                        contributes: 0
+                      }
+                    ]
+                  }
+                ],
+                rcv: null
+              }
+            ]
+          })
+        ]
+      }
     });
     await userEvent.click(
       screen.getByRole('button', { expanded: false, name: /Pathogenic \(2\)/ })
@@ -1927,37 +2018,39 @@ describe('renderDisplayOption', () => {
 
   test('ClinVar: a classification with no submitters offers nothing to expand', () => {
     renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'no_assertion_criteria_provided',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 1,
-              submissions: 1
-            }
-          ],
-          records: [
-            {
-              names: [
-                {
-                  name: 'WARS2-related_disorder',
-                  ids: null,
-                  id_url: null
-                }
-              ],
-              classification_type: 'Germline',
-              classifications: [
-                { classification: 'Pathogenic', count: 1, submitters: [] }
-              ],
-              rcv: null
-            }
-          ]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'no_assertion_criteria_provided',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 1,
+                submissions: 1
+              }
+            ],
+            records: [
+              {
+                names: [
+                  {
+                    name: 'WARS2-related_disorder',
+                    ids: null,
+                    id_url: null
+                  }
+                ],
+                classification_type: 'Germline',
+                classifications: [
+                  { classification: 'Pathogenic', count: 1, submitters: [] }
+                ],
+                rcv: null
+              }
+            ]
+          })
+        ]
+      }
     });
     expect(screen.getByText('Pathogenic (1)')).toBeDefined();
     // no control, rather than one that opens onto nothing
@@ -1987,16 +2080,18 @@ describe('renderDisplayOption', () => {
 
   test('ProtVar default view: headed per-pocket / interface rows, links', () => {
     renderOption('protvar', {
-      consequence: [
-        annotation('protvar', 'transcript', {
-          structure_stability_score: 1.23,
-          pockets: [
-            { pocket_id: '1', score: 0.5 },
-            { pocket_id: '2', score: null } // no score, still renders + links
-          ],
-          interaction_interfaces: [{ partner: 'P12345', score: 0.9 }]
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('protvar', 'transcript', {
+            structure_stability_score: 1.23,
+            pockets: [
+              { pocket_id: '1', score: 0.5 },
+              { pocket_id: '2', score: null } // no score, still renders + links
+            ],
+            interaction_interfaces: [{ partner: 'P12345', score: 0.9 }]
+          })
+        ]
+      },
       protvarUrl: 'https://protvar.example/x'
     });
     expect(screen.getByText('ProtVar')).toBeDefined(); // option heading
@@ -2025,16 +2120,18 @@ describe('renderDisplayOption', () => {
 
   test('ProtVar Show-all view: the same itemised detail as the default view', () => {
     renderOption('protvar', {
-      consequence: [
-        annotation('protvar', 'transcript', {
-          structure_stability_score: 1.23,
-          pockets: [
-            { pocket_id: '1', score: 0.5 },
-            { pocket_id: '2', score: 1 }
-          ],
-          interaction_interfaces: [] // none -> dash, no link
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('protvar', 'transcript', {
+            structure_stability_score: 1.23,
+            pockets: [
+              { pocket_id: '1', score: 0.5 },
+              { pocket_id: '2', score: 1 }
+            ],
+            interaction_interfaces: [] // none -> dash, no link
+          })
+        ]
+      },
       showAll: true,
       subOptionRan: () => true, // all three ProtVar sub-options ran
       protvarUrl: 'https://protvar.example/x'
@@ -2060,13 +2157,15 @@ describe('renderDisplayOption', () => {
 
   test('ProtVar Show-all view: an unselected sub-option is dropped, not dashed', () => {
     renderOption('protvar', {
-      consequence: [
-        annotation('protvar', 'transcript', {
-          structure_stability_score: 1.23,
-          pockets: [],
-          interaction_interfaces: []
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('protvar', 'transcript', {
+            structure_stability_score: 1.23,
+            pockets: [],
+            interaction_interfaces: []
+          })
+        ]
+      },
       showAll: true,
       // only stability ran; the empty-list dash rows must respect that gate,
       // or Show all would advertise sub-options the user never selected.
@@ -2082,12 +2181,14 @@ describe('renderDisplayOption', () => {
 
   test('ProtVar: builder link on a row and on list items', () => {
     renderOption('protvar', {
-      consequence: [
-        annotation('protvar', 'transcript', {
-          structure_stability_score: 1.23,
-          pockets: [{ pocket_id: 'P34', energy: 2, score: 0.324 }]
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('protvar', 'transcript', {
+            structure_stability_score: 1.23,
+            pockets: [{ pocket_id: 'P34', energy: 2, score: 0.324 }]
+          })
+        ]
+      },
       protvarUrl: 'https://www.ebi.ac.uk/ProtVar/query?chromosome=1',
       subOptionRan: () => true
     });
@@ -2101,13 +2202,15 @@ describe('renderDisplayOption', () => {
 
   test('protein: the id as an in-app "View in" popup trigger (a button)', () => {
     renderOption('protein', {
-      consequence: [
-        annotation('protein', 'transcript', {
-          ensembl_protein_id: 'ENSP00000269305'
-        })
-      ],
-      genomeId: 'homo_sapiens_GCA_000001405_29',
-      geneStableId: 'ENSG00000141510'
+      consequence: {
+        annotations: [
+          annotation('protein', 'transcript', {
+            ensembl_protein_id: 'ENSP00000269305'
+          })
+        ],
+        stable_id: 'ENST00000357654'
+      } as unknown as PredictedTranscriptConsequence,
+      genomeId: 'homo_sapiens_GCA_000001405_29'
     });
     expect(screen.getByText('Protein ID')).toBeDefined();
     // the app_popup builder wraps the id in the popup trigger button
@@ -2117,21 +2220,24 @@ describe('renderDisplayOption', () => {
 
   test('protein: plain id (no popup) when the consequence has no gene', () => {
     renderOption('protein', {
-      consequence: [
-        annotation('protein', 'transcript', {
-          ensembl_protein_id: 'ENSP00000269305'
-        })
-      ]
-      // no geneStableId -> the builder falls back to plain text
+      consequence: {
+        annotations: [
+          annotation('protein', 'transcript', {
+            ensembl_protein_id: 'ENSP00000269305'
+          })
+        ]
+      }
     });
     expect(screen.getByText('ENSP00000269305').closest('button')).toBeNull();
   });
 
   test('protein: renders nothing without an id', () => {
     const { container } = renderOption('protein', {
-      consequence: [
-        annotation('protein', 'transcript', { ensembl_protein_id: null })
-      ]
+      consequence: {
+        annotations: [
+          annotation('protein', 'transcript', { ensembl_protein_id: null })
+        ]
+      }
     });
     expect(container.innerHTML).toBe('');
   });
@@ -2141,14 +2247,16 @@ describe('renderDisplayOption', () => {
 
 test('IntAct: the interactions table is in the default view, not behind Show all', () => {
   renderOption('intact', {
-    consequence: [
-      annotation('intact', 'transcript', {
-        interactions: [
-          { interaction_ac: 'EBI-1', feature_type: 'mutation' },
-          { interaction_ac: 'EBI-2', feature_type: 'mutation decreasing' }
-        ]
-      })
-    ]
+    consequence: {
+      annotations: [
+        annotation('intact', 'transcript', {
+          interactions: [
+            { interaction_ac: 'EBI-1', feature_type: 'mutation' },
+            { interaction_ac: 'EBI-2', feature_type: 'mutation decreasing' }
+          ]
+        })
+      ]
+    }
     // deliberately no showAll
   });
   expect(screen.getByText('IntAct')).toBeDefined();
@@ -2185,7 +2293,9 @@ describe('IntAct interactions table', () => {
 
   const renderIntact = (subOptionRan: () => boolean = () => true) =>
     renderOption('intact', {
-      consequence: [annotation('intact', 'transcript', { interactions })],
+      consequence: {
+        annotations: [annotation('intact', 'transcript', { interactions })]
+      },
       showAll: true,
       subOptionRan
     });
@@ -2271,14 +2381,16 @@ describe('IntAct interactions table', () => {
 
   it('keeps every column when all of them vary', () => {
     renderOption('intact', {
-      consequence: [
-        annotation('intact', 'transcript', {
-          interactions: [
-            { ...interactions[0], feature_short_label: 'P37840:p.Ala53Thr' },
-            { ...interactions[1], feature_short_label: 'P37840:p.Glu46Lys' }
-          ]
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('intact', 'transcript', {
+            interactions: [
+              { ...interactions[0], feature_short_label: 'P37840:p.Ala53Thr' },
+              { ...interactions[1], feature_short_label: 'P37840:p.Glu46Lys' }
+            ]
+          })
+        ]
+      },
       showAll: true,
       subOptionRan: () => true
     });
@@ -2297,15 +2409,17 @@ describe('IntAct interactions table', () => {
 
   it('lifts a linked column with its link intact', () => {
     renderOption('intact', {
-      consequence: [
-        annotation('intact', 'transcript', {
-          // one shared affected protein across both interactions
-          interactions: interactions.map((i) => ({
-            ...i,
-            ap_ac: 'uniprotkb:P37840'
-          }))
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('intact', 'transcript', {
+            // one shared affected protein across both interactions
+            interactions: interactions.map((i) => ({
+              ...i,
+              ap_ac: 'uniprotkb:P37840'
+            }))
+          })
+        ]
+      },
       showAll: true,
       subOptionRan: () => true
     });
@@ -2343,12 +2457,14 @@ describe('option help on the results heading', () => {
 
   it('hangs it on a block heading (SpliceAI)', async () => {
     const { container } = renderOption('spliceai', {
-      consequence: [
-        annotation('spliceai', 'transcript', {
-          symbol: 'BRCA2',
-          events: [{ event: 'DG', delta: 0.9, position: 12 }]
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('spliceai', 'transcript', {
+            symbol: 'BRCA2',
+            events: [{ event: 'DG', delta: 0.9, position: 12 }]
+          })
+        ]
+      },
       help
     });
     expect(screen.getByText('SpliceAI')).toBeDefined();
@@ -2358,11 +2474,13 @@ describe('option help on the results heading', () => {
 
   it('hangs it on an option-level heading (ProtVar)', async () => {
     const { container } = renderOption('protvar', {
-      consequence: [
-        annotation('protvar', 'transcript', {
-          pockets: [{ pocket_id: '1', energy: 2, score: 3 }]
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('protvar', 'transcript', {
+            pockets: [{ pocket_id: '1', energy: 2, score: 3 }]
+          })
+        ]
+      },
       help
     });
     expect(screen.getByText('ProtVar')).toBeDefined();
@@ -2372,7 +2490,9 @@ describe('option help on the results heading', () => {
 
   it('hangs it on the title row of a headingless option (REVEL)', async () => {
     const { container } = renderOption('revel', {
-      consequence: [annotation('revel', 'transcript', { score: 0.42 })],
+      consequence: {
+        annotations: [annotation('revel', 'transcript', { score: 0.42 })]
+      },
       help
     });
     await openHelp(container);
@@ -2383,21 +2503,23 @@ describe('option help on the results heading', () => {
   // two shapes are different blocks and only one of them draws.
   it('follows ClinVar to whichever of its shapes drew', async () => {
     const { container } = renderOption('phenotypes', {
-      consequence: [
-        annotation('clinvar', 'transcript', {
-          significance: ['Pathogenic'],
-          classification_summary: [
-            {
-              type: 'Germline',
-              classification: 'Pathogenic',
-              review_status: 'reviewed_by_expert_panel',
-              rating_scale: 'clinvar_aggregate',
-              supporting: 3,
-              submissions: 4
-            }
-          ]
-        })
-      ],
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            significance: ['Pathogenic'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'reviewed_by_expert_panel',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 3,
+                submissions: 4
+              }
+            ]
+          })
+        ]
+      },
       help
     });
     await openHelp(container);
@@ -2435,7 +2557,9 @@ describe('option help on the results heading', () => {
 
   it('renders exactly as before when the option has no help', () => {
     const { container } = renderOption('revel', {
-      consequence: [annotation('revel', 'transcript', { score: 0.42 })]
+      consequence: {
+        annotations: [annotation('revel', 'transcript', { score: 0.42 })]
+      }
     });
     expect(
       container.querySelectorAll('[class*="questionButton"]')
@@ -2457,12 +2581,14 @@ describe('table column alignment', () => {
 
   it('right-aligns numeric columns and their headers (SpliceAI deltas)', () => {
     const { container } = renderOption('spliceai', {
-      consequence: [
-        annotation('spliceai', 'transcript', {
-          symbol: 'BRCA2',
-          events: [{ event: 'DG', delta: 0.9, position: 12 }]
-        })
-      ]
+      consequence: {
+        annotations: [
+          annotation('spliceai', 'transcript', {
+            symbol: 'BRCA2',
+            events: [{ event: 'DG', delta: 0.9, position: 12 }]
+          })
+        ]
+      }
     });
     // Splicing event | ΔS | ΔP
     expect(alignmentOf(container, 'th')).toEqual(['left', 'right', 'right']);
