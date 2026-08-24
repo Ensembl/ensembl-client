@@ -151,7 +151,7 @@ export const entityViewerTranscript = (params: {
   view?: string | null;
 }) => {
   const { genomeId, transcriptId } = params;
-  const pathname = `/feature-explorer/${genomeId}/${transcriptId}`;
+  const pathname = `/feature-explorer/${genomeId}/transcript:${transcriptId}`;
   const urlSearchParams = new URLSearchParams('');
   if (params?.view) {
     urlSearchParams.append('view', params.view);

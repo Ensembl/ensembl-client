@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * The value formatters shared by the VEP results annotation renderers.
- *
- * These used to live next to the components that needed them, which meant the
- * number formatter existed twice (annotation detail and the protein column) and
- * had to be kept in sync by hand. They are the display vocabulary of the
- * annotation renderer, so they live in one place.
- */
-
 /** Integers as-is, otherwise 4 significant figures with trailing zeros dropped. */
 export const num = (value: number): string =>
   Number.isInteger(value)
@@ -81,15 +72,10 @@ export const humanizeJoin = (
   values && values.length ? values.map(humanizeClass).join(', ') : null;
 
 /**
- * One value that packs several terms, humanised and read as a list.
- *
  * The enriched ClinVar VCF uses `+` where the source had a list, so a single
  * aggregate classification can arrive as
  * `Conflicting_classifications_of_pathogenicity+risk_factor` — two terms in one
- * value, which `humanize` alone would show with the separator still in it.
- *
- * Null when nothing survives, as every sibling formatter does: a value of just
- * separators would otherwise render an empty row instead of dropping it.
+ * value.
  */
 export const humanizeTerms = (value: string): string | null =>
   value.split('+').map(humanizeClass).filter(Boolean).join(', ') || null;

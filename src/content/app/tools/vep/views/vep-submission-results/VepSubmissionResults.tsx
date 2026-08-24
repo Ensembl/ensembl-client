@@ -54,19 +54,18 @@ import { buildProtvarUrlFromHgvsg } from 'src/content/app/tools/vep/utils/buildP
 import { buildOpenTargetsVariantId } from 'src/content/app/tools/vep/utils/openTargetsVariantId';
 import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
 import { resolveResultsPanels } from 'src/content/app/tools/vep/utils/resultsPanels';
-import { transcriptFeatureExplorerUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
 import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
 import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
 import VepResultsGene from './components/vep-results-gene/VepResultsGene';
+import VepResultsTranscript from './components/vep-results-transcript/VepResultsTranscript';
 import VepResultsLocation from './components/vep-results-location/VepResultsLocation';
 import VepResultsAllele from './components/vep-results-allele/VepResultsAllele';
 import VepResultsAnnotationDetail from './components/vep-results-annotation-detail/VepResultsAnnotationDetail';
 import VepResultsFilters from './components/vep-results-filters/VepResultsFilters';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
-import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 import Pill from 'src/shared/components/pill/Pill';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import SpeciesName from 'src/shared/components/species-name/SpeciesName';
@@ -925,7 +924,7 @@ const TranscriptTableCell = (props: {
 
   return (
     <td>
-      <VariantTranscript genomeId={genomeId} transcript={row.consequence} />
+      <VepResultsTranscript genomeId={genomeId} transcript={row.consequence} />
       {!isExpanded && totalTranscriptsCount > 1 && (
         <div>
           <button onClick={onTranscriptClick} className={styles.expandButton}>
@@ -953,53 +952,6 @@ const VariantName = (props: {
     <>
       <div>{props.variant.name}</div>
       <div className={styles.smallLight}>{props.variant.allele_type}</div>
-    </>
-  );
-};
-
-const VariantTranscript = (props: {
-  genomeId: string;
-  transcript: {
-    stable_id: string;
-    biotype: string;
-    is_canonical: boolean;
-    is_mane_select?: boolean;
-    is_mane_plus_clinical?: boolean;
-    is_gencode_primary?: boolean;
-  };
-}) => {
-  const { genomeId, transcript } = props;
-
-  const badges = [
-    transcript.is_mane_select && 'MANE Select',
-    transcript.is_mane_plus_clinical && 'MANE Plus Clinical',
-    transcript.is_gencode_primary && 'GENCODE Primary',
-    transcript.is_canonical && 'Canonical'
-  ].filter((badge): badge is string => Boolean(badge));
-
-  return (
-    <>
-      <div>
-        <ViewInAppPopup
-          links={{
-            entityViewer: {
-              url: transcriptFeatureExplorerUrl(genomeId, transcript.stable_id)
-            }
-          }}
-        >
-          {transcript.stable_id}
-        </ViewInAppPopup>
-      </div>
-      <div className={styles.smallLight}>{transcript.biotype}</div>
-      {badges.length > 0 && (
-        <div className={styles.transcriptBadges}>
-          {badges.map((badge) => (
-            <span key={badge} className={styles.transcriptBadge}>
-              {badge}
-            </span>
-          ))}
-        </div>
-      )}
     </>
   );
 };

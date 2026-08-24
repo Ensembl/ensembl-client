@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
-
-import { locationGenomeBrowserUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 
 type Props = {
   genomeId: string;
@@ -38,12 +38,17 @@ const VepResultsLocation = (props: Props) => {
   const startCoord = Math.max(location.start - OFFSET_FROM_CENTER, 1);
   const endCoord = startCoord + VIEWPORT_WIDTH;
 
+  const locationId = `${location.region_name}:${startCoord}-${endCoord}`;
+  const focusIdForUrl = buildFocusIdForUrl({
+    type: 'location',
+    objectId: locationId
+  });
+
   const links = {
     genomeBrowser: {
-      url: locationGenomeBrowserUrl(genomeId, {
-        regionName: location.region_name,
-        start: startCoord,
-        end: endCoord
+      url: urlFor.browser({
+        genomeId,
+        focus: focusIdForUrl
       })
     }
   };

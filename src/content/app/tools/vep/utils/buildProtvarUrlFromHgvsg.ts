@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-// A genomic HGVS substitution, e.g. `11:g.19237425T>G`: region, position, then
-// ref>alt. VEP already emits HGVSg in ProtVar's expected minimal (parsimonious)
-// form, so this needs no minimisation — the base positions are taken verbatim.
+// A genomic HGVS substitution, e.g. `11:g.19237425T>G`: region, position, then ref>alt
 const HGVSG_SUBSTITUTION = /^([^:]+):g\.(\d+)([ACGTN]+)>([ACGTN]+)$/;
 
 /**
  * Build a link to a variant's ProtVar entry from its HGVSg genomic
  * representation, e.g. `11:g.19237425T>G` -> `.../ProtVar/g/11/19237425/T/G`.
- *
- * ProtVar links only appear on protein-structural (missense) rows, which are
- * single-nucleotide substitutions — the shape HGVSg writes with `>`. A missing
- * HGVSg, or a non-substitution (indels use del/ins/dup notation and carry no
- * ProtVar data), yields no link.
  */
 export const buildProtvarUrlFromHgvsg = (
   hgvsgGenomic: string | null | undefined

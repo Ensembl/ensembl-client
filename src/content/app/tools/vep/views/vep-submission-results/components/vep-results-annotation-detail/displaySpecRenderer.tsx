@@ -16,8 +16,9 @@
 
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { withScore } from 'src/content/app/tools/vep/utils/annotationFormatters';
-import { proteinFeatureExplorerUrl } from 'src/content/app/tools/vep/utils/featureExplorerUrls';
 import {
   renderRows,
   renderRowGroup,
@@ -596,18 +597,19 @@ const LINK_BUILDERS: Record<
   protein_popup: (context, value) => {
     const consequence = context.consequence as
       PredictedTranscriptConsequence | null | undefined;
-    const gene = consequence?.gene_stable_id;
-    // This builder puts the value in a URL, so unlike the others it needs the
-    // string form; it is only ever used on a row, whose value is one.
-    const id = String(value);
-    if (!gene) {
-      return value; // no gene (e.g. intergenic) — plain id, no popup
+    const transcriptId = consequence?.stable_id;
+    if (!transcriptId) {
+      return value; // no transcript (e.g. intergenic variant) — plain id, no popup
     }
     return (
       <ViewInAppPopup
         links={{
           entityViewer: {
-            url: proteinFeatureExplorerUrl(context.genomeId, gene, id)
+            url: urlFor.entityViewerTranscript({
+              genomeId: context.genomeId,
+              transcriptId,
+              view: 'protein'
+            })
           }
         }}
       >
