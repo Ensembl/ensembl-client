@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ensembl UI"
+  short_description: "Build coherent interfaces from Ensembl UI primitives"
+  default_prompt: "Use $ensembl-ui to implement this interface with existing Ensembl components and design tokens."
