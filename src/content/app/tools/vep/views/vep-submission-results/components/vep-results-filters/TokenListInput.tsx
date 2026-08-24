@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
-import type { FormEvent } from 'react';
+import { useState, memo, type InputEvent } from 'react';
 import classNames from 'classnames';
 
 import type { TextInputConfig } from './resultsFilterFields';
@@ -50,55 +49,34 @@ const parseTokens = (text: string): string[] => {
  */
 const TokenListInput = (props: Props) => {
   const { values, onChange, config } = props;
+  const [prevValues, setPrevValues] = useState(values);
   const [text, setText] = useState(values.join(', '));
 
-  const isValid = (token: string) =>
-    config.pattern ? config.pattern.test(token) : true;
-  const validTokens = (input: string) => parseTokens(input).filter(isValid);
+  if (values.join('') !== prevValues.join('')) {
+    setPrevValues(values);
+    setText(values.join(', '));
+  }
 
-  // Resync the field when committed values diverge from what's typed (e.g. the
-  // condition is cleared or its field switched, values -> []). Only valid tokens
-  // are committed, so compare against those; while typing they already match.
-  useEffect(() => {
-    if (validTokens(text).join(' ') !== values.join(' ')) {
-      setText(values.join(', '));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values]);
-
-  const onInput = (event: FormEvent<HTMLInputElement>) => {
+  const onInput = (event: InputEvent<HTMLInputElement>) => {
     const nextText = event.currentTarget.value;
     setText(nextText);
-    onChange(validTokens(nextText));
+    onChange(parseTokens(nextText));
   };
-
-  const invalidTokens = config.pattern
-    ? parseTokens(text).filter((token) => !isValid(token))
-    : [];
 
   return (
     <div className={styles.tokenField}>
       <input
         type="text"
         className={classNames(styles.tokenInput, {
-          [styles.tokenInputMono]: config.mono,
-          [styles.tokenInputInvalid]: invalidTokens.length > 0
+          [styles.tokenInputMono]: config.mono
         })}
         value={text}
         onInput={onInput}
         placeholder={config.placeholder}
-        aria-invalid={invalidTokens.length > 0}
         spellCheck={false}
       />
-      {invalidTokens.length > 0 && (
-        <span className={styles.tokenError}>
-          Ignoring invalid{invalidTokens.length > 1 ? ' ids' : ' id'}:{' '}
-          {invalidTokens.join(', ')}
-          {config.invalidHint ? ` (${config.invalidHint})` : ''}
-        </span>
-      )}
     </div>
   );
 };
 
-export default TokenListInput;
+export default memo(TokenListInput);

@@ -113,10 +113,6 @@
   font-family: 'IBM Plex Mono', monospace;
 }
 
-.tokenInputInvalid {
-  border-color: var(--color-red);
-}
-
 .tokenError {
   color: var(--color-red);
   font-size: 11px;

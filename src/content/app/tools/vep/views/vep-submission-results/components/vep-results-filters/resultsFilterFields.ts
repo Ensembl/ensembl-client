@@ -26,8 +26,6 @@ import type {
 export type TextInputConfig = {
   placeholder: string;
   mono?: boolean;
-  pattern?: RegExp;
-  invalidHint?: string;
 };
 
 // The fields the query builder can filter on. Adding a field here (plus, for a
@@ -184,9 +182,7 @@ export const FILTER_FIELDS: FilterFieldDefinition[] = [
     editor: 'text',
     textInput: {
       placeholder: 'e.g. ENST00000341065',
-      mono: true,
-      pattern: /^ENST\d{11}(\.\d+)?$/,
-      invalidHint: 'expected ENST + 11 digits'
+      mono: true
     }
   },
   {
@@ -205,9 +201,7 @@ export const FILTER_FIELDS: FilterFieldDefinition[] = [
     editor: 'text',
     textInput: {
       placeholder: 'e.g. ENSG00000141510',
-      mono: true,
-      pattern: /^ENSG\d{11}(\.\d+)?$/,
-      invalidHint: 'expected ENSG + 11 digits'
+      mono: true
     }
   },
   {
