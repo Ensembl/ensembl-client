@@ -37,8 +37,10 @@ describe('num', () => {
   });
 
   it('drops trailing zeros from the rounded value', () => {
-    expect(num(0.5)).toBe('0.5');
-    expect(num(23.4)).toBe('23.4');
+    // prettier-ignore
+    expect(num(0.50000)).toBe('0.5');
+    // prettier-ignore
+    expect(num(23.40000)).toBe('23.4');
   });
 });
 
