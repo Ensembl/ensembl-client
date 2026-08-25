@@ -21,19 +21,8 @@ import { resolveValuePiece } from './displaySpecRenderer';
 import { displaySpecFixture } from './displaySpec.fixture';
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
 
-/**
- * The one resolver behind a cell, an item line, and a plain table cell.
- *
- * Tested here rather than through a rendered option because the combinations
- * that matter are ones no shipped spec happens to use — a piece that both
- * counts and links, say. Those are exactly the combinations that used to be
- * impossible to get wrong only because each renderer supported a different
- * subset.
- */
 const spec = displaySpecFixture as DisplaySpec;
 
-/** The rating a resolved piece leads with — `stars` is a rendered <StarRating>,
- *  so its props are where the number lives. */
 const rating = (stars: unknown): number | null =>
   stars ? ((stars as ReactElement).props as { rating: number }).rating : null;
 
@@ -44,7 +33,6 @@ describe('resolveValuePiece', () => {
   });
 
   it('takes the element itself when there is no field to name', () => {
-    // A list of scalars — phenotype strings.
     expect(resolveValuePiece({}, 'Long QT syndrome', spec)?.text).toBe(
       'Long QT syndrome'
     );
@@ -58,8 +46,6 @@ describe('resolveValuePiece', () => {
   });
 
   it('shows nothing when the format has nothing to say', () => {
-    // Previously two of the three renderers dropped this and the third left an
-    // empty span behind.
     const got = resolveValuePiece(
       { from: 'terms', format: 'humanize_terms' },
       { terms: '+' },
@@ -69,10 +55,6 @@ describe('resolveValuePiece', () => {
   });
 
   it('keeps the count out of the value it links', () => {
-    // "Pathogenic (3)" is what the reader sees; "Pathogenic" is what a link is
-    // built from or split on. Merging the three renderers made one `text` for
-    // both, and a piece that counted *and* linked would have put its own count
-    // in the URL.
     const got = resolveValuePiece(
       { from: 'classification', count_from: 'count' },
       { classification: 'Pathogenic', count: 3 },
@@ -160,15 +142,12 @@ describe('resolveValuePiece', () => {
       },
       spec
     );
-    // The same wording is read differently by the two scales -- which is the
-    // whole reason the scale is data rather than something the display states.
     expect(rating(germline?.stars)).toBe(2);
     expect(rating(somatic?.stars)).toBe(2);
     expect(germline?.text).toBe('Pathogenic');
   });
 
   it('shows no rating for a term the scale does not know', () => {
-    // Not zero stars: zero is a claim the source never made.
     const got = resolveValuePiece(
       { from: 'review_status', stars: 'clinvar_submission' },
       { review_status: 'something_new_clinvar_started_writing' },
