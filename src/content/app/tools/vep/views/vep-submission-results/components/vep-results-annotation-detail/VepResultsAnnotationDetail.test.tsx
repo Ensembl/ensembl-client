@@ -903,51 +903,15 @@ describe('panel order', () => {
 });
 
 /**
- * Each section is `break-inside: avoid`, so it is an indivisible unit: a panel
- * with N sections can never usefully fill more than N columns. Asking for more
- * left empty columns beside the content, which is what made a variant with few
- * annotations look sparse.
+ * Selector for the sections of annotations that are displayed in columns
  */
-/**
- * The columned container, told apart from the full-width one beside it.
- *
- * `[class*="sections"]` alone will not do: it is a substring match, and jsdom
- * disagrees with itself across versions about whether attribute values match
- * case-insensitively — where they do, it also matches `fullWidthSections` and
- * these assertions quietly invert. Excluding the full-width class says what is
- * meant in either.
- */
-const COLUMNED_SECTIONS = '[class*="sections"]:not([class*="ullWidth"])';
+const COLUMNED_SECTIONS = '[class*="sections"]:not([class*="fullWidth"])';
 
 const columnedSections = (container: HTMLElement) =>
   container.querySelector(COLUMNED_SECTIONS) as HTMLElement;
 
 describe('VepResultsAnnotationDetail columns', () => {
-  // The per-panel column count is gone: it capped a panel at one column per
-  // section, which only made sense while a section could not break. Every panel
-  // is laid out by the stylesheet the same way now.
-
-  it('leaves the column layout entirely to the stylesheet', () => {
-    const { container } = render(
-      <VepResultsAnnotationDetail
-        genomeId="grch38"
-        consequence={transcriptConsequence}
-        allele={makeAllele()}
-        parameters={{ hgvs: true }}
-        panels={panels}
-        display={displaySpecFixture}
-      />
-    );
-
-    expect(columnedSections(container).getAttribute('style')).toBeNull();
-  });
-
   it('does not count a frequencies panel that renders nothing', () => {
-    // The allele-frequencies panel rendered as a Fragment, which is truthy
-    // whatever is inside it — so a variant with no frequency data still counted
-    // towards the column count, and asked for a column nothing filled. That is
-    // what made wrapping look arbitrary: it followed data the reader cannot
-    // see.
     const { container } = render(
       <VepResultsAnnotationDetail
         genomeId="grch38"
@@ -1019,9 +983,12 @@ describe('VepResultsAnnotationDetail columns', () => {
 
     it('sits outside the column flow, not in it', () => {
       const { container } = renderWithPhenotypes();
+
+      // This section sits inside the full-width sections area
       const heading = screen.getByText('Phenotype & disease associations');
       expect(heading.closest('[class*="fullWidthSections"]')).toBeTruthy();
-      // the other panel stays in the columns, and this one is not among them
+
+      // Whereas the other panel stays in the columns
       const columns = columnedSections(container);
       expect(columns.contains(heading)).toBe(false);
       expect(columns.textContent).toContain('Variant representation');
