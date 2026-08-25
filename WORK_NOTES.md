@@ -18,8 +18,6 @@ Note that the `hgvs` option is a single "boolean", but it is rendered as two che
 
 
 
-
-
 ## UI
 - The 20px indents in Andrea's design — are they necessary? Aren't we losing precious space:
   - left/right indent for the grey details panel
@@ -30,13 +28,21 @@ Note that the `hgvs` option is a single "boolean", but it is rendered as two che
 
 ## TODO
 - Add popular species?
-- Remove `expandCommand` from VepFormOptionsPanel
+- Remove `expandCommand` from `VepFormOptionsPanel` (and from `VepFormOptionsSection`)
 - Remove requirement to pass `assembly_name` and `species_taxonomy_id` to requests for form config (see `vepFormSlice`)
+
+## CHECK AND REMOVE?
+- Check if the logic of the `resultsPanels` function is still necessary
+- `[styles.tokenInputMono]: config.mono` - why monospace font in TokenListInput?
+- Check for all remaining FIXME comments
 
 
 ## WTF
 - What the hell is featureExplorerUrls file?
 - Client has `isHumanGRCh38` flag in `VepSubmissionResults`
+- There is a client-side builder of opentargets variant ids
+  see `openTargetsVariantId`
+- `VepFormOptionsPanel` knows the `utrannotator` id of an option
 - Filters are human-centric:
  pattern: /^ENST\d{11}(\.\d+)?$/,
  invalidHint: 'expected ENST + 11 digits'
@@ -52,8 +58,6 @@ Note that the `hgvs` option is a single "boolean", but it is rendered as two che
 - Labels for Allele frequency sources are defined on the client
 - Client-side removal of gene versions (ENSG) - if we don't remove the version, genes or transcripts may not be found
 
-
-
 ```ts
 const AF_SOURCE_LABELS: Record<string, string> = {
   gnomad_exomes: 'gnomAD exomes',
@@ -65,8 +69,4 @@ const AF_SOURCE_LABELS: Record<string, string> = {
 ```
 
 - Filters are hard-coded on the client (see `resultsFilterFields.ts`)
-
-
-## CHECK AND REMOVE?
-- `[styles.tokenInputMono]: config.mono` - why monospace font in TokenListInput?
-- Check for all remaining FIXME comments
+- Help is hard-coded on the client (see `optionHelp.ts`)

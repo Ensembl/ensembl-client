@@ -23,18 +23,6 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import { getVepFormParameters } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 import { updateParameters } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
-import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
-import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
-import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
-
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
-
-import type {
-  FormPanel,
-  FormPanelOption,
-  FormPanelSubOption
-} from 'src/content/app/tools/vep/types/vepFormConfig';
 import { groupByCategory } from 'src/content/app/tools/vep/utils/groupByCategory';
 import {
   panelSelectionUpdates,
@@ -43,7 +31,20 @@ import {
   optionToggleUpdates
 } from './panelSelectionUpdates';
 import { getOptionHelp } from './optionHelp';
+
 import OptionHelpText from './OptionHelpText';
+import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
+import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+import TextButton from 'src/shared/components/text-button/TextButton';
+
+import type {
+  FormPanel,
+  FormPanelOption,
+  FormPanelSubOption
+} from 'src/content/app/tools/vep/types/vepFormConfig';
 
 import commonStyles from '../VepFormOptionsSection.module.css';
 import styles from './VepFormOptionsPanel.module.css';
@@ -291,8 +292,7 @@ const VepFormOptionsPanel = (props: Props) => {
                 renderSubOption(subOption, showChildren, option)
               )}
             {isCustomisable && (
-              <button
-                type="button"
+              <TextButton
                 className={styles.customiseButton}
                 onClick={() =>
                   setCustomisedSources((current) => ({
@@ -302,7 +302,7 @@ const VepFormOptionsPanel = (props: Props) => {
                 }
               >
                 {showChildren ? 'Show fewer' : 'Customise selection'}
-              </button>
+              </TextButton>
             )}
           </div>
         )}
@@ -319,13 +319,12 @@ const VepFormOptionsPanel = (props: Props) => {
           onClick={toggleExpanded}
         />
         {isExpanded && (
-          <button
-            type="button"
-            className={styles.selectAllButton}
+          <TextButton
             onClick={toggleSelectAll}
+            className={styles.selectAllButton}
           >
             {allSelected ? 'Unselect all' : 'Select all'}
-          </button>
+          </TextButton>
         )}
       </div>
       {isExpanded && (

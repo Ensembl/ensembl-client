@@ -3,37 +3,15 @@
 }
 
 .panelBody {
-  /* 62px on the left, 20px more than the 42px that matched the panel heading's
-     own inset. Everything a panel reveals is inside this box, so one value
-     steps the whole expanded content in from the heading it opened from —
-     previously the two started within 2px of each other, which read as no
-     relationship at all.
-
-     Stated as a pair rather than one `--padding-side`, since the two sides no
-     longer agree: the right keeps the 42px it shares with the heading. */
-  --padding-side: 42px;
   background-color: var(--color-light-grey);
-  padding: 12px var(--padding-side) 22px;
-
-  /* After the shorthand above, which would otherwise reset it. */
-  padding-left: 62px;
+  padding: 12px 42px 22px 62px;
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
-/* Right-aligned panel-header action (shown only while the panel is expanded):
-   toggle every option in the panel on (with their default sub-options) / off. */
 .selectAllButton {
   margin-left: auto;
-  appearance: none;
-  border: none;
-  background: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  color: var(--color-blue);
-  white-space: nowrap;
 }
 
 .group {
@@ -47,24 +25,6 @@
   color: var(--color-dark-grey);
 }
 
-/* Columns of at least 230px, as many as fit — the same shape
-   `.optionsGridSources` below already uses, rather than a fixed four.
-
-   200px was ~30px too narrow for the longest label here: "Nearest exon junction
-   boundary" needs 181.5px on one line, and after the checkbox, its 12px of
-   padding and the help icon beside it, the text was left ~154px and wrapped. It
-   was the only label in the panel that did.
-
-   That wrap is what stranded its help icon. An icon following a wrapped label
-   sits after the label *box* — which is the width the text wrapped at, not the
-   width of any line in it — so it sat 35px from the words where every other
-   option's sits 5px away. No alignment fixes that; only not wrapping does.
-
-   ★ Fixed 230px columns would have overflowed a narrow panel: four of them plus
-   gaps want 992px, and at a 1024px viewport the panel has 847px, so the fourth
-   column ran 132px past its edge (the old 200px overflowed by 12px there, which
-   is how this went unnoticed). `auto-fill` drops to three columns instead —
-   measured: four at 1512px, three at 1024px, and nothing overflows at either. */
 .optionsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -73,10 +33,6 @@
   align-items: start;
 }
 
-/* A group of allele-frequency sources (gnomAD exomes/genomes, All of Us, SV,
-   CNV). Each carries its own ancestry/subset matrix, so they get wider columns
-   than a standard option and sit side by side across the panel, filling the
-   available width. The column count drops on a narrow viewport. */
 .optionsGridSources {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   column-gap: 2rem;
@@ -87,42 +43,21 @@
   flex-direction: column;
 }
 
-/* An option's checkbox row + its help (question-mark) icon, side by side.
-
-   The help sits on the label's *first* line, not centred against the whole
-   label box.
-
-   It only shows on a label long enough to wrap — "Nearest exon junction
-   boundary" is the one in the 200px option column — and centring put the icon
-   against the middle of the two-line block, which reads as belonging to the
-   second line, adrift from the words it explains.
-
-   `baseline` rather than `flex-start`: it aligns the icon to the first line's
-   baseline, so it lands beside the last word of that line. Measured against
-   every option here, the ten single-line labels do not move by a pixel, where
-   `flex-start` lifted all of them 7px off centre. */
 .optionHeader {
   display: flex;
   align-items: baseline;
   gap: 5px;
 }
 
-/* Keep the help icon at full size when the option label is long enough to make
-   the flex row want to shrink it. */
 .helpIcon {
   flex: none;
 }
 
+/* FIXME: remove the class? */
 /* Force an option to begin a new grid row (used to drop UTRAnnotator below the
    base transcript options). */
 .rowBreak {
   grid-column-start: 1;
-}
-
-/* A non-checkbox option label (e.g. the HGVS group heading). */
-.optionHeading {
-  font-weight: var(--font-weight-bold);
-  color: var(--color-dark-grey);
 }
 
 /* A labelled group of nested options within a parent option's children. */
@@ -149,7 +84,6 @@
   border-left: 1px solid var(--color-medium-light-grey);
 }
 
-/* A labelled select/number sub-option row. */
 .subOptionRow {
   display: flex;
   flex-direction: column;
@@ -172,17 +106,7 @@
   border-radius: 4px;
 }
 
-/* "Customise selection" under an allele-frequency source: a text button in the
-   same idiom as the results page's "+ n more", revealing the source's full
-   ancestry matrix. Left as text rather than a control so the suggested-defaults
-   view stays the quiet one. */
 .customiseButton {
   align-self: flex-start;
   margin-top: 4px;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: var(--color-blue);
-  font-size: inherit;
 }
