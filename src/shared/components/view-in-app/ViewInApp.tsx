@@ -21,7 +21,8 @@ import { ImageButton } from 'src/shared/components/image-button/ImageButton';
 
 import {
   GenomeBrowserIcon,
-  EntityViewerIcon
+  EntityViewerIcon,
+  SequenceViewerIcon
 } from 'src/shared/components/app-icon';
 
 import { Status } from 'src/shared/types/status';
@@ -36,6 +37,10 @@ export const Apps = {
   entityViewer: {
     tooltip: 'Feature explorer',
     icon: EntityViewerIcon
+  },
+  sequenceViewer: {
+    tooltip: 'Sequence viewer',
+    icon: SequenceViewerIcon
   },
   activityViewer: {
     tooltip: 'Regulatory Activity Viewer',

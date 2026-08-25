@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-export { default as ActivityViewerIcon } from './ActivityViewerIcon';
-export { default as AlignmentsViewerIcon } from './AlignmentsViewerIcon';
-export { default as BlastIcon } from './BlastIcon';
-export { default as HelpIcon } from './HelpIcon';
-export { default as GenomeBrowserIcon } from './GenomeBrowserIcon';
-export { default as GlobalSearchIcon } from './GlobalSearchIcon';
-export { default as EntityViewerIcon } from './EntityViewerIcon';
-export { default as SpeciesSelectorIcon } from './SpeciesSelectorIcon';
-export { default as SequenceViewerIcon } from './SequenceViewerIcon';
-export { default as VepIcon } from './VepIcon';
+import { lazy } from 'react';
+
+const SequenceViewer = lazy(() => import('./SequenceViewer'));
+
+export default SequenceViewer;

@@ -57,6 +57,13 @@ const TranscriptDetails = (props: Props) => {
       objectId: props.transcript.unversioned_stable_id
     })
   });
+  const sequenceViewerUrl = urlFor.sequenceViewer({
+    genomeId: props.genomeIdForUrl,
+    entityId: buildFocusIdForUrl({
+      type: 'transcript',
+      objectId: props.transcript.unversioned_stable_id
+    })
+  });
 
   return (
     <div className={styles.container}>
@@ -83,7 +90,10 @@ const TranscriptDetails = (props: Props) => {
             <div>{props.transcript.stable_id}</div>
             <div className={styles.viewInApp}>
               <ViewInApp
-                links={{ genomeBrowser: { url: genomeBrowserUrl } }}
+                links={{
+                  genomeBrowser: { url: genomeBrowserUrl },
+                  sequenceViewer: { url: sequenceViewerUrl }
+                }}
                 theme="dark"
               />
             </div>
