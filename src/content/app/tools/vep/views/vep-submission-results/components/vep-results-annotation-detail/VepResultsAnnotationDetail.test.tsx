@@ -43,7 +43,6 @@ const option = (
   category
 });
 
-// Generic annotation entries, as the backend now emits them.
 const transcriptAnnotation = (
   plugin: string,
   data: Record<string, unknown>
@@ -54,9 +53,6 @@ const alleleAnnotation = (
   data: Record<string, unknown>
 ): Annotation => ({ plugin, scope: 'allele', data });
 
-// The real form has a single `hgvs` control that drives two params (hgvs =
-// HGVSc/HGVSp, hgvsg = HGVSg); there is no standalone `hgvsg` form option. SPDI
-// is a separate allele-level option (so it also surfaces for intergenic).
 const panels: FormPanel[] = [
   {
     id: 'hgvs_panel',
@@ -70,12 +66,6 @@ const panels: FormPanel[] = [
   }
 ];
 
-// The allele-frequency panel, as `form_config` serves it. The labels are the
-// versioned ones the form shows, and they are also what the display spec heads
-// each option with — so a populated source and an empty one read the same.
-//
-// Passed explicitly by the AF tests: an option is only rendered if the job's
-// pinned panels carry it, which is how every other option works too.
 const afPanels: FormPanel[] = [
   {
     id: 'allele_frequencies',
@@ -90,8 +80,6 @@ const afPanels: FormPanel[] = [
   }
 ];
 
-// The pathogenicity-prediction options, which all moved off the deleted nested
-// `pathogenicity` object onto their own plugin entries.
 const pathogenicityPanels: FormPanel[] = [
   {
     id: 'pathogenicity',
@@ -146,8 +134,6 @@ const withAnnotations = (
   annotations: [...(transcriptConsequence.annotations ?? []), ...annotations]
 });
 
-// The phenotypes panel leaves the column flow: its ClinVar conditions tables
-// are the widest thing the detail draws.
 const phenotypePanels: FormPanel[] = [
   {
     id: 'representation',
@@ -176,19 +162,17 @@ describe('VepResultsAnnotationDetail', () => {
       />
     );
 
-    // Transcript-level HGVS values are shown...
+    // Transcript-level HGVS values are shown
     expect(screen.getByText('c.123A>G')).toBeDefined();
     expect(screen.getByText('p.Lys41Arg')).toBeDefined();
-    // ...but not HGVSg, which is hidden pending chromosome synonyms even where
-    // the param ran (it is computed for the ProtVar link, not for display).
+
+    // This version of VEP intentionally hides HGVSg variant representation
+    // even where the hgvsg param ran, because it is needed for the ProtVar link
     expect(screen.queryByText('19:g.7676154A>G')).toBeNull();
     // SPDI returned nothing and this is not "Show all", so it is absent.
     expect(screen.queryByText('SPDI')).toBeNull();
   });
 
-  // HGVSg is hidden pending chromosome synonyms: the param is still computed
-  // (ProtVar forces it on to build its link), but it has no form control and no
-  // row in the annotation spec, so it must not surface on its own.
   it('shows nothing for HGVS when only the hidden hgvsg param ran', () => {
     render(
       <VepResultsAnnotationDetail
@@ -201,6 +185,7 @@ describe('VepResultsAnnotationDetail', () => {
       />
     );
 
+    // This version of VEP intentionally hides HGVSg variant representation
     expect(screen.queryByText('19:g.7676154A>G')).toBeNull();
     expect(screen.queryByText('HGVS')).toBeNull();
     expect(screen.queryByText('c.123A>G')).toBeNull();
@@ -239,7 +224,7 @@ describe('VepResultsAnnotationDetail', () => {
 
     expect(screen.queryByText('SPDI')).toBeNull();
 
-    await user.click(screen.getByRole('checkbox')); // the "Show all" toggle
+    await user.click(screen.getByText('Show all')); // the "Show all" toggle
 
     // SPDI now appears as a run-but-empty row with a dash.
     expect(screen.getByText('SPDI')).toBeDefined();
@@ -263,8 +248,7 @@ describe('VepResultsAnnotationDetail', () => {
       />
     );
 
-    // No transcript consequence, but the allele-level SPDI still shows. (HGVSg
-    // is hidden pending chromosome synonyms, so it does not.)
+    // In this version of VEP, HGVSg variant representation is intentionally hidden
     expect(screen.queryByText('19:g.7676154A>G')).toBeNull();
     expect(screen.getByText('NC_000019.10:7676153:A:G')).toBeDefined();
   });
@@ -286,7 +270,7 @@ describe('VepResultsAnnotationDetail', () => {
     expect(screen.queryByText('gnomAD Exomes v4.1.1')).toBeNull();
     expect(screen.queryByText('—')).toBeNull();
 
-    await user.click(screen.getByRole('checkbox')); // the "Show all" toggle
+    await user.click(screen.getByText('Show all')); // the "Show all" toggle
 
     // Now it appears, as a dash.
     expect(screen.getByText('gnomAD Exomes v4.1.1')).toBeDefined();
@@ -332,7 +316,7 @@ describe('VepResultsAnnotationDetail', () => {
     expect(screen.queryByText('gnomAD Exomes v4.1.1')).toBeNull();
     expect(screen.queryByText('—')).toBeNull();
 
-    await user.click(screen.getByRole('checkbox')); // the "Show all" toggle
+    await user.click(screen.getByText('Show all')); // the "Show all" toggle
 
     // Now the source appears, one dash row per selected population, each labelled
     // by the backend-supplied source label; the overall AF is "All".
@@ -385,7 +369,7 @@ describe('VepResultsAnnotationDetail', () => {
 
       expect(screen.getByText('REVEL')).toBeDefined();
       expect(screen.getByText('0.123')).toBeDefined();
-      // score first, humanised classification in brackets
+      // expected formatting: score first, pretty-printed classification in brackets
       expect(screen.getByText('0.9876 (likely pathogenic)')).toBeDefined();
       // CADD is allele-scoped
       expect(screen.getByText('CADD (PHRED)')).toBeDefined();
@@ -393,10 +377,6 @@ describe('VepResultsAnnotationDetail', () => {
     });
 
     it('does not render an option that was not selected, even with data present', () => {
-      // Dev-data VCFs are annotated from a full cache, so CADD's columns (and
-      // thus its parsed annotation) can be present even when the option wasn't
-      // selected. It must not leak into the view — the display is gated on the
-      // selected input options.
       render(
         <VepResultsAnnotationDetail
           genomeId="grch38"
@@ -597,8 +577,8 @@ describe('VepResultsAnnotationDetail', () => {
           consequence={transcriptConsequence}
           allele={makeAllele({
             annotations: [
-              // the backend gated the all-ancestry overall (its column was not
-              // selected), leaving only a selected sub-population
+              // the overall all-ancestry option has not been selected,
+              // leaving only a selected sub-population
               alleleAnnotation('gnomad_genomes', {
                 overall: null,
                 populations: { eas_XX: 0.0333 }
@@ -608,10 +588,6 @@ describe('VepResultsAnnotationDetail', () => {
           parameters={{ gnomad_genomes: true }}
           panels={afPanels}
           display={displaySpecFixture}
-          // The rows come from the job's own vocabulary rather than from the
-          // data, so what the submission selected is what can appear — and the
-          // all-ancestry column is not in it here. That is the same fact the
-          // gated `overall` above states, from the other end.
           availableAfSources={[
             {
               key: 'gnomAD_genomes_AF_eas_XX',
@@ -645,8 +621,6 @@ describe('VepResultsAnnotationDetail', () => {
             ]
           })}
           parameters={{}} // gnomAD exomes not selected
-          // The panel carries the option, so the selection gate is the only
-          // thing keeping it off the page — which is what this is about.
           panels={afPanels}
           display={displaySpecFixture}
           availableAfSources={[
@@ -829,9 +803,6 @@ describe('VepResultsAnnotationDetail', () => {
   });
 
   it('renders gene-associated phenotypes from the consequence, not the allele', () => {
-    // A gene association is narrowed to the gene its `id` names, so it hangs off
-    // the transcript consequence rather than the allele — a variant overlapping
-    // two genes served both genes' phenotypes against each of them otherwise.
     render(
       <VepResultsAnnotationDetail
         genomeId="grch38"
@@ -872,12 +843,6 @@ describe('VepResultsAnnotationDetail', () => {
 });
 
 describe('panel order', () => {
-  /**
-   * Allele frequencies need their own renderer, but they are still a panel: the
-   * backend states one order for the input form and these annotations alike, and
-   * the block used to be appended after the panel loop — so it sat last whatever
-   * that order said.
-   */
   it('renders allele frequencies in the position its panel holds', () => {
     const orderedPanels: FormPanel[] = [
       {
