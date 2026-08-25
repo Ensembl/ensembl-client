@@ -165,6 +165,16 @@ export const TranscriptsListItemInfo = (
     });
   };
 
+  const getSequenceViewerLink = () => {
+    return urlFor.sequenceViewer({
+      genomeId: genomeIdInUrl as string,
+      entityId: buildFocusIdForUrl({
+        type: 'transcript',
+        objectId: transcript.unversioned_stable_id
+      })
+    });
+  };
+
   const handleDownloadLinkClick = () => {
     dispatch(toggleTranscriptDownload(transcript.stable_id));
   };
@@ -295,7 +305,8 @@ export const TranscriptsListItemInfo = (
             theme="dark"
             links={{
               genomeBrowser: { url: getBrowserLink() },
-              entityViewer: { url: getEntityViewerLink() }
+              entityViewer: { url: getEntityViewerLink() },
+              sequenceViewer: { url: getSequenceViewerLink() }
             }}
           />
         </div>

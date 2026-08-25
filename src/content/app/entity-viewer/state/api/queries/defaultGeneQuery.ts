@@ -36,6 +36,7 @@ export const transcriptFieldsFragment = gql`
       }
       region {
         name
+        length
       }
       strand {
         code
@@ -64,6 +65,9 @@ export const transcriptFieldsFragment = gql`
       cds {
         relative_start
         relative_end
+        sequence {
+          checksum
+        }
       }
       cdna {
         length
@@ -211,6 +215,9 @@ type ProductGeneratingContextOnDefaultTranscript = Pick<
     relative_end: NonNullable<
       FullProductGeneratingContext['cds']
     >['relative_end'];
+    sequence: {
+      checksum: string;
+    };
   } | null;
   cdna: {
     length: NonNullable<FullProductGeneratingContext['cdna']>['length'];
@@ -224,7 +231,7 @@ export type DefaultEntityViewerTranscript = Pick<
   'stable_id' | 'unversioned_stable_id'
 > &
   Pick2<FullTranscript, 'slice', 'location'> &
-  Pick3<FullTranscript, 'slice', 'region', 'name'> &
+  Pick3<FullTranscript, 'slice', 'region', 'name' | 'length'> &
   Pick3<FullTranscript, 'slice', 'strand', 'code'> &
   Pick2<FullTranscript, 'relative_location', 'start' | 'end'> & {
     spliced_exons: SplicedExonOnDefaultTranscript[];

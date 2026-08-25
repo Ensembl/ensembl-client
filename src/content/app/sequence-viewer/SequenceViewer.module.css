@@ -1,0 +1,182 @@
+.sequenceViewer {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.content {
+  display: flex;
+  min-height: 0;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px var(--standard-gutter);
+  overflow: auto;
+}
+
+.featureSummary {
+  display: flex;
+  gap: 30px;
+  padding-left: var(--double-standard-gutter);
+  color: var(--color-black);
+  overflow: hidden;
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.featureSummaryLabel {
+  margin-right: 10px;
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  text-transform: capitalize;
+}
+
+.sequence {
+  width: min(100%, 1100px);
+  margin: 0;
+  color: var(--color-white);
+  font-family: var(--font-family-monospace);
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.sequenceLine {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 24px;
+}
+
+.sequenceCoordinates {
+  color: var(--color-medium-dark-grey);
+  text-align: right;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.sequenceBases {
+  white-space: pre;
+}
+
+.sidebarHeading {
+  margin: 0 0 20px;
+  color: var(--color-black);
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+}
+
+.featureDetails {
+  margin: 0;
+  color: var(--color-black);
+}
+
+.featureDetails > div {
+  margin-bottom: 18px;
+}
+
+.featureDetails dt {
+  margin-bottom: 4px;
+  color: var(--color-grey);
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+}
+
+.featureDetails dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.highlights {
+  margin-top: 34px;
+}
+
+.orientation {
+  margin-top: 34px;
+}
+
+.highlightsList {
+  display: grid;
+  row-gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.highlightLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.exonSwatch,
+.intronSwatch,
+.cdsSwatch,
+.utrSwatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+}
+
+.exonSwatch {
+  background-color: var(--color-blue);
+}
+
+.intronSwatch {
+  background-color: var(--color-green);
+}
+
+.cdsSwatch {
+  background-color: var(--color-orange);
+}
+
+.utrSwatch {
+  background-color: var(--color-dark-pink);
+}
+
+.exonHighlight {
+  color: var(--color-white);
+  background-color: var(--color-blue);
+}
+
+.intronHighlight {
+  color: var(--color-black);
+  background-color: var(--color-green);
+}
+
+.cdsHighlight {
+  box-shadow: inset 0 -3px 0 var(--color-orange);
+}
+
+.utrHighlight {
+  box-shadow: inset 0 3px 0 var(--color-dark-pink);
+}
+
+.flankingSequence {
+  margin-top: 34px;
+  color: var(--color-black);
+}
+
+.flankInputLabel {
+  display: grid;
+  row-gap: 5px;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+
+.flankInput {
+  width: 100%;
+}
+
+.applyFlanksButton {
+  padding: 6px 16px;
+  color: var(--color-white);
+  border: 0;
+  background-color: var(--color-blue);
+  cursor: pointer;
+}
+
+.flankSequence {
+  color: var(--color-medium-dark-grey);
+}

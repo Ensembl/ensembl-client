@@ -115,6 +115,10 @@ const GeneNameSection = ({
     genomeId: genomeId,
     entityId: geneFocusIdForUrl
   });
+  const linkToSequenceViewer = urlFor.sequenceViewer({
+    genomeId,
+    entityId: geneFocusIdForUrl
+  });
 
   return (
     <>
@@ -132,7 +136,8 @@ const GeneNameSection = ({
         <ViewInApp
           links={{
             genomeBrowser: { url: linkToGenomeBrowser },
-            entityViewer: { url: linkToEntityViewer }
+            entityViewer: { url: linkToEntityViewer },
+            sequenceViewer: { url: linkToSequenceViewer }
           }}
           theme="light"
           className={styles.viewInAppGene}

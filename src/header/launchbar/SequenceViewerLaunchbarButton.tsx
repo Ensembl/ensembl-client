@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-export { default as ActivityViewerIcon } from './ActivityViewerIcon';
-export { default as AlignmentsViewerIcon } from './AlignmentsViewerIcon';
-export { default as BlastIcon } from './BlastIcon';
-export { default as HelpIcon } from './HelpIcon';
-export { default as GenomeBrowserIcon } from './GenomeBrowserIcon';
-export { default as GlobalSearchIcon } from './GlobalSearchIcon';
-export { default as EntityViewerIcon } from './EntityViewerIcon';
-export { default as SpeciesSelectorIcon } from './SpeciesSelectorIcon';
-export { default as SequenceViewerIcon } from './SequenceViewerIcon';
-export { default as VepIcon } from './VepIcon';
+import { useLocation } from 'react-router';
+
+import { SequenceViewerIcon } from 'src/shared/components/app-icon';
+
+import LaunchbarButton from './LaunchbarButton';
+
+const SequenceViewerLaunchbarButton = () => {
+  const location = useLocation();
+
+  return (
+    <LaunchbarButton
+      path="/sequence-viewer"
+      description="Sequence viewer"
+      icon={SequenceViewerIcon}
+      enabled={true}
+      isActive={location.pathname.startsWith('/sequence-viewer')}
+    />
+  );
+};
+
+export default SequenceViewerLaunchbarButton;

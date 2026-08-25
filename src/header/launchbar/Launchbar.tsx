@@ -24,6 +24,7 @@ import { GlobalSearchIcon, HelpIcon } from 'src/shared/components/app-icon';
 import LaunchbarButton from './LaunchbarButton';
 import SpeciesSelectorLaunchbarButton from './SpeciesSelectorLaunchbarButton';
 import GenomeBrowserLaunchbarButton from './GenomeBrowserLaunchbarButton';
+import SequenceViewerLaunchbarButton from './SequenceViewerLaunchbarButton';
 import EntityViewerLaunchbarButton from './EntityViewerLaunchbarButton';
 import AlignmentsViewerLaunchbarButton from './AlignmentsViewerLaunchbarButton';
 import RegulatoryActivityViewerLaunchbarButton from './RegulationViewerLaunchbarButton';
@@ -59,6 +60,7 @@ const Launchbar = () => {
           </div>
           <div className={styles.category}>
             <GenomeBrowserLaunchbarButton />
+            <SequenceViewerLaunchbarButton />
             <AlignmentsViewerLaunchbarButton />
           </div>
           <div className={styles.category}>
