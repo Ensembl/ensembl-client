@@ -20,31 +20,10 @@ import type {
 } from 'src/content/app/tools/vep/types/vepFormConfig';
 
 /**
- * Local fallback help text, keyed by option id.
- *
- * These descriptions are expected to move to the tools API's form_config
- * endpoint (delivered on each option, per species, alongside the panel config).
- * Until then they live here. The shape matches the API contract's `OptionHelp`
- * type exactly — plain strings and link descriptors, no JSX — so switching to
- * the API is just a matter of the option carrying its own `help`; nothing
- * downstream (resolver or renderer) needs to change.
- */
-/**
- * Appended to every allele-frequency option's description. Population and
- * ancestry-group names are reproduced exactly as the source publishes them —
- * they are not mapped onto a common vocabulary, so the same cohort can appear
- * under different names between sources.
+ * These descriptions are expected to move to the tools API's form_config endpoint
  */
 const POPULATION_NAMING = 'Populations are named as at source.';
 
-/**
- * The help map is keyed by option id, and an id is shared across assemblies —
- * `gnomad_exomes` is *gnomAD Exomes v4.1.1* on GRCh38 and *v2.1.1* on GRCh37 —
- * so anything version-specific written in here would be wrong for one of them.
- * The label is already per-assembly and comes from the API, so both the
- * description's `{version}` and the choice of which links apply are resolved
- * from it, leaving one version to keep right instead of two.
- */
 const VERSION_PLACEHOLDER = /\s?\{version\}/g;
 const VERSION_IN_LABEL = /\bv\d+(?:\.\d+)*/;
 
@@ -76,16 +55,11 @@ const resolveVersionedHelp = (
 };
 
 export const OPTION_HELP: Record<string, OptionHelp> = {
-  // --- Variant representations ---
-  // HGVSg is not described here while its checkbox is hidden (pending
-  // chromosome synonyms) — put the sentence back with the control.
   hgvs: {
     description:
       'HGVS — Human Genome Variation Society nomenclature. HGVSc (*c*oding ' +
       'DNA) describes changes at the nucleotide level. HGVSp describes the ' +
       'change at the *p*rotein level.',
-    // The nomenclature itself rather than a paper, so it stays outside the
-    // Europe PMC convention the citations follow.
     links: [{ href: 'https://hgvs-nomenclature.org/stable/' }]
   },
   spdi: {
@@ -338,8 +312,6 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       POPULATION_NAMING,
     links: [{ href: 'https://europepmc.org/article/MED/38374255' }]
   },
-  // The v4 release announcement does not describe the v2 callset that GRCh37
-  // carries, so each assembly's version cites its own reference.
   gnomad_sv: {
     description:
       'Allele frequencies for structural variants in the Genome Aggregation ' +
@@ -356,9 +328,6 @@ export const OPTION_HELP: Record<string, OptionHelp> = {
       }
     ]
   },
-  // Sample rather than allele frequency: gnomAD reports CNVs as the fraction of
-  // samples carrying the call (hence the `_sf` option ids), not as an allele
-  // count over a called total.
   gnomad_cnv: {
     description:
       'Sample frequencies for copy number variants in the Genome Aggregation ' +

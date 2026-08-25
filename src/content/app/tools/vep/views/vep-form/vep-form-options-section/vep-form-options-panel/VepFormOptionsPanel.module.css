@@ -1,12 +1,3 @@
-/* One panel of the Job options box.
-
-   No rule between one panel and the next: the panels sit in a single bordered
-   box and the headings, not a line each, are what separate them. Only the
-   dividers go — the last panel keeps its bottom border, so the box still
-   closes.
-
-   Scoped here rather than on `FormSection` itself, which is shared: the Genome
-   and Variants sections above use the same component and are still divided. */
 .panelSection:not(:last-child) {
   border-bottom: none;
 }

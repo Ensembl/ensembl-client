@@ -50,13 +50,6 @@ import styles from './VepFormOptionsPanel.module.css';
 
 type Props = {
   panel: FormPanel;
-  /**
-   * A command from the section-level "Enable all default options" toggle: open
-   * every panel, or close them again. Not plain state — a panel is otherwise
-   * free to be opened and closed on its own, so this must apply only when the
-   * section toggle is actually clicked. `nonce` changes on each click, which is
-   * what distinguishes a fresh command from a re-render.
-   */
   expandCommand?: { expanded: boolean; nonce: number };
 };
 
@@ -69,23 +62,11 @@ type Props = {
 const isSourceOption = (option: FormPanelOption) =>
   !!option.sub_options?.some((subOption) => subOption.type === 'group');
 
-/**
- * A collapsible "Job options" panel rendered from the tools-API form config: a
- * title with a show/hide toggle (collapsed by default), revealing the panel's
- * options grouped by category.
- *
- * Each option's `id` is also its submission parameter name, so toggling an
- * option (or changing a sub-option) writes straight into the redux form
- * parameters and reaches the submission payload.
- */
 const VepFormOptionsPanel = (props: Props) => {
   const { panel, expandCommand } = props;
   const dispatch = useAppDispatch();
   const formParameters = useAppSelector(getVepFormParameters);
   const [isExpanded, setIsExpanded] = useState(false);
-  // Which allele-frequency sources have had "Customise selection" clicked. An
-  // AF source carries a whole ancestry matrix — gnomAD Exomes alone is 25
-  // checkboxes — so until asked, a source shows only what is actually selected.
   const [customisedSources, setCustomisedSources] = useState<
     Record<string, boolean>
   >({});
@@ -97,7 +78,6 @@ const VepFormOptionsPanel = (props: Props) => {
     return value === undefined ? fallback : !!value;
   };
 
-  // Whether any top-level option in this panel is currently selected.
   const hasSelectedOption = useMemo(
     () => panel.options.some((option) => !!formParameters[option.id]),
     [panel.options, formParameters]
@@ -274,9 +254,7 @@ const VepFormOptionsPanel = (props: Props) => {
   function renderOption(option: FormPanelOption, showAll = true) {
     const checked = boolValue(option.id, option.default);
     const help = getOptionHelp(option);
-    // An AF source starts showing only its suggested defaults; everything else
-    // is behind "Customise selection". Options without a nested matrix (the
-    // ordinary one- or two-checkbox options) are unaffected.
+    // Controls the "Customise selection" button.
     const isCustomisable = showAll && isSourceOption(option);
     const showChildren = isCustomisable
       ? !!customisedSources[option.id]
@@ -360,8 +338,7 @@ const VepFormOptionsPanel = (props: Props) => {
               <div
                 className={classNames(styles.optionsGrid, {
                   // Allele-frequency sources carry whole matrices of their own,
-                  // so they get wider columns — side by side under their
-                  // category heading rather than one per full-width row.
+                  // so they get wider columns
                   [styles.optionsGridSources]:
                     group.options.some(isSourceOption)
                 })}

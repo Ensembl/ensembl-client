@@ -25,8 +25,6 @@ const option = (
 
 describe('getOptionHelp', () => {
   describe('version from the option label', () => {
-    // The whole point: one option id, two assemblies, two versions. A version
-    // written into the help map itself would be wrong for one of them.
     it('takes gnomAD exomes v4.1.1 from the GRCh38 label', () => {
       const help = getOptionHelp(
         option('gnomad_exomes', 'gnomAD Exomes v4.1.1')
