@@ -22,15 +22,9 @@ import type { Variant } from 'src/content/app/tools/vep/types/vepResultsResponse
  *
  * That is the id their platform keys variant pages on, confirmed against their
  * GraphQL API: querying `1_230710048_A_G` returns `rsIds: ["rs699"]` at
- * chromosome 1, position 230710048, ref A, alt G — which is exactly the row the
- * dev-data VCF carries.
+ * chromosome 1, position 230710048, ref A, alt G.
  *
- * Built from the results row rather than annotated, so it needs no extra column
- * and does not depend on the variant having an rsID at all.
- *
- * Undefined when the alternative allele is unknown — an intergenic row whose
- * allele could not be resolved — so the caller drops the link rather than
- * pointing at a malformed id.
+ * Undefined when the alternative allele is unknown.
  */
 export const buildOpenTargetsVariantId = (
   variant: Pick<Variant, 'location' | 'reference_allele'>,

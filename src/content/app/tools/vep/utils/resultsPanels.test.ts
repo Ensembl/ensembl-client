@@ -48,8 +48,6 @@ describe('resolveResultsPanels', () => {
   });
 
   it('falls back to the live panels for a job submitted before pinning', () => {
-    // The backend returns null (or omits the field) when a job has no pinned
-    // panels sidecar; such a job must keep rendering exactly as it did before.
     expect(resolveResultsPanels({ pinnedPanels: null, livePanels: live })).toBe(
       live
     );

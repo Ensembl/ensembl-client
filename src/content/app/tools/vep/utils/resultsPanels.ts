@@ -16,6 +16,8 @@
 
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 
+// QUESTION: is this logic about "pinned panels" vs "live panels" still necessary?
+
 /**
  * Which option panels the results view should lay itself out from.
  *
