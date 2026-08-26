@@ -260,15 +260,8 @@ const VepFormOptionsPanel = (props: Props) => {
     const showChildren = isCustomisable
       ? !!customisedSources[option.id]
       : showAll;
-    const cellClassName = classNames(
-      styles.optionCell,
-      // UTRAnnotator starts a new grid row, so the base transcript options
-      // (Distance to TSS / Nearest gene / Nearest exon junction boundary) sit on
-      // the top row and UTRAnnotator drops down next to RiboSeqORFs.
-      { [styles.rowBreak]: option.id === 'utrannotator' }
-    );
     return (
-      <div className={cellClassName} key={option.id}>
+      <div className={styles.optionCell} key={option.id}>
         <div className={styles.optionHeader}>
           <CheckboxWithLabel
             label={option.label}

@@ -53,13 +53,6 @@
   flex: none;
 }
 
-/* FIXME: remove the class? */
-/* Force an option to begin a new grid row (used to drop UTRAnnotator below the
-   base transcript options). */
-.rowBreak {
-  grid-column-start: 1;
-}
-
 /* A labelled group of nested options within a parent option's children. */
 .subOptionGroup {
   display: flex;
