@@ -28,6 +28,13 @@ get used when AppIcon is placed inside of the ImageButton component */
   height: 70%;
 }
 
+.featureExplorer svg {
+  --image-button-svg-width: 100%;
+  --image-button-svg-height: 100%;
+  width: 100%;
+  height: 100%;
+}
+
 .blast svg {
   --image-button-svg-width: 75%;
   --image-button-svg-height: 75%;

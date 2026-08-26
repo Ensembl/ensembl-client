@@ -23,7 +23,7 @@ import styles from './AppIcon.module.css';
 const EntityViewerIcon = (props: { className?: string }) => {
   const elementClasses = classNames(
     styles.appIcon,
-    styles.entityViewer,
+    styles.featureExplorer,
     props.className
   );
 
