@@ -41,10 +41,7 @@ import {
 
 const vepApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // Quick-select species for the form. Resolved by the backend against the
-    // current integrated release rather than shipped as hardcoded genome
-    // UUIDs, which are release-scoped and go stale silently.
-    vepSpeciesPresets: builder.query<VepSelectedSpecies[], void>({
+    vepGenomeSuggestions: builder.query<VepSelectedSpecies[], void>({
       query: () => ({
         url: `${config.toolsApiBaseUrl}/vep/species_presets`
       })
@@ -191,7 +188,7 @@ const prepareSubmissionFormData = (payload: VepSubmissionPayload) => {
 };
 
 export const {
-  useVepSpeciesPresetsQuery,
+  useVepGenomeSuggestionsQuery,
   useVepFormConfigQuery,
   useVepFormExampleInputQuery,
   useVepResultsQuery,

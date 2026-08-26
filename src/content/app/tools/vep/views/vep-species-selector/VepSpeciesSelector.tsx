@@ -51,6 +51,7 @@ import SpeciesSearchResultsTable from 'src/content/app/species-selector/componen
 import ModalView from 'src/shared/components/modal-view/ModalView';
 import { CircleLoader } from 'src/shared/components/loader';
 import PaginationWithPerPage from 'src/shared/components/pagination/PaginationWithPerPage';
+import VepGenomesQuickList from 'src/content/app/tools/vep/views/vep-species-selector/VepGenomesQuickList';
 
 import type { SpeciesSearchResponse } from 'src/content/app/species-selector/state/species-selector-api-slice/speciesSelectorApiSlice';
 import type { SortOrderWithNone } from 'src/shared/types/sort-order';
@@ -174,7 +175,9 @@ const VepSpeciesSelector = () => {
               />
             </TableSection>
           </SpeciesSearchResultsTableWrapper>
-        ) : null}
+        ) : (
+          <VepGenomesQuickList />
+        )}
       </div>
     </ModalView>
   );
