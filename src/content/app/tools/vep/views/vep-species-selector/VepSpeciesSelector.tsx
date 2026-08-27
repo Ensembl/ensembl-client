@@ -150,7 +150,7 @@ const VepSpeciesSelector = () => {
           onClose={onClose}
         />
 
-        {data?.matches.length ? (
+        {!!data?.matches.length && (
           <SpeciesSearchResultsTableWrapper>
             <TableControlsSection>
               <PaginationWithPerPage
@@ -175,9 +175,9 @@ const VepSpeciesSelector = () => {
               />
             </TableSection>
           </SpeciesSearchResultsTableWrapper>
-        ) : (
-          <VepGenomesQuickList />
         )}
+
+        {!data && !isError && <VepGenomesQuickList />}
       </div>
     </ModalView>
   );

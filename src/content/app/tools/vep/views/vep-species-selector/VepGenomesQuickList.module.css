@@ -33,4 +33,5 @@
   flex-direction: column;
   align-items: flex-start;
   row-gap: 1rem;
+  padding-left: 20px; /* same as for the label of genome search field */
 }
