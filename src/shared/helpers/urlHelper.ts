@@ -38,7 +38,8 @@ type EntityViewerUrlParams = {
 
 type SequenceViewerUrlParams = {
   genomeId: string;
-  entityId: string;
+  entityId?: string;
+  location?: string;
 };
 
 type RegulatoryActivityViewerUrlParams = {
@@ -151,7 +152,11 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
 };
 
 export const sequenceViewer = (params: SequenceViewerUrlParams) => {
-  return `/sequence-viewer/${params.genomeId}/${params.entityId}`;
+  const path = params.entityId
+    ? `/sequence-viewer/${params.genomeId}/${params.entityId}`
+    : `/sequence-viewer/${params.genomeId}`;
+
+  return params.location ? `${path}?location=${params.location}` : path;
 };
 
 export const entityViewerTranscript = (params: {

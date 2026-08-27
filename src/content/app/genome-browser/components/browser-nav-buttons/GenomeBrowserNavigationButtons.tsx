@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router';
 
 import { useAppSelector } from 'src/store';
 
@@ -27,12 +28,23 @@ import {
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import RegionNavigationButtons from 'src/shared/components/region-navigation-buttons/RegionNavigationButtons';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import SequenceViewerIcon from 'static/icons/icon_launchbar_sequence_viewer.svg';
+
+import styles from './GenomeBrowserNavigationButtons.module.css';
+
+const MAX_SEQUENCE_VIEWER_BASES = 100000;
 
 const GenomeBrowserNavigationButtons = () => {
   const activeGenomeId = useAppSelector(getBrowserActiveGenomeId);
   const browserLocation = useAppSelector(getActualChrLocation);
 
   const { changeBrowserLocation } = useGenomeBrowser();
+  const navigate = useNavigate();
+  const [sequenceViewerError, setSequenceViewerError] = useState<string | null>(
+    null
+  );
 
   const [regionName] = browserLocation ?? [];
 
@@ -107,13 +119,44 @@ const GenomeBrowserNavigationButtons = () => {
     setCanUpdateFromOutside(true);
   };
 
+  const onSequenceViewerClick = () => {
+    const length = end - start + 1;
+
+    if (length > MAX_SEQUENCE_VIEWER_BASES) {
+      setSequenceViewerError(
+        `Sequence Viewer supports regions up to ${MAX_SEQUENCE_VIEWER_BASES.toLocaleString()} bp. Zoom in and try again.`
+      );
+      return;
+    }
+
+    navigate(
+      urlFor.sequenceViewer({
+        genomeId: activeGenomeId,
+        location: `${regionName}:${start}-${end}`
+      })
+    );
+  };
+
   return (
-    <RegionNavigationButtons
-      onChange={onChange}
-      viewportStart={start}
-      viewportEnd={end}
-      regionLength={regionData?.region.length || Infinity}
-    />
+    <div className={styles.controls}>
+      <RegionNavigationButtons
+        onChange={onChange}
+        viewportStart={start}
+        viewportEnd={end}
+        regionLength={regionData?.region.length || Infinity}
+      />
+      <ImageButton
+        className={styles.sequenceViewerButton}
+        description="View sequence"
+        image={SequenceViewerIcon}
+        onClick={onSequenceViewerClick}
+      />
+      {sequenceViewerError && (
+        <span className={styles.sequenceViewerError} role="alert">
+          {sequenceViewerError}
+        </span>
+      )}
+    </div>
   );
 };
 
