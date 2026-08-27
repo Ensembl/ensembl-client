@@ -88,10 +88,9 @@ export type OptionHelpLink = {
 
 /**
  * Structured help text for a form option, shown in a tooltip via a
- * question-mark icon. Deliberately kept API-serialisable (plain strings + link
- * descriptors, no JSX) so the form_config endpoint can supply it per species in
- * future — in the same way it already drives which panels/options to show. A
- * local fallback map provides it until then (see optionHelp.ts).
+ * question-mark icon. Plain strings + link descriptors rather than JSX, because
+ * form_config supplies it: it is authored in the annotation spec's `help`
+ * section, alongside the label and panel that decide where the option appears.
  */
 export type OptionHelp = {
   /** Description text. A `*span*` is rendered emphasised (a small markdown
@@ -111,9 +110,8 @@ export type FormPanelOption = {
   default: boolean;
   category?: string; // Optional label used to group options within a panel.
   sub_options?: FormPanelSubOption[];
-  /** Help text for the option. Optional so the API can start supplying it
-   *  without a type change; until then getOptionHelp falls back to a local
-   *  map keyed by option id. */
+  /** Help text for the option, from the spec. Optional: an option with none —
+   *  `updownstream_distance`, say — simply shows no tooltip. */
   help?: OptionHelp;
   /**
    * The option cannot run with none of its sub-options selected. mutfunc does

@@ -17,100 +17,75 @@
 import { getOptionHelp } from './optionHelp';
 import type { FormPanelOption } from 'src/content/app/tools/vep/types/vepFormConfig';
 
+/**
+ * Help arrives on the option from the tools API, so these fixtures are written
+ * out. What is tested here is what the frontend decides: resolving `{version}`
+ * and a link's `majorVersion` against the label this genome renders.
+ *
+ * The wording, and which options carry help at all, belong to the spec and are
+ * asserted there (tests/test_option_help.py).
+ */
 const option = (
-  id: string,
   label: string,
   help?: FormPanelOption['help']
-): FormPanelOption => ({ id, label, type: 'boolean', default: false, help });
+): FormPanelOption => ({
+  id: 'an_option',
+  label,
+  type: 'boolean',
+  default: false,
+  help
+});
+
+const GNOMAD_SV_LINKS = [
+  { href: 'https://gnomad.broadinstitute.org/news/v4-sv/', majorVersion: '4' },
+  { href: 'https://europepmc.org/article/MED/32461652', majorVersion: '2' }
+];
 
 describe('getOptionHelp', () => {
+  it('is undefined when the API sends no help', () => {
+    expect(getOptionHelp(option('Some option'))).toBe(undefined);
+  });
+
+  it('passes a description with no placeholder through untouched', () => {
+    const help = getOptionHelp(
+      option('NIH All of Us', { description: 'Frequencies from All of Us.' })
+    );
+    expect(help?.description).toBe('Frequencies from All of Us.');
+  });
+
   describe('version from the option label', () => {
-    it('takes gnomAD exomes v4.1.1 from the GRCh38 label', () => {
-      const help = getOptionHelp(
-        option('gnomad_exomes', 'gnomAD Exomes v4.1.1')
-      );
-      expect(help?.description).toContain('(gnomAD) v4.1.1.');
+    const versioned = { description: 'Frequencies from gnomAD{version}.' };
+
+    it('takes the version the label carries', () => {
+      expect(
+        getOptionHelp(option('gnomAD Exomes v4.1.1', versioned))?.description
+      ).toBe('Frequencies from gnomAD v4.1.1.');
     });
 
-    it('takes gnomAD exomes v2.1.1 from the GRCh37 label', () => {
-      const help = getOptionHelp(
-        option('gnomad_exomes', 'gnomAD Exomes v2.1.1')
-      );
-      expect(help?.description).toContain('(gnomAD) v2.1.1.');
+    it('takes a different one from the other assembly, same sentence', () => {
+      const help = getOptionHelp(option('gnomAD Exomes v2.1.1', versioned));
+      expect(help?.description).toBe('Frequencies from gnomAD v2.1.1.');
       expect(help?.description).not.toContain('4.1.1');
     });
 
-    it('handles the two-part genomes version on GRCh37', () => {
-      const help = getOptionHelp(
-        option('gnomad_genomes', 'gnomAD Genomes v2.1')
-      );
-      expect(help?.description).toContain('(gnomAD) v2.1.');
+    it('handles a two-part version', () => {
+      expect(
+        getOptionHelp(option('gnomAD Genomes v2.1', versioned))?.description
+      ).toBe('Frequencies from gnomAD v2.1.');
     });
 
     it('leaves no gap when the label carries no version', () => {
-      const help = getOptionHelp(option('gnomad_genomes', 'gnomAD Genomes'));
-      expect(help?.description).toContain('(gnomAD).');
-      expect(help?.description).not.toContain('{version}');
+      const help = getOptionHelp(option('gnomAD Genomes', versioned));
+      expect(help?.description).toBe('Frequencies from gnomAD.');
       expect(help?.description).not.toContain(' .');
     });
 
     it('never leaves the placeholder in rendered text', () => {
       for (const label of ['gnomAD Exomes v4.1.1', 'gnomAD Exomes', 'x']) {
         expect(
-          getOptionHelp(option('gnomad_exomes', label))?.description
+          getOptionHelp(option(label, versioned))?.description
         ).not.toContain('{version}');
       }
-    });
-  });
-
-  it('leaves a description without the placeholder untouched', () => {
-    const help = getOptionHelp(option('allofus', 'NIH All of Us'));
-    expect(help?.description).toContain('NIH All of Us Research Program');
-    expect(help?.description).not.toContain('{version}');
-  });
-
-  it('notes the source naming on every allele-frequency option', () => {
-    // All five options of the Allele frequencies panel — the short-variant
-    // sources and both structural-variant ones.
-    const ids: [string, string][] = [
-      ['gnomad_exomes', 'gnomAD Exomes v4.1.1'],
-      ['gnomad_genomes', 'gnomAD Genomes v4.1.1'],
-      ['allofus', 'NIH All of Us'],
-      ['gnomad_sv', 'gnomAD SV v4.1'],
-      ['gnomad_cnv', 'gnomAD CNV v4.1']
-    ];
-    for (const [id, label] of ids) {
-      expect(getOptionHelp(option(id, label))?.description).toContain(
-        'Populations are named as at source.'
-      );
-    }
-  });
-
-  describe('structural-variant sources', () => {
-    it('describes gnomAD SV as allele frequencies, versioned from the label', () => {
-      const help = getOptionHelp(option('gnomad_sv', 'gnomAD SV v4.1'));
-      expect(help?.description).toContain(
-        'Allele frequencies for structural variants'
-      );
-      expect(help?.description).toContain('(gnomAD) v4.1.');
-      expect(help?.links?.[0].href).toContain('v4-structural-variants');
-    });
-
-    it('describes gnomAD CNV as sample frequencies', () => {
-      const help = getOptionHelp(option('gnomad_cnv', 'gnomAD CNV v4.1'));
-      // gnomAD reports CNVs as the fraction of samples carrying the call, not
-      // as an allele count — the wording is deliberate, not a slip.
-      expect(help?.description).toContain(
-        'Sample frequencies for copy number variants'
-      );
-      expect(help?.description).not.toContain('Allele frequencies');
-      expect(help?.links?.[0].href).toContain('v4-copy-number-variants');
-    });
-
-    it('carries the GRCh37 version on gnomAD SV v2.1', () => {
-      const help = getOptionHelp(option('gnomad_sv', 'gnomAD SV v2.1'));
-      expect(help?.description).toContain('(gnomAD) v2.1.');
-      expect(help?.description).not.toContain('4.1');
     });
   });
 
@@ -118,68 +93,40 @@ describe('getOptionHelp', () => {
     // gnomAD SV is v4.1 on GRCh38 and v2.1 on GRCh37, and the v4 release
     // announcement does not describe the v2 callset. Each assembly must cite
     // its own reference.
-    it('gives gnomAD SV v4.1 only the v4 announcement', () => {
-      const links = getOptionHelp(option('gnomad_sv', 'gnomAD SV v4.1'))?.links;
-      expect(links).toHaveLength(1);
-      expect(links?.[0].href).toContain('v4-structural-variants');
+    const svHelp = {
+      description: 'Structural variants from gnomAD{version}.',
+      links: GNOMAD_SV_LINKS
+    };
+
+    it('gives v4.1 only the v4 announcement', () => {
+      const links = getOptionHelp(option('gnomAD SV v4.1', svHelp))?.links;
+      expect(links).toEqual([GNOMAD_SV_LINKS[0]]);
     });
 
-    it('gives gnomAD SV v2.1 only the v2 paper', () => {
-      const links = getOptionHelp(option('gnomad_sv', 'gnomAD SV v2.1'))?.links;
-      expect(links).toHaveLength(1);
-      expect(links?.[0].href).toBe(
-        'https://europepmc.org/article/MED/32461652'
-      );
+    it('gives v2.1 only the v2 paper', () => {
+      const links = getOptionHelp(option('gnomAD SV v2.1', svHelp))?.links;
+      expect(links).toEqual([GNOMAD_SV_LINKS[1]]);
     });
 
     it('matches on the major version, so a point release keeps its link', () => {
-      const links = getOptionHelp(
-        option('gnomad_sv', 'gnomAD SV v4.2.1')
-      )?.links;
-      expect(links).toHaveLength(1);
-      expect(links?.[0].href).toContain('v4-structural-variants');
+      const links = getOptionHelp(option('gnomAD SV v4.2.1', svHelp))?.links;
+      expect(links).toEqual([GNOMAD_SV_LINKS[0]]);
     });
 
     it('drops version-specific links rather than guess when there is no version', () => {
       // Citing the wrong release is worse than citing none.
-      const links = getOptionHelp(option('gnomad_sv', 'gnomAD SV'))?.links;
-      expect(links).toEqual([]);
+      expect(getOptionHelp(option('gnomAD SV', svHelp))?.links).toEqual([]);
     });
 
-    it('always keeps links that are not version-specific', () => {
+    it('always keeps a link that is not version-specific', () => {
+      const link = { href: 'https://gnomad.broadinstitute.org/' };
       const links = getOptionHelp(
-        option('gnomad_exomes', 'gnomAD Exomes v2.1.1')
+        option('gnomAD Exomes v2.1.1', {
+          description: 'Frequencies from gnomAD{version}.',
+          links: [link]
+        })
       )?.links;
-      expect(links).toHaveLength(1);
-      expect(links?.[0].href).toBe('https://gnomad.broadinstitute.org/');
+      expect(links).toEqual([link]);
     });
-  });
-
-  describe('API-supplied help', () => {
-    it('wins over the local map', () => {
-      const help = getOptionHelp(
-        option('gnomad_exomes', 'gnomAD Exomes v4.1.1', {
-          description: 'From the API.'
-        })
-      );
-      expect(help?.description).toBe('From the API.');
-    });
-
-    it('gets the same placeholder treatment', () => {
-      const help = getOptionHelp(
-        option('anything', 'Some source v9.9', {
-          description: 'Frequencies from Somewhere{version}.'
-        })
-      );
-      expect(help?.description).toBe('Frequencies from Somewhere v9.9.');
-    });
-  });
-
-  it('is undefined for an option with no help anywhere', () => {
-    // A fictional id on purpose: naming a real option here makes the test fail
-    // the day that option is given help, which is not a regression.
-    expect(getOptionHelp(option('no_such_option', 'No such option'))).toBe(
-      undefined
-    );
   });
 });
