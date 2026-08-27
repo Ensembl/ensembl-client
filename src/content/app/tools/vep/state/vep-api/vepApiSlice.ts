@@ -53,27 +53,11 @@ const vepApiSlice = restApiSlice.injectEndpoints({
       VepFormConfig,
       {
         genome_id: string;
-        // Passed from the selected species so the tools API can decide which
-        // panels/options to show (e.g. human GRCh37/38).
-        species_taxonomy_id?: string;
-        assembly_name?: string;
       }
     >({
-      query: (params) => {
-        const search = new URLSearchParams();
-        if (params.species_taxonomy_id) {
-          search.set('species_taxonomy_id', params.species_taxonomy_id);
-        }
-        if (params.assembly_name) {
-          search.set('assembly_name', params.assembly_name);
-        }
-        const queryString = search.toString();
-        return {
-          url: `${config.toolsApiBaseUrl}/vep/form_config/${params.genome_id}${
-            queryString ? `?${queryString}` : ''
-          }`
-        };
-      }
+      query: ({ genome_id }) => ({
+        url: `${config.toolsApiBaseUrl}/vep/form_config/${genome_id}`
+      })
     }),
     vepFormExampleInput: builder.query<
       { vcfString?: string },
