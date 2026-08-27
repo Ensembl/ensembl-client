@@ -102,8 +102,8 @@ table {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  break-inside: auto;
   margin-bottom: 16px;
+  break-inside: avoid; /* Prevent breaking content within sections in a multicol layout. Critical for Safari, and good for Firefox */
 }
 
 .sectionTitle {
