@@ -11,7 +11,7 @@
   min-height: 0;
   align-items: flex-start;
   justify-content: center;
-  padding: 48px var(--standard-gutter);
+  padding: 48px var(--standard-gutter) 180px;
   overflow: auto;
 }
 
@@ -59,6 +59,133 @@
   white-space: pre;
 }
 
+.sequenceBases > span {
+  position: relative;
+}
+
+.transcriptBoundaryBase {
+  position: relative;
+  display: inline-block;
+}
+
+.boundaryBaseButton {
+  padding: 0;
+  color: var(--color-black);
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  line-height: inherit;
+}
+
+.geneStartBoundaryBaseButton {
+  composes: boundaryBaseButton;
+  background: #3e98a8;
+  color: var(--color-white);
+}
+
+.geneEndBoundaryBaseButton {
+  composes: boundaryBaseButton;
+  background: #245a64;
+  color: var(--color-white);
+}
+
+.transcriptStartBoundaryBaseButton {
+  composes: boundaryBaseButton;
+  background: var(--color-orange);
+}
+
+.transcriptEndBoundaryBaseButton {
+  composes: boundaryBaseButton;
+  background: #b86c00;
+}
+
+.mixedBoundaryBaseButton {
+  composes: boundaryBaseButton;
+  background: var(--color-green);
+}
+
+.boundaryBaseButton:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+}
+
+.transcriptBoundaryToolbox {
+  width: 420px;
+  max-width: min(420px, calc(100vw - 40px));
+  font-family: var(--font-family-body);
+}
+
+.transcriptBoundaryMenuItem:not(:last-child) {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-grey) 30%, transparent);
+}
+
+.transcriptBoundaryMenuContent {
+  display: grid;
+  gap: 4px;
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: var(--font-weight-light);
+  line-height: 1.45;
+}
+
+.transcriptBoundaryMenuContent > div {
+  display: flex;
+  gap: 10px;
+}
+
+.transcriptBoundaryMenuContent strong {
+  font-weight: var(--font-weight-bold);
+}
+
+.transcriptBoundaryMenuLinks {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--color-white) 30%, transparent);
+}
+
+.selectedSequenceToolbox {
+  --pointer-box-padding: 12px 20px;
+  width: 280px;
+  min-height: 40px;
+  font-family: var(--font-family-body);
+  font-size: 13px;
+  filter: drop-shadow(2px 2px 3px var(--shadow-color));
+}
+
+.selectedSequenceMenu {
+  display: grid;
+  gap: 6px;
+  color: var(--color-white);
+}
+
+.selectedSequenceMenu > strong {
+  font-size: 16px;
+}
+
+.selectedSequenceMenu > span:first-child {
+  color: var(--color-grey);
+}
+
+.selectedSequenceMenuActions {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--color-white) 30%, transparent);
+}
+
+.selectedSequenceMenuAction {
+  padding: 0;
+  color: var(--color-blue);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
 .sidebarHeading {
   margin: 0 0 20px;
   color: var(--color-black);
@@ -94,6 +221,49 @@
 
 .orientation {
   margin-top: 34px;
+}
+
+.transcriptBoundaries {
+  margin-top: 34px;
+}
+
+.overlappingFeatures {
+  margin-top: 4px;
+}
+
+.boundaryKey {
+  margin-top: 34px;
+}
+
+.boundaryKeyItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color-black);
+}
+
+.geneStartBoundarySwatch,
+.geneEndBoundarySwatch,
+.transcriptStartBoundarySwatch,
+.transcriptEndBoundarySwatch {
+  width: 12px;
+  height: 12px;
+}
+
+.geneStartBoundarySwatch {
+  background: #3e98a8;
+}
+
+.geneEndBoundarySwatch {
+  background: #245a64;
+}
+
+.transcriptStartBoundarySwatch {
+  background: var(--color-orange);
+}
+
+.transcriptEndBoundarySwatch {
+  background: #b86c00;
 }
 
 .highlightsList {

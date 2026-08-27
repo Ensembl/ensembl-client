@@ -28,9 +28,57 @@ type Feature = {
   };
 };
 
+type TranscriptBoundary = {
+  stable_id: string;
+  unversioned_stable_id: string;
+  metadata: {
+    biotype: { label: string } | null;
+  };
+  slice: {
+    location: { start: number; end: number; length: number };
+    region: { name: string };
+    strand: { code: Strand };
+  };
+};
+
+type GeneFeature = Feature & {
+  transcripts: TranscriptBoundary[];
+};
+
 type FeatureQueryParams = {
   genomeId: string;
   featureId: string;
+};
+
+type RegionSequenceQueryParams = {
+  genomeId: string;
+  regionName: string;
+};
+
+type RegionSequence = {
+  name: string;
+  length: number;
+  sequence: { checksum: string };
+};
+
+type OverlapFeature = {
+  stable_id: string;
+  symbol: string | null;
+  name?: string | null;
+  so_term: string | null;
+  slice: TranscriptBoundary['slice'];
+};
+
+type OverlapRegionQueryParams = {
+  genomeId: string;
+  regionName: string;
+  start: number;
+  end: number;
+};
+
+type OverlapRegion = {
+  genes: OverlapFeature[];
+  transcripts: OverlapFeature[];
 };
 
 const sequenceFields = gql`
@@ -58,6 +106,28 @@ const geneSequenceQuery = gql`
       slice {
         ...sequenceFields
       }
+      transcripts {
+        stable_id
+        unversioned_stable_id
+        metadata {
+          biotype {
+            label
+          }
+        }
+        slice {
+          location {
+            start
+            end
+            length
+          }
+          region {
+            name
+          }
+          strand {
+            code
+          }
+        }
+      }
     }
   }
   ${sequenceFields}
@@ -74,15 +144,83 @@ const transcriptSequenceQuery = gql`
   ${sequenceFields}
 `;
 
+const regionSequenceQuery = gql`
+  query SequenceViewerRegion($genomeId: String!, $regionName: String!) {
+    region(by_name: { genome_id: $genomeId, name: $regionName }) {
+      name
+      length
+      sequence {
+        checksum
+      }
+    }
+  }
+`;
+
+const overlapRegionQuery = gql`
+  query SequenceViewerOverlapRegion(
+    $genomeId: String!
+    $regionName: String!
+    $start: Int!
+    $end: Int!
+  ) {
+    overlap_region(
+      by_slice: {
+        genome_id: $genomeId
+        region_name: $regionName
+        start: $start
+        end: $end
+      }
+    ) {
+      genes {
+        stable_id
+        symbol
+        name
+        so_term
+        slice {
+          location {
+            start
+            end
+            length
+          }
+          region {
+            name
+          }
+          strand {
+            code
+          }
+        }
+      }
+      transcripts {
+        stable_id
+        symbol
+        so_term
+        slice {
+          location {
+            start
+            end
+            length
+          }
+          region {
+            name
+          }
+          strand {
+            code
+          }
+        }
+      }
+    }
+  }
+`;
+
 const sequenceViewerApiSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    sequenceViewerGene: builder.query<Feature, FeatureQueryParams>({
+    sequenceViewerGene: builder.query<GeneFeature, FeatureQueryParams>({
       query: ({ genomeId, featureId }) => ({
         url: config.coreApiUrl,
         body: geneSequenceQuery,
         variables: { genomeId, featureId }
       }),
-      transformResponse: (response: { gene: Feature }) => response.gene
+      transformResponse: (response: { gene: GeneFeature }) => response.gene
     }),
     sequenceViewerTranscript: builder.query<Feature, FeatureQueryParams>({
       query: ({ genomeId, featureId }) => ({
@@ -92,9 +230,37 @@ const sequenceViewerApiSlice = graphqlApiSlice.injectEndpoints({
       }),
       transformResponse: (response: { transcript: Feature }) =>
         response.transcript
+    }),
+    sequenceViewerRegion: builder.query<
+      RegionSequence,
+      RegionSequenceQueryParams
+    >({
+      query: ({ genomeId, regionName }) => ({
+        url: config.coreApiUrl,
+        body: regionSequenceQuery,
+        variables: { genomeId, regionName }
+      }),
+      transformResponse: (response: { region: RegionSequence }) =>
+        response.region
+    }),
+    sequenceViewerOverlapRegion: builder.query<
+      OverlapRegion,
+      OverlapRegionQueryParams
+    >({
+      query: (params) => ({
+        url: config.coreApiUrl,
+        body: overlapRegionQuery,
+        variables: params
+      }),
+      transformResponse: (response: { overlap_region: OverlapRegion }) =>
+        response.overlap_region
     })
   })
 });
 
-export const { useSequenceViewerGeneQuery, useSequenceViewerTranscriptQuery } =
-  sequenceViewerApiSlice;
+export const {
+  useSequenceViewerGeneQuery,
+  useSequenceViewerTranscriptQuery,
+  useSequenceViewerRegionQuery,
+  useSequenceViewerOverlapRegionQuery
+} = sequenceViewerApiSlice;

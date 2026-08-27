@@ -104,6 +104,10 @@ const routes: RouteConfig[] = [
     element: <SequenceViewerPage />
   },
   {
+    path: '/sequence-viewer/:genomeId',
+    element: <SequenceViewerPage />
+  },
+  {
     path: '/sequence-viewer/:genomeId/:entityId',
     element: <SequenceViewerPage />
   },

@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { skipToken } from '@reduxjs/toolkit/query';
 
 import { useAppSelector } from 'src/store';
@@ -26,6 +26,11 @@ import { StandardAppLayout } from 'src/shared/components/layout';
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import Input from 'src/shared/components/input/Input';
+import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
+import PointerBox, {
+  Position as PointerBoxPosition
+} from 'src/shared/components/pointer-box/PointerBox';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsSlider from 'src/shared/components/species-tabs-slider/SpeciesTabsSlider';
@@ -44,11 +49,16 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import type { Strand } from 'src/shared/types/core-api/strand';
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
-import { useSequenceViewerGeneQuery } from './state/api/sequenceViewerApiSlice';
+import {
+  useSequenceViewerGeneQuery,
+  useSequenceViewerRegionQuery,
+  useSequenceViewerOverlapRegionQuery
+} from './state/api/sequenceViewerApiSlice';
 
 import styles from './SequenceViewer.module.css';
 
@@ -66,6 +76,46 @@ type SequenceRange = {
   start: number;
   end: number;
   type: 'exon' | 'intron' | 'cds' | 'utr' | 'flank';
+};
+
+type TranscriptBoundary = {
+  featureType?: EntityType;
+  label?: string | null;
+  stable_id: string;
+  unversioned_stable_id: string;
+  metadata: {
+    biotype: { label: string } | null;
+  };
+  slice: {
+    location: { start: number; end: number; length: number };
+    region: { name: string };
+    strand: { code: Strand };
+  };
+};
+
+type OverlapBoundaryFeature = {
+  stable_id: string;
+  symbol: string | null;
+  name?: string | null;
+  so_term: string | null;
+  slice: TranscriptBoundary['slice'];
+};
+
+type TranscriptSequenceMarker = {
+  featureType: EntityType;
+  label: string | null;
+  position: number;
+  stableId: string;
+  unversionedStableId: string;
+  biotype: string | null;
+  boundary: 'first' | 'last';
+  transcript: TranscriptBoundary;
+};
+
+type SelectedSequence = {
+  anchor: HTMLElement;
+  region: string;
+  sequence: string;
 };
 
 const SEQUENCE_LINE_LENGTH = 60;
@@ -95,6 +145,7 @@ type TranscriptWithExons = Feature & {
 
 const SequenceViewer = () => {
   const { genomeId = '', entityId = '' } = useParams();
+  const { search } = useLocation();
   const committedSpecies = useAppSelector(getCommittedSpecies);
   const viewportWidth = useAppSelector(getBreakpointWidth);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -102,10 +153,17 @@ const SequenceViewer = () => {
   const [areIntronsHighlighted, setAreIntronsHighlighted] = useState(false);
   const [isCdsHighlighted, setIsCdsHighlighted] = useState(false);
   const [areUtrsHighlighted, setAreUtrsHighlighted] = useState(false);
+  const [areTranscriptBoundariesShown, setAreTranscriptBoundariesShown] =
+    useState(false);
+  const [areOverlappingGenesShown, setAreOverlappingGenesShown] =
+    useState(true);
+  const [areOverlappingTranscriptsShown, setAreOverlappingTranscriptsShown] =
+    useState(true);
   const [isReverseComplement, setIsReverseComplement] = useState(false);
   const [fivePrimeFlankLength, setFivePrimeFlankLength] = useState(10);
   const [threePrimeFlankLength, setThreePrimeFlankLength] = useState(10);
   const entity = parseEntityId(entityId);
+  const location = parseLocation(new URLSearchParams(search).get('location'));
   const savedGenome = committedSpecies.find(
     (species) =>
       species.genome_id === genomeId || species.genome_tag === genomeId
@@ -146,7 +204,49 @@ const SequenceViewer = () => {
     }
   );
   const transcript = transcriptResponse?.transcript;
-  const feature = gene ?? transcript;
+  const {
+    currentData: region,
+    isFetching: isRegionFetching,
+    error: regionError
+  } = useSequenceViewerRegionQuery(
+    {
+      genomeId: resolvedGenomeId ?? '',
+      regionName: location?.regionName ?? ''
+    },
+    { skip: !resolvedGenomeId || !location || Boolean(entity) }
+  );
+  const locationFeature =
+    region && location
+      ? {
+          slice: {
+            location: { start: location.start, end: location.end },
+            region,
+            strand: { code: 'forward' as const }
+          }
+        }
+      : undefined;
+  const { currentData: overlappingFeatures } =
+    useSequenceViewerOverlapRegionQuery(
+      {
+        genomeId: resolvedGenomeId ?? '',
+        regionName: location?.regionName ?? '',
+        start: location?.start ?? 0,
+        end: location?.end ?? 0
+      },
+      { skip: !resolvedGenomeId || !location || Boolean(entity) }
+    );
+  const feature = gene ?? transcript ?? locationFeature;
+  const overlapBoundaries = getOverlapBoundaries(overlappingFeatures);
+  const boundaryFeatures =
+    gene?.transcripts ??
+    overlapBoundaries.filter(
+      (boundary) =>
+        (boundary.featureType === 'gene' && areOverlappingGenesShown) ||
+        (boundary.featureType === 'transcript' &&
+          areOverlappingTranscriptsShown)
+    );
+  const areFeatureBoundariesShown =
+    entity?.type === 'gene' ? areTranscriptBoundariesShown : Boolean(location);
   const exonRanges = transcript ? getExonRanges(transcript) : [];
   const intronRanges = transcript ? getIntronRanges(transcript) : [];
   const cdsRanges = transcript ? getCdsRanges(transcript) : [];
@@ -190,8 +290,10 @@ const SequenceViewer = () => {
     isGenomeFetching ||
     isGeneFetching ||
     isTranscriptFetching ||
+    isRegionFetching ||
     isSequenceFetching;
-  const error = genomeError || geneError || transcriptError || sequenceError;
+  const error =
+    genomeError || geneError || transcriptError || regionError || sequenceError;
 
   return (
     <div className={styles.sequenceViewer}>
@@ -221,6 +323,9 @@ const SequenceViewer = () => {
             fivePrimeFlankSequence={fivePrimeFlankSequence}
             threePrimeFlankSequence={threePrimeFlankSequence}
             isReverseComplement={isReverseComplement}
+            transcripts={boundaryFeatures}
+            areTranscriptBoundariesShown={areFeatureBoundariesShown}
+            genomeIdForUrl={genomeId}
           />
         }
         sidebarContent={
@@ -239,6 +344,28 @@ const SequenceViewer = () => {
             canHighlightUtrs={Boolean(utrRanges.length)}
             areUtrsHighlighted={areUtrsHighlighted}
             onUtrHighlightChange={setAreUtrsHighlighted}
+            canShowTranscriptBoundaries={
+              entity?.type === 'gene' && Boolean(gene?.transcripts.length)
+            }
+            areTranscriptBoundariesShown={areTranscriptBoundariesShown}
+            onTranscriptBoundariesShownChange={setAreTranscriptBoundariesShown}
+            canShowOverlappingFeatures={Boolean(location)}
+            overlappingGenesCount={
+              overlapBoundaries.filter(
+                (boundary) => boundary.featureType === 'gene'
+              ).length
+            }
+            areOverlappingGenesShown={areOverlappingGenesShown}
+            onOverlappingGenesShownChange={setAreOverlappingGenesShown}
+            overlappingTranscriptsCount={
+              overlapBoundaries.filter(
+                (boundary) => boundary.featureType === 'transcript'
+              ).length
+            }
+            areOverlappingTranscriptsShown={areOverlappingTranscriptsShown}
+            onOverlappingTranscriptsShownChange={
+              setAreOverlappingTranscriptsShown
+            }
             isReverseComplement={isReverseComplement}
             onReverseComplementChange={setIsReverseComplement}
             fivePrimeFlankLength={fivePrimeFlankLength}
@@ -306,7 +433,7 @@ const FeatureSummary = (props: {
   feature: Feature | undefined;
   entity: { type: EntityType; objectId: string } | null;
 }) => {
-  if (!props.feature || !props.entity) {
+  if (!props.feature) {
     return null;
   }
 
@@ -315,8 +442,10 @@ const FeatureSummary = (props: {
   return (
     <div className={styles.featureSummary}>
       <span>
-        <span className={styles.featureSummaryLabel}>{props.entity.type} </span>
-        <strong>{props.entity.objectId}</strong>
+        <span className={styles.featureSummaryLabel}>
+          {props.entity?.type ?? 'region'}{' '}
+        </span>
+        <strong>{props.entity?.objectId ?? slice.region.name}</strong>
       </span>
       <span>{getStrandDisplayName(slice.strand.code)}</span>
       <span>
@@ -348,10 +477,13 @@ const SequenceContent = (props: {
   fivePrimeFlankSequence?: string;
   threePrimeFlankSequence?: string;
   isReverseComplement: boolean;
+  transcripts: TranscriptBoundary[];
+  areTranscriptBoundariesShown: boolean;
+  genomeIdForUrl: string;
 }) => {
   let content;
 
-  if (!props.entity) {
+  if (!props.entity && !props.feature) {
     content = (
       <p>Open Sequence viewer from a gene or transcript in Feature explorer.</p>
     );
@@ -377,6 +509,9 @@ const SequenceContent = (props: {
         fivePrimeFlankSequence={props.fivePrimeFlankSequence}
         threePrimeFlankSequence={props.threePrimeFlankSequence}
         isReverseComplement={props.isReverseComplement}
+        transcripts={props.transcripts}
+        areTranscriptBoundariesShown={props.areTranscriptBoundariesShown}
+        genomeIdForUrl={props.genomeIdForUrl}
       />
     );
   }
@@ -399,6 +534,16 @@ const SequenceSidebar = (props: {
   canHighlightUtrs: boolean;
   areUtrsHighlighted: boolean;
   onUtrHighlightChange: (isHighlighted: boolean) => void;
+  canShowTranscriptBoundaries: boolean;
+  areTranscriptBoundariesShown: boolean;
+  onTranscriptBoundariesShownChange: (isShown: boolean) => void;
+  canShowOverlappingFeatures: boolean;
+  overlappingGenesCount: number;
+  areOverlappingGenesShown: boolean;
+  onOverlappingGenesShownChange: (isShown: boolean) => void;
+  overlappingTranscriptsCount: number;
+  areOverlappingTranscriptsShown: boolean;
+  onOverlappingTranscriptsShownChange: (isShown: boolean) => void;
   isReverseComplement: boolean;
   onReverseComplementChange: (isReverseComplement: boolean) => void;
   fivePrimeFlankLength: number;
@@ -408,8 +553,44 @@ const SequenceSidebar = (props: {
     threePrime: number;
   }) => void;
 }) => {
-  if (!props.feature || !props.entity) {
+  if (!props.feature) {
     return <Sidebar>{null}</Sidebar>;
+  }
+
+  if (!props.entity) {
+    return (
+      <Sidebar>
+        {props.canShowOverlappingFeatures && (
+          <>
+            <section className={styles.overlappingFeatures}>
+              <h2 className={styles.sidebarHeading}>Overlapping features</h2>
+              <ul className={styles.highlightsList}>
+                <li>
+                  <CheckboxWithLabel
+                    checked={props.areOverlappingGenesShown}
+                    label={`Genes (${props.overlappingGenesCount})`}
+                    onChange={props.onOverlappingGenesShownChange}
+                  />
+                </li>
+                <li>
+                  <CheckboxWithLabel
+                    checked={props.areOverlappingTranscriptsShown}
+                    label={`Transcripts (${props.overlappingTranscriptsCount})`}
+                    onChange={props.onOverlappingTranscriptsShownChange}
+                  />
+                </li>
+              </ul>
+            </section>
+            <BoundaryKey />
+            <FlankingSequenceControls
+              fivePrimeFlankLength={props.fivePrimeFlankLength}
+              threePrimeFlankLength={props.threePrimeFlankLength}
+              onChange={props.onFlankLengthsChange}
+            />
+          </>
+        )}
+      </Sidebar>
+    );
   }
 
   const { slice } = props.feature;
@@ -454,6 +635,19 @@ const SequenceSidebar = (props: {
           onChange={props.onReverseComplementChange}
         />
       </section>
+      {props.canShowTranscriptBoundaries && (
+        <>
+          <section className={styles.transcriptBoundaries}>
+            <h2 className={styles.sidebarHeading}>Transcripts</h2>
+            <CheckboxWithLabel
+              checked={props.areTranscriptBoundariesShown}
+              label="Transcript boundaries"
+              onChange={props.onTranscriptBoundariesShownChange}
+            />
+          </section>
+          <BoundaryKey showGenes={false} />
+        </>
+      )}
       {props.canHighlightExons && (
         <section className={styles.highlights}>
           <h2 className={styles.sidebarHeading}>Highlights</h2>
@@ -529,6 +723,53 @@ const HighlightLabel = (props: { type: SequenceRange['type'] }) => {
   );
 };
 
+const BoundaryKey = (props: { showGenes?: boolean }) => (
+  <section className={styles.boundaryKey}>
+    <h2 className={styles.sidebarHeading}>
+      {props.showGenes === false
+        ? 'Transcript boundary key'
+        : 'Feature boundary key'}
+    </h2>
+    <ul className={styles.highlightsList}>
+      {props.showGenes !== false && (
+        <>
+          <li>
+            <BoundaryKeyItem
+              className={styles.geneStartBoundarySwatch}
+              label="Gene start"
+            />
+          </li>
+          <li>
+            <BoundaryKeyItem
+              className={styles.geneEndBoundarySwatch}
+              label="Gene end"
+            />
+          </li>
+        </>
+      )}
+      <li>
+        <BoundaryKeyItem
+          className={styles.transcriptStartBoundarySwatch}
+          label="Transcript start"
+        />
+      </li>
+      <li>
+        <BoundaryKeyItem
+          className={styles.transcriptEndBoundarySwatch}
+          label="Transcript end"
+        />
+      </li>
+    </ul>
+  </section>
+);
+
+const BoundaryKeyItem = (props: { className: string; label: string }) => (
+  <span className={styles.boundaryKeyItem}>
+    <span className={props.className} />
+    {props.label}
+  </span>
+);
+
 const FlankingSequenceControls = (props: {
   fivePrimeFlankLength: number;
   threePrimeFlankLength: number;
@@ -592,7 +833,15 @@ const Sequence = (props: {
   fivePrimeFlankSequence?: string;
   threePrimeFlankSequence?: string;
   isReverseComplement: boolean;
+  transcripts: TranscriptBoundary[];
+  areTranscriptBoundariesShown: boolean;
+  genomeIdForUrl: string;
 }) => {
+  const [selectedMarkerPosition, setSelectedMarkerPosition] = useState<
+    number | null
+  >(null);
+  const [selectedSequence, setSelectedSequence] =
+    useState<SelectedSequence | null>(null);
   const featureSequence = props.isReverseComplement
     ? getReverseComplement(props.sequence)
     : props.sequence;
@@ -622,6 +871,14 @@ const Sequence = (props: {
     ? defaultStartCoordinate +
       defaultCoordinateStep * (displayedSequence.length - 1)
     : defaultStartCoordinate;
+  const transcriptMarkers = props.areTranscriptBoundariesShown
+    ? getTranscriptMarkers({
+        feature: props.feature,
+        transcripts: props.transcripts,
+        fivePrimeFlankLength: fivePrimeFlankSequence?.length ?? 0,
+        isReverseComplement: props.isReverseComplement
+      })
+    : [];
   const featureRanges = [
     ...(props.areExonsHighlighted ? props.exonRanges : []),
     ...(props.areIntronsHighlighted ? props.intronRanges : []),
@@ -655,14 +912,36 @@ const Sequence = (props: {
         }
       : null
   ].filter((range): range is SequenceRange => Boolean(range));
-  const segments = getSequenceSegments(displayedSequence, [
-    ...flankRanges,
-    ...featureRanges
-  ]);
+  const segments = getSequenceSegments(
+    displayedSequence,
+    [...flankRanges, ...featureRanges],
+    transcriptMarkers.flatMap((marker) => [
+      marker.position,
+      marker.position + 1
+    ])
+  );
   const lines = getSequenceLines(segments);
 
   return (
-    <div className={styles.sequence}>
+    <div
+      className={styles.sequence}
+      onMouseUp={(event) => {
+        const selectionContainer = event.currentTarget;
+
+        // Native selection state is finalised after mouseup handlers run.
+        requestAnimationFrame(() => {
+          setSelectedSequence(
+            getSelectedSequence({
+              displayedSequence,
+              regionName: props.feature.slice.region.name,
+              firstCoordinate,
+              coordinateStep,
+              selectionContainer
+            })
+          );
+        });
+      }}
+    >
       {lines.map((line, index) => (
         <div className={styles.sequenceLine} key={index}>
           <span className={styles.sequenceCoordinates}>
@@ -671,15 +950,46 @@ const Sequence = (props: {
           <span className={styles.sequenceBases}>
             {line.segments.map((segment, segmentIndex) => (
               <span
+                data-sequence-start={segment.start}
                 className={getSegmentClassName(segment.types)}
                 key={segmentIndex}
               >
-                {segment.sequence}
+                {getMarkersAtPosition(transcriptMarkers, segment.start)
+                  .length ? (
+                  <TranscriptBoundaryBase
+                    base={segment.sequence}
+                    genomeIdForUrl={props.genomeIdForUrl}
+                    isExpanded={selectedMarkerPosition === segment.start}
+                    markers={getMarkersAtPosition(
+                      transcriptMarkers,
+                      segment.start
+                    )}
+                    onClose={() => setSelectedMarkerPosition(null)}
+                    onClick={() =>
+                      setSelectedMarkerPosition((selectedPosition) =>
+                        selectedPosition === segment.start
+                          ? null
+                          : segment.start
+                      )
+                    }
+                  />
+                ) : (
+                  segment.sequence
+                )}
               </span>
             ))}
           </span>
         </div>
       ))}
+      {selectedSequence && (
+        <SelectedSequenceMenu
+          anchor={selectedSequence.anchor}
+          genomeIdForUrl={props.genomeIdForUrl}
+          onClose={() => setSelectedSequence(null)}
+          region={selectedSequence.region}
+          sequence={selectedSequence.sequence}
+        />
+      )}
     </div>
   );
 };
@@ -833,7 +1143,11 @@ const getSequenceRange = (
       };
 };
 
-const getSequenceSegments = (sequence: string, ranges: SequenceRange[]) => {
+const getSequenceSegments = (
+  sequence: string,
+  ranges: SequenceRange[],
+  markerPositions: number[] = []
+) => {
   const segments: Array<{
     start: number;
     end: number;
@@ -849,6 +1163,7 @@ const getSequenceSegments = (sequence: string, ranges: SequenceRange[]) => {
       0,
       sequence.length,
       ...lineBreakPositions,
+      ...markerPositions,
       ...ranges.flatMap(({ start, end }) => [start, end])
     ])
   ).toSorted((position1, position2) => position1 - position2);
@@ -909,6 +1224,394 @@ const getCoordinateLabel = (
   return `${start.toLocaleString()} - ${end.toLocaleString()}`;
 };
 
+const getSelectedSequence = (params: {
+  displayedSequence: string;
+  regionName: string;
+  firstCoordinate: number;
+  coordinateStep: number;
+  selectionContainer: HTMLElement;
+}): SelectedSequence | null => {
+  const selection = window.getSelection();
+  if (!selection || selection.isCollapsed || !selection.rangeCount) {
+    return null;
+  }
+
+  const range = selection.getRangeAt(0);
+  const start = getSequenceSelectionPoint({
+    node: range.startContainer,
+    offset: range.startOffset,
+    selectionContainer: params.selectionContainer,
+    edge: 'start'
+  });
+  const end = getSequenceSelectionPoint({
+    node: range.endContainer,
+    offset: range.endOffset,
+    selectionContainer: params.selectionContainer,
+    edge: 'end'
+  });
+  const focus = selection.focusNode
+    ? getSequenceSelectionPoint({
+        node: selection.focusNode,
+        offset: selection.focusOffset,
+        selectionContainer: params.selectionContainer,
+        edge: 'end'
+      })
+    : null;
+
+  if (!start || !end || start.position >= end.position) {
+    return null;
+  }
+
+  const firstSelectedCoordinate =
+    params.firstCoordinate + params.coordinateStep * start.position;
+  const lastSelectedCoordinate =
+    params.firstCoordinate + params.coordinateStep * (end.position - 1);
+  const regionStart = Math.min(firstSelectedCoordinate, lastSelectedCoordinate);
+  const regionEnd = Math.max(firstSelectedCoordinate, lastSelectedCoordinate);
+
+  return {
+    anchor: focus?.anchor ?? end.anchor,
+    region: `${params.regionName}:${regionStart}-${regionEnd}`,
+    sequence: params.displayedSequence.slice(start.position, end.position)
+  };
+};
+
+const getSequenceSelectionPoint = (params: {
+  node: Node;
+  offset: number;
+  selectionContainer: HTMLElement;
+  edge: 'start' | 'end';
+}): { position: number; anchor: HTMLElement } | null => {
+  let element =
+    params.node.nodeType === Node.ELEMENT_NODE
+      ? (params.node as Element)
+      : params.node.parentElement;
+  let segment = element?.closest<HTMLElement>('[data-sequence-start]');
+  let usedBoundaryFallback = false;
+
+  // At a line boundary, browsers can report the sequence-bases element rather
+  // than a text node in a sequence segment.
+  if (!segment && params.node.nodeType === Node.ELEMENT_NODE) {
+    usedBoundaryFallback = true;
+    const childIndex =
+      params.edge === 'start' ? params.offset : params.offset - 1;
+    const child = params.node.childNodes.item(childIndex);
+    element =
+      child?.nodeType === Node.ELEMENT_NODE
+        ? (child as Element)
+        : (child?.parentElement ?? null);
+    segment = element?.closest<HTMLElement>('[data-sequence-start]');
+  }
+
+  const sequenceStart = segment?.dataset.sequenceStart;
+
+  if (
+    !segment ||
+    !sequenceStart ||
+    !params.selectionContainer.contains(segment)
+  ) {
+    return null;
+  }
+
+  const range = document.createRange();
+  range.selectNodeContents(segment);
+  if (usedBoundaryFallback) {
+    range.setEnd(
+      segment,
+      params.edge === 'start' ? 0 : segment.childNodes.length
+    );
+  } else {
+    range.setEnd(params.node, params.offset);
+  }
+
+  return {
+    anchor: segment,
+    position: Number(sequenceStart) + range.toString().length
+  };
+};
+
+const SelectedSequenceMenu = (props: {
+  anchor: HTMLElement;
+  genomeIdForUrl: string;
+  onClose: () => void;
+  region: string;
+  sequence: string;
+}) => {
+  const navigate = useNavigate();
+
+  return (
+    <PointerBox
+      anchor={props.anchor}
+      autoAdjust={true}
+      className={styles.selectedSequenceToolbox}
+      onOutsideClick={props.onClose}
+      position={PointerBoxPosition.BOTTOM_RIGHT}
+      renderInsideAnchor={true}
+    >
+      <section className={styles.selectedSequenceMenu}>
+        <span>Selected region</span>
+        <strong>{props.region}</strong>
+        <span>{props.sequence.length.toLocaleString()} bp</span>
+        <div className={styles.selectedSequenceMenuActions}>
+          <SelectionCopyButton label="Copy region" value={props.region} />
+          <SelectionCopyButton label="Copy sequence" value={props.sequence} />
+          <button
+            className={styles.selectedSequenceMenuAction}
+            onClick={() =>
+              navigate(
+                urlFor.browser({
+                  genomeId: props.genomeIdForUrl,
+                  focus: `location:${props.region}`,
+                  location: props.region
+                })
+              )
+            }
+            type="button"
+          >
+            View in Genome Browser
+          </button>
+        </div>
+      </section>
+    </PointerBox>
+  );
+};
+
+const SelectionCopyButton = (props: { label: string; value: string }) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const onClick = () => {
+    navigator.clipboard?.writeText(props.value);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  return (
+    <button
+      className={styles.selectedSequenceMenuAction}
+      onClick={onClick}
+      type="button"
+    >
+      {isCopied ? 'Copied' : props.label}
+    </button>
+  );
+};
+
+const getTranscriptMarkers = (params: {
+  feature: Feature;
+  transcripts: TranscriptBoundary[];
+  fivePrimeFlankLength: number;
+  isReverseComplement: boolean;
+}): TranscriptSequenceMarker[] => {
+  const { feature, transcripts, fivePrimeFlankLength, isReverseComplement } =
+    params;
+  const isReverseStrand = feature.slice.strand.code === 'reverse';
+  const featureLength =
+    feature.slice.location.end - feature.slice.location.start + 1;
+
+  return transcripts
+    .flatMap((transcript) => {
+      const getSequencePosition = (coordinate: number) => {
+        const positionInFeature = isReverseStrand
+          ? feature.slice.location.end - coordinate
+          : coordinate - feature.slice.location.start;
+        const positionInDisplayedSequence = isReverseComplement
+          ? featureLength - positionInFeature - 1
+          : positionInFeature;
+
+        return positionInDisplayedSequence + fivePrimeFlankLength;
+      };
+
+      const firstTranscriptBase = isReverseStrand
+        ? transcript.slice.location.end
+        : transcript.slice.location.start;
+      const lastTranscriptBase = isReverseStrand
+        ? transcript.slice.location.start
+        : transcript.slice.location.end;
+
+      return [
+        {
+          stableId: transcript.stable_id,
+          unversionedStableId: transcript.unversioned_stable_id,
+          biotype: transcript.metadata.biotype?.label ?? null,
+          featureType: transcript.featureType ?? 'transcript',
+          label: transcript.label ?? null,
+          position: getSequencePosition(firstTranscriptBase),
+          boundary: 'first' as const,
+          transcript
+        },
+        {
+          stableId: transcript.stable_id,
+          unversionedStableId: transcript.unversioned_stable_id,
+          biotype: transcript.metadata.biotype?.label ?? null,
+          featureType: transcript.featureType ?? 'transcript',
+          label: transcript.label ?? null,
+          position: getSequencePosition(lastTranscriptBase),
+          boundary: 'last' as const,
+          transcript
+        }
+      ];
+    })
+    .filter(
+      (marker) =>
+        marker.position >= fivePrimeFlankLength &&
+        marker.position < fivePrimeFlankLength + featureLength
+    );
+};
+
+const getOverlapBoundaries = (overlap?: {
+  genes: OverlapBoundaryFeature[];
+  transcripts: OverlapBoundaryFeature[];
+}): TranscriptBoundary[] => {
+  if (!overlap) {
+    return [];
+  }
+
+  const toBoundary = (
+    feature: OverlapBoundaryFeature,
+    featureType: EntityType
+  ): TranscriptBoundary => ({
+    featureType,
+    label: feature.symbol ?? feature.name ?? null,
+    stable_id: feature.stable_id,
+    unversioned_stable_id: feature.stable_id,
+    metadata: {
+      biotype: feature.so_term ? { label: feature.so_term } : null
+    },
+    slice: feature.slice
+  });
+
+  return [
+    ...overlap.genes.map((feature) => toBoundary(feature, 'gene')),
+    ...overlap.transcripts.map((feature) => toBoundary(feature, 'transcript'))
+  ];
+};
+
+const getMarkersAtPosition = (
+  markers: TranscriptSequenceMarker[],
+  position: number
+) => markers.filter((marker) => marker.position === position);
+
+const TranscriptBoundaryBase = (props: {
+  base: string;
+  genomeIdForUrl: string;
+  markers: TranscriptSequenceMarker[];
+  isExpanded: boolean;
+  onClick: () => void;
+  onClose: () => void;
+}) => {
+  const [anchor, setAnchor] = useState<HTMLSpanElement | null>(null);
+  const markerTypes = new Set(
+    props.markers.map((marker) => marker.featureType)
+  );
+  const markerBoundaries = new Set(
+    props.markers.map((marker) => marker.boundary)
+  );
+  const isStart = markerBoundaries.size === 1 && markerBoundaries.has('first');
+  const boundaryClassName =
+    markerTypes.size > 1
+      ? styles.mixedBoundaryBaseButton
+      : markerTypes.has('gene')
+        ? isStart
+          ? styles.geneStartBoundaryBaseButton
+          : styles.geneEndBoundaryBaseButton
+        : isStart
+          ? styles.transcriptStartBoundaryBaseButton
+          : styles.transcriptEndBoundaryBaseButton;
+
+  return (
+    <span className={styles.transcriptBoundaryBase} ref={setAnchor}>
+      <button
+        aria-expanded={props.isExpanded}
+        aria-label="Show features starting or ending at this base"
+        className={boundaryClassName}
+        onClick={props.onClick}
+        type="button"
+      >
+        {props.base}
+      </button>
+      {props.isExpanded && anchor && (
+        <Toolbox
+          anchor={anchor}
+          className={styles.transcriptBoundaryToolbox}
+          onOutsideClick={props.onClose}
+          position={ToolboxPosition.RIGHT}
+        >
+          {props.markers.map((marker) => (
+            <TranscriptBoundaryMenuItem
+              genomeIdForUrl={props.genomeIdForUrl}
+              key={`${marker.stableId}-${marker.boundary}`}
+              marker={marker}
+              onNavigate={props.onClose}
+            />
+          ))}
+        </Toolbox>
+      )}
+    </span>
+  );
+};
+
+const TranscriptBoundaryMenuItem = (props: {
+  genomeIdForUrl: string;
+  marker: TranscriptSequenceMarker;
+  onNavigate: () => void;
+}) => {
+  const { marker } = props;
+  const { transcript } = marker;
+  const entityId = buildFocusIdForUrl({
+    type: marker.featureType,
+    objectId: marker.unversionedStableId
+  });
+  const location = getFormattedLocation({
+    chromosome: transcript.slice.region.name,
+    start: transcript.slice.location.start,
+    end: transcript.slice.location.end
+  });
+
+  return (
+    <section className={styles.transcriptBoundaryMenuItem}>
+      <div className={styles.transcriptBoundaryMenuContent}>
+        <div>
+          <span>{marker.featureType === 'gene' ? 'Gene' : 'Transcript'}</span>
+          <strong>{marker.stableId}</strong>
+        </div>
+        {marker.label && <div>{marker.label}</div>}
+        <div>
+          <span>{marker.featureType === 'gene' ? 'SO term' : 'Biotype'}</span>
+          <span>{marker.biotype ?? 'Unavailable'}</span>
+        </div>
+        <div>{getStrandDisplayName(transcript.slice.strand.code)}</div>
+        <div>{location}</div>
+      </div>
+      <div className={styles.transcriptBoundaryMenuLinks}>
+        <ViewInApp
+          links={{
+            genomeBrowser: {
+              url: urlFor.browser({
+                genomeId: props.genomeIdForUrl,
+                focus: entityId
+              })
+            },
+            entityViewer: {
+              url: urlFor.entityViewer({
+                genomeId: props.genomeIdForUrl,
+                entityId
+              })
+            },
+            sequenceViewer: {
+              url: urlFor.sequenceViewer({
+                genomeId: props.genomeIdForUrl,
+                entityId
+              })
+            }
+          }}
+          onAnyAppClick={props.onNavigate}
+          theme="dark"
+        />
+      </div>
+    </section>
+  );
+};
+
 const getSegmentClassName = (types: SequenceRange['type'][]) => {
   return [
     types.includes('exon') ? styles.exonHighlight : null,
@@ -926,6 +1629,21 @@ const parseEntityId = (
 ): { type: EntityType; objectId: string } | null => {
   const match = entityId.match(/^(gene|transcript):(.+)$/);
   return match ? { type: match[1] as EntityType, objectId: match[2] } : null;
+};
+
+const parseLocation = (location: string | null) => {
+  const match = location?.match(/^(.+):(\d+)-(\d+)$/);
+  if (!match) {
+    return null;
+  }
+
+  const [, regionName, start, end] = match;
+  const startNumber = Number(start);
+  const endNumber = Number(end);
+
+  return startNumber <= endNumber
+    ? { regionName, start: startNumber, end: endNumber }
+    : null;
 };
 
 export default SequenceViewer;

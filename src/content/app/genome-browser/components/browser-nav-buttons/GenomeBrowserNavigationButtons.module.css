@@ -1,0 +1,25 @@
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.sequenceViewerButton {
+  --_button-size: var(--browser-nav-button-size, 22px);
+  height: var(--_button-size);
+  width: var(--_button-size);
+}
+
+.sequenceViewerError {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 2;
+  width: 290px;
+  padding: 8px 10px;
+  color: var(--color-white);
+  background: var(--color-red);
+  font-size: 12px;
+  line-height: 16px;
+}
