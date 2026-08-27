@@ -52,8 +52,9 @@ describe('panelSelectionUpdates', () => {
   });
 
   it('leaves the hidden hgvsg param alone', () => {
-    // The HGVS control drives only `hgvs` (HGVSc/HGVSp) while HGVSg is hidden
-    // pending chromosome synonyms — "Select all" must not switch it on, since
+    // The HGVS control drives only `hgvs` (HGVSc/HGVSp)
+    // while HGVSg in this version of VEP remains hidden.
+    // "Select all" must not switch HGVSg on, since
     // it is computed only where something needs it (ProtVar's `forces_on`).
     expect(panelSelectionUpdates(panel('spdi', 'hgvs'), true)).toEqual({
       spdi: true,
@@ -166,9 +167,7 @@ describe('an option that cannot run with no sub-option (mutfunc)', () => {
     ]
   });
 
-  it('unticking the last sub-option switches the option itself off', () => {
-    // motif already off, now the user unticks int: nothing would be left, and a
-    // flagless mutfunc line means *all*, so the option has to go off with it.
+  test('unticking the last sub-option switches the option itself off', () => {
     expect(
       subOptionToggleUpdates(mutfunc(), 'int', false, { motif: false })
     ).toEqual({ int: false, mutfunc: false });
@@ -181,9 +180,6 @@ describe('an option that cannot run with no sub-option (mutfunc)', () => {
   });
 
   it('counts an untouched sub-option by its default, not as absent', () => {
-    // motif has never been clicked, so it is not in the parameters — but it is
-    // on, and the checkbox shows it on. Treating absent as off here would
-    // switch mutfunc off with a sub-option still ticked.
     expect(subOptionToggleUpdates(mutfunc(), 'int', false, {})).toEqual({
       int: false
     });
@@ -195,9 +191,7 @@ describe('an option that cannot run with no sub-option (mutfunc)', () => {
     ).toEqual({ int: true });
   });
 
-  it('switching the option on restores every sub-option', () => {
-    // Otherwise re-enabling one whose sub-options were all unticked lands
-    // straight back in the state that cannot be submitted.
+  test('switching the option on restores every sub-option', () => {
     expect(optionToggleUpdates(mutfunc(), true)).toEqual({
       mutfunc: true,
       motif: true,
@@ -205,7 +199,7 @@ describe('an option that cannot run with no sub-option (mutfunc)', () => {
     });
   });
 
-  it('switching it off touches only the option', () => {
+  test('switching it off touches only the option', () => {
     expect(optionToggleUpdates(mutfunc(), false)).toEqual({ mutfunc: false });
   });
 
@@ -224,9 +218,6 @@ describe('an option that cannot run with no sub-option (mutfunc)', () => {
 });
 
 describe('an allele-frequency ancestry (sexes beneath it)', () => {
-  // gnomAD v4: each ancestry emits one field per *selected sex*, so with none
-  // ticked it contributes no column at all. The backend flags it, exactly as it
-  // flags mutfunc, and the two differ only in what their defaults are.
   const ancestry = (): FormPanel['options'][number] => ({
     ...option('gnomad_genomes_all'),
     requires_any_sub_option: true,
@@ -252,8 +243,7 @@ describe('an allele-frequency ancestry (sexes beneath it)', () => {
     ]
   });
 
-  it('unticking the last sex switches the ancestry off', () => {
-    // The reported bug: "All" stayed ticked while asking for no column.
+  test('unticking the last sex switches the ancestry off', () => {
     expect(
       subOptionToggleUpdates(ancestry(), 'gnomad_genomes_all_both', false, {
         gnomad_genomes_all_female: false,
@@ -279,11 +269,7 @@ describe('an allele-frequency ancestry (sexes beneath it)', () => {
     ).toEqual({ gnomad_genomes_all_female: false });
   });
 
-  it('switching the ancestry back on restores the DEFAULTS, not every sex', () => {
-    // The one that separates this from mutfunc. Restoring "all" would silently
-    // add XX and XY, which the user never asked for; the suggested selection is
-    // Combined alone. mutfunc is unaffected because its sub-options all default
-    // on, so defaults and all-on are the same thing there.
+  test('switching the ancestry back on restores the DEFAULTS, not every sex', () => {
     expect(optionToggleUpdates(ancestry(), true)).toEqual({
       gnomad_genomes_all: true,
       gnomad_genomes_all_both: true,
@@ -294,10 +280,6 @@ describe('an allele-frequency ancestry (sexes beneath it)', () => {
 });
 
 describe('a gnomAD v2 ancestry (sexes AND nested sub-populations)', () => {
-  // v2 divides NFE and EAS further, in a group beneath the sexes. A selected
-  // sub-population emits `<base>_<anc>_<subpop>` on its own, so the ancestry is
-  // still alive with every sex unticked — counting only the direct children
-  // would switch it off while a sub-population still asked for a column.
   const nfe = (): FormPanel['options'][number] => ({
     ...option('gnomad_exomes_v2_nfe'),
     requires_any_sub_option: true,
@@ -329,7 +311,7 @@ describe('a gnomAD v2 ancestry (sexes AND nested sub-populations)', () => {
     ]
   });
 
-  it('a selected sub-population keeps the ancestry on', () => {
+  test('a selected sub-population keeps the ancestry on', () => {
     expect(
       subOptionToggleUpdates(nfe(), 'gnomad_exomes_v2_nfe_male', false, {
         gnomad_exomes_v2_nfe_female: false,

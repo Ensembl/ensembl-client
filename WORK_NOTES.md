@@ -25,6 +25,7 @@ Note that the `hgvs` option is a single "boolean", but it is rendered as two che
 - Light font used for labels sometimes — not sure I understand the pattern (and not sure I can reproduce it)
 - Dark/plain font used in tables — not sure I can reproduce this
 - Line in table heading: "Submissions not contributing to the aggregate classification shown in light text"
+- Fix styles of links in help popups (they are blue against dark grey; make them white)
 
 ## TODO
 - Add popular species?
@@ -34,7 +35,7 @@ Note that the `hgvs` option is a single "boolean", but it is rendered as two che
 ## CHECK AND REMOVE?
 - Check if the logic of the `resultsPanels` function is still necessary
 - `[styles.tokenInputMono]: config.mono` - why monospace font in TokenListInput?
-- Check for all remaining FIXME comments
+- Check for all remaining FIXME comments and QUESTION comments
 
 
 ## WTF

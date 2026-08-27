@@ -24,8 +24,8 @@ import type { OptionHelp } from 'src/content/app/tools/vep/types/vepFormConfig';
 const DEFAULT_LINK_LABEL = 'More information';
 
 // Render a description string, turning each `*span*` into emphasised text. This
-// restricted markdown subset lets the description stay a plain (serialisable)
-// string in the data layer while still supporting inline emphasis.
+// restricted markdown subset lets the description stay a plain string
+// in the data layer while still supporting inline emphasis.
 const renderDescription = (description: string): ReactNode[] =>
   description
     .split(/(\*[^*]+\*)/g)
