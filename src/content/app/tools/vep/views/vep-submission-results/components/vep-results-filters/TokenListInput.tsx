@@ -17,14 +17,14 @@
 import { useState, memo, type InputEvent } from 'react';
 import classNames from 'classnames';
 
-import type { TextInputConfig } from './resultsFilterFields';
+import type { FilterField } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
 import styles from './VepResultsFilters.module.css';
 
 type Props = {
   values: string[];
   onChange: (values: string[]) => void;
-  config: TextInputConfig;
+  config: Pick<FilterField, 'placeholder' | 'mono'>;
 };
 
 // Split free text (comma / whitespace / newline separated) into unique tokens,
@@ -43,9 +43,7 @@ const parseTokens = (text: string): string[] => {
 
 /**
  * The value editor for a free-text token field (transcript / gene). Takes one or
- * more values separated by spaces, commas or newlines. When the field config
- * carries a `pattern`, non-matching tokens are flagged and excluded from the
- * applied filter rather than sent to the server.
+ * more values separated by spaces, commas or newlines.
  */
 const TokenListInput = (props: Props) => {
   const { values, onChange, config } = props;

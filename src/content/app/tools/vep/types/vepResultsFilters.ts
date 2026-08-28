@@ -149,3 +149,55 @@ export const serializeResultsFilters = (
   });
   return active.length > 0 ? JSON.stringify(active) : undefined;
 };
+
+/**
+ * The filter catalogue the tools API serves on the results response: which
+ * fields the query builder offers, and what each one's editor needs.
+ *
+ * Only the keys an editor reads are sent, so a text field has no score groups
+ * and the allele-frequency field is three keys wide. Which of the offered
+ * scores and AF sources this job actually carries is separate, and arrives as
+ * `available_scores` / `available_af_sources`.
+ */
+export type FilterOption = {
+  value: string;
+  label: string;
+};
+
+export type FilterOptionGroup = {
+  label: string;
+  options: string[];
+};
+
+export type ScoreOption = {
+  value: ResultsFilterField;
+  label: string;
+  /** Range hint for the threshold input; differs per score. */
+  placeholder: string;
+};
+
+export type ScoreOptionGroup = {
+  title: string;
+  options: ScoreOption[];
+};
+
+export type FilterField = {
+  field: ResultsFilterField;
+  label: string;
+  /** Read between the field and its value. Absent where the editor chooses its
+   *  own operator, as the allele-frequency and score editors do. */
+  operator_label?: string;
+  editor: 'consequence' | 'text' | 'group' | 'af' | 'score';
+  /** Text editors. */
+  placeholder?: string;
+  mono?: boolean;
+  /** An editor that already takes many values is offered once, then withdrawn. */
+  single_instance?: boolean;
+  /** Consequence editor. */
+  option_groups?: FilterOptionGroup[];
+  /** Transcript-group editor. */
+  options?: FilterOption[];
+  /** Score editor. */
+  missing_label?: string;
+  score_groups?: ScoreOptionGroup[];
+};

@@ -16,12 +16,12 @@
 
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 
-import type { TranscriptGroupOption } from './resultsFilterFields';
+import type { FilterOption } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
 import styles from './VepResultsFilters.module.css';
 
 type Props = {
-  options: TranscriptGroupOption[];
+  options: FilterOption[];
   values: string[];
   onChange: (values: string[]) => void;
 };

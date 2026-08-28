@@ -29,23 +29,20 @@ import AlleleFrequencyInput, {
   type AfSourceOption
 } from './AlleleFrequencyInput';
 import {
-  FILTER_FIELDS,
   createCondition,
   availableFieldsForRow,
   availableScoresForRow,
   definitionForField,
   flattenScoreOptions,
   isScoreField,
-  nextAvailableField,
-  getTranscriptGroupOptions,
-  type FilterFieldDefinition
+  nextAvailableField
 } from './resultsFilterFields';
 
+import type { FilterField } from 'src/content/app/tools/vep/types/vepResultsFilters';
 import type {
   ResultsFilterCondition,
   ResultsFilterField
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
-import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 
 import styles from './VepResultsFilters.module.css';
 
@@ -59,9 +56,10 @@ type Props = {
   hasAppliedFilters: boolean;
   // Filtered / total record counts from the last applied request, if any.
   resultSummary: { filtered: number; total: number } | null;
-  // The `species` property is needed to generate a list of transcript filters (e.g. MANE sets for human GRCh38).
-  // FIXME: this logic should be moved out of the client and to the server
-  species: VepSubmissionWithoutInputFile['species'];
+  // The fields this job can be filtered on, and how each is presented, from the
+  // results response. Which transcript groups it offers is decided there, from
+  // the columns the output has.
+  filterFields: FilterField[];
   // Allele-frequency sources chosen at input; the AF filter is only offered when
   // this is non-empty.
   afSources: AfSourceOption[];
@@ -76,8 +74,10 @@ type Props = {
 
 // Every score resolves to the one "Variant impact predictions" entry; which
 // score a row tests lives in the row, not in the field dropdown.
-const fieldDefinition = (field: ResultsFilterField): FilterFieldDefinition =>
-  definitionForField(field) ?? FILTER_FIELDS[0];
+const fieldDefinition = (
+  field: ResultsFilterField,
+  fields: FilterField[]
+): FilterField => definitionForField(field, fields) ?? fields[0];
 
 /**
  * The results filter query builder: rows of (field, operator, values) conditions
@@ -93,7 +93,7 @@ const VepResultsFilters = (props: Props) => {
     isDirty,
     hasAppliedFilters,
     resultSummary,
-    species,
+    filterFields,
     afSources,
     scoreFields,
     appliedConditionIds
@@ -116,9 +116,9 @@ const VepResultsFilters = (props: Props) => {
     // "Variant impact predictions" is one entry standing for several scores,
     // and its declared field is only the first of them. Landing on it would put
     // two rows on the same score, so take the first one still free.
-    const resolved = isScoreField(field)
+    const resolved = isScoreField(field, filterFields)
       ? (flattenScoreOptions(
-          availableScoresForRow(conditions, index, scoreFields)
+          availableScoresForRow(conditions, index, scoreFields, filterFields)
         ).find(
           (option) =>
             !conditions.some((c, i) => i !== index && c.field === option.value)
@@ -127,7 +127,7 @@ const VepResultsFilters = (props: Props) => {
     onChange(
       conditions.map((condition, i) =>
         i === index
-          ? { ...createCondition(resolved), id: condition.id }
+          ? { ...createCondition(resolved, filterFields), id: condition.id }
           : condition
       )
     );
@@ -138,14 +138,17 @@ const VepResultsFilters = (props: Props) => {
   };
 
   const addCondition = () => {
-    onChange([...conditions, createCondition(nextAvailableField(conditions))]);
+    onChange([
+      ...conditions,
+      createCondition(
+        nextAvailableField(conditions, filterFields),
+        filterFields
+      )
+    ]);
   };
 
-  // FIXME: This logic should not belong on the client; the client should not know anything about specific species or assemblies
-  const isHumanGRCh38 =
-    String(species?.species_taxonomy_id) === '9606' &&
-    (species?.assembly.name ?? '').startsWith('GRCh38');
-  const transcriptGroupOptions = getTranscriptGroupOptions(isHumanGRCh38);
+  const transcriptGroupOptions =
+    filterFields.find((f) => f.editor === 'group')?.options ?? [];
 
   return (
     <div className={styles.panel}>
@@ -157,7 +160,7 @@ const VepResultsFilters = (props: Props) => {
 
       <div className={styles.conditions}>
         {conditions.map((condition, index) => {
-          const definition = fieldDefinition(condition.field);
+          const definition = fieldDefinition(condition.field, filterFields);
           // The field (query type) locks once this row has been applied.
           const isFieldLocked = appliedConditionIds.has(condition.id);
           return (
@@ -165,7 +168,7 @@ const VepResultsFilters = (props: Props) => {
               {index > 0 && <span className={styles.conjunction}>and</span>}
               <SimpleSelect
                 className={styles.fieldSelect}
-                options={availableFieldsForRow(conditions, index)
+                options={availableFieldsForRow(conditions, index, filterFields)
                   .filter((field) => {
                     // A filter is only offered when the job carries the data it
                     // tests: AF sources and impact-prediction scores are both
@@ -179,8 +182,12 @@ const VepResultsFilters = (props: Props) => {
                       // are already dropped, so a non-empty list of groups
                       // means a genuinely available score.
                       return (
-                        availableScoresForRow(conditions, index, scoreFields)
-                          .length > 0
+                        availableScoresForRow(
+                          conditions,
+                          index,
+                          scoreFields,
+                          filterFields
+                        ).length > 0
                       );
                     }
                     return true;
@@ -192,7 +199,7 @@ const VepResultsFilters = (props: Props) => {
                 // A score row's value is its score, which is not a field option
                 // — point the select at the group entry instead.
                 value={
-                  isScoreField(condition.field)
+                  isScoreField(condition.field, filterFields)
                     ? definition.field
                     : condition.field
                 }
@@ -205,16 +212,16 @@ const VepResultsFilters = (props: Props) => {
                   )
                 }
               />
-              {definition.operatorLabel && (
+              {definition.operator_label && (
                 <span className={styles.operator}>
-                  {definition.operatorLabel}
+                  {definition.operator_label}
                 </span>
               )}
-              {definition.editor === 'text' && definition.textInput ? (
+              {definition.editor === 'text' ? (
                 <TokenListInput
                   values={condition.values}
                   onChange={(values) => updateCondition(index, { values })}
-                  config={definition.textInput}
+                  config={definition}
                 />
               ) : definition.editor === 'group' ? (
                 <TranscriptGroupSelect
@@ -228,12 +235,13 @@ const VepResultsFilters = (props: Props) => {
                   scoreOptionGroups={availableScoresForRow(
                     conditions,
                     index,
-                    scoreFields
+                    scoreFields,
+                    filterFields
                   )}
                   operator={condition.operator}
                   threshold={condition.threshold}
                   includeMissing={condition.includeMissing ?? false}
-                  missingLabel={definition.score?.missingLabel ?? ''}
+                  missingLabel={definition.missing_label ?? ''}
                   onChange={(patch) => updateCondition(index, patch)}
                 />
               ) : definition.editor === 'af' ? (
@@ -249,6 +257,7 @@ const VepResultsFilters = (props: Props) => {
                 <ConsequenceMultiSelect
                   values={condition.values}
                   onChange={(values) => updateCondition(index, { values })}
+                  optionGroups={definition.option_groups ?? []}
                 />
               )}
               <CloseButton

@@ -16,6 +16,7 @@
 
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
+import type { FilterField } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
 export type VepResultsResponse = {
   metadata: VepResultsResponseMetadata;
@@ -40,6 +41,12 @@ export type VepResultsResponseMetadata = {
    * columns nobody asked for.
    */
   available_scores?: string[];
+  /**
+   * The fields the query builder offers and how each is presented, from the
+   * job's pinned spec — gated to what this output can be filtered by. Absent
+   * for a job pinned before the catalogue existed.
+   */
+  filter_fields?: FilterField[] | null;
   /**
    * The option panels this job was submitted against, pinned by the tools API
    * at submission time. The results view lays itself out from these rather than

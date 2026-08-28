@@ -25,9 +25,8 @@ import type {
   ResultsFilterField,
   ResultsFilterOperator
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
-import { scoreFieldOption } from './resultsFilterFields';
 
-import type { ScoreFieldOptionGroup } from './resultsFilterFields';
+import type { ScoreOptionGroup } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
 import styles from './VepResultsFilters.module.css';
 
@@ -36,7 +35,7 @@ type Props = {
   // category (genome wide / missense / splicing). A score taken by another row
   // is not offered again — one threshold per score.
   field: ResultsFilterField;
-  scoreOptionGroups: ScoreFieldOptionGroup[];
+  scoreOptionGroups: ScoreOptionGroup[];
   operator: ResultsFilterOperator;
   threshold: number | undefined;
   includeMissing: boolean;
@@ -84,7 +83,12 @@ const ScoreInput = (props: Props) => {
     missingLabel,
     onChange
   } = props;
-  const placeholder = scoreFieldOption(field)?.placeholder ?? '';
+  // The row's own score is always among the groups it is offered, so its range
+  // hint is here rather than needing the whole catalogue.
+  const placeholder =
+    scoreOptionGroups
+      .flatMap((group) => group.options)
+      .find((option) => option.value === field)?.placeholder ?? '';
   // Kept as text so a half-typed value ("-", "1.") survives; the number is only
   // reported once it parses.
   const [thresholdText, setThresholdText] = useState(
