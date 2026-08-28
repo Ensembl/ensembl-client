@@ -23,6 +23,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
+import { getSelectedSpecies as getSelectedSpeciesForVep } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
 
 import { setSelectedSpecies } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
@@ -49,7 +50,8 @@ const VepAppBar = () => {
 const SpeciesTabs = () => {
   const vepFormPath = urlFor.vepForm();
   const isVepFormView = useMatch({ path: vepFormPath, end: true });
-  const speciesList = useAppSelector(getEnabledCommittedSpecies);
+  const genomesList = useAppSelector(getEnabledCommittedSpecies);
+  const selectedGenome = useAppSelector(getSelectedSpeciesForVep);
   const { removeGenome } = useGenomeRemoval();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -61,10 +63,11 @@ const SpeciesTabs = () => {
     }
   };
 
-  const speciesTabs = speciesList.map((species) => (
+  const speciesTabs = genomesList.map((genome) => (
     <SelectedSpecies
-      key={species.genome_id}
-      species={species}
+      key={genome.genome_id}
+      species={genome}
+      isActive={genome.genome_id === selectedGenome?.genome_id}
       onClick={onSpeciesSelect}
       onRemove={removeGenome}
     />
