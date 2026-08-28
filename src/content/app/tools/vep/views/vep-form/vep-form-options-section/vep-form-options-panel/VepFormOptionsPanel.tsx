@@ -30,7 +30,6 @@ import {
   subOptionToggleUpdates,
   optionToggleUpdates
 } from './panelSelectionUpdates';
-import { getOptionHelp } from './optionHelp';
 
 import OptionHelpText from './OptionHelpText';
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
@@ -254,7 +253,7 @@ const VepFormOptionsPanel = (props: Props) => {
 
   function renderOption(option: FormPanelOption, showAll = true) {
     const checked = boolValue(option.id, option.default);
-    const help = getOptionHelp(option);
+    const help = option.help;
     // Controls the "Customise selection" button.
     const isCustomisable = showAll && isSourceOption(option);
     const showChildren = isCustomisable
