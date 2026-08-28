@@ -12,7 +12,6 @@ Note that the `hgvs` option is a single "boolean", but it is rendered as two che
 1. DisplaySpec -> plugin_scopes: should the value type be changed from string to "transcript" | "allele"?
 
 
-
 ## UI
 - The 20px indents in Andrea's design — are they necessary? Aren't we losing precious space:
   - left/right indent for the grey details panel
@@ -23,12 +22,13 @@ Note that the `hgvs` option is a single "boolean", but it is rendered as two che
 - Fix styles of links in help popups (they are blue against dark grey; make them white)
 
 ## TODO
-- Add popular species?
 - Remove `expandCommand` from `VepFormOptionsPanel` (and from `VepFormOptionsSection`)
+
 
 ## CHECK AND REMOVE?
 - Check if the logic of the `resultsPanels` function is still necessary
 - `[styles.tokenInputMono]: config.mono` - why monospace font in TokenListInput?
+- Check usage of `useRef` and `useEffect`
 - Check for all remaining FIXME comments and QUESTION comments
 
 
@@ -46,6 +46,7 @@ Note that the `hgvs` option is a single "boolean", but it is rendered as two che
 
 ## DONE
 - Revert HGVS to single checkbox; drop custom code
+- Add popular species
 
 
 ## PAIN
