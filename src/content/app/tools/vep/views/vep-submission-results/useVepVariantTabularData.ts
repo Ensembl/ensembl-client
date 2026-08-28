@@ -59,6 +59,9 @@ const useVepVariantTabularData = (params: Params) => {
 
   const tabularData = useMemo(() => {
     return getTabularData(params);
+    // `params` is rebuilt every render, so depending on it would memoise
+    // nothing. Its two fields are the real dependencies, and they are both here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [variant, expandedTranscriptPaths]);
 
   return tabularData;
@@ -207,6 +210,13 @@ const groupAlleleConsequencesByType = (
       consequenceGroups.transcriptConsequences.push(consequence);
     } else if (consequence.feature_type === null) {
       consequenceGroups.intergenicConsequences.push(consequence);
+    } else {
+      // Every kind of consequence has to be grouped into something, or its row
+      // never reaches the table — silently, since there is nothing to render
+      // and nothing to report. `feature_type` discriminates the union, so a
+      // kind added to it without a branch here narrows to something other than
+      // `never` and fails to compile.
+      consequence satisfies never;
     }
   }
 
