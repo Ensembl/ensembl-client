@@ -45,9 +45,7 @@ const VepFormOptionsSection = () => {
 
   const { currentData: formConfig, isFetching } = useVepFormConfigQuery(
     {
-      genome_id: selectedSpecies?.genome_id ?? '',
-      species_taxonomy_id: selectedSpecies?.species_taxonomy_id,
-      assembly_name: selectedSpecies?.assembly.name
+      genome_id: selectedSpecies?.genome_id ?? ''
     },
     {
       skip: !selectedSpecies

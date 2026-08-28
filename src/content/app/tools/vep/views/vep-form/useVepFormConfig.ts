@@ -52,9 +52,7 @@ const useVepFormConfig = () => {
   const areFormParametersEmpty = isObjectEmpty(vepFormParameters);
   const { currentData: vepFormConfig } = useVepFormConfigQuery(
     {
-      genome_id: selectedGenomeId ?? '',
-      species_taxonomy_id: selectedSpecies?.species_taxonomy_id,
-      assembly_name: selectedSpecies?.assembly.name
+      genome_id: selectedGenomeId ?? ''
     },
     {
       skip: !selectedGenomeId || !areFormParametersEmpty
@@ -71,7 +69,7 @@ const useVepFormConfig = () => {
     }
 
     dispatch(setDefaultParameters(vepFormConfig));
-  }, [vepFormConfig, areFormParametersEmpty]);
+  }, [vepFormConfig, areFormParametersEmpty, dispatch]);
 };
 
 const isObjectEmpty = (obj: Record<string, unknown>) => {

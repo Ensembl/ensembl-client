@@ -202,9 +202,7 @@ const VepSubmissionResults = () => {
   const pinnedPanels = vepResults?.metadata.display_panels ?? null;
   const { currentData: formConfig } = useVepFormConfigQuery(
     {
-      genome_id: species?.genome_id ?? '',
-      species_taxonomy_id: species?.species_taxonomy_id,
-      assembly_name: species?.assembly.name
+      genome_id: species?.genome_id ?? ''
     },
     // Wait for the results before deciding: a job with pinned panels needs no
     // form_config request at all, and one without gets it as soon as we know.

@@ -1,10 +1,5 @@
 # Need to review
 
-## API
-- The vepFormConfig endpoint (`/vep/form_config/:genome_id`) has been updated to take two optional parameters: `species_taxonomy_id` and `assembly_name`, alongside genome_id. But genome_id should be sufficient on its own for the backend to discover all the data that it needs.
-==> Can we remove these parameters from this endpoint
-
-
 ### The form config
 Explore the contract of the response
   - The purpose (and the name) of the `locked_children` field?
@@ -30,7 +25,6 @@ Note that the `hgvs` option is a single "boolean", but it is rendered as two che
 ## TODO
 - Add popular species?
 - Remove `expandCommand` from `VepFormOptionsPanel` (and from `VepFormOptionsSection`)
-- Remove requirement to pass `assembly_name` and `species_taxonomy_id` to requests for form config (see `vepFormSlice`)
 
 ## CHECK AND REMOVE?
 - Check if the logic of the `resultsPanels` function is still necessary
