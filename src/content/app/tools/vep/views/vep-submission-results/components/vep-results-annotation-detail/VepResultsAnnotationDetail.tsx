@@ -35,7 +35,6 @@ import type {
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
 import { groupByCategory } from 'src/content/app/tools/vep/utils/groupByCategory';
 import { subOptionRan as didSubOptionRun } from 'src/content/app/tools/vep/utils/subOptionRan';
-import { getOptionHelp } from 'src/content/app/tools/vep/views/vep-form/vep-form-options-section/vep-form-options-panel/optionHelp';
 import styles from './VepResultsAnnotationDetail.module.css';
 
 /**
@@ -91,10 +90,7 @@ const VepResultsAnnotationDetail = (props: {
     }
     return map;
   }, [panels]);
-  const helpFor = (optionId: string) => {
-    const option = optionsById.get(optionId);
-    return option ? getOptionHelp(option) : undefined;
-  };
+  const helpFor = (optionId: string) => optionsById.get(optionId)?.help;
 
   const subOptionRan = (optionId: string, defaultValue: boolean) =>
     didSubOptionRun(parameters, optionId, defaultValue);
