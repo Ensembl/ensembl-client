@@ -57,9 +57,9 @@ const initialState: State = {
   isTooltipShown: false
 };
 
-export const useShowTooltip = () => {
+export const useShowTooltip = <T extends HTMLElement = HTMLElement>() => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [hoverRef, isHovered] = useHover<HTMLDivElement>();
+  const [hoverRef, isHovered] = useHover<T>();
 
   let timeoutId: number | null = null;
 

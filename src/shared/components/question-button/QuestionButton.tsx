@@ -15,7 +15,7 @@
  */
 
 import classNames from 'classnames';
-import type { ReactNode } from 'react';
+import type { ReactNode, ButtonHTMLAttributes } from 'react';
 
 import { useShowTooltip } from 'src/shared/hooks/useShowTooltip';
 
@@ -28,16 +28,20 @@ import defaultStyles from './QuestionButton.module.css';
 // Extra styling options based on where the button is located
 type QuestionButtonStyleOption = 'inline' | 'in-input-field';
 
-type Props = {
+type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   helpText: ReactNode;
   styleOption?: QuestionButtonStyleOption;
-  className?: Partial<Record<QuestionButtonStyleOption, string>>;
 };
 
 const QuestionButton = (props: Props) => {
-  const { helpText, styleOption = 'inline' } = props;
+  const {
+    helpText,
+    styleOption = 'inline',
+    className: classNameFromProps,
+    ...otherProps
+  } = props;
   const { elementRef, onClick, onTooltipCloseSignal, shouldShowTooltip } =
-    useShowTooltip();
+    useShowTooltip<HTMLButtonElement>();
 
   if (!helpText) {
     return null;
@@ -48,12 +52,17 @@ const QuestionButton = (props: Props) => {
     {
       [defaultStyles[styleOption]]: styleOption
     },
-    props.className?.inline,
-    props.className?.['in-input-field']
+    classNameFromProps
   );
 
   return (
-    <div ref={elementRef} className={className} onClick={onClick}>
+    <button
+      ref={elementRef}
+      type="button"
+      className={className}
+      onClick={onClick}
+      {...otherProps}
+    >
       <QuestionIcon />
       {shouldShowTooltip && (
         <Tooltip
@@ -65,7 +74,7 @@ const QuestionButton = (props: Props) => {
           {helpText}
         </Tooltip>
       )}
-    </div>
+    </button>
   );
 };
 

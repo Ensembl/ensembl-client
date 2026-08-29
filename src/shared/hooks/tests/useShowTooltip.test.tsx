@@ -26,7 +26,7 @@ let triggerTooltipCloseSignal: () => void;
 
 const TestComponent = () => {
   const { elementRef, onClick, onTooltipCloseSignal, shouldShowTooltip } =
-    useShowTooltip();
+    useShowTooltip<HTMLDivElement>();
 
   triggerTooltipCloseSignal = onTooltipCloseSignal;
 

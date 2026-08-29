@@ -105,7 +105,7 @@ const TableHeaderCell = (props: IndividualColumn) => {
         {helpText && (
           <QuestionButton
             helpText={helpText}
-            className={{ inline: styles.questionButton }}
+            className={ styles.questionButton }
           />
         )}
       </div>

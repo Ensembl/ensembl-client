@@ -35,7 +35,7 @@ const AlertButton = (props: Props) => {
   const { level: alertLevel = 'red', tooltipContent } = props;
 
   const { elementRef, onClick, onTooltipCloseSignal, shouldShowTooltip } =
-    useShowTooltip();
+    useShowTooltip<HTMLButtonElement>();
 
   const alertButtonClass = classNames(
     styles.alertButton,
@@ -46,7 +46,7 @@ const AlertButton = (props: Props) => {
   );
 
   return (
-    <div ref={elementRef} className={alertButtonClass} onClick={onClick}>
+    <button ref={elementRef} className={alertButtonClass} onClick={onClick}>
       <AlertIcon />
       {tooltipContent && shouldShowTooltip && (
         <Tooltip
@@ -58,7 +58,7 @@ const AlertButton = (props: Props) => {
           {tooltipContent}
         </Tooltip>
       )}
-    </div>
+    </button>
   );
 };
 
