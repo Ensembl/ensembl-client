@@ -3,4 +3,4 @@
  * 
  * For other layers, see the main.css file, in which they are assigned to imports 
  */
-@layer base, components;
+@layer base, elements, components;

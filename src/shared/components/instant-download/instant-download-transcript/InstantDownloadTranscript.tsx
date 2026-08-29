@@ -23,6 +23,7 @@ import intersection from 'lodash/intersection';
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 
 import InstantDownloadTranscriptVisualisation from './InstantDownloadTranscriptVisualisation';
+import CheckboxGroup from 'src/shared/components/checkbox-group/CheckboxGroup';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
 
@@ -265,12 +266,12 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
       >
         {transcriptVisualisation}
       </div>
-      <div
+      <CheckboxGroup
         data-part="transcript-section-checkbox-grid"
         className={styles.checkboxGrid}
       >
         {checkboxes}
-      </div>
+      </CheckboxGroup>
     </div>
   );
 };
@@ -282,7 +283,7 @@ const GeneSection = (props: GeneSectionProps) => {
         Gene
         <span className={styles.featureId}>{props.gene.id}</span>
       </div>
-      <div className={styles.checkboxes}>
+      <CheckboxGroup>
         <CheckboxWithLabel
           theme={getCheckboxTheme(props.theme)}
           label="Genomic sequence"
@@ -297,7 +298,7 @@ const GeneSection = (props: GeneSectionProps) => {
           onChange={() => props.onChange('exons')}
           className={styles.checkbox}
         />
-      </div>
+      </CheckboxGroup>
     </div>
   );
 };
