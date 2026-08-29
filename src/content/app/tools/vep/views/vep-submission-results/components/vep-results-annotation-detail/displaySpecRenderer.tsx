@@ -277,7 +277,7 @@ const rowLabel = (row: DisplayRowSpec): ReactNode =>
             row.help
           )
         }
-        className={{ inline: styles.rowHelpIcon }}
+        className={styles.rowHelpIcon}
       />
     </span>
   ) : (

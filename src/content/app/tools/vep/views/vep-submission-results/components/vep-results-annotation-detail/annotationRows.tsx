@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import type { ReactNode } from 'react';
 import classNames from 'classnames';
-
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
-// The form's help renderer, reused so one OptionHelp renders identically on the
-// form and against the matching results heading.
-import OptionHelpText from 'src/content/app/tools/vep/views/vep-form/vep-form-options-section/vep-form-options-panel/OptionHelpText';
+import type { ReactNode } from 'react';
 
 import {
   num,
@@ -31,6 +26,9 @@ import {
   humanizeJoin,
   count
 } from 'src/content/app/tools/vep/utils/annotationFormatters';
+
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+import OptionHelpText from 'src/content/app/tools/vep/views/vep-form/vep-form-options-section/vep-form-options-panel/OptionHelpText';
 
 import type { OptionHelp } from 'src/content/app/tools/vep/types/vepFormConfig';
 
@@ -53,7 +51,7 @@ export const withOptionHelp = (
       {label}
       <QuestionButton
         helpText={<OptionHelpText help={help} />}
-        className={{ inline: styles.rowHelpIcon }}
+        className={styles.rowHelpIcon}
       />
     </span>
   ) : (

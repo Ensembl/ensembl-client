@@ -272,7 +272,7 @@ const VepFormOptionsPanel = (props: Props) => {
           {help && (
             <QuestionButton
               helpText={<OptionHelpText help={help} />}
-              className={{ inline: styles.helpIcon }}
+              className={styles.helpIcon}
             />
           )}
         </div>
