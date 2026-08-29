@@ -86,15 +86,13 @@ describe('TruncatedList', () => {
 
     expect(container.textContent).toBe('');
   });
+
   /**
    * Collapsing removes items from above the toggle, so the control and
-   * everything after it jump up the page. In the results table that leaves the
-   * reader looking at a different variant than the one they expanded, which is
-   * the bug this anchoring fixes.
+   * everything after it jump up the page. In the results table this may leave the
+   * reader looking at a different variant than the one they expanded.
    *
-   * jsdom does no layout, so the geometry is stubbed: the toggle reports one
-   * position while expanded and a higher one once collapsed, and the scroller
-   * reports that it scrolls.
+   * Since jsdom doesn't do layout, the api for retrieving geometry is stubbed.
    */
   describe('keeps the toggle in place when collapsing', () => {
     const renderInScroller = (tops: number[]) => {
@@ -157,11 +155,6 @@ describe('TruncatedList', () => {
   });
 });
 
-/**
- * The collapsed-detail shape: `visibleCount: 0` plus `toggleFirst` turns the
- * same primitive into a summary that opens onto its detail. Without the
- * ordering the summary would sit underneath what it summarises.
- */
 describe('toggleFirst', () => {
   const renderDetail = (toggleFirst: boolean) =>
     render(

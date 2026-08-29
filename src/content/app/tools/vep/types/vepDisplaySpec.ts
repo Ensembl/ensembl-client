@@ -21,24 +21,22 @@
  * need job context no annotation field carries.
  */
 
-/** Mirrors `RowFormat` in annotationRows.tsx. */
 export type DisplayRowFormat =
   | 'text'
   | 'num'
-  | 'humanize'
   | 'phenotype'
   | 'join'
-  | 'humanize_join'
+  | 'humanize' // pretty-print
+  | 'humanize_join' // pretty-print and separate items with commas
   | 'count'
-  /** One value packing several `+`-joined terms, humanised and comma-joined. */
+  /** Original string contains several terms joined with a "+"; pretty print them and separate them with commas. */
   | 'humanize_terms';
 
 /** Which view a block belongs to; absent = both (the common case). */
 export type DisplayBlockView = 'default' | 'show_all';
 
 /**
- * A value built from more than one field. Only `with_score` exists: the
- * `withScore` formatter, from a classification plus its score.
+ * A value built from more than one field. Only `with_score` exists.
  */
 export type DisplayCompose = {
   format: 'with_score';
@@ -240,24 +238,14 @@ export type DisplayWhereSpec = {
 export type DisplayTruncateSpec = { visible_count: number };
 
 /**
- * A condition gating whether a block renders. `present` -> only when the field
- * has content; `empty` -> only when it is absent (null / '' / empty list). The
- * field is a `<plugin>.<field>` reference like a row's `from`.
+ * String values of below fields are formatted as `<plugin>.<field>`,
+ * like the value of a row's `from` field.
  */
 export type DisplayWhenSpec = {
-  present?: string | null;
-  empty?: string | null;
+  present?: string | null; // only when corresponding field has content
+  empty?: string | null; // only when corresponding field is absent (null / '' / empty list)
 };
 
-/**
- * Gate a block on whether a form option/sub-option was *selected* for the job
- * (as opposed to `when`/`requires`, which test the annotation data). ClinVar's
- * master renders its short and structural blocks under one option, so each gates
- * on its own sub-option — dev-data VCFs carry columns the user didn't pick, so
- * gating on data alone would leak the unselected variant kind into the view.
- * `default` is the sub-option's default (an option left at its default isn't
- * written to the submitted parameters).
- */
 export type DisplaySelectedGate = {
   id: string;
   default?: boolean;
@@ -450,19 +438,32 @@ export type DisplayTableColumnSpec = DisplayValuePiece & {
   merge_by?: string | null;
 };
 
-/** One row of a fixed (matrix) table: a text `label` for the first column, then
- * a `<plugin>.<field>` scalar ref per value column. */
+/** Describes one row of a fixed (matrix) table.
+ * The `label` field contains the text that goes in the first column.
+ * The `values` array contains a list of strings formatted as `<plugin>.<field>`,
+ * each describing where to access the data that goes into the corresponding column. */
 export type DisplayTableMatrixRowSpec = {
   label: string;
   values: string[];
 };
 
 /**
- * A small table with a header row of column labels. Either list mode (`from`:
- * one row per element of a list field, columns reading item fields — ClinVar's
- * Classification | Submitters reporting) or fixed mode (`rows`: explicit `{label,
- * values}` rows, label in the first column and each value a scalar under a value
- * column — SpliceAI's Splicing event | ΔS | ΔP). Exactly one of `from`/`rows`.
+ * A small table with a header row of column labels.
+ * The table can be assembled in one of two ways:
+ *
+ * - "list mode"
+ *   Rows of the table are looked up in `<plugin>.<listField>`,
+ *   each column reading that element's `from` item field.
+ *   Example: ClinVar's conflicting classifications (Classification | Submitters reporting).
+ *
+ * - "fixed / matrix mode"
+ *   Rows of the table are defined explicitly in the
+ *   `rows` field of the payload (each row having a shape of `{label, values}`,
+ *   the label filling the first column and each value a `<plugin>.<field>` scalar
+ *   under a value column
+ *   Example: SpliceAI's splicing events (Splicing event | ΔS | ΔP).
+ *
+ * The "from" and "rows" fields are mutually exclusive; you should expect either one or the other
  */
 export type DisplayTableBlockSpec = {
   kind: 'table';
@@ -471,35 +472,23 @@ export type DisplayTableBlockSpec = {
   requires_selected?: DisplaySelectedGate | null;
   when?: DisplayWhenSpec | null;
   view?: DisplayBlockView | null;
-  /** Sit one indent step in, as if under a heading — for an unheaded table
-   *  standing beside headed siblings (the ClinVar phenotype table beside the
-   *  "Gene associated" / "Variant associated" ones). */
   indent?: boolean;
-  /** list mode: `<plugin>.<listField>` — the list the rows come from. */
-  from?: string | null;
+  from?: string | null; // string format: `<plugin>.<listField>`
   columns: DisplayTableColumnSpec[];
-  /** list mode: split the rows into a headed table per distinct value. */
-  group_by?: DisplayGroupBy | null;
+  group_by?: DisplayGroupBy | null; // split the rows into a headed table per distinct value
   /**
-   * list mode: keep only the rows whose `field` equals `equals`, so two tables
-   * can divide one list between them under a single shared heading — the
-   * phenotypes option shows variant-associated rows and ClinVar's own rows as
-   * two tables under one "Variant associated" group. `group_by` cannot do that:
-   * it builds a heading per table, so a second table repeats the heading rather
-   * than joining it.
+   * Keep only the rows whose `field` equals `equals`, so two tables
+   * can divide one list between them under a single shared heading.
+   * Example: the phenotypes option shows variant-associated rows and ClinVar's own rows
+   * as two tables under one "Variant associated" group.
    */
   where?: DisplayWhereSpec | null;
-  /** list mode: show this many rows, the rest behind a show-more toggle (per
-   *  section when grouped). */
-  truncate?: DisplayTruncateSpec | null;
-  /** fixed mode: explicit rows. */
+  truncate?: DisplayTruncateSpec | null; // show this many rows, and hide the rest behind a show-more toggle
   rows?: DisplayTableMatrixRowSpec[] | null;
 };
 
 /**
- * A run of sub-blocks under one optional heading, gated as a whole by `when`.
- * Lets a heading span more than one block conditionally (ClinVar's conflicting
- * case: a "Classification" row plus a breakdown table under one heading).
+ * A list of blocks under one optional heading.
  */
 export type DisplayGroupBlockSpec = {
   kind: 'group';
@@ -519,25 +508,12 @@ export type DisplayBlockSpec =
 
 export type DisplayOptionSpec = {
   option_id: string;
-  /**
-   * An option-level heading wrapping all the option's blocks in one OptionBlock,
-   * shown whenever the option renders anything — for output that spans more than
-   * one block under a single heading (MaveDB's Variant row + assays list).
-   */
   heading?: string | null;
-  /** A sequence: `eve` is a bare EVE row plus a sibling popEVE block. */
   blocks: DisplayBlockSpec[];
 };
 
 /**
  * A term -> rating table, drawn as a row of filled and empty stars.
- *
- * Which phrase earns which rating is source knowledge, so it is authored in the
- * spec and served rather than known here: ClinVar reads the same review-status
- * wording differently for a variant's aggregate classification and for a single
- * submission, which is why scales are named. Terms are matched loosely — case,
- * and `_` as a space — so the scale can be written as the phrase a reader would
- * recognise while the data keeps the source's own punctuation.
  */
 export type DisplayRatingScale = {
   out_of: number;
@@ -548,6 +524,5 @@ export type DisplaySpec = {
   options: DisplayOptionSpec[];
   /** plugin id -> "allele" | "transcript", derived by the backend from `parsing`. */
   plugin_scopes: Record<string, string>;
-  /** Scales a row's or item's `stars` names. */
   rating_scales?: Record<string, DisplayRatingScale>;
 };

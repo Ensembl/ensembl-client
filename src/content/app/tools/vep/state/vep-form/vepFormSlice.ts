@@ -300,22 +300,11 @@ const prepareRequestPayload = async ({
     );
   }
 
-  // Include the assembly name so the tools API can pick assembly-specific
-  // plugin data files (e.g. human GRCh37 vs GRCh38), and the species taxonomy
-  // id so it can pin this job's option panels using the same species/assembly
-  // rules /form_config uses (without it every human-specific panel would be
-  // silently missing from the pin).
-  const finalParameters = {
-    ...parameters,
-    assembly_name: species.assembly.name,
-    species_taxonomy_id: species.species_taxonomy_id
-  };
-
   return {
     submission_id: submissionId,
     genome_id: species.genome_id,
     input_file: inputFile as File,
-    parameters: JSON.stringify(finalParameters)
+    parameters: JSON.stringify(parameters)
   };
 };
 

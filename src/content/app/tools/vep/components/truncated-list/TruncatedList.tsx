@@ -18,57 +18,26 @@ import { useState, Fragment, type ReactNode, type SyntheticEvent } from 'react';
 import { flushSync } from 'react-dom';
 
 export type TruncatedListToggleProps = {
-  /** How many items are hidden while collapsed (never negative). */
-  hiddenCount: number;
+  hiddenCount: number; // How many items are hidden while collapsed
   isExpanded: boolean;
-  /**
-   * Wire straight to the control's `onClick`. The event is what lets collapsing
-   * hold its scroll position (see below); called without one it still toggles,
-   * just without the correction.
-   */
   toggle: (event?: SyntheticEvent<HTMLElement>) => void;
 };
 
 type Props<Item> = {
   items: Item[];
-  /** How many items to show while collapsed. */
-  visibleCount: number;
+  visibleCount: number; // How many items to show while collapsed.
   /**
-   * `renderedCount` is how many items are on screen right now — the visible
-   * slice while collapsed, all of them once expanded. Only a caller that draws
-   * *across* items needs it: the annotation tables merge a column's cells down
-   * with a rowspan, and a span reaching past the last rendered row would leave
-   * the cell hanging below the table.
+   * `renderedCount` is how many items are on screen right now.
+   * Needed if the caller is a table that has to calculate how many rows to span.
    */
   renderItem: (item: Item, index: number, renderedCount: number) => ReactNode;
-  /**
-   * The toggle control, rendered only when something is hidden. This is a
-   * render prop on purpose: the annotation lists deliberately do not share a
-   * toggle presentation (a plain "+ n more" button in some places, the shared
-   * ShowHide control in others), so each call site keeps its own markup.
-   */
   renderToggle: (props: TruncatedListToggleProps) => ReactNode;
-  /**
-   * Put the toggle *before* the items rather than after them.
-   *
-   * The two shapes this serves read in opposite orders. A truncated list shows
-   * some items and offers "n more" underneath. A collapsed detail shows a
-   * summary and reveals the detail beneath it — same expand state, same
-   * collapse-anchoring, but the control has to come first or the summary would
-   * sit under what it summarises. `visibleCount: 0` is what makes it a detail
-   * rather than a truncation.
-   */
-  toggleFirst?: boolean;
+  toggleFirst?: boolean; // Put the toggle before the items rather than after them
 };
 
-/**
- * The nearest ancestor that actually scrolls, or null when the page itself does.
- *
- * The results table scrolls inside its own viewport container rather than at
- * document level, so adjusting `window.scrollY` would move nothing. Walking up
- * keeps this correct either way.
- */
-const scrollableAncestor = (element: HTMLElement): HTMLElement | null => {
+const findNearestScrollableAncestor = (
+  element: HTMLElement
+): HTMLElement | null => {
   let node = element.parentElement;
   while (node) {
     const { overflowY } = window.getComputedStyle(node);
@@ -83,10 +52,6 @@ const scrollableAncestor = (element: HTMLElement): HTMLElement | null => {
 
 /**
  * A list that shows its first few items and reveals the rest on demand.
- *
- * The primitive owns only the expand state, the slicing and the hidden-item
- * count; the items and the toggle are both supplied by the caller, so this adds
- * no markup of its own.
  */
 const TruncatedList = <Item,>(props: Props<Item>) => {
   const { items, visibleCount, renderItem, renderToggle, toggleFirst } = props;
@@ -102,30 +67,26 @@ const TruncatedList = <Item,>(props: Props<Item>) => {
    * variant than the one they were expanding. So measure where the control sits,
    * collapse, and scroll by however far it moved.
    *
-   * The measurement has to happen at click time, not at the previous render:
-   * reading a long list means scrolling, which changes where the control is.
-   * `flushSync` applies the collapse to the DOM straight away so the second
-   * measurement can be taken in the same handler — before the browser paints,
+   * The function uses `flushSync`, which applies component state update
+   * to the DOM straight away, so that the second measurement can be taken
+   * in the same handler and before the browser paints,
    * so the correction is never seen as a jump.
-   *
-   * Expanding needs none of this: it only adds below the reader's position, so
-   * nothing they are looking at moves.
    */
   const toggle = (event?: SyntheticEvent<HTMLElement>) => {
     const control = event?.currentTarget;
     if (!isExpanded || !control) {
+      // Expanding the list does not require any additional DOM manipulations
+      // to correct the element's position.
       setIsExpanded((expanded) => !expanded);
       return;
     }
     const before = control.getBoundingClientRect().top;
     flushSync(() => setIsExpanded(false));
-    // Negative: the control has risen, so scroll up by as much to leave it
-    // under the cursor.
     const delta = control.getBoundingClientRect().top - before;
     if (delta === 0) {
       return;
     }
-    const scroller = scrollableAncestor(control);
+    const scroller = findNearestScrollableAncestor(control);
     if (scroller) {
       scroller.scrollTop += delta;
     } else {

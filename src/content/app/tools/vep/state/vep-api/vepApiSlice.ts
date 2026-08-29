@@ -61,7 +61,6 @@ const vepApiSlice = restApiSlice.injectEndpoints({
     }),
     vepFormExampleInput: builder.query<
       { vcfString?: string },
-      // { submission_id: string },
       { genomeId: string }
     >({
       queryFn: async (params, { dispatch }) => {
@@ -140,8 +139,6 @@ const vepApiSlice = restApiSlice.injectEndpoints({
         submission_id: string;
         page: number;
         per_page: number;
-        // Server-side filters; omitted from the URL when there's nothing active,
-        // so unfiltered requests keep the fast page-index path.
         filters?: ResultsFilterCondition[];
       }
     >({

@@ -71,19 +71,6 @@ import type {
 import styles from './VepResultsAnnotationDetail.module.css';
 
 /**
- * The generic renderer for spec-driven options.
- *
- * The annotation spec's `display` section describes an option's output as
- * blocks of label/value rows; this walks that description and hands it to the
- * same row primitives the hand-written cases used, so the output is identical
- * to the twelve `case` bodies it replaces.
- *
- * The only thing it needs beyond the spec is where to read each plugin from:
- * `plugin_scopes` (derived by the backend from the parsing spec) says whether a
- * plugin hangs off the allele or the transcript consequence.
- */
-
-/**
  * What a named link builder needs beyond the annotation field: the job's genome
  * and the ProtVar URL (algorithmic, precomputed upstream), plus the consequence
  * for a builder that needs the gene (the protein "View in" popup).
@@ -162,9 +149,6 @@ const makeHelpAnchor = (help: OptionHelp) => {
   };
 };
 
-/** A heading with its (?) button, when this is the node claiming the option's
- *  help. A nested heading (level > 0) is a sub-division of the option, not its
- *  title, so it never claims. */
 const claimHelp = (
   heading: ReactNode,
   entities: Entities,
@@ -1677,11 +1661,7 @@ const renderBlock = (
   block: DisplayBlockSpec,
   spec: DisplaySpec,
   entities: Entities,
-  // The heading nesting depth for this block: 0 for a block directly under the
-  // option (or under a headingless gate group), incremented each time a heading
-  // is drawn (see OptionBlock). A headingless block passes its level straight to
-  // its children, so only visible headings add a level of weight/indent.
-  level: number
+  level: number // The heading nesting depth for this block: 0 for a block directly under the option
 ): ReactNode | null => {
   // A data condition (ClinVar's shape-flip) gates the whole block first.
   if (block.when && !whenSatisfied(block.when, spec, entities)) {
@@ -1827,10 +1807,7 @@ export const renderDisplayOption = (args: {
   const body = nodes.map((node, index) => (
     <Fragment key={index}>{node}</Fragment>
   ));
-  // An option-level heading wraps every block in one OptionBlock (MaveDB); it is
-  // shown only because at least one block survived above. Its blocks rendered at
-  // level 1, so none of them can have claimed the help — it belongs here, on the
-  // option's own title.
+
   return option.heading ? (
     <OptionBlock label={claimHelp(option.heading, entities, 0)} level={0}>
       {body}
