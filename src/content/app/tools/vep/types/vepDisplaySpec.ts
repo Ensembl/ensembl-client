@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * The rendering primitives live in two places: `annotationRows.tsx` for rows
- * and blocks, and `displaySpecRenderer.tsx` for the rest (cells, tables,
- * ratings, expanders). The frontend still owns named `builder` links, which
- * need job context no annotation field carries.
- */
-
 export type DisplayRowFormat =
   | 'text'
   | 'num'
@@ -50,62 +43,43 @@ export type DisplayRowSpec = {
    *  classifications sit directly above the table they describe, where their
    *  position says what a repeated label would. */
   label?: string | null;
-  /**
-   * `<plugin>.<field>` into the parsing spec. Which entity the plugin is read
-   * from is *not* stated here — that is the parser's `scope`, and arrives
-   * separately as `plugin_scopes`.
-   */
-  from?: string | null;
+  from?: string | null; // string formatted as `<plugin>.<field>`
   compose?: DisplayCompose | null;
   format?: DisplayRowFormat | null;
-  /** Unset drops an absent row; set keeps it and shows this. */
-  placeholder?: string | null;
-  /** Help text for a (?) button beside the label. */
-  help?: string | null;
+  placeholder?: string | null; // if present, shown in place of an absent row
+  help?: string | null; // Help text shown by a QuestionButton beside the label
+  help_link?: { href: string; label?: string | null } | null; // A source cited inside that help popup
   /**
-   * A source cited inside that help popup — popEVE's threshold is the authors'
-   * recommendation, so the help says where to read it. Not a `DisplayLinkSpec`:
-   * those build a URL per row from the annotation's own values, while this is
-   * one fixed reference belonging to the help text. `label` is the anchor text.
-   * Shaped like the form side's `OptionHelpLink` (`href`, not `url`) so the two
-   * help systems converge rather than growing a second name for one thing.
-   */
-  help_link?: { href: string; label?: string | null } | null;
-  /**
-   * The form sub-option this row's value comes from. Only affects "Show all":
-   * a selected-but-empty sub-option shows a dash there; the default view still
-   * drops the empty row. `default` mirrors the form default (absent parameter =
+   * The form sub-option this row's value comes from.
+   * Is used when user chooses to show all requested annotations,
+   * even if some of them do not have any data (which the UI shows as a dash).
+   * The value of the `default` field mirrors the form default (absent parameter =
    * its default), as for `subOptionRan`.
    */
   sub_option?: { id: string; default?: boolean } | null;
   /** A trailing link on the value (a named builder — ProtVar's icon per row). */
   link?: DisplayLinkSpec | null;
   /**
-   * Build that link from a *sibling* field rather than from the value's own
-   * text — the same thing a table column or a list item's cell can do. Geno2MP
-   * reports a count of HPO profiles plus the URL of the variant's page, and no
-   * template can derive the second from the first.
+   * Build that link from a sibling field rather than from the value's own text.
+   * Example when used: Geno2MP
    */
   link_from?: string | null;
-  /** A star rating in front of the value, using this named scale. The value
-   *  itself still renders. */
-  stars?: string | null;
+  stars?: string | null; // string referring to a rating scale
   /**
-   * A row whose `from` is a *list*: one rendered line per element, stacked as
-   * the row's value under a single label. The same element shape a list block
-   * repeats — ClinVar's classification is one line per classification type.
+   * An `item` is a row that itself contains a list of rows or cells,
+   * stacked as the row's value under a single label.
    */
   item?: DisplayItemSpec | null;
-  /** Keep only some of the stacked list, so one list can be shown in two
-   *  places. The same filter a table block takes. */
+  /** Keep only some of the stacked list, so one list can be shown in two places. */
   where?: DisplayWhereSpec | null;
 };
 
 /**
- * How a cell value becomes a link. `external` -> a plain anchor: `template` is a
- * URL with `{field}` placeholders filled from the item, or `builder` names a
- * frontend link builder for URLs that are not a simple template. `app_popup` ->
- * an in-app "View in" popup, always a named `builder`.
+ * How a cell value becomes a link.
+ * `external`: a plain link
+ *   - `template` is a URL with `{field}` placeholders filled from the item
+ *   - `builder` names a frontend link builder for URLs that are not a simple template.
+ * `app_popup`: an in-app "View in" popup, always has a named `builder`.
  */
 export type DisplayLinkSpec = {
   kind: 'external' | 'app_popup';
@@ -299,8 +273,7 @@ export type DisplayMapRowsBlockSpec = {
   requires_selected?: DisplaySelectedGate | null;
   when?: DisplayWhenSpec | null;
   view?: DisplayBlockView | null;
-  /** The dict-valued `<plugin>.<field>` the values come from. */
-  from: string;
+  from: string; // formatted as `<plugin>.<field>`, to map where the values come from.
   /**
    * The scalar the vocabulary's "" entry reads. A source's all-ancestry figure
    * sits beside the population dict rather than inside it, so without this the

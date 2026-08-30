@@ -89,6 +89,12 @@ table {
   font-size: 12px;
 }
 
+/*
+  FIXME: for this and optionLabelPlain, check how they are used.
+  See OptionBlock in annotationRows.tsx.
+  Note that OptionBlock uses .optionLabel as the highest heading level,
+  but we no longer use prominent styles for .optionLabel
+*/
 .optionLabelIntermediate {
   font-weight: var(--font-weight-semibold);
 }

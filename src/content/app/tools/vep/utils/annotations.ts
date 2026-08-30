@@ -49,13 +49,7 @@ import type {
 } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
 /**
- * The plugin-id -> data-shape contract for the backend's generic `annotations`
- * list. Each key is a `plugin` id as emitted by the backend; the value is the
- * shape of that entry's `data` object.
- *
- * This is the single seam between the wire format and the UI: components should
- * read annotation data through `getAnnotation` rather than reaching into
- * `annotations` themselves.
+ * A map of plugin id -> shape of plugin annotation data
  */
 export type PluginDataMap = {
   // transcript-scoped
@@ -78,9 +72,6 @@ export type PluginDataMap = {
   loeuf: LoeufScore;
   nmd: NmdData;
   nearest_exon_jb: NearestExonJbData;
-  // ClinVar is transcript-scoped: its record is about a gene, and `applies_to`
-  // narrows it to the CSQ rows whose SYMBOL that gene names. Its structural
-  // sibling is a plain allele overlap, hence the different side of the line.
   clinvar: ClinVarAnnotation;
   // allele-scoped
   clinvar_sv: ClinVarSvAnnotation;
@@ -101,22 +92,22 @@ export type PluginDataMap = {
 
 export type PluginId = keyof PluginDataMap;
 
-// Anything carrying the generic annotation list: an alternative allele or a
-// predicted transcript consequence.
+// Anything carrying the generic annotation list: a variant allele,
+// or a predicted transcript consequence.
 export type AnnotatedEntity = {
   annotations?: Annotation[];
 };
 
 /**
- * The data of the given plugin's annotation on this allele / consequence, or
- * `null` when the plugin did not run or produced nothing for it.
+ * Read the data of the given plugin's annotation
+ * from the "annotated entity" (i.e. a variant allele, or a predicted transcript consequence object)
  */
-export const getAnnotation = <Plugin extends PluginId>(
+export const getAnnotation = <P extends PluginId>(
   entity: AnnotatedEntity | null | undefined,
-  plugin: Plugin
-): PluginDataMap[Plugin] | null => {
+  plugin: P
+): PluginDataMap[P] | null => {
   const entry = entity?.annotations?.find(
     (annotation) => annotation.plugin === plugin
   );
-  return entry ? (entry.data as PluginDataMap[Plugin]) : null;
+  return entry ? (entry.data as PluginDataMap[P]) : null;
 };

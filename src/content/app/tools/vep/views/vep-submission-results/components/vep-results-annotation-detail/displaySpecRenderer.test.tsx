@@ -76,11 +76,6 @@ const renderOption = (
 afterEach(cleanup);
 
 describe('renderDisplayOption', () => {
-  /**
-   * The point of shipping `plugin_scopes` rather than authoring the scope on
-   * each row: the same reference resolves against the allele or the transcript
-   * consequence purely on the parsing plugin's say-so.
-   */
   it('reads an allele-scoped plugin from the allele, not the consequence', () => {
     renderOption('cadd', {
       allele: [annotation('cadd', 'allele', { phred: 24.6, raw: 3.21 })],
@@ -137,17 +132,13 @@ describe('renderDisplayOption', () => {
   });
 
   it('renders a negative GERP score as-is', () => {
-    // A faster-than-neutral site scores below zero; `num` must not drop the sign.
+    // `num` formatting must not drop the sign.
     renderOption('gerp', {
       allele: [annotation('gerp', 'allele', { score: -0.674 })]
     });
     expect(screen.getByText('-0.674')).toBeDefined();
   });
 
-  /**
-   * `requires` is what keeps SpliceAI's event table from rendering for a variant
-   * the plugin said nothing about.
-   */
   it('renders nothing for a block whose required plugin produced no annotation', () => {
     const { container } = renderOption('spliceai', {});
     expect(container.innerHTML).toBe('');
@@ -201,10 +192,8 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('Gap frequency')).toBeDefined();
   });
 
-  /** A row's help can cite a source: the recommended gap-frequency threshold is
-   * the popEVE authors', so the help says where to read it. */
   it("renders a help row's cited source as a link", async () => {
-    const { container } = renderOption('eve', {
+    const { getByRole } = renderOption('eve', {
       consequence: {
         annotations: [
           annotation('popeve', 'transcript', {
@@ -214,12 +203,7 @@ describe('renderDisplayOption', () => {
         ]
       }
     });
-    // The help sits behind the (?) control, so open it first. QuestionButton is
-    // a div with an onClick rather than a <button>, so there is no button role
-    // to query here.
-    const questionButton = container.querySelector(
-      '[class*="questionButton"]'
-    ) as HTMLElement;
+    const questionButton = getByRole('button');
     expect(questionButton).toBeDefined();
     await userEvent.click(questionButton);
     expect(screen.getByText(/Authors recommend filtering/)).toBeDefined();

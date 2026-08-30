@@ -320,10 +320,7 @@ const toRowSpec = (
   spec: DisplaySpec,
   entities: Entities
 ): RowSpec => {
-  // A row with no `from`/`compose` is built entirely by its named builder: the
-  // value is job context, not annotation (the OpenTargets variant link). The
-  // builder returning null — no id to link — drops the row, exactly as an
-  // absent annotation value would.
+  // A row with no `from`/`compose` is built by its named builder.
   if (!row.from && !row.compose && row.link?.builder) {
     const node = renderLink(row.link, entities.linkContext);
     return {
@@ -331,14 +328,13 @@ const toRowSpec = (
       label: rowLabel(row),
       value: node ? '' : null,
       valueNode: node ?? null,
-      // Its own line under the block heading, not the value half of a
-      // label/value pair — there is no label opposite it.
+      // Display as its own line under the block heading,
+      // not the value half of a label/value pair
       plain: true
     };
   }
   const { value, placeholder } = rowValueAndPlaceholder(row, spec, entities);
-  // An app-popup link wraps the value itself (the protein id becomes the popup
-  // trigger) rather than trailing it, so it is rendered here as the value node.
+
   if (row.link?.kind === 'app_popup') {
     const absent = isAbsent(value);
     return {
@@ -350,10 +346,7 @@ const toRowSpec = (
         : renderLink(row.link, entities.linkContext, String(value))
     };
   }
-  // An external link whose URL comes from a named builder (ProtVar) wraps the
-  // value the same way a templated one does — icon, then the value as the link
-  // text. It used to trail the value as a bare icon, which is the one place the
-  // house rule was still broken.
+
   if (row.link?.kind === 'external' && row.link.builder) {
     const text = isAbsent(value)
       ? null
@@ -368,15 +361,8 @@ const toRowSpec = (
           : (renderLink(row.link, entities.linkContext, text) ?? text)
     };
   }
-  // An external link with a URL template wraps the value in an anchor (the value
-  // becomes the clickable link, led by the icon, e.g. the ClinVar variation id
-  // linking to its ClinVar page), interpolating `{value}` into the template. An
-  // absent value renders nothing rather than a broken link.
+
   if (row.link?.kind === 'external' && row.link.template) {
-    // `link_from` points the link at a sibling field: the reader sees the
-    // value, the href is what the parse resolved alongside it — Geno2MP's
-    // count of HPO profiles, linked to that variant's page. No URL there means
-    // the value renders as plain text, never a link to nowhere.
     const href = row.link_from
       ? readField(row.link_from, spec, entities)
       : value;
@@ -387,10 +373,6 @@ const toRowSpec = (
       key: row.key ?? undefined,
       label: rowLabel(row),
       value,
-      // No value drops the row, as an absent scalar always does. A value whose
-      // *href* is missing still has something to say, so it renders unlinked
-      // rather than disappearing — `undefined` leaves the formatting to
-      // renderRows, which is exactly the plain-value path.
       valueNode: isAbsent(value) ? null : hrefString ? (
         <ExternalLink to={hrefString}>
           {formatValue(value, row.format ?? 'text')}
@@ -398,21 +380,13 @@ const toRowSpec = (
       ) : undefined
     };
   }
-  // A row that stacks a list: one rendered line per element under one label,
-  // borrowing the element shape a list block repeats. An empty list drops the
-  // row, as an absent scalar would.
+
   if (row.item) {
     const all = Array.isArray(value) ? value : [];
-    // One list shown in two places: the germline classification above the
-    // germline conditions, the somatic ones above theirs.
     const elements = row.where
-      ? all.filter((e) => matchesFilter(row.where!, e))
+      ? all.filter((e) => matchesFilter(row.where, e))
       : all;
     const cells = row.item.cells;
-    // Stacked lines read as a small table — a classification type, its rating,
-    // its term — so the cells share columns down the stack rather than each
-    // line packing its own. Every cell keeps its slot even when it renders
-    // nothing, or a line missing one would pull the rest out of step.
     const body =
       cells && elements.length ? (
         <div
@@ -440,15 +414,12 @@ const toRowSpec = (
       key: row.key ?? undefined,
       label: rowLabel(row),
       value,
-      // Several columns of content cannot live in the half-width the label
-      // leaves it; the stack takes its own lines beneath the label instead.
       stacked: true,
       valueNode: elements.length ? body : null
     };
   }
-  // A rating in front of the value (ClinVar's review status as stars). Only for
-  // a value that is actually there — an absent one falls through so `placeholder`
-  // still decides whether the row drops or shows a dash.
+
+  // A rating in front of the value (ClinVar's review status as stars).
   if (row.stars && !isAbsent(value)) {
     const text = formatValue(value, row.format ?? 'text');
     return {
@@ -461,6 +432,7 @@ const toRowSpec = (
           : withStars(starRating(row.stars, value, spec), text)
     };
   }
+
   return {
     key: row.key ?? undefined,
     label: rowLabel(row),
@@ -1663,13 +1635,10 @@ const renderBlock = (
   entities: Entities,
   level: number // The heading nesting depth for this block: 0 for a block directly under the option
 ): ReactNode | null => {
-  // A data condition (ClinVar's shape-flip) gates the whole block first.
   if (block.when && !whenSatisfied(block.when, spec, entities)) {
     return null;
   }
-  // A selection gate: render only when the named sub-option was selected. Gates
-  // ClinVar's short vs structural blocks so an unselected variant kind (whose
-  // columns dev-data still carries) doesn't leak into the view.
+
   if (
     block.requires_selected &&
     !entities.subOptionRan(
@@ -1679,20 +1648,15 @@ const renderBlock = (
   ) {
     return null;
   }
-  // The default annotation view vs "Show all": a view-restricted block renders
-  // only in its view (ProtVar's detail rows by default, sub-option counts in
-  // Show all).
+
   if (
     block.view &&
     block.view !== (entities.showAll ? 'show_all' : 'default')
   ) {
     return null;
   }
+
   if (block.kind === 'group') {
-    // A run of sub-blocks under one optional heading, shown only because a
-    // child survived — like the option-level heading, but scoped to the group.
-    // A heading here is a sub-option, so its children nest one level deeper; a
-    // headingless gate group is invisible and passes its level through.
     const childLevel = block.heading ? level + 1 : level;
     const nodes = block.blocks
       .map((child) => renderBlock(child, spec, entities, childLevel))
@@ -1714,8 +1678,7 @@ const renderBlock = (
       <>{body}</>
     );
   }
-  // `requires` guards a block whose rows have placeholders: with no annotation
-  // at all there is nothing to show, not a column of dashes.
+
   if (block.requires && !readPlugin(block.requires, spec, entities)) {
     return null;
   }
@@ -1736,10 +1699,9 @@ const renderBlock = (
       level
     );
   }
-  // Headingless at the option's own level: the first surviving row *is* the
-  // option's visible title (REVEL, CADD, SPDI …), so that label carries the
-  // help. Decorating the first row rather than rows[0] matters — rows[0] can be
-  // dropped for an absent value.
+  // When there is no designated heading at the option's level,
+  // then the first available row becomes the option's visible title.
+  // Examples: REVEL, CADD, SPDI.
   return renderRowGroup(rows, level, (label) =>
     claimHelp(label, entities, level)
   );
@@ -1754,8 +1716,6 @@ export const renderDisplayOption = (args: {
   spec: DisplaySpec;
   consequence: AnnotatedEntity | null | undefined;
   allele: AnnotatedEntity | null | undefined;
-  // Sub-option rows (Show all) need these; default to the plain, no-sub-option
-  // behaviour so existing callers/tests are unaffected.
   showAll?: boolean;
   subOptionRan?: (optionId: string, defaultValue: boolean) => boolean;
   // For named link builders (ProtVar's icon, the protein popup); optional so

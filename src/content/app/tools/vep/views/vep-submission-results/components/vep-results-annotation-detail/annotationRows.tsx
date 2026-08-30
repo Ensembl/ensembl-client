@@ -34,14 +34,6 @@ import type { OptionHelp } from 'src/content/app/tools/vep/types/vepFormConfig';
 
 import styles from './VepResultsAnnotationDetail.module.css';
 
-/**
- * An option's title in the results with its help (?) beside it — the same text
- * the form shows for that option, so a reader who skipped the form still gets
- * the explanation, and the two can never disagree.
- *
- * Returns the label untouched when there is no help, so an option without any
- * renders exactly as before.
- */
 export const withOptionHelp = (
   label: ReactNode,
   help: OptionHelp | undefined
@@ -58,47 +50,22 @@ export const withOptionHelp = (
     label
   );
 
-/**
- * The labelled-row vocabulary of the annotation detail panel.
- *
- * Most annotations are "a heading and some label/value rows", differing only in
- * which value each row reads and how it is formatted. Describing them as data
- * (RowSpec) rather than as bespoke JSX keeps that shape in one place — and is
- * the vocabulary a later declarative (spec-driven) display layer will target.
- */
-
-// `emphasis` marks a row whose label *is* a top-level option name (a
-// single-value option like REVEL / SPDI, rendered as one label/value line
-// rather than a heading-plus-rows block). It gets the top-level option label
-// style so those options read the same weight/size as a multi-value option's
-// heading (popEVE). Nested value rows leave it off and stay plain.
 export const Row = (props: {
   label: ReactNode;
   value: ReactNode;
   emphasis?: boolean;
   /**
-   * A row that is only its value — no label opposite it. Rendered left-aligned
-   * under its heading rather than pushed to the far edge by the label/value
-   * `space-between` (the OpenTargets variant link).
+   * A row that is only its value (no label opposite it).
+   * Rendered left-aligned under its heading
+   * Example: the OpenTargets variant link.
    */
   plain?: boolean;
   /**
    * A value too wide to sit opposite its label: the label takes a line of its
-   * own and the value goes beneath it, indented. Opposite a label there is only
-   * ever a fraction of the panel's width, which is not enough for a value that
-   * is itself several columns (ClinVar's classification per type).
+   * own and the value goes beneath it, indented.
+   * Example: ClinVar's classification per type.
    */
   stacked?: boolean;
-  /**
-   * The value is a plain result — a number or a short string — so it is set
-   * bold and becomes what the eye lands on in the row.
-   *
-   * Off for everything that already has its own visual weight or its own
-   * structure: a link (blue, and bold links read as emphasis rather than as a
-   * result), a table, a stacked list, a starred rating, and the dash that
-   * stands for "ran, no result". Set by `renderRows` on exactly the path that
-   * produces formatted text, so no call site has to classify its own value.
-   */
   strong?: boolean;
 }) => {
   const contentStyles =
@@ -133,35 +100,15 @@ export const Row = (props: {
   );
 };
 
-/**
- * The one place the annotation panel's indent step is applied.
- *
- * Everything that sits beneath a heading goes through here, so "a heading
- * indents its content" is a property of the code rather than a rule each call
- * site has to remember — which is how the category headings ended up flat.
- * `className` carries the container's own layout (the gap differs by context);
- * the indent itself is never restated.
- */
 export const Indented = (props: {
   className?: string;
   children: ReactNode;
 }) => (
-  <div
-    className={
-      props.className
-        ? `${props.className} ${styles.indented}`
-        : styles.indented
-    }
-  >
+  <div className={classNames(props.className, styles.indented)}>
     {props.children}
   </div>
 );
 
-/**
- * A heading with its content indented beneath it — the shape shared by an
- * option heading and a category heading. They differ only in the label's
- * typography and the gap between the children, so those are the only knobs.
- */
 const HeadingWithChildren = (props: {
   label: ReactNode;
   blockClass: string;
@@ -175,26 +122,10 @@ const HeadingWithChildren = (props: {
   </div>
 );
 
-/**
- * An option whose output is more than a single value: the option's own label as
- * a sub-heading (below its panel/category) with its values beneath, so the
- * panel -> category -> option -> values hierarchy from the form_config contract
- * is preserved (e.g. "Dosage sensitivity" over pHaplo / pTriplo).
- *
- * `level` is the heading's nesting depth within the option (0 = the top-level
- * option heading, 1 = an intermediate sub-option, 2+ = a bottom sub-option), so
- * a sub-section reads as subordinate rather than a sibling: the label weight
- * steps down (bold -> semi-bold -> normal). The heading's *children* indent one
- * step, not the heading itself, and because a nested OptionBlock's children wrap
- * in another indented container the indent compounds — a level-2 block's content
- * sits two steps in.
- */
 export const OptionBlock = (props: {
-  /** ReactNode rather than string for the same reason as `Row`: a heading may
-   *  carry an inline help (?) control. */
   label: ReactNode;
   children: ReactNode;
-  level?: number;
+  level?: number; // the heading's nesting depth within the option
 }) => {
   const level = props.level ?? 0;
   const labelClass =
@@ -217,11 +148,6 @@ export const OptionBlock = (props: {
 
 /**
  * A panel's category heading (Locations, Missense, …) with its options beneath.
- *
- * The tier above OptionBlock: a category groups whole options, where an
- * OptionBlock groups one option's values. Its children keep the section body's
- * spacing rather than the tighter within-option gap, so grouping the options
- * changes their indent and nothing else.
  */
 export const CategoryBlock = (props: {
   label: ReactNode;
@@ -248,30 +174,14 @@ export type RowFormat =
   | 'humanize_terms';
 
 export type RowSpec = {
-  /**
-   * ReactNode rather than string: a label may carry an inline control, e.g.
-   * popEVE's gap frequency and its help (?) button.
-   */
   label: ReactNode;
   value: unknown;
-  /** How to render the value; `text` (stringify as-is) by default. */
-  format?: RowFormat;
-  mono?: boolean;
-  /**
-   * What to render when the value is absent. When set (SpliceAI uses '—') the
-   * row is kept and shows this; when unset the row is dropped entirely.
-   */
-  placeholder?: string;
-  /** Defaults to the row's position, which is stable for these fixed lists. */
+  format?: RowFormat; // How to render the value; "text" by default
+  mono?: boolean; // Use monospace font-family
+  placeholder?: string; // What to render when the value is absent. When unset, empty row is dropped
   key?: string;
-  /** See `Row.plain`: the row is its value alone, left-aligned. */
   plain?: boolean;
-  /** See `Row.stacked`: the value goes beneath its label, indented. */
   stacked?: boolean;
-  /**
-   * A trailing element on the value — ProtVar's link icon. Shown only next to a
-   * real value, never on a placeholder/dash row (as the old summary did).
-   */
   link?: ReactNode;
   /**
    * A pre-rendered value node that replaces the formatted value entirely — an
@@ -281,9 +191,9 @@ export type RowSpec = {
   valueNode?: ReactNode;
 };
 
-// Absent = nothing to show. `0` and `false` are real values (SpliceAI deltas),
-// so only null/undefined and the empty string count as absent — matching the
-// truthiness checks these rows replace.
+// Absent = nothing to show.
+// `0` and `false` are real values (SpliceAI deltas),
+// so only null/undefined and the empty string count as absent.
 export const isAbsent = (value: unknown) =>
   value === null || value === undefined || value === '';
 
@@ -312,22 +222,10 @@ export const formatValue = (
   }
 };
 
-/**
- * Turn row specs into <Row> elements: format each value, and either drop or
- * placeholder the rows whose value is absent. `emphasis` marks these as
- * top-level option rows (see Row) — set only for a headingless group at the
- * option's own level, not for value rows nested under a heading.
- */
 export const renderRows = (
   rows: RowSpec[],
   emphasis = false,
-  /**
-   * Applied to the label of the first row that actually renders — not the first
-   * in the list, which may be dropped for an absent value. Used to hang the
-   * option's help (?) on a headingless option's title row, where that row *is*
-   * the option's visible title.
-   */
-  decorateFirstLabel?: (label: ReactNode) => ReactNode
+  decorateFirstLabel?: (label: ReactNode) => ReactNode // A function that adds the help button to the label
 ): ReactNode[] => {
   const nodes: ReactNode[] = [];
   const label = (raw: ReactNode): ReactNode => {
@@ -357,7 +255,6 @@ export const renderRows = (
     const formatted = isAbsent(row.value)
       ? null
       : formatValue(row.value, row.format);
-    // 'join' can also come back null (an empty list), which is equally absent.
     if (formatted === null) {
       if (row.placeholder === undefined) {
         return;
@@ -373,13 +270,8 @@ export const renderRows = (
       );
       return;
     }
-    // The one path that ends in plain formatted text, so the one path whose
-    // value is bolded as the row's result. Everything with its own structure or
-    // colour left above: a pre-rendered `valueNode` (link, stacked list, stars,
-    // popup) and the placeholder dash both return before this.
-    //
-    // A trailing `link` is still bold, because it is an icon beside the value
-    // rather than the value itself — the text is what was measured.
+
+    // Note that the value of this row is bolded.
     nodes.push(
       <Row
         key={row.key ?? index}
@@ -402,15 +294,9 @@ export const renderRows = (
   return nodes;
 };
 
-/**
- * The rows as a fragment, or null when none of them survived. `level` is the
- * rows' own nesting depth: at the option's top level (0) each row *is* a
- * single-value option, so its label gets the top-level option style; nested
- * (>=1) they are plain value rows under a heading.
- */
 export const renderRowGroup = (
   rows: RowSpec[],
-  level = 0,
+  level = 0, // rows' own nesting depth
   decorateFirstLabel?: (label: ReactNode) => ReactNode
 ): ReactNode | null => {
   const nodes = renderRows(rows, level === 0, decorateFirstLabel);
@@ -418,15 +304,12 @@ export const renderRowGroup = (
 };
 
 /**
- * The common "option heading with its rows beneath" shape: an OptionBlock, or
- * null when no row survived (so the heading never shows on its own). `level` is
- * the heading's nesting depth (see OptionBlock); its rows are the heading's
- * children (plain value rows), so they are never emphasised.
+ * The common "option heading with its rows beneath" shape.
  */
 export const renderRowBlock = (
   label: ReactNode,
   rows: RowSpec[],
-  level = 0
+  level = 0 // heading's nesting depth
 ): ReactNode | null => {
   const nodes = renderRows(rows);
   return nodes.length ? (
