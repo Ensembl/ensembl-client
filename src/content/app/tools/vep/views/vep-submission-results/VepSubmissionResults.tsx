@@ -79,7 +79,8 @@ import TextButton from 'src/shared/components/text-button/TextButton';
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 import type {
   VepResultsResponse,
-  AfSource
+  AfSource,
+  HgvsgRepresentation
 } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
@@ -764,7 +765,7 @@ const VariantRow = (props: {
     // canonical minimal representation, which is exactly what ProtVar expects.
     // (When ProtVar is selected the backend forces HGVSg to be computed.)
     const protvarUrl = buildProtvarUrlFromHgvsg(
-      getAnnotation(allele, 'hgvsg')?.genomic
+      getAnnotation<HgvsgRepresentation>(allele, 'hgvsg')?.genomic
     );
     // This variant in OpenTargets' notation, for the link in its annotation
     // block. Built here rather than in the renderer because it comes from the
