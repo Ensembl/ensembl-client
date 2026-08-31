@@ -75,7 +75,8 @@ import TextButton from 'src/shared/components/text-button/TextButton';
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 import type {
   VepResultsResponse,
-  AfSource
+  AfSource,
+  HgvsgRepresentation
 } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
@@ -709,7 +710,7 @@ const VariantRow = (props: {
     const hasDetail = Boolean(allele) && hasSelectedOptions;
 
     const protvarUrl = buildProtvarUrlFromHgvsg(
-      getAnnotation(allele, 'hgvsg')?.genomic
+      getAnnotation<HgvsgRepresentation>(allele, 'hgvsg')?.genomic
     );
 
     const openTargetsVariantId = buildOpenTargetsVariantId(

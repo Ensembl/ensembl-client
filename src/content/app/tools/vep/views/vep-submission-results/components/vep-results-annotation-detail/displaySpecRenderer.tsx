@@ -33,8 +33,7 @@ import {
 } from './annotationRows';
 import {
   getAnnotation,
-  type AnnotatedEntity,
-  type PluginId
+  type AnnotatedEntity
 } from 'src/content/app/tools/vep/utils/annotations';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
@@ -184,7 +183,7 @@ const readPlugin = (
     spec.plugin_scopes[plugin] === 'allele'
       ? entities.allele
       : entities.consequence;
-  return getAnnotation(entity, plugin as PluginId);
+  return getAnnotation(entity, plugin);
 };
 
 /**
