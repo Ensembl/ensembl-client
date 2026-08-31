@@ -91,10 +91,6 @@ import {
 
 import styles from './VepSubmissionResults.module.css';
 
-type RestoredVepSubmission = Omit<VepSubmissionWithoutInputFile, 'species'> & {
-  species: NonNullable<VepSubmissionWithoutInputFile['species']>;
-};
-
 const AF_SOURCE_LABELS: Record<string, string> = {
   gnomad_exomes: 'gnomAD exomes',
   gnomad_genomes: 'gnomAD genomes',
@@ -103,9 +99,6 @@ const AF_SOURCE_LABELS: Record<string, string> = {
   gnomad_cnv: 'gnomAD CNV'
 };
 
-// A friendly label for an AF source, combining the source name with the
-// population label the backend already decoded. Empty population = the source's
-// overall AF.
 const formatAfSourceLabel = (source: AfSource): string => {
   const base = AF_SOURCE_LABELS[source.source] ?? source.source;
   return source.population ? `${base} — ${source.label}` : `${base} (overall)`;
@@ -128,9 +121,6 @@ const VepSubmissionResults = () => {
   const { submissionId } = useParams() as { submissionId: string };
   const { page, perPage, setPage, setPerPage } = useVepResultsPagination();
 
-  // Filter state: `draftFilters` is what the query builder is editing;
-  // `appliedFilters` is what actually drives the (server-side) request, committed
-  // on Apply. Each apply is a full scan, so we don't refetch on every keystroke.
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [draftFilters, setDraftFilters] = useState<ResultsFilterCondition[]>(
     []
@@ -139,7 +129,6 @@ const VepSubmissionResults = () => {
     ResultsFilterCondition[]
   >([]);
 
-  // Bulk expand / collapse of every annotation-detail panel (see DetailExpansion).
   const [detailExpansion, setDetailExpansion] = useState<DetailExpansion>({
     action: 'collapse',
     nonce: 0
@@ -204,8 +193,6 @@ const VepSubmissionResults = () => {
     {
       genome_id: species?.genome_id ?? ''
     },
-    // Wait for the results before deciding: a job with pinned panels needs no
-    // form_config request at all, and one without gets it as soon as we know.
     { skip: !species?.genome_id || !vepResults || !!pinnedPanels }
   );
   const resultsPanels = resolveResultsPanels({
@@ -258,10 +245,8 @@ const VepSubmissionResults = () => {
   } = vepResults;
   const { per_page, total } = paginationMetadata;
   const maxPage = Math.ceil(total / per_page);
-  // Ensembl URLs use the genome UUID; the human-readable tag (e.g. `grch38`) is
-  // being retired.
-  const genomeIdForUrl = (submission as RestoredVepSubmission).species
-    .genome_id;
+  const genomeIdForUrl =
+    submission.species!.genome_tag ?? submission.species!.genome_id;
 
   // Filtered vs unfiltered counts for the "Showing X of Y" summary.
   const resultSummary = filterMetadata
@@ -271,18 +256,12 @@ const VepSubmissionResults = () => {
       }
     : null;
 
-  // Allele-frequency filter options: the AF columns present in this result set
-  // (i.e. the AF options chosen at input), labelled with the same source /
-  // population names used elsewhere in the UI.
   const afSources = (vepResults.metadata.available_af_sources ?? []).map(
     (source) => ({
       key: source.key,
       label: formatAfSourceLabel(source)
     })
   );
-  // The variant-impact prediction scores this job carries, for gating which
-  // scores the impact-prediction filter offers — same rule as the AF sources
-  // above.
   const scoreFields = (vepResults?.metadata.available_scores ??
     []) as ResultsFilterField[];
 
@@ -373,14 +352,8 @@ const VepResultsHeader = ({
   isFiltersOpen: boolean;
   onToggleFilters: () => void;
   onToggleAllDetails: () => void;
-  /**
-   * The bulk expand / collapse is still rendering. Its work is proportional to
-   * the page, so on a modest machine it runs for a second or more — long enough
-   * that without a sign of progress the button looks broken.
-   */
   isExpansionPending: boolean;
-  /** False when the job ran no annotation option — nothing to expand. */
-  canExpandDetails: boolean;
+  canExpandDetails: boolean; // False when the job ran no annotation option
 }) => {
   const { species } = submission;
   const perPageOptions = PER_PAGE_OPTIONS.map((option) => ({
@@ -418,9 +391,6 @@ const VepResultsHeader = ({
         lastPageNumber={maxPage}
         className={styles.pagination}
       />
-      {/* Nothing to expand when the job ran no annotation option, so the
-          control is not offered rather than left to flip its own label over an
-          unchanged table. */}
       {canExpandDetails && (
         <ExpandAllAnnotationsToggle
           isPending={isExpansionPending}
@@ -482,7 +452,6 @@ const VepResultsTable = (props: {
   display: DisplaySpec | null | undefined;
   availableAfSources: AfSource[];
   detailExpansion: DetailExpansion;
-  /** False when the job ran no annotation option — see hasAnySelectedOption. */
   hasSelectedOptions: boolean;
 }) => {
   const {
@@ -650,7 +619,6 @@ const VariantRow = (props: {
   display: DisplaySpec | null | undefined;
   availableAfSources: AfSource[];
   detailExpansion: DetailExpansion;
-  /** False when the job ran no annotation option — see hasAnySelectedOption. */
   hasSelectedOptions: boolean;
 }) => {
   const {
@@ -760,23 +728,16 @@ const VariantRow = (props: {
       : undefined;
 
     const hasDetail = Boolean(allele) && hasSelectedOptions;
-    // ProtVar link for this allele, built from the allele's HGVSg — VEP's
-    // canonical minimal representation, which is exactly what ProtVar expects.
-    // (When ProtVar is selected the backend forces HGVSg to be computed.)
+
     const protvarUrl = buildProtvarUrlFromHgvsg(
       getAnnotation(allele, 'hgvsg')?.genomic
     );
-    // This variant in OpenTargets' notation, for the link in its annotation
-    // block. Built here rather than in the renderer because it comes from the
-    // results row — the variant's location and reference allele, plus this
-    // row's alternative allele — and not from any parsed annotation.
+
     const openTargetsVariantId = buildOpenTargetsVariantId(
       variant,
       allele?.allele_sequence
     );
 
-    // The variant/allele/gene cells to emit on this row, already split so their
-    // rowSpans never cover an expanded detail panel (see planLeadingCells).
     const {
       variant: variantCell,
       allele: alleleCell,
