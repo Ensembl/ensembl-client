@@ -4,7 +4,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 ## Overview
 
-`ensembl-client` is the new frontend for the Ensembl genomics website (https://beta.ensembl.org). It is a server-side-rendered React 19 + Redux Toolkit application written in TypeScript, bundled with webpack, and served by an Express server. It is a single codebase hosting several embedded React "apps" (Genome Browser, Species Selector, Entity Viewer, BLAST, VEP, etc.), each backed by one or more separate backend services reached through a proxy.
+`ensembl-client` is the frontend for the Ensembl website (https://ensembl.org). It is a server-side-rendered React 19 + Redux Toolkit application written in TypeScript, bundled with webpack, and served by an Express server. It is a single codebase hosting several embedded React "apps" (Genome Browser, Species Selector, Entity Viewer, BLAST, VEP, etc.), each backed by one or more separate backend services reached through a proxy.
 
 ## Commands
 
