@@ -35,10 +35,7 @@ import {
   getVepSubmissionById
 } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSelectors';
 
-import {
-  useVepResultsQuery,
-  useVepFormConfigQuery
-} from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
+import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 import { updateSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 import useVepVariantTabularData, {
@@ -53,7 +50,6 @@ import {
 import { buildProtvarUrlFromHgvsg } from 'src/content/app/tools/vep/utils/buildProtvarUrlFromHgvsg';
 import { buildOpenTargetsVariantId } from 'src/content/app/tools/vep/utils/openTargetsVariantId';
 import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
-import { resolveResultsPanels } from 'src/content/app/tools/vep/utils/resultsPanels';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
 import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
@@ -181,24 +177,7 @@ const VepSubmissionResults = () => {
   );
   const dispatch = useAppDispatch();
 
-  // The `panels` define the annotation hierarchy (the same contract used by the
-  // input form); the results detail arranges its output by them. Jobs submitted
-  // since panels became pinned carry their own on the results response
-  // (`metadata.display_panels`) — the options they actually ran with. The live
-  // form_config query is only the fallback for jobs submitted before that, and
-  // is skipped once a pinned set is available.
-  const species = submission?.species;
-  const pinnedPanels = vepResults?.metadata.display_panels ?? null;
-  const { currentData: formConfig } = useVepFormConfigQuery(
-    {
-      genome_id: species?.genome_id ?? ''
-    },
-    { skip: !species?.genome_id || !vepResults || !!pinnedPanels }
-  );
-  const resultsPanels = resolveResultsPanels({
-    pinnedPanels,
-    livePanels: formConfig?.panels
-  });
+  const resultsPanels = vepResults?.metadata.display_panels ?? [];
 
   const hasSelectedOptions = hasAnySelectedOption(
     resultsPanels,
