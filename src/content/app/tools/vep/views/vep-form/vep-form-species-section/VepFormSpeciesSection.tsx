@@ -32,7 +32,7 @@ export const VepFormSpecies = (props: { className?: string }) => {
   const selectedSpecies = useAppSelector(getSelectedSpecies);
 
   if (!selectedSpecies) {
-    return <Link to={vepSpeciesSelectorUrl}>Select a genome</Link>;
+    return <Link to={vepSpeciesSelectorUrl}>Choose a genome</Link>;
   }
 
   return (

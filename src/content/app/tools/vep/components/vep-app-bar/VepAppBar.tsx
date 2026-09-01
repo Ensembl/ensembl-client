@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMatch } from 'react-router';
+import { useMatch, useNavigate } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -50,25 +50,26 @@ const VepAppBar = () => {
 const SpeciesTabs = () => {
   const vepFormPath = urlFor.vepForm();
   const isVepFormView = useMatch({ path: vepFormPath, end: true });
-  const speciesList = useAppSelector(getEnabledCommittedSpecies);
-  const speciesSelectedForVep = useAppSelector(getSelectedSpeciesForVep);
+  const genomesList = useAppSelector(getEnabledCommittedSpecies);
+  const selectedGenome = useAppSelector(getSelectedSpeciesForVep);
   const { removeGenome } = useGenomeRemoval();
   const dispatch = useAppDispatch();
-
-  const hasSelectedSpeciesForVep = !!speciesSelectedForVep;
-  const shouldEnableSpeciesTabs = isVepFormView && !hasSelectedSpeciesForVep;
+  const navigate = useNavigate();
 
   const onSpeciesSelect = (species: CommittedItem) => {
     dispatch(setSelectedSpecies({ species }));
+    if (!isVepFormView) {
+      navigate(urlFor.vepForm());
+    }
   };
 
-  const speciesTabs = speciesList.map((species) => (
+  const speciesTabs = genomesList.map((genome) => (
     <SelectedSpecies
-      key={species.genome_id}
-      species={species}
+      key={genome.genome_id}
+      species={genome}
+      isActive={genome.genome_id === selectedGenome?.genome_id}
       onClick={onSpeciesSelect}
-      onRemove={shouldEnableSpeciesTabs ? removeGenome : undefined}
-      disabled={!shouldEnableSpeciesTabs}
+      onRemove={removeGenome}
     />
   ));
 
