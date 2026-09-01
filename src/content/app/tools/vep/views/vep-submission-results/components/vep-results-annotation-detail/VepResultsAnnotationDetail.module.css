@@ -226,7 +226,6 @@ table {
   font-weight: var(--font-weight-light);
   border-bottom: 1px solid var(--color-medium-light-grey);
   padding-bottom: 3px;
-  max-width: 16ch;
 }
 
 .labelWithHelp {
