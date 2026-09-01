@@ -18,6 +18,8 @@ import { render, screen, cleanup, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { renderDisplayOption } from './displaySpecRenderer';
+
+import type { VocabularyEntry } from './displaySpecRenderer';
 import { displaySpecFixture } from './displaySpec.fixture';
 
 import type {
@@ -54,6 +56,7 @@ const renderOption = (
     genomeId?: string;
     help?: OptionHelp;
     openTargetsVariantId?: string;
+    vocabularies?: Record<string, VocabularyEntry[]>;
   }
 ) =>
   render(
@@ -68,7 +71,8 @@ const renderOption = (
         protvarUrl: entities.protvarUrl,
         genomeId: entities.genomeId,
         help: entities.help,
-        openTargetsVariantId: entities.openTargetsVariantId
+        openTargetsVariantId: entities.openTargetsVariantId,
+        vocabularies: entities.vocabularies
       })}
     </>
   );
@@ -2617,5 +2621,107 @@ describe('table column alignment', () => {
       'right',
       'right'
     ]);
+  });
+});
+
+/**
+ * A `map_rows` block draws one row per vocabulary entry rather than naming its
+ * fields up front, because an allele frequency's populations are a dict chosen
+ * per submission. These cover the three fields that steer it: `vocabulary`
+ * (which shipped list supplies the rows), `scope` (which slice of it), and
+ * `overall_from` (where the "" entry reads, since the all-ancestry figure sits
+ * beside the dict rather than inside it).
+ */
+describe('map_rows: rows from a shipped vocabulary', () => {
+  // As the response ships it: one list covering every source, each entry
+  // naming the source it belongs to. The "" population is the source's
+  // all-ancestry figure.
+  const afPopulations: VocabularyEntry[] = [
+    { scope: 'gnomad_exomes', code: '', label: 'All' },
+    { scope: 'gnomad_genomes', code: '', label: 'All' },
+    {
+      scope: 'gnomad_genomes',
+      code: 'grpmax',
+      label: 'Maximum across all groups'
+    },
+    { scope: 'all_of_us', code: '', label: 'All' },
+    { scope: 'all_of_us', code: 'max', label: 'Maximum subpopulation' }
+  ];
+
+  const genomes = (data: Record<string, unknown>) => ({
+    allele: [annotation('gnomad_genomes', 'allele', data)],
+    vocabularies: { af_populations: afPopulations }
+  });
+
+  it('reads the "" entry from overall_from, beside the dict rather than in it', () => {
+    renderOption(
+      'gnomad_genomes',
+      genomes({
+        overall: 0.0114171,
+        populations: { grpmax: 0.03 }
+      })
+    );
+    // Both rows come from the same vocabulary, but by different routes: "All"
+    // via `overall_from`, the rest by key from the populations dict.
+    expect(screen.getByText('All')).toBeDefined();
+    expect(screen.getByText('0.01142')).toBeDefined();
+    expect(screen.getByText('Maximum across all groups')).toBeDefined();
+    expect(screen.getByText('0.03')).toBeDefined();
+  });
+
+  it('draws only its own scope, though one vocabulary covers every source', () => {
+    renderOption(
+      'gnomad_genomes',
+      genomes({
+        overall: 0.0114171,
+        populations: { grpmax: 0.03 }
+      })
+    );
+    // gnomAD Exomes and All of Us are in the same list. Their rows belong to
+    // their own blocks, so this one must not draw them — and "Maximum
+    // subpopulation" is All of Us's label, not a variant of this block's.
+    expect(screen.queryByText('Maximum subpopulation')).toBeNull();
+    // Two rows drawn: this source's "" and its one population.
+    expect(screen.getAllByText('All')).toHaveLength(1);
+  });
+
+  it('draws nothing when the vocabulary it names was not shipped', () => {
+    // The block asks for `af_populations`; the job shipped something else. No
+    // rows can be discovered, so the block is absent rather than empty.
+    const { container } = renderOption('gnomad_genomes', {
+      allele: [
+        annotation('gnomad_genomes', 'allele', {
+          overall: 0.0114171,
+          populations: { grpmax: 0.03 }
+        })
+      ],
+      vocabularies: { something_else: afPopulations }
+    });
+    expect(container.textContent).toBe('');
+  });
+
+  it('drops a population the variant has no value for', () => {
+    renderOption(
+      'gnomad_genomes',
+      genomes({
+        overall: 0.0114171,
+        populations: {}
+      })
+    );
+    // Selected, but this variant has no figure for it: the default view omits
+    // the row entirely rather than showing an empty one.
+    expect(screen.getByText('All')).toBeDefined();
+    expect(screen.queryByText('Maximum across all groups')).toBeNull();
+  });
+
+  it('lists that population with a dash under "Show all"', () => {
+    renderOption('gnomad_genomes', {
+      ...genomes({ overall: 0.0114171, populations: {} }),
+      showAll: true
+    });
+    // Every entry in the vocabulary was selected — that is what being there
+    // means — so "Show all" accounts for it rather than hiding it.
+    expect(screen.getByText('Maximum across all groups')).toBeDefined();
+    expect(screen.getByText('—')).toBeDefined();
   });
 });
