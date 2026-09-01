@@ -50,11 +50,10 @@ export type DisplayRowSpec = {
   help?: string | null; // Help text shown by a QuestionButton beside the label
   help_link?: { href: string; label?: string | null } | null; // A source cited inside that help popup
   /**
-   * The form sub-option this row's value comes from.
+   * The form sub-option that this row's value comes from.
    * Is used when user chooses to show all requested annotations,
    * even if some of them do not have any data (which the UI shows as a dash).
-   * The value of the `default` field mirrors the form default (absent parameter =
-   * its default), as for `subOptionRan`.
+   * The value of the `default` field mirrors the form default.
    */
   sub_option?: { id: string; default?: boolean } | null;
   /** A trailing link on the value (a named builder — ProtVar's icon per row). */
@@ -70,8 +69,7 @@ export type DisplayRowSpec = {
    * stacked as the row's value under a single label.
    */
   item?: DisplayItemSpec | null;
-  /** Keep only some of the stacked list, so one list can be shown in two places. */
-  where?: DisplayWhereSpec | null;
+  where?: DisplayWhereSpec | null; // Keep only some members of the list
 };
 
 /**
@@ -88,92 +86,43 @@ export type DisplayLinkSpec = {
 };
 
 /**
- * One rendered value, wherever it appears.
- *
- * A cell of a repeated item and a line of a list-valued table cell are the same
- * idea, and they had drifted: `labels` and `template` on one, `count_from` and
- * `split` on the other, a rating named by a field here and stated outright
- * there — differences that came from the order the two grew rather than from
- * anything about the values. A capability belongs to *a value*; what is
- * genuinely particular stays on the subtype.
- *
- * `from` is a field *of the element* (not `plugin.field`); omit it for a scalar
- * list whose elements are the value themselves (phenotype strings).
+ * The `stars` field in this type seems to be mutually exclusive
+ * with the `stars_from` / `stars_of` combo.
+ * When the plain `stars` field is used, it will be combined
+ * with a "from" field, which will point at a field whose value
+ * can be used as a key for the rating value.
+ * When a `stars_from` field is used, then then `stars_of` field
+ * points at a field whose value is a key for rating value.
+ * See tests in `resolveValuePiece.test.ts`
  */
 export type DisplayValuePiece = {
   from?: string | null;
-  /** A prefix before the value — OpenTargets' "L2G 0.42", or a ClinVar
-   *  submitter's own wording ("filed as ..."). On the shared type because
-   *  prefixing is a thing a value does, whichever renderer draws it. */
   label?: string | null;
   format?: DisplayRowFormat | null;
   link?: DisplayLinkSpec | null;
-  /** Build the link from a *sibling* field rather than from the value's own
-   *  text: the reader sees a condition's name, the href is the URL the parse
-   *  resolved for it. */
-  link_from?: string | null;
-  /** One value packing several, each linked in its own right — a ClinVar
-   *  submission cites its publications as one `+`-joined list of PMIDs, and
-   *  IntAct joins interaction participants with `_and_`. */
-  split?: string | null;
-  /** Only link a value carrying this prefix, and strip it before filling the
-   *  template: IntAct writes `uniprotkb:P37840` where UniProt's URL wants the
-   *  bare accession. A value without the prefix is not an accession, so it
-   *  renders as plain text rather than becoming a broken link. */
-  link_prefix?: string | null;
-  /** A star rating in front of the value, on this named scale... */
-  stars?: string | null;
-  /**
-   * ...or on the scale *named by this field of the element*, so sibling lines
-   * can be rated differently: ClinVar reads the same review-status wording one
-   * way for a germline classification and another for a somatic one, so which
-   * scale applies is data.
-   */
-  stars_from?: string | null;
-  /** Which field the rating is *of*, when not this value itself: the stars lead
-   *  the classification but rate the review status behind it. */
-  stars_of?: string | null;
-  /**
-   * The text as a `{field}` template over the element, for a value that only
-   * means something said in words ("1/44 submissions contribute to aggregate
-   * classification"). `from` still says which field must be present for it to
-   * render at all.
-   */
+  link_from?: string | null; // Build the link from a *sibling* field rather than from the value's own text
+  split?: string | null; // separator in cases of a value string containing several values (e.g.: "+" or "_and_")
+  link_prefix?: string | null; // only link a value carrying this prefix, and strip the prefix from the result (e.g. turn "uniprotkb:P37840" from IntAct to "P37840")
+  stars?: string | null; // name of the scale within the `rating_scales` dictionary in the payload used for the star rating
+  stars_from?: string | null; // name of the field whose value names the scale within the `rating_scales` dictionary
+  stars_of?: string | null; // name of the field in rating_scales->ratings that maps to the numeric value of the rating
+  /** A template that uses `{field}` notation to inject the value of the field into an output string */
   template?: string | null;
   /**
-   * Value -> what to show for it. For a value whose wording is the source's
-   * rather than a reader's: ClinVar's classification type is the key a join
-   * matches on, so it stays "SomaticClinicalImpact" in the data while reading
-   * as three words here. An unmapped value keeps the data's own wording.
+   * Maps strings to human-readable labels
+   * E.g.: in ClinVar, "SomaticClinicalImpact" is mapped to "Somatic Clinical Impact".
    */
   labels?: Record<string, string> | null;
-  /**
-   * Keep the value on one line, so its column is never sized below it. For an
-   * identifier: a link's icon and its id are one thing, and a break between
-   * them strands the icon on the row above. Opt-in, never a blanket rule for
-   * links, because the same table links a condition *name* — prose, which must
-   * be free to wrap.
-   */
   nowrap?: boolean | null;
 };
 
-/** One cell of a repeated list item. Everything a value can do, and nothing
- *  more — its last own field, `label`, moved to the base once an item line
- *  needed one too. */
 export type DisplayCellSpec = DisplayValuePiece;
 
-/**
- * The label of a list element rendered as a label/value row. `from` reads one
- * item field (ClinVar's per-class significance); `template` interpolates item
- * fields into text ("Pocket {pocket_id}"); `format` applies to a `from` value;
- * `wrap` surrounds the formatted `from` value with fixed text via a `{}` slot
- * (ClinVar's `Submitters reporting "Pathogenic"`).
- */
 export type DisplayItemLabelSpec = {
   from?: string | null;
-  template?: string | null;
-  format?: DisplayRowFormat | null;
-  wrap?: string | null;
+  template?: string | null; // interpolates item fields into text (e.g.: "Pocket {pocket_id}")
+  format?: DisplayRowFormat | null; // applies to a `from` value
+  wrap?: string | null; // surrounds the formatted `from` value with fixed text via a `{}` slot (e.g.: ClinVar's `Submitters reporting "Pathogenic"`)
 };
 
 /** One labelled field-row of a list element rendered as a stack of rows. */
@@ -184,11 +133,13 @@ export type DisplayItemFieldRowSpec = {
 };
 
 /**
- * How one list element renders. Without `label`, a row of inline cells (GO id +
- * name); with `label`, a label/value row whose value is the `cells` (ClinVar's
- * per-class counts, ProtVar's pockets). With `rows` instead of `cells`, a stack
- * of `label: value` field-rows (NearestExonJB's exon boundaries) — `cells` and
- * `rows` are mutually exclusive.
+ * How one list element renders.
+ * - Without `label`, a row of inline cells (e.g. GO id + name)
+ * - With `label`, a label/value row whose value is the `cells`
+ *   (e.g. ClinVar's per-class counts, ProtVar's pockets).
+ * - With `rows` instead of `cells`, a stack of `label: value` field-rows
+ *   (NearestExonJB's exon boundaries)
+ * NOTE: `cells` and `rows` are mutually exclusive.
  */
 export type DisplayItemSpec = {
   label?: DisplayItemLabelSpec | null;
@@ -200,8 +151,6 @@ export type DisplayItemSpec = {
 
 /**
  * Keep only the list elements whose `field` equals (or does not equal) a value.
- * `not_equals` is the complement, so a pair of blocks can divide a list
- * exhaustively rather than the second naming the values it wants.
  */
 export type DisplayWhereSpec = {
   field: string;
@@ -211,10 +160,6 @@ export type DisplayWhereSpec = {
 
 export type DisplayTruncateSpec = { visible_count: number };
 
-/**
- * String values of below fields are formatted as `<plugin>.<field>`,
- * like the value of a row's `from` field.
- */
 export type DisplayWhenSpec = {
   present?: string | null; // only when corresponding field has content
   empty?: string | null; // only when corresponding field is absent (null / '' / empty list)
@@ -228,20 +173,11 @@ export type DisplaySelectedGate = {
 /** A fixed set of rows. */
 export type DisplayRowsBlockSpec = {
   kind: 'rows';
-  /** Present -> renderRowBlock (a sub-heading); absent -> renderRowGroup. */
   heading?: string | null;
-  /**
-   * A plugin that must have produced an annotation at all for the block to
-   * render. SpliceAI needs it: its delta rows carry a placeholder, so without
-   * it a variant with no SpliceAI annotation would show eight dashes.
-   */
-  requires?: string | null;
-  /** Render only when this sub-option was selected (ClinVar short/structural). */
-  requires_selected?: DisplaySelectedGate | null;
-  /** A data condition on top of `requires` (ClinVar's bare vs headed shapes). */
-  when?: DisplayWhenSpec | null;
-  /** Restrict to the default view or "Show all" (ProtVar / IntAct). */
-  view?: DisplayBlockView | null;
+  requires?: string | null; // A plugin that must have produced an annotation for the block to render.
+  requires_selected?: DisplaySelectedGate | null; // Render only when this sub-option was selected (ClinVar short/structural).
+  when?: DisplayWhenSpec | null; // A data condition on top of `requires`
+  view?: DisplayBlockView | null; // Restrict to the default view or "Show all" (ProtVar / IntAct).
   rows: DisplayRowSpec[];
 };
 
@@ -252,19 +188,8 @@ export type DisplayMapRowLabelSuffix = {
 };
 
 /**
- * One row per entry of a per-job *vocabulary*, values read from a dict field.
- *
- * Every other block names its fields up front. This one cannot: an allele
- * frequency's populations are a dict whose keys are chosen per submission, and
- * whose human labels are decoded by the backend rather than carried in the
- * annotation. So the rows come from a vocabulary the response ships — see
- * `renderDisplayOption`'s `vocabularies` — gated to what the job selected.
- *
- * Taking the rows from the vocabulary rather than the data is what makes both
- * views work with no second code path: the default view drops a population the
- * variant has no value for, and "Show all" lists every selected population with
- * a dash where there is none. That is the `sub_option` row rule applied to a row
- * set that is discovered instead of written down.
+ * Example: allele frequency populations are a dict whose keys are chosen per submission.
+ * So the rows come from a vocabulary the response ships.
  */
 export type DisplayMapRowsBlockSpec = {
   kind: 'map_rows';
@@ -275,15 +200,13 @@ export type DisplayMapRowsBlockSpec = {
   view?: DisplayBlockView | null;
   from: string; // formatted as `<plugin>.<field>`, to map where the values come from.
   /**
-   * The scalar the vocabulary's "" entry reads. A source's all-ancestry figure
-   * sits beside the population dict rather than inside it, so without this the
-   * "All" row would have nowhere to read from.
+   * In the context of allele frequency populations,
+   * this field indicates where to read the "All" value from.
+   * In the allele frequency vocabulary, this corresponds to the empty key ("").
    */
   overall_from?: string | null;
-  /** Which shipped vocabulary supplies the rows. */
-  vocabulary: string;
-  /** Which slice of it — one AF vocabulary covers every source at once. */
-  scope: string;
+  vocabulary: string; // Which vocabulary provides data for the rows.
+  scope: string; // used to filter the relevant vocabulary
   format?: DisplayRowFormat | null;
   label_suffix?: DisplayMapRowLabelSuffix | null;
 };
@@ -300,113 +223,57 @@ export type DisplayListBlockSpec = {
   requires_selected?: DisplaySelectedGate | null;
   when?: DisplayWhenSpec | null;
   view?: DisplayBlockView | null;
-  /** `<plugin>.<listField>` — the list the items come from. */
-  from: string;
+  from: string; // formatted as `<plugin>.<listField>`
   /** Split the items into a headed section per distinct value of an item field
-   *  (GO terms by aspect). `truncate` then applies per section. */
+   *  e.g.: GO terms by aspect. */
   group_by?: DisplayGroupBy | null;
   truncate?: DisplayTruncateSpec | null;
   item: DisplayItemSpec;
 };
 
-/**
- * Sub-sections driven by the data: one per distinct value of `field`, in
- * first-seen order, each headed by the value itself — so a value the pipeline
- * starts emitting shows up without a spec change. `labels` renames individual
- * headings where the pipeline's word is not the one to show ("Variation" ->
- * "Variant associated"); an unmapped value keeps the data's own wording.
- */
 export type DisplayGroupBy = {
   field: string;
+  // `labels` renames individual headings where the pipeline's word is not the one to show
+  // e.g: "Variation" -> "Variant associated"
   labels?: Record<string, string> | null;
 };
 
-/** One line of a list-valued cell: `from` names the element field to show,
- * `count_from` a companion count rendered in brackets, and `link`/`link_from`
- * work as on the column itself. */
 export type DisplayColumnItems = DisplayValuePiece & {
-  /** Required here, unlike on a cell: a line of a list of *objects* has to say
-   *  which field of them it shows. */
   from: string;
-  /** A companion count rendered after the value: "Pathogenic (5)". */
-  count_from?: string | null;
-  /** Opens this one line onto its own detail. */
-  expand?: DisplayColumnExpand | null;
+  count_from?: string | null; // A companion count rendered after the value, e.g.: "Pathogenic (5)"
+  expand?: DisplayColumnExpand | null; // Opens this one line onto its own detail.
 };
 
-/** A summary line's collapsed detail. `from` is read from the same element the
- *  line came from — a cell of several summaries opens one at a time — and
- *  `cells` are the fields shown for each element of it. */
 export type DisplayColumnExpand = {
   from: string;
   cells: DisplayColumnItems[];
   /**
-   * Which of these lines to set apart. The detail is a long list of much the
-   * same thing and only some of it bears on the classification above: a ClinVar
-   * submission that counts toward the aggregate reads at full weight, one that
-   * does not stays quiet rather than being hidden — it is still a real
-   * submission somebody made. Tested by value, not truthiness, because the flag
-   * is a code and "0" is a perfectly true-looking string.
+   * Which of the lines to set apart
+   * Example when used: ClinVar
    */
   emphasis?: DisplayWhereSpec | null;
 };
 
-/**
- * A further line of a column's heading. A column that needs explaining ends up
- * with a heading longer than the values beneath it, and as one string it wrapped
- * wherever the width ran out. `muted` sets a line in the same quiet text as the
- * thing it describes, so the heading demonstrates its own convention.
- */
+// FIXME: column notes should be displayed at the bottom of the table
+// QUESTION: is the 'muted' field necessary
 export type DisplayColumnNote = {
   text: string;
   muted?: boolean;
 };
 
-/** One column of a `table` block: a header `label`. In list mode the value
- * comes from the list element's `from`; in fixed mode the columns are headers
- * only (the value columns' `format` applies to each row's `values`). */
-/**
- * One column of a table block: a heading over a rendered value.
- *
- * A column *is* a value, so it is a `DisplayValuePiece`. What stays here is
- * what a column has and a value does not — a heading, and how the column
- * behaves within its table.
- */
 export type DisplayTableColumnSpec = DisplayValuePiece & {
   label: string;
-  /** Further heading lines beneath the label. */
-  notes?: DisplayColumnNote[] | null;
-  /** Present only when its sub-option ran, so a table's width follows what the
-   * user selected. Same gate the rows use. */
-  sub_option?: { id: string; default?: boolean } | null;
-  /** How to render a cell whose value is a list of objects: one line per
-   *  element. `count_from` renders a companion count in brackets. */
-  items?: DisplayColumnItems | null;
-  /**
-   * Which way the column's values and header align. Normally absent: the house
-   * rule derives it from the data type, so a numeric `format` reads right and
-   * everything else reads left. It is stated only where the format cannot say
-   * so — a number the source publishes pre-formatted as a string, like
-   * OpenTargets' p-value.
-   */
+  notes?: DisplayColumnNote[] | null; // notes for this table column
+  sub_option?: { id: string; default?: boolean } | null; // Present only when its sub-option ran
+  items?: DisplayColumnItems | null; // How to render a cell whose value is a list of objects: one line per element
   align?: 'left' | 'right' | null;
   /** When every row shares one value for this column, show it once above the
    * table rather than repeating it down a column — IntAct's affected protein is
-   * usually the same for every interaction a variant takes part in. It stays a
-   * column the moment the value differs anywhere. */
+   * usually the same for every interaction a variant takes part in. */
   lift_when_invariant?: boolean | null;
   /**
-   * Merge this column's cells down: one cell per run of consecutive rows
-   * sharing the value of the named *element* field, spanning that run.
-   *
-   * The per-group sibling of `lift_when_invariant` — that lifts a value out of
-   * the table when every row agrees, this keeps it in but draws it once per
-   * group, for a value belonging to something coarser than a row. MaveDB: a
-   * dozen score sets from one experiment share a publication.
-   *
-   * The merged cell shows the group's first *stated* value, because the source
-   * populates the field on only some rows of a group; and a group whose stated
-   * values disagree is not merged at all.
+   * Merge this column's cells down
+   * Example: MaveDB - a dozen score sets from one experiment share a publication.
    */
   merge_by?: string | null;
 };
