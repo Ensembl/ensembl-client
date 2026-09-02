@@ -1354,6 +1354,41 @@ describe('renderDisplayOption', () => {
     );
   });
 
+  test('ClinVar short: several matched records each get their own link', () => {
+    // A custom annotation joins every ClinVar record that matched the variant
+    // with `&`. One URL built from all of them points nowhere, so the row
+    // splits and links each id in its own right.
+    renderOption('phenotypes', {
+      consequence: {
+        annotations: [
+          annotation('clinvar', 'transcript', {
+            id: '2673364&2045211&3773565',
+            significance: ['Pathogenic', 'Pathogenic', 'Benign'],
+            classification_summary: [
+              {
+                type: 'Germline',
+                classification: 'Pathogenic',
+                review_status: 'no_assertion_criteria_provided',
+                rating_scale: 'clinvar_aggregate',
+                supporting: 1,
+                submissions: 1
+              }
+            ]
+          })
+        ]
+      }
+    });
+
+    for (const id of ['2673364', '2045211', '3773565']) {
+      expect(screen.getByRole('link', { name: id }).getAttribute('href')).toBe(
+        `https://www.ncbi.nlm.nih.gov/clinvar/variation/${id}/`
+      );
+    }
+
+    // ...and the separator is not left behind as text between them.
+    expect(screen.queryByText(/2673364&/)).toBeNull();
+  });
+
   test('ClinVar short: the variant-id row drops when there is no id', () => {
     renderOption('phenotypes', {
       consequence: {
