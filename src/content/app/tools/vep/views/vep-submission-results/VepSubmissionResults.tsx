@@ -178,13 +178,6 @@ const VepSubmissionResults = () => {
   );
   const dispatch = useAppDispatch();
 
-  const resultsPanels = vepResults?.metadata.display_panels ?? [];
-
-  const hasSelectedOptions = hasAnySelectedOption(
-    resultsPanels,
-    submission?.parameters ?? {}
-  );
-
   useEffect(() => {
     // When user views a VEP submission for the first time, mark it as seen
     if (vepResults && submission && !submission.resultsSeen) {
@@ -223,6 +216,11 @@ const VepSubmissionResults = () => {
   const {
     metadata: { pagination: paginationMetadata, filters: filterMetadata }
   } = vepResults;
+  const resultsPanels = vepResults.metadata.display_panels;
+  const hasSelectedOptions = hasAnySelectedOption(
+    resultsPanels,
+    submission?.parameters ?? {}
+  );
   const { per_page, total } = paginationMetadata;
   const maxPage = Math.ceil(total / per_page);
   const genomeIdForUrl =
@@ -431,8 +429,8 @@ const VepResultsTable = (props: {
   variants: VepResultsResponse['variants'];
   genomeId: string;
   parameters: Record<string, unknown>;
-  panels: FormPanel[] | undefined;
-  display: DisplaySpec | null | undefined;
+  panels: FormPanel[];
+  display: DisplaySpec;
   availableAfSources: AfSource[];
   detailExpansion: DetailExpansion;
   hasSelectedOptions: boolean;
@@ -598,8 +596,8 @@ const VariantRow = (props: {
   variant: VepResultsResponse['variants'][number];
   genomeId: string;
   parameters: Record<string, unknown>;
-  panels: FormPanel[] | undefined;
-  display: DisplaySpec | null | undefined;
+  panels: FormPanel[];
+  display: DisplaySpec;
   availableAfSources: AfSource[];
   detailExpansion: DetailExpansion;
   hasSelectedOptions: boolean;

@@ -48,7 +48,7 @@ const VepResultsAnnotationDetail = (props: {
   allele: AlternativeVariantAllele | undefined;
   parameters?: Record<string, unknown>;
   panels?: FormPanel[];
-  display?: DisplaySpec | null;
+  display: DisplaySpec;
   availableAfSources?: AfSource[];
   protvarUrl?: string;
   openTargetsVariantId?: string;
@@ -96,10 +96,10 @@ const VepResultsAnnotationDetail = (props: {
     didSubOptionRun(parameters, optionId, defaultValue);
 
   const optionContent = (optionId: string): ReactNode | null => {
-    const specOption = display?.options.find(
+    const specOption = display.options.find(
       (option) => option.option_id === optionId
     );
-    if (!specOption || !display) {
+    if (!specOption) {
       return null;
     }
     return renderDisplayOption({

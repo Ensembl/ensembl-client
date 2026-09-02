@@ -184,9 +184,8 @@ export type RowSpec = {
   stacked?: boolean;
   link?: ReactNode;
   /**
-   * A pre-rendered value node that replaces the formatted value entirely — an
-   * app-popup-wrapped value (the protein id). `null` means the value was absent,
-   * so the row drops; `undefined` (the usual case) means format `value` instead.
+   * A pre-rendered value node.
+   * Example: a view-in-app popup for the protein id.
    */
   valueNode?: ReactNode;
 };
@@ -235,8 +234,7 @@ export const renderRows = (
     return decorateFirstLabel(raw);
   };
   rows.forEach((row, index) => {
-    // A pre-rendered value (an app-popup-wrapped id) bypasses formatting; a
-    // null one means the underlying value was absent, so the row drops.
+    // A pre-rendered value (valueNode) bypasses formatting
     if (row.valueNode !== undefined) {
       if (row.valueNode !== null) {
         nodes.push(

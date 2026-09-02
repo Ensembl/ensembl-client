@@ -29,38 +29,16 @@ export type VepResultsResponseMetadata = {
     per_page: number;
     total: number;
   };
-  // Present only when server-side filters were applied to this request.
+  // filters applied to the request
   filters?: FilterMetadata;
-  // AF columns present in this result set (the AF options chosen at input).
+  // Allele frequency columns present in this result set (related to what was chosen at input).
   available_af_sources?: AfSource[];
-  /**
-   * Which variant-impact prediction scores this job carries ('cadd_phred',
-   * 'revel', 'spliceai_dl', …), so the query builder offers those filters only
-   * where there is data to filter on. Gated the same way as the AF sources:
-   * present in the output *and* selected at input, since a full cache can carry
-   * columns nobody asked for.
-   */
+  // A list of variant-impact prediction scores available for this job
   available_scores?: string[];
-  /**
-   * The fields the query builder offers and how each is presented, from the
-   * job's pinned spec — gated to what this output can be filtered by. Absent
-   * for a job pinned before the catalogue existed.
-   */
+  // The fields the query builder offers and how each is presented
   filter_fields?: FilterField[] | null;
-  /**
-   * The option panels this job was submitted against, pinned by the tools API
-   * at submission time. The results view lays itself out from these rather than
-   * from the live form config, so a job renders against the options it actually
-   * ran with. Absent (or null) for jobs submitted before pinning existed —
-   * those fall back to the live form-config panels.
-   */
-  display_panels?: FormPanel[] | null;
-  /**
-   * How each option's parsed annotation is laid out, from the `display` section
-   * of the spec pinned to this job (with the plugin->scope map derived from its
-   * parsing half). Absent only from a backend with no display section at all.
-   */
-  display?: DisplaySpec | null;
+  display_panels: FormPanel[];
+  display: DisplaySpec;
 };
 
 // Per-filter count of how many records a filter removed (in pipeline order).
@@ -75,15 +53,10 @@ export type FilterMetadata = {
   stats: FilterStat[];
 };
 
-// An allele-frequency column available to filter on (an AF option chosen at
-// input). `population` is empty for the source's overall AF.
 export type AfSource = {
   key: string; // CSQ column name
   source: string; // gnomad_exomes | gnomad_genomes | all_of_us
   population: string;
-  // Human population label, decoded from the code by the backend (from the input
-  // form's vocabulary); 'All' for the overall AF. The frontend renders this
-  // rather than decoding the code itself.
   label: string;
 };
 
@@ -117,18 +90,11 @@ export type AlternativeVariantAllele = {
   allele_type: string;
   // A secondary line for a structural allele (the symbolic `allele_sequence`,
   // `<DEL>` / `<BND>`): the span in bases for sized SVs ("765 bp") or a breakend's
-  // two loci ("2:321681 ↔ 17:198982"). Null for simple variants.
+  // two loci ("2:321681 ↔ 17:198982")
   structural_variant_detail?: string | null;
   predicted_molecular_consequences: PredictedMolecularConsequence[];
-  // Allele-scoped plugin output (also the only annotations available for
-  // intergenic variants, which have no transcript consequences).
-  // Filled in by `resolveAnnotationPool` from `annotation_refs`; on the wire
-  // only the refs arrive.
   annotations?: Annotation[];
   annotation_refs?: number[];
-  // TODO(unspecced tail): the backend still emits `colocated_variants`
-  // (Existing_variation); untyped here as nothing renders it yet — convert to a
-  // plugin annotation like the rest when sample data arrives.
 };
 
 /** One submitter's account of a condition, behind the count that summarises it. */
