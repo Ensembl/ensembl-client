@@ -107,9 +107,6 @@ describe('renderDisplayOption', () => {
   });
 
   it('renders the pLI score from the consequence', () => {
-    // pLI is scored per transcript — the plugin's config line passes
-    // `transcript` rather than taking the gene-level default — so it reads from
-    // the consequence, and a same-named entry on the allele must be ignored.
     renderOption('pli', {
       consequence: {
         annotations: [annotation('pli', 'transcript', { score: 0.9821 })]
@@ -160,7 +157,7 @@ describe('renderDisplayOption', () => {
       }
     });
     expect(screen.getByText('SpliceAI')).toBeDefined();
-    // The absent gene symbol drops its row; the table still renders.
+    // The absent gene symbol drops its row.
     expect(screen.queryByText('Gene')).toBeNull();
     expect(
       screen.getByRole('columnheader', { name: 'Splicing event' })
@@ -193,7 +190,9 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('EVE')).toBeDefined();
     expect(screen.getByText('0.812 (likely pathogenic)')).toBeDefined();
     expect(screen.getByText('popEVE')).toBeDefined();
+    expect(screen.getByText('-3.21')).toBeDefined();
     expect(screen.getByText('Gap frequency')).toBeDefined();
+    expect(screen.getByText('0.07')).toBeDefined();
   });
 
   it("renders a help row's cited source as a link", async () => {
