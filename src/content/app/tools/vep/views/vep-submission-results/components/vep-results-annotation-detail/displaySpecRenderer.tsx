@@ -1318,23 +1318,28 @@ const cellClass = (
 const tableHead = (columns: DisplayTableBlockSpec['columns']): ReactNode => (
   <thead>
     <tr>
-      {columns.map((column, index) => (
-        <th key={index} className={alignmentClass(column)}>
-          {column.label}
-          {(column.notes ?? []).map((note, noteIndex) => (
-            <span
-              key={noteIndex}
-              className={
-                note.muted
-                  ? `${styles.columnNote} ${styles.columnNoteMuted}`
-                  : styles.columnNote
-              }
-            >
-              {note.text}
-            </span>
-          ))}
-        </th>
-      ))}
+      {columns.map((column, index) => {
+        const columnNotes = column.notes ?? [];
+        const columnNoteElements =
+          columnNotes.length > 0
+            ? columnNotes.map((note, noteIndex) => (
+                <div key={noteIndex}>{note.text}</div>
+              ))
+            : null;
+        const columnHeadContent = columnNoteElements ? (
+          <span className={styles.labelWithHelp}>
+            <span>{column.label}</span>
+            <QuestionButton helpText={columnNoteElements} />
+          </span>
+        ) : (
+          column.label
+        );
+        return (
+          <th key={index} className={alignmentClass(column)}>
+            {columnHeadContent}
+          </th>
+        );
+      })}
     </tr>
   </thead>
 );

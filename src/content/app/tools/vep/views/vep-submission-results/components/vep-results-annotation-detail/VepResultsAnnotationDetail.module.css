@@ -207,18 +207,17 @@ table {
   padding-right: 0;
 }
 
+/* Avoid excessively wide table columns
+   The rule excludes buttons, because QuestionButton can be a direct child of th,
+   and a combination of max-width with QuestionButton's font-size: 0 breaks its width
+*/
+.breakdownTable th > :not(button),
+.breakdownTable td > :not(button) {
+  max-width: 70ch;
+}
+
 .nowrap {
   white-space: nowrap;
-}
-
-.columnNote {
-  display: block;
-  font-weight: var(--font-weight-normal);
-  white-space: nowrap;
-}
-
-.columnNoteMuted {
-  font-size: 10px;
 }
 
 .breakdownTable th {
