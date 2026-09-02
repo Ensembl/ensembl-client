@@ -69,11 +69,6 @@ import type {
 
 import styles from './VepResultsAnnotationDetail.module.css';
 
-/**
- * What a named link builder needs beyond the annotation field: the job's genome
- * and the ProtVar URL (algorithmic, precomputed upstream), plus the consequence
- * for a builder that needs the gene (the protein "View in" popup).
- */
 export type LinkBuilderContext = {
   genomeId: string;
   protvarUrl?: string;
@@ -98,31 +93,10 @@ type Entities = {
   // For named link builders referenced by a row/item `link.builder`.
   linkContext: LinkBuilderContext;
   /**
-   * The option's own help, shown as a (?) beside whatever ends up being its
-   * top-level heading in the results — the same text the form shows for that
-   * option, so the two can never disagree.
-   *
-   * Which node that is cannot be known up front: an option may carry its own
-   * heading (ProtVar), or take it from its first block (SpliceAI), or have no
-   * heading at all and render as one emphasised label/value row (REVEL). Worse,
-   * the first block can be gated out by the data — ClinVar's conflicting-vs-not
-   * shapes are two different blocks, and only one of them draws. So the help is
-   * *claimed* by the first level-0 heading or row that actually draws, which is
-   * exactly the option's visible title in every one of those shapes.
-   *
-   * `take` yields the help once and null thereafter. Blocks render in document
-   * order within a single synchronous pass, so the claim is deterministic.
+   * `take` yields the help once and null thereafter,
+   * so that the help block is rendered only once.
    */
   helpAnchor?: { take: () => OptionHelp | null };
-  /**
-   * Row sets a block cannot name up front, keyed by vocabulary name (see
-   * `map_rows`). The allele frequencies are the case that needs it: which
-   * populations a job carries is chosen per submission, and their labels are
-   * decoded by the backend, so neither can be written into the spec.
-   *
-   * Threaded like `linkContext` rather than baked into the DSL — the block says
-   * *which* vocabulary it wants, and knows nothing about where it came from.
-   */
   vocabularies?: Record<string, VocabularyEntry[]>;
 };
 
@@ -134,7 +108,7 @@ export type VocabularyEntry = {
   label: string;
 };
 
-/** One-shot holder: the first level-0 heading or row to draw takes the help. */
+/** The first level-0 heading or row to call this function takes the help. */
 const makeHelpAnchor = (help: OptionHelp) => {
   let taken = false;
   return {
@@ -187,24 +161,12 @@ const readPlugin = (
 };
 
 /**
- * The loose form of a rating term: case-folded, with `_` read as a space.
- *
- * ClinVar writes review status as `criteria_provided,_single_submitter` while
- * the scale is authored as the phrase a reader would recognise. Comparing both
- * in this form lets each stay as it is instead of one mirroring the other's
- * punctuation.
+ * ClinVar writes review status as e.g. `criteria_provided,_single_submitter`,
+ * while the keys in rating scales are formatted as a regular phrase (e.g. 'criteria provided, single submitter').
  */
 const ratingTermKey = (term: string): string =>
   term.toLowerCase().replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
 
-/**
- * A value's rating on the named scale, or null when there is nothing to show.
- *
- * Null for an unknown *term* as much as an unknown scale: sources add wording
- * without warning, and no stars reads as "not rated here", which is true, where
- * zero stars would be a claim the source never made. (A term the scale does map
- * to zero still draws its four empty stars — that is a rating.)
- */
 const starRating = (
   scaleName: string | null | undefined,
   value: unknown,
@@ -239,8 +201,7 @@ const withStars = (stars: ReactNode, value: ReactNode): ReactNode =>
   );
 
 /**
- * A composed value. `with_score` mirrors the hand-written cases exactly: no
- * classification means no row, whatever the score says.
+ * Combines a value with a score.
  */
 const composeValue = (
   compose: DisplayCompose,
@@ -255,10 +216,6 @@ const composeValue = (
   return withScore(String(classification), (score ?? null) as number | null);
 };
 
-/** A label, with its help (?) button when the spec gives it help text. The help
- * may cite a source (popEVE's threshold comes from its paper), which trails the
- * text inside the popup rather than sitting beside the label — the label row is
- * for the value, and the citation only matters once the help is open. */
 const rowLabel = (row: DisplayRowSpec): ReactNode =>
   row.help ? (
     <span className={styles.labelWithHelp}>
@@ -284,13 +241,8 @@ const rowLabel = (row: DisplayRowSpec): ReactNode =>
   );
 
 /**
- * A row's value and effective placeholder, applying sub-option semantics.
- *
- * A plain row uses its own `placeholder`. A `sub_option` row behaves like the
- * old `renderRunSubOptions`: the default view is value-gated (an empty row just
- * drops); "Show all" instead lists the *selected* sub-options — an unselected
- * one is dropped even if it has a value, and a selected-but-empty one shows a
- * dash.
+ * A plain row uses its own `placeholder`.
+ * A `sub_option` will show a dash ("-") as placeholder when "Show all" is selected
  */
 const rowValueAndPlaceholder = (
   row: DisplayRowSpec,
@@ -328,7 +280,6 @@ const toRowSpec = (
       value: node ? '' : null,
       valueNode: node ?? null,
       // Display as its own line under the block heading,
-      // not the value half of a label/value pair
       plain: true
     };
   }
@@ -438,12 +389,9 @@ const toRowSpec = (
     value,
     format: row.format ?? undefined,
     placeholder,
-    // Shown by renderRows only next to a real value (ProtVar's icon).
     link: row.link ? renderLink(row.link, entities.linkContext) : undefined
   };
 };
-
-// --- list blocks (repeat + link + truncate) ---------------------------------
 
 const MoreToggle = (props: TruncatedListToggleProps) => (
   <button
@@ -455,15 +403,6 @@ const MoreToggle = (props: TruncatedListToggleProps) => (
   </button>
 );
 
-/**
- * How many of a split cell's stacked values show before the "+ n more".
- *
- * Not read from the spec, because a column has no `truncate` of its own and
- * inventing one would add a knob with a single possible setting: every
- * `truncate` in the annotation library — all seven of them — is
- * `visible_count: 3`. This is that same house number, stated once. If a column
- * ever needs its own count, that is the point to make it spec-driven.
- */
 const SPLIT_CELL_VISIBLE_COUNT = 3;
 
 /** Fill a `{field}` template from an item's fields, for display text. */
@@ -471,31 +410,12 @@ const interpolate = (template: string, item: Record<string, unknown>): string =>
   template.replace(/\{(\w+)\}/g, (_match, field) => String(item[field] ?? ''));
 
 /**
- * The same, for a URL — or null when no usable one can be built.
+ * Some urls contain hashes that need to survive the transformation
+ * Example: https://geno2mp.gs.washington.edu/Geno2MP/#/variant/1/11022/G%3EA/snp
  *
- * Two ways that happens. A field the template names may be absent, and filling
- * it with '' silently truncates the URL: the GO cell reads `name` but links
- * `{id}`, so a term with a name and no id linked to `.../amigo/term/`. And the
- * whole href may come from the data (`template: "{value}"` with `link_from`),
- * where the scheme is whatever the parse put there.
- *
- * No link is better than a broken one, so both cases fall back to plain text.
- * Values are *not* percent-encoded: they routinely carry characters that are
- * URL-significant and intended — a MaveDB URN is `urn:mavedb:00000001-a-1` —
- * and encoding them would break links that work today. `#` is the exception,
- * and not a matter of taste: a MaveDB *accession* is
- * `urn:mavedb:00000045-a-1#2010`, and left raw the browser reads everything
- * from the '#' as a fragment and never sends it, so a template that puts the
- * accession in a query string loses both it and anything after it. There is no
- * reading of a '#' *inside a value* as anything but a literal, so it is always
- * safe to escape — unlike ':' or '/', which a value may well mean structurally.
- *
- * That reasoning holds for a value interpolated *into* a URL, and only there.
- * A template that is nothing but the placeholder — `{value}`, the `link_from`
- * shape, where the parse resolved the whole href — is the opposite case: the
- * value *is* the URL, so a '#' in it is that URL's own structure. Geno2MP's
- * variant pages are fragment-routed (`.../Geno2MP/#/variant/1/11022/G%3EA/snp`)
- * and escaping theirs would point every one of them at the site's front page.
+ * On the other hand, some ids interpolated into the template may also contain a hash -
+ * example: urn:mavedb:00000045-a-1#2010 -
+ * then this hash must be url-escaped when generating the url.
  */
 const HASH_IN_VALUE = /#/g;
 const WHOLE_VALUE_TEMPLATE = /^\{\w+\}$/;
@@ -527,17 +447,10 @@ const LINK_BUILDERS: Record<
   string,
   (context: LinkBuilderContext, value: ReactNode) => ReactNode
 > = {
-  // This variant's ProtVar page. Like every link here it leads with the icon
-  // and makes the value beside it the blue clickable text — the value is the
-  // row's own (a stability score, a pocket's score), so the builder wraps it
-  // rather than sitting alongside as a bare icon.
   protvar: (context, value) =>
     context.protvarUrl ? (
       <ExternalLink to={context.protvarUrl}>{value}</ExternalLink>
     ) : null,
-  // The variant's OpenTargets page: the link icon, then the variant in
-  // OpenTargets' own notation as the link text. Unlike ProtVar's icon-only link
-  // this *is* the row's value — there is no annotation field behind it.
   opentargets_variant: (context) =>
     context.openTargetsVariantId ? (
       <ExternalLink
@@ -546,9 +459,7 @@ const LINK_BUILDERS: Record<
         {context.openTargetsVariantId}
       </ExternalLink>
     ) : null,
-  // The protein id as an in-app "View in" popup trigger (Entity Viewer), built
-  // from the job genome plus the consequence's gene. Unlike an external icon it
-  // *wraps* the value, so it becomes the row's value rather than a trailing bit.
+  // The protein id as an in-app "View in" popup
   protein_popup: (context, value) => {
     const consequence = context.consequence as
       PredictedTranscriptConsequence | null | undefined;
@@ -574,32 +485,15 @@ const LINK_BUILDERS: Record<
   }
 };
 
-/** A row/item-level link: the named builder rendered against the job context. */
 const renderLink = (
   link: DisplayLinkSpec,
   context: LinkBuilderContext,
-  // What the link wraps: a formatted row value, or a list item's rendered cells.
   value: ReactNode = ''
 ): ReactNode => {
   const builder = link.builder ? LINK_BUILDERS[link.builder] : undefined;
   return builder ? builder(context, value) : null;
 };
 
-/** One cell of a list item: its formatted value, as a link when `link` is set. */
-/**
- * One rendered value, wherever it appears.
- *
- * A cell of a repeated item, a line of a list-valued table cell, and a plain
- * table cell are the same idea described three times, and the three had drifted
- * apart with no principle behind the gaps: `labels` and `template` existed on
- * one, `count_from` on another, stars were named by a field in one and stated
- * outright in another, and an absent value ended as `null` here and `''` there.
- *
- * This is what they share — read the field, format it, count it, rate it — so
- * that a capability belongs to *a value* rather than to whichever of the three
- * happened to grow it. How the value is then linked still differs by shape
- * (a stack of split links, a prefix-stripped run) and stays with each caller.
- */
 export type ValuePiece = DisplayValuePiece & {
   /** A companion count rendered after the value: "Pathogenic (5)". Only a line
    *  of a list has one, but the resolver is the same either way. */
@@ -609,24 +503,16 @@ export type ValuePiece = DisplayValuePiece & {
 export type ResolvedPiece = {
   /** The value as it came, before formatting — what a link is built from. */
   raw: unknown;
-  /** The element as a record ({} when the element is a scalar). */
+  /** The element as a record (empty record when the element is a scalar). */
   fields: Record<string, unknown>;
-  /** The formatted value on its own — what a link is split or built from. */
+  /** The formatted value on its own — what a link is built from. */
   value: string;
   /** What the reader sees: the value, plus its count where it has one. */
   text: string;
-  /** The rating leading it, or null when this piece is not rated. */
+  /** Associated rating or null when this piece is not rated. */
   stars: ReturnType<typeof starRating>;
 };
 
-/**
- * Resolve one piece against an element, or null when it shows nothing.
- *
- * Nothing means nothing in every case now: an absent field, a format with no
- * output, and an empty string all drop the piece rather than leaving an empty
- * cell behind. Two of the three already did that; the third rendered an empty
- * span.
- */
 export const resolveValuePiece = (
   piece: ValuePiece,
   element: unknown,
@@ -649,8 +535,6 @@ export const resolveValuePiece = (
   }
   const count = piece.count_from ? fields[piece.count_from] : null;
   const text = isAbsent(count) ? formatted : `${formatted} (${count})`;
-  // The count belongs to what is *shown*, not to what is linked: a value that
-  // both counts and splits would otherwise split on its own count.
   const stars = piece.stars_from
     ? starRating(
         fields[piece.stars_from] as string | null,
@@ -667,18 +551,13 @@ const renderCell = (
   index: number,
   spec: DisplaySpec
 ): ReactNode => {
-  // An absent cell renders nothing — this drops an optional field (OpenTargets'
-  // L2G score, a QTL biosample) rather than showing an empty cell, and keeps a
-  // `num`/`with_score` format from being handed a null.
   const resolved = resolveValuePiece(cell, item, spec);
   if (resolved === null) {
     return null;
   }
   const { text, fields: record, stars: cellStars } = resolved;
   const key = cell.from ?? index;
-  // A cell whose text is a sentence about the element rather than one of its
-  // values ("1/44 submissions contribute to aggregate classification") has
-  // nothing to link or rate — it is already prose.
+
   if (cell.template) {
     return <span key={key}>{text}</span>;
   }
@@ -692,9 +571,6 @@ const renderCell = (
       text
     );
   }
-  // Plain value. An optional `label` becomes a prefix, for a meta cell like
-  // OpenTargets' "L2G 0.42". (Cell-level builder links are not used — a row's or
-  // item's `link` carries the builder ones.)
   return (
     <span key={key} className={cell.nowrap ? styles.nowrap : undefined}>
       {withStars(cellStars, cell.label ? `${cell.label} ${text}` : text)}
@@ -702,11 +578,6 @@ const renderCell = (
   );
 };
 
-/**
- * The label of a row-layout list item: an interpolated `{field}` template
- * ("Pocket {pocket_id}") or a formatted item field (ClinVar's humanised
- * significance).
- */
 const renderItemLabel = (
   label: DisplayItemLabelSpec,
   element: unknown
@@ -730,8 +601,6 @@ const renderListItem = (
   entities: Entities,
   spec: DisplaySpec
 ): ReactNode => {
-  // A stack of labelled field-rows (NearestExonJB's exon boundaries): each field
-  // is its own `label: value` row; absent fields drop.
   if (item.rows) {
     const record = (
       element && typeof element === 'object' ? element : {}
@@ -743,10 +612,6 @@ const renderListItem = (
           return null;
         }
         const text = formatValue(raw, fieldRow.format ?? 'text');
-        // Bold for the same reason `renderRows` bolds its plain values: these
-        // are label/value rows of formatted text, indistinguishable from the
-        // panel's other rows, and being inside a list record is not a reason to
-        // read differently.
         return text === null ? null : (
           <Row key={fieldRow.from} label={fieldRow.label} value={text} strong />
         );
@@ -759,43 +624,26 @@ const renderListItem = (
   const cells = (item.cells ?? [])
     .map((cell, index) => renderCell(cell, element, index, spec))
     .filter(Boolean);
-  // Without a label the cells lay out inline (a GO id + name); with one they
-  // become the value of a label/value row (ClinVar's per-class counts, ProtVar's
-  // pockets).
+
   if (!item.label) {
     return cells.length ? <div className={styles.listItem}>{cells}</div> : null;
   }
   const label = renderItemLabel(item.label, element);
-  // A trailing item link (ProtVar's icon) shows on every rendered item, even
-  // when a cell (the score) is absent — matching the old per-pocket summary.
   const linkNode = item.link
     ? renderLink(item.link, entities.linkContext, <>{cells}</>)
     : null;
   if (!label && !cells.length && !linkNode) {
     return null;
   }
-  return (
-    <Row
-      label={label}
-      // A builder link wraps the item's cells rather than trailing them, so the
-      // icon leads and the cells are the blue clickable text — the same shape a
-      // linked row has (ProtVar's pocket and interface scores).
-      value={linkNode ?? cells}
-    />
-  );
+  return <Row label={label} value={linkNode ?? cells} />;
 };
 
 /**
  * A block whose rows come from a vocabulary rather than from the spec.
  *
- * The values are read from a dict field, keyed by each vocabulary entry's code
- * — except the `""` entry, a source's all-ancestry figure, which the parse
- * keeps as its own scalar beside the dict.
- *
- * Every row is built as a `sub_option` RowSpec so the two views need no code
- * here at all: `renderRows` already drops a value-less sub-option row in the
- * default view and shows it as a dash under "Show all", which is exactly what
- * an unpopulated population should do.
+ * The values are read from a dict field, keyed by each vocabulary entry's code,
+ * except for the entry with an empty code (""),
+ * whose value is accessed via the `overall_from` field.
  */
 const renderMapRowsBlock = (
   block: DisplayMapRowsBlockSpec,
@@ -826,8 +674,6 @@ const renderMapRowsBlock = (
     const formatted = isAbsent(value)
       ? null
       : formatValue(value, block.format ?? 'text');
-    // The suffix names where a figure came from, so it belongs to the value and
-    // is dropped with it — a dash must never read "— (European)".
     const suffixed =
       formatted !== null &&
       block.label_suffix &&
@@ -839,10 +685,6 @@ const renderMapRowsBlock = (
       key: entry.code || 'overall',
       label: entry.label,
       value: suffixed,
-      // The `sub_option` row rule, stated directly rather than borrowed: every
-      // entry in the vocabulary was selected — that is what being there means —
-      // so the default view drops the ones with no value, and "Show all" lists
-      // all of them with a dash where the variant had none.
       placeholder: entities.showAll ? '—' : undefined
     };
   });
@@ -887,10 +729,6 @@ const renderListBlock = (
       </>
     );
 
-  // Grouped: a headed run of items per distinct value of the grouped field, the
-  // headings coming from the data rather than the spec — GO terms by aspect.
-  // Truncation then applies per section, so each aspect gets its own toggle.
-  // Same shape the grouped table uses.
   const groupBy = block.group_by;
   const body = groupBy
     ? groupRows(items, groupBy.field, groupBy.labels).map((group) => (
@@ -918,9 +756,9 @@ const renderListBlock = (
   );
 };
 
-/** The one value a column takes across every row, or null if it varies, is
- * missing anywhere, or there is nothing to compare. Used to decide whether a
- * `lift_when_invariant` column can be shown once above the table. */
+/** The one value a column takes across every row.
+ * Used to decide whether a `lift_when_invariant` column
+ * can be shown once above the table. */
 const invariantValue = (
   column: DisplayTableColumnSpec,
   items: unknown[]
@@ -947,16 +785,6 @@ const invariantValue = (
  * Where a `merge_by` column's cells join up: for each run of consecutive rows
  * sharing the named element field, which row starts the run, how many rows it
  * covers, and which element the cell should be drawn from.
- *
- * Two rules, both taken from what the source actually publishes. MaveDB states
- * a publication on only *some* of an experiment's score sets, so the cell is
- * drawn from the run's first **stated** value rather than its first row —
- * otherwise a run of twelve would show the blank that happens to be first. And
- * a run whose stated values **disagree** is not merged at all: presenting one
- * row's value as the whole group's would be a claim the data does not make,
- * which is worse than repeating it.
- *
- * Returns null when the column does not merge, so the caller can skip the work.
  */
 const mergePlan = (
   column: DisplayTableColumnSpec,
@@ -988,7 +816,6 @@ const mergePlan = (
   while (start < items.length) {
     const group = groupOf(items[start]);
     let end = start;
-    // A row with no group value of its own joins nothing — it is its own run.
     while (
       group !== undefined &&
       group !== null &&
@@ -1014,7 +841,6 @@ const mergePlan = (
   return { spanAt, covered };
 };
 
-/** One line of a list-valued cell (see ColumnItems in the display spec). */
 const columnItem = (
   items: DisplayColumnItems,
   element: unknown,
@@ -1025,11 +851,7 @@ const columnItem = (
     return '';
   }
   const { text, value, fields: record, stars } = resolved;
-  // An optional prefix, as a cell has: "filed as <condition>".
   const label = items.label ? `${items.label} ${text}` : text;
-  // An identifier's link is one thing: its icon must not be left on the line
-  // above. Declared per item, never assumed — a linked condition *name* is
-  // prose and has to wrap.
   const linkClass = items.nowrap ? styles.nowrap : undefined;
 
   const template =
@@ -1037,8 +859,7 @@ const columnItem = (
   if (!template) {
     return withStars(stars, label);
   }
-  // One value holding several, each its own link: a submission's cited papers
-  // arrive as one '+'-joined list of PMIDs, and each is a separate paper.
+  // One value holding several, separated with a separator that is the value of the `split` field
   if (items.split) {
     const parts = value.split(items.split).filter(Boolean);
     return withStars(
@@ -1074,7 +895,6 @@ const columnItem = (
     : withStars(stars, label);
 };
 
-/** Whether a list element passes a `where` filter (see DisplayWhereSpec). */
 const matchesFilter = (
   where: DisplayWhereSpec | null | undefined,
   element: unknown
@@ -1086,8 +906,6 @@ const matchesFilter = (
     !!element && typeof element === 'object'
       ? String((element as Record<string, unknown>)[where.field] ?? '')
       : '';
-  // `not_equals` is what stops a value nobody anticipated falling between two
-  // blocks and disappearing: one names what it wants, the other takes the rest.
   return where.not_equals !== null && where.not_equals !== undefined
     ? value !== where.not_equals
     : value === where.equals;
@@ -1135,16 +953,6 @@ const ExpandableItem = (props: {
   />
 );
 
-/**
- * One line of a list-valued cell, with its own expander when the spec gives it
- * one and there is something behind it.
- *
- * Per line rather than per cell: a condition's classifications are counted
- * separately ("Pathogenic (5)", "Uncertain significance (1)"), so the submitters
- * behind each count belong to that count. One control over the whole cell would
- * open all of them together and make the reader re-do the grouping the parse
- * already did.
- */
 const columnItemNode = (
   items: DisplayColumnItems,
   element: unknown,
@@ -1169,14 +977,6 @@ const columnItemNode = (
   );
 };
 
-/** One table cell: the column's value read from the list element and formatted
- * (a scalar list element is the value itself; no `from`).
- *
- * A `split` column holds several values in one string — IntAct joins interaction
- * participants with `_and_` — and each is rendered in its own right. Where the
- * column carries a `link_prefix`, only values with that prefix are linkable: the
- * prefix is stripped to fill the template, and anything without it is left as
- * plain text rather than becoming a link to nowhere. */
 const tableCellContent = (
   column: DisplayTableColumnSpec,
   element: unknown,
@@ -1184,10 +984,6 @@ const tableCellContent = (
 ): ReactNode => {
   const isRecord = !!element && typeof element === 'object';
 
-  // A cell whose value is a list of objects renders one line per element — the
-  // classifications a condition's submitters gave, or every RCV record covering
-  // it. A condition can have several of either, and they stack. Resolved before
-  // the shared piece, because a list is not a value to format.
   if (column.items) {
     const list =
       column.from && isRecord
@@ -1199,7 +995,6 @@ const tableCellContent = (
     return (
       <div className={styles.cellItems}>
         {list.map((value, index) => (
-          // A div, not a span: a line carrying an expander holds block content.
           <div key={index}>{columnItemNode(column.items!, value, spec)}</div>
         ))}
       </div>
@@ -1211,8 +1006,6 @@ const tableCellContent = (
     return '';
   }
   const { text } = resolved;
-  // A column can ask to stay on one line as an item can — an accession's icon
-  // and its id are one thing.
   const linkClass = column.nowrap
     ? `${styles.listLink} ${styles.nowrap}`
     : undefined;
@@ -1262,22 +1055,7 @@ const tableCellContent = (
     return rendered;
   }
 
-  // A split column's values stack, one per line, in the same container a cell
-  // of `items` uses — they are the same thing, several values in one cell, and
-  // they should not have looked different.
-  //
-  // They used to run on inline, separated by a space, on the reasoning that in
-  // a narrow column each would land on its own line anyway. It does not hold:
-  // IntAct's participants reflow raggedly, and worse, the inline run makes the
-  // column claim the width of *all* its values at once — which squeezed the
-  // neighbouring accession column until `EBI-34581068` broke at its hyphen.
-  // Stacking asks for the width of one value, and the table's auto layout hands
-  // the difference back to the columns that need it.
-  //
-  // Stacked, the tall cells are the ones that need a limit: one IntAct
-  // interaction in the dev data carries 42 participants, which as 42 lines
-  // drags the whole row past everything beside it. Truncated to the same few
-  // the table truncates its own rows to, with the same control.
+  // A split column's values stack one per line in the same cell
   return (
     <div className={styles.cellItems}>
       <TruncatedList
@@ -1290,15 +1068,6 @@ const tableCellContent = (
   );
 };
 
-/**
- * A column's alignment class, or undefined for the default (left).
- *
- * The house rule is by data type: text reads left, numbers read right, so a
- * column of figures lines up on its digits. That is derived from the format —
- * `num` and `count` produce numbers — so a spec normally says nothing. `align`
- * overrides it for the one case a format cannot express: a number the source
- * publishes pre-formatted as a string, like OpenTargets' `2.033e-47`.
- */
 const NUMERIC_FORMATS: ReadonlySet<string> = new Set(['num', 'count']);
 
 const alignmentClass = (
@@ -1314,7 +1083,6 @@ const cellClass = (
   column: Pick<DisplayTableColumnSpec, 'format' | 'align'> | undefined
 ): string | undefined => (column ? alignmentClass(column) : undefined);
 
-// The header row shared by both table modes.
 const tableHead = (columns: DisplayTableBlockSpec['columns']): ReactNode => (
   <thead>
     <tr>
@@ -1344,12 +1112,6 @@ const tableHead = (columns: DisplayTableBlockSpec['columns']): ReactNode => (
   </thead>
 );
 
-/**
- * A heading indents its children (see `Indented` in annotationRows). A table
- * marked `indent` takes the same wrapper without a heading, so an unheaded table
- * lines up with the headed sections it sits beside instead of standing a step out
- * from them (the ClinVar phenotype table beside the grouped ones).
- */
 const withHeading = (
   block: DisplayTableBlockSpec,
   level: number,
@@ -1366,10 +1128,6 @@ const withHeading = (
   ) : (
     table
   );
-  // `indent` applies to a headed block too: a heading of its own says what the
-  // block is, not what it belongs to. ClinVar's Germline and Somatic tables are
-  // both named and subordinate — they belong under the Classification above
-  // them, and sat flush against it while their own contents were indented.
   return block.indent ? (
     <Indented className={styles.optionChildren}>{headed}</Indented>
   ) : (
@@ -1377,9 +1135,10 @@ const withHeading = (
   );
 };
 
-// Fixed (matrix) mode: explicit `{label, values}` rows. The label fills the
-// first column; each value reads a scalar `<plugin>.<field>` and is formatted by
-// its value column (the columns after the first).
+// Fixed (matrix) mode: explicit `{label, values}` rows.
+// The label fills the first column.
+// Each value reads from `<plugin>.<field>` and is formatted
+// as instructed by the corresponding column.
 const renderMatrixTable = (
   block: DisplayTableBlockSpec,
   spec: DisplaySpec,
@@ -1428,9 +1187,8 @@ const renderTableBlock = (
   }
   const list = readField(block.from ?? '', spec, entities);
   const allItems = Array.isArray(list) ? list : [];
-  // `where` lets two tables split one list between them, so each can sit under
-  // a shared heading. Filtering to nothing renders nothing, which is what makes
-  // an empty half collapse its group heading with it.
+  // `where` lets two tables split one list between them,
+  // so each can sit under a shared heading.
   const items = block.where
     ? allItems.filter((item) => {
         const value =
@@ -1439,9 +1197,6 @@ const renderTableBlock = (
                 (item as Record<string, unknown>)[block.where!.field] ?? ''
               )
             : '';
-        // `not_equals` is what stops a value nobody anticipated falling between
-        // two tables and disappearing: one names what it wants, the other takes
-        // the rest.
         const notEquals = block.where!.not_equals;
         return notEquals !== null && notEquals !== undefined
           ? value !== notEquals
@@ -1452,8 +1207,9 @@ const renderTableBlock = (
     return null;
   }
 
-  // A column whose sub-option did not run has no data behind it, so it is
-  // dropped rather than rendered empty — IntAct's table is 2 to 6 columns wide.
+  // A column whose sub-option did not run has no data behind it,
+  // so it is dropped rather than rendered empty.
+  // For example, IntAct's table is 2 to 6 columns wide.
   const selectedColumns = block.columns.filter(
     (column) =>
       !column.sub_option ||
@@ -1467,9 +1223,7 @@ const renderTableBlock = (
   }
 
   // A column marked `lift_when_invariant` whose value is the same on every row
-  // says one thing about the variant, not one thing per row: show it once above
-  // the table and give its width back to the columns that do vary. It stays a
-  // column the moment the value differs anywhere.
+  // should be shown once above the table.
   const lifted = selectedColumns.filter(
     (column) =>
       column.lift_when_invariant && invariantValue(column, items) !== null
@@ -1490,7 +1244,6 @@ const renderTableBlock = (
         {columns.map((column, colIndex) => {
           const merge = merges[colIndex];
           if (merge?.covered.has(rowIndex)) {
-            // Absorbed into the cell above; the row simply has no cell here.
             return null;
           }
           const span = merge?.spanAt.get(rowIndex);
@@ -1501,9 +1254,6 @@ const renderTableBlock = (
               </td>
             );
           }
-          // Clamped to what is on screen: a truncated table renders the first
-          // few rows, and a span reaching past them would hang the cell below
-          // the last row it has to sit against.
           const visibleSpan = Math.min(span.span, renderedCount - rowIndex);
           return (
             <td
@@ -1517,8 +1267,6 @@ const renderTableBlock = (
         })}
       </tr>
     );
-    // TruncatedList adds no markup of its own, so the rows and the toggle stay
-    // inside the tbody — the toggle as a row spanning every column.
     return (
       <div className={styles.tableScroll}>
         <table className={styles.breakdownTable}>
@@ -1538,8 +1286,6 @@ const renderTableBlock = (
                 )}
               />
             ) : (
-              // Not `rows.map(bodyRow)`: map passes the array as a third
-              // argument, which would arrive as the rendered-row count.
               rows.map((row, index) => bodyRow(row, index))
             )}
           </tbody>
@@ -1548,8 +1294,6 @@ const renderTableBlock = (
     );
   };
 
-  // Grouped: a headed table per distinct value of the grouped field, the
-  // headings coming from the data rather than the spec.
   const groupBy = block.group_by;
   const body = groupBy
     ? groupRows(items, groupBy.field, groupBy.labels).map((group) => (
@@ -1565,8 +1309,6 @@ const renderTableBlock = (
       ))
     : renderTable(items);
 
-  // The lifted columns read as facts about the variant, so they sit above the
-  // table, using the same cell rendering (links, prefixes) as the column would.
   const withLifted =
     lifted.length === 0 ? (
       body
@@ -1586,12 +1328,6 @@ const renderTableBlock = (
   return withHeading(block, level, withLifted, entities);
 };
 
-/**
- * Rows split by the value of `field`, in first-seen order — so the sub-headings
- * come from the data, with `labels` renaming the ones the spec chooses to word
- * differently. Rows with no value for that field keep their order in an
- * unheaded group.
- */
 const groupRows = (
   rows: unknown[],
   field: string,
@@ -1617,11 +1353,6 @@ const groupRows = (
   return groups;
 };
 
-/**
- * A block's `when` guard: whether the named field is present / empty. Empty is
- * `null | undefined | '' | []` — the same "absent" rule the rows use, extended
- * to an empty list (ClinVar's `conflicting_breakdown`).
- */
 const whenSatisfied = (
   when: DisplayWhenSpec,
   spec: DisplaySpec,
@@ -1711,10 +1442,6 @@ const renderBlock = (
   );
 };
 
-/**
- * One option's content, or null when nothing survived — the same contract as
- * the `case` bodies this replaces.
- */
 export const renderDisplayOption = (args: {
   option: DisplayOptionSpec;
   spec: DisplaySpec;
@@ -1722,18 +1449,10 @@ export const renderDisplayOption = (args: {
   allele: AnnotatedEntity | null | undefined;
   showAll?: boolean;
   subOptionRan?: (optionId: string, defaultValue: boolean) => boolean;
-  // For named link builders (ProtVar's icon, the protein popup); optional so
-  // options without a builder link, and their tests, need not supply them.
   genomeId?: string;
   protvarUrl?: string;
   openTargetsVariantId?: string;
-  // The option's help, hung on whichever node turns out to be its visible title
-  // (see Entities.helpAnchor). Optional: an option with no help renders exactly
-  // as before.
   help?: OptionHelp;
-  // Row sets a `map_rows` block draws from, keyed by vocabulary name — the AF
-  // populations this job selected. Optional: an option with no such block, and
-  // every existing caller, is unaffected.
   vocabularies?: Record<string, VocabularyEntry[]>;
 }): ReactNode | null => {
   const {
