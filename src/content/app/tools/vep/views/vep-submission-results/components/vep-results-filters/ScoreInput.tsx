@@ -21,13 +21,12 @@ import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 
 import type {
+  FilterOption,
   ResultsFilterCondition,
   ResultsFilterField,
-  ResultsFilterOperator
+  ResultsFilterOperator,
+  ScoreOptionGroup
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
-import { scoreFieldOption } from './resultsFilterFields';
-
-import type { ScoreFieldOptionGroup } from './resultsFilterFields';
 
 import styles from './VepResultsFilters.module.css';
 
@@ -36,7 +35,8 @@ type Props = {
   // category (genome wide / missense / splicing). A score taken by another row
   // is not offered again — one threshold per score.
   field: ResultsFilterField;
-  scoreOptionGroups: ScoreFieldOptionGroup[];
+  scoreOptionGroups: ScoreOptionGroup[];
+  operatorOptions: FilterOption[];
   operator: ResultsFilterOperator;
   threshold: number | undefined;
   includeMissing: boolean;
@@ -44,11 +44,6 @@ type Props = {
   missingLabel: string;
   onChange: (patch: Partial<ResultsFilterCondition>) => void;
 };
-
-const OPERATOR_OPTIONS = [
-  { value: 'le', label: '≤' },
-  { value: 'ge', label: '≥' }
-];
 
 /**
  * The editor for a numeric score filter: a comparison, a threshold, and what to
@@ -78,13 +73,19 @@ const ScoreInput = (props: Props) => {
   const {
     field,
     scoreOptionGroups,
+    operatorOptions,
     operator,
     threshold,
     includeMissing,
     missingLabel,
     onChange
   } = props;
-  const placeholder = scoreFieldOption(field)?.placeholder ?? '';
+  // The row's own score is always among the groups it is offered, so its range
+  // hint is here rather than needing the whole catalogue.
+  const placeholder =
+    scoreOptionGroups
+      .flatMap((group) => group.options)
+      .find((option) => option.value === field)?.placeholder ?? '';
   // Kept as text so a half-typed value ("-", "1.") survives; the number is only
   // reported once it parses.
   const [thresholdText, setThresholdText] = useState(
@@ -117,7 +118,7 @@ const ScoreInput = (props: Props) => {
         />
         <SimpleSelect
           className={styles.afOperatorSelect}
-          options={OPERATOR_OPTIONS}
+          options={operatorOptions}
           value={operator}
           onInput={(event) =>
             onChange({
@@ -136,7 +137,7 @@ const ScoreInput = (props: Props) => {
         <CheckboxWithLabel
           label={missingLabel}
           checked={includeMissing}
-          onChange={(checked) => onChange({ includeMissing: checked })}
+          onChange={(checked) => onChange({ include_missing: checked })}
         />
       </div>
     </div>

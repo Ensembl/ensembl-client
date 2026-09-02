@@ -244,6 +244,9 @@ const VepSubmissionResults = () => {
   );
   const scoreFields = (vepResults?.metadata.available_scores ??
     []) as ResultsFilterField[];
+  // Which fields the query builder offers, and how each is presented. Absent on
+  // a job pinned before the catalogue existed, which then offers no filters.
+  const filterFields = vepResults?.metadata.filter_fields ?? [];
 
   return (
     <div className={styles.container}>
@@ -274,7 +277,7 @@ const VepSubmissionResults = () => {
             isDirty={isFiltersDirty}
             hasAppliedFilters={hasAppliedFilters}
             resultSummary={resultSummary}
-            species={submission.species}
+            filterFields={filterFields}
             afSources={afSources}
             scoreFields={scoreFields}
             appliedConditionIds={appliedConditionIds}

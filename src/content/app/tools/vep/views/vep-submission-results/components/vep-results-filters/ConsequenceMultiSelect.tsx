@@ -21,18 +21,15 @@ import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/Checkbo
 import VariantColour from 'src/shared/components/variant-color/VariantColor';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
-import { CONSEQUENCE_OPTION_GROUPS } from './resultsFilterFields';
+import type { FilterOptionGroup } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
 import styles from './VepResultsFilters.module.css';
 
 type Props = {
   values: string[];
   onChange: (values: string[]) => void;
+  optionGroups: FilterOptionGroup[];
 };
-
-// All consequence terms in vocabulary order, so a selection is always reported
-// in a stable order regardless of the order the user ticked them.
-const ALL_TERMS = CONSEQUENCE_OPTION_GROUPS.flatMap((group) => group.options);
 
 /**
  * The value editor for a consequence condition: a button summarising the current
@@ -43,7 +40,10 @@ const ALL_TERMS = CONSEQUENCE_OPTION_GROUPS.flatMap((group) => group.options);
  * inner scrollable list impossible to scroll.
  */
 const ConsequenceMultiSelect = (props: Props) => {
-  const { values, onChange } = props;
+  const { values, onChange, optionGroups } = props;
+  // All terms in catalogue order, so a selection is reported in a stable order
+  // regardless of the order the user ticked them.
+  const allTerms = optionGroups.flatMap((group) => group.options);
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const selected = new Set(values);
@@ -51,7 +51,7 @@ const ConsequenceMultiSelect = (props: Props) => {
   useOutsideClick(wrapperRef, () => setIsOpen(false));
 
   const emit = (next: Set<string>) => {
-    onChange(ALL_TERMS.filter((term) => next.has(term)));
+    onChange(allTerms.filter((term) => next.has(term)));
   };
 
   const toggleValue = (value: string) => {
@@ -96,7 +96,7 @@ const ConsequenceMultiSelect = (props: Props) => {
       {isOpen && (
         <div className={styles.optionsPanel}>
           <div className={styles.optionGroups}>
-            {CONSEQUENCE_OPTION_GROUPS.map((group) => {
+            {optionGroups.map((group) => {
               const allSelected = group.options.every((option) =>
                 selected.has(option)
               );

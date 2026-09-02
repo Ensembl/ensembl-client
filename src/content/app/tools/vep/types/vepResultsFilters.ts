@@ -46,22 +46,6 @@ export type ResultsFilterField =
   | 'spliceai_dl'
   | 'spliceai_any';
 
-// The fields whose editor is a numeric comparison rather than a value list.
-export const SCORE_FILTER_FIELDS: ResultsFilterField[] = [
-  'cadd_phred',
-  'cadd_raw',
-  'alphamissense',
-  'revel',
-  'clinpred',
-  'eve',
-  'popeve',
-  'spliceai_ag',
-  'spliceai_al',
-  'spliceai_dg',
-  'spliceai_dl',
-  'spliceai_any'
-];
-
 // 'in' for set-membership fields; le/ge (<=, >=) for the numeric ones. There is
 // deliberately no '==': these are floats, so equality is a question the data can
 // rarely answer, and it was never the useful test for a frequency or a score.
@@ -89,21 +73,21 @@ export type ResultsFilterCondition = {
   // was never scored (out of that predictor's scope — a missense predictor has
   // nothing to say about a synonymous variant) and so implies nothing about how
   // damaging it is.
-  includeMissing?: boolean;
+  include_missing?: boolean;
 };
 
 // Whether a condition would actually filter anything (and so should be applied).
 export const isResultsFilterActive = (
   condition: ResultsFilterCondition
 ): boolean => {
-  if (condition.field === 'allele_frequency') {
+  if (condition.match !== undefined) {
     return (
       typeof condition.threshold === 'number' &&
       condition.threshold >= 0 &&
       condition.threshold <= 1
     );
   }
-  if (SCORE_FILTER_FIELDS.includes(condition.field)) {
+  if (condition.threshold !== undefined) {
     // No 0-1 bound here: not every score is a probability. CADD RAW is
     // unbounded and popEVE is negative throughout.
     return (
@@ -123,29 +107,67 @@ export const serializeResultsFilters = (
   conditions: ResultsFilterCondition[]
 ): string | undefined => {
   const active = conditions.filter(isResultsFilterActive).map((condition) => {
-    if (condition.field === 'allele_frequency') {
-      return {
-        field: condition.field,
-        operator: condition.operator,
-        values: condition.values,
-        threshold: condition.threshold,
-        match: condition.match ?? 'any'
-      };
-    }
-    if (SCORE_FILTER_FIELDS.includes(condition.field)) {
-      return {
-        field: condition.field,
-        operator: condition.operator,
-        values: [],
-        threshold: condition.threshold,
-        include_missing: condition.includeMissing ?? false
-      };
-    }
-    return {
-      field: condition.field,
-      operator: condition.operator,
-      values: condition.values
-    };
+    const wireCondition: Partial<ResultsFilterCondition> = { ...condition };
+    delete wireCondition.id;
+    return wireCondition;
   });
   return active.length > 0 ? JSON.stringify(active) : undefined;
+};
+
+/**
+ * The filter catalogue the tools API serves on the results response: which
+ * fields the query builder offers, and what each one's editor needs.
+ *
+ * Only the keys an editor reads are sent, so a text field has no score groups
+ * and the allele-frequency field is three keys wide. Which of the offered
+ * scores and AF sources this job actually carries is separate, and arrives as
+ * `available_scores` / `available_af_sources`.
+ */
+export type FilterOption = {
+  value: string;
+  label: string;
+};
+
+export type InitialFilterCondition = Omit<
+  ResultsFilterCondition,
+  'id' | 'field'
+>;
+
+export type FilterOptionGroup = {
+  label: string;
+  options: string[];
+};
+
+export type ScoreOption = {
+  value: ResultsFilterField;
+  label: string;
+  /** Range hint for the threshold input; differs per score. */
+  placeholder: string;
+};
+
+export type ScoreOptionGroup = {
+  title: string;
+  options: ScoreOption[];
+};
+
+export type FilterField = {
+  field: ResultsFilterField;
+  label: string;
+  /** Read between the field and its value. Absent where the editor chooses its
+   *  own operator, as the allele-frequency and score editors do. */
+  operator_label?: string;
+  editor: 'consequence' | 'text' | 'group' | 'af' | 'score';
+  initial_condition: InitialFilterCondition;
+  operator_options?: FilterOption[];
+  /** Text editors. */
+  placeholder?: string;
+  /** An editor that already takes many values is offered once, then withdrawn. */
+  single_instance?: boolean;
+  /** Consequence editor. */
+  option_groups?: FilterOptionGroup[];
+  /** Transcript-group editor. */
+  options?: FilterOption[];
+  /** Score editor. */
+  missing_label?: string;
+  score_groups?: ScoreOptionGroup[];
 };

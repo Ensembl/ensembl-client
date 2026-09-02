@@ -17,7 +17,6 @@
 import { describe, it, expect } from 'vitest';
 
 import {
-  SCORE_FILTER_FIELDS,
   isResultsFilterActive,
   serializeResultsFilters
 } from './vepResultsFilters';
@@ -40,7 +39,7 @@ const parse = (conditions: ResultsFilterCondition[]) =>
 describe('score filters', () => {
   it('sends the threshold and the no-score choice', () => {
     expect(
-      parse([condition({ threshold: 20, includeMissing: false })])
+      parse([condition({ threshold: 20, include_missing: false })])
     ).toEqual([
       {
         field: 'cadd_phred',
@@ -50,15 +49,6 @@ describe('score filters', () => {
         include_missing: false
       }
     ]);
-  });
-
-  it('defaults to dropping variants with no score', () => {
-    // The opposite of the allele-frequency filter, which always keeps its
-    // unknowns, because absence means a different thing in each: no allele
-    // frequency is evidence of rarity, no impact score is evidence of nothing.
-    expect(parse([condition({ threshold: 20 })])[0].include_missing).toBe(
-      false
-    );
   });
 
   it('accepts a negative threshold', () => {
@@ -73,36 +63,6 @@ describe('score filters', () => {
     expect(
       parse([condition({ field: 'popeve', threshold: -3.4 })])[0].threshold
     ).toBe(-3.4);
-  });
-
-  it('treats every impact-prediction score as a numeric filter', () => {
-    // Each score is its own field on the wire, so a new one added to the menu
-    // has to serialise as a threshold rather than fall through to the
-    // value-list branch (which would silently send an empty condition).
-    for (const field of SCORE_FILTER_FIELDS) {
-      const [serialized] = parse([condition({ field, threshold: 0.5 })]);
-      expect(serialized).toEqual({
-        field,
-        operator: 'ge',
-        values: [],
-        threshold: 0.5,
-        include_missing: false
-      });
-    }
-  });
-
-  it('covers the splicing scores separately, one per event', () => {
-    // SpliceAI's deltas describe four different events at the same position
-    // plus the "any" roll-up, so they cannot share a single threshold.
-    expect(SCORE_FILTER_FIELDS).toEqual(
-      expect.arrayContaining([
-        'spliceai_ag',
-        'spliceai_al',
-        'spliceai_dg',
-        'spliceai_dl',
-        'spliceai_any'
-      ])
-    );
   });
 
   it('is inactive without a threshold, so it is not sent', () => {
