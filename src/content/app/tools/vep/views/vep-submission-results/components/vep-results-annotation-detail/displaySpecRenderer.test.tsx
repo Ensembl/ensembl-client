@@ -1368,8 +1368,8 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByText('ClinVar variant ID')).toBeNull();
   });
 
-  test('ClinVar: the conditions table — linked condition, counted classifications, stacked records', () => {
-    const { container } = renderOption('phenotypes', {
+  test('ClinVar: the conditions table — linked condition, counted classifications, stacked records', async () => {
+    const { container, findByText } = renderOption('phenotypes', {
       consequence: {
         annotations: [
           annotation('clinvar', 'transcript', {
@@ -1475,14 +1475,12 @@ describe('renderDisplayOption', () => {
       'ClinVar record'
     ]);
 
-    // The classification header carries the one note that says something the
-    // table cannot show for itself. What a row expands to is not it -- the
-    // chevron says that already.
-    const notes = headers[0].querySelectorAll('[class*="columnNote"]');
-    expect(notes.length).toBe(1);
-    // The line about light text is itself in that light text.
-    expect(notes[0].className).toMatch(/columnNoteMuted/);
-    expect(notes[0].textContent).toContain('not contributing');
+    // The classification header carries a note, which is hidden behind the question button
+    const questionButton = headers[0].querySelector('button');
+    expect(questionButton).toBeDefined();
+    await userEvent.click(questionButton as HTMLElement);
+    const note = await findByText(/not contributing/i);
+    expect(note).toBeDefined();
 
     const [linked] = screen.getAllByRole('link', {
       name: /Parkinsonism-dystonia 3, childhood-onset/
@@ -1500,9 +1498,6 @@ describe('renderDisplayOption', () => {
     expect(rcv.getAttribute('href')).toBe(
       'https://www.ncbi.nlm.nih.gov/clinvar/RCV006249379/'
     );
-    // An accession is one thing: its icon must not be left on the line above.
-    // The condition beside it is prose, so it must still be free to wrap —
-    // which is why this is declared per item and not a rule for every link.
     expect(rcv.className).toMatch(/nowrap/);
     expect(linked.className).not.toMatch(/nowrap/);
     expect(screen.getByRole('link', { name: /RCV001836831/ })).toBeDefined();
