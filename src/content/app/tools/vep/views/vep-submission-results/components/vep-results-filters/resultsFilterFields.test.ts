@@ -41,14 +41,43 @@ const CATALOGUE: FilterField[] = [
     field: 'consequence',
     label: 'Predicted molecular consequence',
     editor: 'consequence',
+    initial_condition: { operator: 'in', values: [] },
     single_instance: true
   },
-  { field: 'transcript', label: 'Transcript', editor: 'text' },
-  { field: 'allele_frequency', label: 'Allele frequency', editor: 'af' },
+  {
+    field: 'transcript',
+    label: 'Transcript',
+    editor: 'text',
+    initial_condition: { operator: 'in', values: [] }
+  },
+  {
+    field: 'allele_frequency',
+    label: 'Allele frequency',
+    editor: 'af',
+    initial_condition: {
+      operator: 'le',
+      values: [],
+      threshold: 0.05,
+      match: 'any'
+    },
+    operator_options: [
+      { value: 'le', label: '≤' },
+      { value: 'ge', label: '≥' }
+    ]
+  },
   {
     field: 'cadd_phred',
     label: 'Variant impact predictions',
     editor: 'score',
+    initial_condition: {
+      operator: 'ge',
+      values: [],
+      include_missing: false
+    },
+    operator_options: [
+      { value: 'le', label: '≤' },
+      { value: 'ge', label: '≥' }
+    ],
     missing_label: 'Include variants with no score',
     score_groups: [
       {
@@ -145,22 +174,32 @@ describe('availableScoresForRow', () => {
 });
 
 describe('createCondition', () => {
-  it('starts every score at >=, since the damaging end is what is asked for', () => {
+  it('uses the score initial condition from the catalogue', () => {
     for (const field of CATALOGUE_SCORES) {
-      expect(createCondition(field, CATALOGUE).operator).toBe('ge');
+      expect(createCondition(field, CATALOGUE)).toMatchObject({
+        field,
+        operator: 'ge',
+        values: [],
+        include_missing: false
+      });
     }
   });
 
-  it('starts every score excluding the unscored variants', () => {
-    // Unlike allele frequency, where absence implies the variant is very rare
-    // and so is kept. A variant with no impact score was never judged, so
-    // including it by default would dilute a hunt for damaging variants.
-    for (const field of CATALOGUE_SCORES) {
-      expect(createCondition(field, CATALOGUE).includeMissing).toBe(false);
-    }
-    expect(
-      createCondition('allele_frequency', CATALOGUE).includeMissing
-    ).toBeUndefined();
+  it('uses the allele-frequency initial condition from the catalogue', () => {
+    expect(createCondition('allele_frequency', CATALOGUE)).toMatchObject({
+      field: 'allele_frequency',
+      operator: 'le',
+      values: [],
+      threshold: 0.05,
+      match: 'any'
+    });
+  });
+
+  it('does not share the catalogue values array between rows', () => {
+    const first = createCondition('transcript', CATALOGUE);
+    const second = createCondition('transcript', CATALOGUE);
+    first.values.push('ENST1');
+    expect(second.values).toEqual([]);
   });
 });
 

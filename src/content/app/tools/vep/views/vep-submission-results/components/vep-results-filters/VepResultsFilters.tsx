@@ -238,15 +238,17 @@ const VepResultsFilters = (props: Props) => {
                     scoreFields,
                     filterFields
                   )}
+                  operatorOptions={definition.operator_options ?? []}
                   operator={condition.operator}
                   threshold={condition.threshold}
-                  includeMissing={condition.includeMissing ?? false}
+                  includeMissing={condition.include_missing ?? false}
                   missingLabel={definition.missing_label ?? ''}
                   onChange={(patch) => updateCondition(index, patch)}
                 />
               ) : definition.editor === 'af' ? (
                 <AlleleFrequencyInput
                   operator={condition.operator}
+                  operatorOptions={definition.operator_options ?? []}
                   match={condition.match}
                   values={condition.values}
                   threshold={condition.threshold}

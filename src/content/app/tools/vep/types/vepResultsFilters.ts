@@ -46,22 +46,6 @@ export type ResultsFilterField =
   | 'spliceai_dl'
   | 'spliceai_any';
 
-// The fields whose editor is a numeric comparison rather than a value list.
-export const SCORE_FILTER_FIELDS: ResultsFilterField[] = [
-  'cadd_phred',
-  'cadd_raw',
-  'alphamissense',
-  'revel',
-  'clinpred',
-  'eve',
-  'popeve',
-  'spliceai_ag',
-  'spliceai_al',
-  'spliceai_dg',
-  'spliceai_dl',
-  'spliceai_any'
-];
-
 // 'in' for set-membership fields; le/ge (<=, >=) for the numeric ones. There is
 // deliberately no '==': these are floats, so equality is a question the data can
 // rarely answer, and it was never the useful test for a frequency or a score.
@@ -89,21 +73,21 @@ export type ResultsFilterCondition = {
   // was never scored (out of that predictor's scope — a missense predictor has
   // nothing to say about a synonymous variant) and so implies nothing about how
   // damaging it is.
-  includeMissing?: boolean;
+  include_missing?: boolean;
 };
 
 // Whether a condition would actually filter anything (and so should be applied).
 export const isResultsFilterActive = (
   condition: ResultsFilterCondition
 ): boolean => {
-  if (condition.field === 'allele_frequency') {
+  if (condition.match !== undefined) {
     return (
       typeof condition.threshold === 'number' &&
       condition.threshold >= 0 &&
       condition.threshold <= 1
     );
   }
-  if (SCORE_FILTER_FIELDS.includes(condition.field)) {
+  if (condition.threshold !== undefined) {
     // No 0-1 bound here: not every score is a probability. CADD RAW is
     // unbounded and popEVE is negative throughout.
     return (
@@ -123,29 +107,9 @@ export const serializeResultsFilters = (
   conditions: ResultsFilterCondition[]
 ): string | undefined => {
   const active = conditions.filter(isResultsFilterActive).map((condition) => {
-    if (condition.field === 'allele_frequency') {
-      return {
-        field: condition.field,
-        operator: condition.operator,
-        values: condition.values,
-        threshold: condition.threshold,
-        match: condition.match ?? 'any'
-      };
-    }
-    if (SCORE_FILTER_FIELDS.includes(condition.field)) {
-      return {
-        field: condition.field,
-        operator: condition.operator,
-        values: [],
-        threshold: condition.threshold,
-        include_missing: condition.includeMissing ?? false
-      };
-    }
-    return {
-      field: condition.field,
-      operator: condition.operator,
-      values: condition.values
-    };
+    const wireCondition: Partial<ResultsFilterCondition> = { ...condition };
+    delete wireCondition.id;
+    return wireCondition;
   });
   return active.length > 0 ? JSON.stringify(active) : undefined;
 };
@@ -163,6 +127,11 @@ export type FilterOption = {
   value: string;
   label: string;
 };
+
+export type InitialFilterCondition = Omit<
+  ResultsFilterCondition,
+  'id' | 'field'
+>;
 
 export type FilterOptionGroup = {
   label: string;
@@ -188,9 +157,10 @@ export type FilterField = {
    *  own operator, as the allele-frequency and score editors do. */
   operator_label?: string;
   editor: 'consequence' | 'text' | 'group' | 'af' | 'score';
+  initial_condition: InitialFilterCondition;
+  operator_options?: FilterOption[];
   /** Text editors. */
   placeholder?: string;
-  mono?: boolean;
   /** An editor that already takes many values is offered once, then withdrawn. */
   single_instance?: boolean;
   /** Consequence editor. */

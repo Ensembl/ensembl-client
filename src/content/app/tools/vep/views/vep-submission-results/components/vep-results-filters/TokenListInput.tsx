@@ -15,7 +15,6 @@
  */
 
 import { useState, memo, type InputEvent } from 'react';
-import classNames from 'classnames';
 
 import type { FilterField } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
@@ -24,7 +23,7 @@ import styles from './VepResultsFilters.module.css';
 type Props = {
   values: string[];
   onChange: (values: string[]) => void;
-  config: Pick<FilterField, 'placeholder' | 'mono'>;
+  config: Pick<FilterField, 'placeholder'>;
 };
 
 // Split free text (comma / whitespace / newline separated) into unique tokens,
@@ -65,9 +64,7 @@ const TokenListInput = (props: Props) => {
     <div className={styles.tokenField}>
       <input
         type="text"
-        className={classNames(styles.tokenInput, {
-          [styles.tokenInputMono]: config.mono
-        })}
+        className={styles.tokenInput}
         value={text}
         onInput={onInput}
         placeholder={config.placeholder}

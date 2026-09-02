@@ -109,10 +109,6 @@
   font-size: 13px;
 }
 
-.tokenInputMono {
-  font-family: 'IBM Plex Mono', monospace;
-}
-
 .tokenError {
   color: var(--color-red);
   font-size: 11px;

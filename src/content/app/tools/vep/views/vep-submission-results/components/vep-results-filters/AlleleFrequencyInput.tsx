@@ -23,6 +23,7 @@ import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/Checkbo
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import type {
+  FilterOption,
   ResultsFilterCondition,
   ResultsFilterOperator,
   AlleleFrequencyMatch
@@ -36,6 +37,7 @@ type Scope = 'any' | 'all' | 'specific';
 
 type Props = {
   operator: ResultsFilterOperator;
+  operatorOptions: FilterOption[];
   match: AlleleFrequencyMatch | undefined;
   values: string[];
   threshold: number | undefined;
@@ -49,15 +51,16 @@ const SCOPE_OPTIONS = [
   { value: 'specific', label: 'Specific selections' }
 ];
 
-// No '=': frequencies are floats, so equality is a question the data can rarely
-// answer, and it was never the useful test here.
-const OPERATOR_OPTIONS = [
-  { value: 'le', label: '≤' },
-  { value: 'ge', label: '≥' }
-];
-
 const AlleleFrequencyInput = (props: Props) => {
-  const { operator, match, values, threshold, sources, onChange } = props;
+  const {
+    operator,
+    operatorOptions,
+    match,
+    values,
+    threshold,
+    sources,
+    onChange
+  } = props;
   const [thresholdText, setThresholdText] = useState(
     threshold !== undefined ? String(threshold) : ''
   );
@@ -158,7 +161,7 @@ const AlleleFrequencyInput = (props: Props) => {
 
         <SimpleSelect
           className={styles.afOperatorSelect}
-          options={OPERATOR_OPTIONS}
+          options={operatorOptions}
           value={operator}
           onChange={() => undefined}
           onInput={(event) =>

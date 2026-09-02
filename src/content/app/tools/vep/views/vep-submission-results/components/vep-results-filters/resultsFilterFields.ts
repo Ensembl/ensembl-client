@@ -50,29 +50,22 @@ export const scoreFieldOption = (
   scoreOptions(fields).find((option) => option.value === field);
 
 // A fresh condition on the given field, with a unique client-side id (used to
-// track which rows have been applied). Allele frequency starts on the requested
-// defaults: match any, <= (le), threshold 0.05.
+// track which rows have been applied) and API-provided initial wire values.
 let conditionCounter = 0;
 export const createCondition = (
   field: ResultsFilterField,
   fields: FilterField[]
 ): ResultsFilterCondition => {
-  const id = `condition-${++conditionCounter}`;
-  if (field === 'allele_frequency') {
-    return {
-      id,
-      field,
-      operator: 'le',
-      values: [],
-      match: 'any',
-      threshold: 0.05
-    };
+  const definition = definitionForField(field, fields);
+  if (!definition) {
+    throw new Error(`No filter definition for field '${field}'`);
   }
-  if (isScoreField(field, fields)) {
-    // `>=` by default
-    return { id, field, operator: 'ge', values: [], includeMissing: false };
-  }
-  return { id, field, operator: 'in', values: [] };
+  return {
+    id: `condition-${++conditionCounter}`,
+    field,
+    ...definition.initial_condition,
+    values: [...definition.initial_condition.values]
+  };
 };
 
 // The single-instance fields already present in a set of conditions.
