@@ -254,11 +254,8 @@ export type DisplayColumnExpand = {
   emphasis?: DisplayWhereSpec | null;
 };
 
-// FIXME: column notes should be displayed at the bottom of the table
-// QUESTION: is the 'muted' field necessary
 export type DisplayColumnNote = {
   text: string;
-  muted?: boolean;
 };
 
 export type DisplayTableColumnSpec = DisplayValuePiece & {

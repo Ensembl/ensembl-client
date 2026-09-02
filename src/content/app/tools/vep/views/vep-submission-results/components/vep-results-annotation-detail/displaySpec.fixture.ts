@@ -566,8 +566,7 @@ export const displaySpecFixture: DisplaySpec = {
                   nowrap: false,
                   notes: [
                     {
-                      text: 'Submissions not contributing to the aggregate classification shown in light text',
-                      muted: true
+                      text: 'Submissions not contributing to the aggregate classification shown in light text'
                     }
                   ],
                   items: {
@@ -708,8 +707,7 @@ export const displaySpecFixture: DisplaySpec = {
                   nowrap: false,
                   notes: [
                     {
-                      text: 'Submissions not contributing to the aggregate classification shown in light text',
-                      muted: true
+                      text: 'Submissions not contributing to the aggregate classification shown in light text'
                     }
                   ],
                   items: {
