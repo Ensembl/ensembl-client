@@ -316,6 +316,32 @@ const toRowSpec = (
     const href = row.link_from
       ? readField(row.link_from, spec, entities)
       : value;
+    // One value holding several, each its own link: a ClinVar custom joins the
+    // records that matched a variant with `&`, and one URL built from all of
+    // them points nowhere.
+    if (row.split && !isAbsent(value)) {
+      const template = row.link.template;
+      const parts = String(value).split(row.split).filter(Boolean);
+      return {
+        key: row.key ?? undefined,
+        label: rowLabel(row),
+        value,
+        valueNode: (
+          <span className={styles.splitLinks}>
+            {parts.map((part, index) => {
+              const url = interpolateUrl(template, { value: part });
+              return url ? (
+                <ExternalLink key={index} to={url}>
+                  {part}
+                </ExternalLink>
+              ) : (
+                <Fragment key={index}>{part}</Fragment>
+              );
+            })}
+          </span>
+        )
+      };
+    }
     const hrefString = interpolateUrl(row.link.template, {
       value: String(href)
     });

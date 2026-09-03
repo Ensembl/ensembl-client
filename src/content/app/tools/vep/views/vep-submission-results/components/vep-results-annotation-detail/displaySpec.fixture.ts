@@ -502,6 +502,7 @@ export const displaySpecFixture: DisplaySpec = {
                 {
                   label: 'ClinVar variant ID',
                   from: 'clinvar.id',
+                  split: '&',
                   link: {
                     kind: 'external',
                     template:
