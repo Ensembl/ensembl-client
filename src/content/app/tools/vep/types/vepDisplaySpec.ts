@@ -63,9 +63,6 @@ export type DisplayRowSpec = {
    * Example when used: Geno2MP
    */
   link_from?: string | null;
-  /** One value packing several, each linked in its own right: a ClinVar custom
-   *  joins the records that matched one variant with `&`, and each has its own
-   *  page. Same separator vocabulary a list item's cell uses. */
   split?: string | null;
   stars?: string | null; // string referring to a rating scale
   /**

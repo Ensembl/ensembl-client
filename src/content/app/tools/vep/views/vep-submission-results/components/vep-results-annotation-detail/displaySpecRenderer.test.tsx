@@ -1355,14 +1355,13 @@ describe('renderDisplayOption', () => {
   });
 
   test('ClinVar short: several matched records each get their own link', () => {
-    // A custom annotation joins every ClinVar record that matched the variant
-    // with `&`. One URL built from all of them points nowhere, so the row
-    // splits and links each id in its own right.
+    const testIds = ['2673364', '2045211', '3773565'];
+
     renderOption('phenotypes', {
       consequence: {
         annotations: [
           annotation('clinvar', 'transcript', {
-            id: '2673364&2045211&3773565',
+            id: testIds.join('&'),
             significance: ['Pathogenic', 'Pathogenic', 'Benign'],
             classification_summary: [
               {
@@ -1379,7 +1378,9 @@ describe('renderDisplayOption', () => {
       }
     });
 
-    for (const id of ['2673364', '2045211', '3773565']) {
+    // check that the joined ids string that is passed in the annotations
+    // gets eventually properly split into individual ids that are used for individual urls
+    for (const id of testIds) {
       expect(screen.getByRole('link', { name: id }).getAttribute('href')).toBe(
         `https://www.ncbi.nlm.nih.gov/clinvar/variation/${id}/`
       );
