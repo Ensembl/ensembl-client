@@ -29,6 +29,7 @@ import { NOTIFICATIONS_STORE_NAME } from 'src/shared/services/notificationsStora
 import { IndexedDBUpdateScheduler } from './indexeddb-migrations/dbUpdateScheduler';
 
 import { migrateSpeciesStore } from './indexeddb-migrations/speciesStoreMigrations';
+import { migrateVepStore } from './indexeddb-migrations/vepStoreMigrations';
 
 const DB_NAME = 'ensembl-website';
 const DB_VERSION = 9;
@@ -65,6 +66,11 @@ const getDbPromise = (params?: {
       }
       if (!db.objectStoreNames.contains(VEP_SUBMISSIONS_STORE_NAME)) {
         db.createObjectStore(VEP_SUBMISSIONS_STORE_NAME);
+      } else {
+        migrateVepStore({
+          oldVersion,
+          transaction
+        });
       }
       if (!db.objectStoreNames.contains(PREVIOUSLY_VIEWED_OBJECTS_STORE_NAME)) {
         db.createObjectStore(PREVIOUSLY_VIEWED_OBJECTS_STORE_NAME);
