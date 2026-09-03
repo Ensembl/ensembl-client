@@ -32,7 +32,7 @@ import { migrateSpeciesStore } from './indexeddb-migrations/speciesStoreMigratio
 import { migrateVepStore } from './indexeddb-migrations/vepStoreMigrations';
 
 const DB_NAME = 'ensembl-website';
-const DB_VERSION = 9;
+const DB_VERSION = 10;
 
 const getDbPromise = (params?: {
   onBlocking?: OpenDBCallbacks<unknown>['blocking'];
