@@ -18,6 +18,8 @@ import { useMemo, useState } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
+import { isProductionEnvironment } from 'src/shared/helpers/environment';
+
 import {
   getSelectedSpecies,
   getVepFormInputCommittedFlag,
@@ -34,6 +36,7 @@ import {
   areAllPanelsFullySelected
 } from './vep-form-options-panel/panelSelectionUpdates';
 import { CircleLoader } from 'src/shared/components/loader';
+import TextButton from 'src/shared/components/text-button/TextButton';
 
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 
@@ -101,13 +104,15 @@ const OptionsSection = (props: { panels: FormPanel[] }) => {
     <div className={styles.container}>
       <div className={styles.sectionHeader}>
         <span>Job options</span>
-        <button
-          type="button"
-          className={styles.enableAllButton}
-          onClick={toggleAll}
-        >
-          {allSelected ? 'Disable all options' : 'Enable all default options'}
-        </button>
+        {!isProductionEnvironment() && (
+          <TextButton
+            type="button"
+            className={styles.enableAllButton}
+            onClick={toggleAll}
+          >
+            {allSelected ? 'Disable all options' : 'Enable all default options'}
+          </TextButton>
+        )}
       </div>
       {panels.map((panel) => (
         <VepFormOptionsPanel

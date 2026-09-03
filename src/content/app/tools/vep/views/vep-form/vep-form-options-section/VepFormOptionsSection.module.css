@@ -54,17 +54,6 @@
   padding-bottom: 22px;
 }
 
-/* Section-level counterpart to a panel's "Select all": switches every option
-   on with its default sub-options and opens the panels, or all back off.
-   Right-aligned in the header grid's second column, opposite "Job options". */
 .enableAllButton {
   justify-self: end;
-  appearance: none;
-  border: none;
-  background: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  color: var(--color-blue);
-  white-space: nowrap;
 }
