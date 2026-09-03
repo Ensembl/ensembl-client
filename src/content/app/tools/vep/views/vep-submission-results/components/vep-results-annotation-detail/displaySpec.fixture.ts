@@ -400,11 +400,6 @@ export const displaySpecFixture: DisplaySpec = {
               label: 'Consequences',
               from: 'riboseq_orfs.consequences',
               format: 'join'
-            },
-            {
-              key: 'imp',
-              label: 'Impact',
-              from: 'riboseq_orfs.impact'
             }
           ]
         }
