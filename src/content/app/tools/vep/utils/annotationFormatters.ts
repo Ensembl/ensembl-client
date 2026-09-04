@@ -21,6 +21,7 @@ export const num = (value: number): string =>
     : Number(value.toPrecision(4)).toString();
 
 /**
+ * "Humanize" means pretty-print to make it fit for human inspection.
  * Classifier terms arrive underscore-delimited (e.g. "likely_benign"); show
  * them space-separated for readability.
  */
@@ -32,7 +33,7 @@ export const humanizeClass = (label: string): string =>
  * Collapse underscore runs to a single space; and where a term is entirely
  * upper-case (OMIM-style shouting) drop it to sentence case. Mixed-case terms
  * are left untouched so embedded gene symbols/acronyms (WARS2, SHOX, CLN8) and
- * prefixes like "ClinVar:" survive.
+ * prefixes like "ClinVar:" are left unchanged.
  */
 export const normalizePhenotype = (raw: string): string => {
   const text = raw.replace(/_+/g, ' ').trim();
@@ -45,7 +46,7 @@ export const normalizePhenotype = (raw: string): string => {
 };
 
 /**
- * A classification with its score, shown score-first with the (humanised) class
+ * A classification with its score, shown score-first with the pretty-printed class
  * in brackets, e.g. "0.0854 (likely benign)". Falls back to just the class when
  * there is no score.
  */
@@ -62,9 +63,9 @@ export const joinList = (values: string[] | null | undefined): string | null =>
   values && values.length ? values.join(', ') : null;
 
 /**
- * A list of classification terms, each humanised (underscores -> spaces) and
- * joined into one comma-separated value; null when there is nothing. ClinVar's
- * significance, shown as e.g. "Pathogenic, likely pathogenic".
+ * A list of pretty-printed classification terms joined into one comma-separated value;
+ * null when there is nothing.
+ * ClinVar's significance, shown as e.g. "Pathogenic, likely pathogenic".
  */
 export const humanizeJoin = (
   values: string[] | null | undefined
@@ -81,7 +82,7 @@ export const humanizeTerms = (value: string): string | null =>
   value.split('+').map(humanizeClass).filter(Boolean).join(', ') || null;
 
 /**
- * The number of items in a list, or in a `&`-delimited string (IntAct packs its
+ * The number of items in a list, or in an `&`-delimited string (IntAct packs its
  * columns that way); null when there are none, so a zero count drops / dashes
  * its row like an absent value — matching the old ProtVar / IntAct summaries.
  */
