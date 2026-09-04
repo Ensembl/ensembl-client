@@ -56,10 +56,9 @@ export type DisplayRowSpec = {
    * The value of the `default` field mirrors the form default.
    */
   sub_option?: { id: string; default?: boolean } | null;
-  /** A trailing link on the value (a named builder — ProtVar's icon per row). */
   link?: DisplayLinkSpec | null;
   /**
-   * Build that link from a sibling field rather than from the value's own text.
+   * Build the link from a sibling field rather than from the value's own text.
    * Example when used: Geno2MP
    */
   link_from?: string | null;
