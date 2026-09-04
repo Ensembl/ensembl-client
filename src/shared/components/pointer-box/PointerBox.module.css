@@ -9,6 +9,11 @@
   z-index: 1000;
 }
 
+.pointerBox a {
+  color: var(--pointer-box-text-color, var(--color-white));
+  text-decoration: underline;
+}
+
 /* Class applied to pointer box while the code is finding appropriate position for it.
 Pointer box should be invisible, but have width and height required for calculations.
 It should also not change dimensions of the page (and cause sliders to appear);

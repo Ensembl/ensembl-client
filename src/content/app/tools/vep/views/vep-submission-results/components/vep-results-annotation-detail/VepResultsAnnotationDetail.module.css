@@ -1,0 +1,320 @@
+.detail {
+  --annotation-indent-step: 10px;
+  padding: 16px 32px;
+  background-color: var(--color-light-grey);
+  content-visibility: auto; /* to reduce browser work and help with performance */
+  contain-intrinsic-height: auto 400px;
+  line-height: 20px;
+}
+
+.sections {
+  column-width: 384px;
+  column-gap: var(--standard-gutter);
+  column-count: 3;
+  max-width: calc(3 * 384px + 2 * 32px);
+}
+
+.fullWidthSections {
+  margin-top: 16px;
+}
+
+.fullWidthSections .row:not(.stackedRow) {
+  max-width: 400px;
+}
+
+.detailToolbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.showAllToggle {
+  grid-template-columns: auto auto;
+}
+
+.showAllToggle span {
+  order: -1;
+  padding-left: 0;
+  padding-right: 12px;
+}
+
+.toolbarClose {
+  margin-left: auto;
+}
+
+.indented {
+  padding-left: var(--annotation-indent-step);
+}
+
+.optionBlock,
+.categoryBlock,
+.row,
+.tableScroll,
+table {
+  break-inside: avoid;
+}
+
+.categoryBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.categoryBlock:last-child {
+  margin-bottom: 0;
+}
+
+.categoryLabel {
+  font-weight: var(--font-weight-bold);
+}
+
+
+.categoryChildren {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.optionBlock,
+.optionChildren,
+.stackedValue,
+.cellItems {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.optionLabel {
+  font-size: 12px;
+}
+
+/*
+  FIXME: for this and optionLabelPlain, check how they are used.
+  See OptionBlock in annotationRows.tsx.
+  Note that OptionBlock uses .optionLabel as the highest heading level,
+  but we no longer use prominent styles for .optionLabel
+*/
+.optionLabelIntermediate {
+  font-weight: var(--font-weight-semibold);
+}
+
+.optionLabelPlain {
+  font-weight: var(--font-weight-normal);
+}
+
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  break-inside: avoid; /* Prevent breaking content within sections in a multicol layout. Critical for Safari, and good for Firefox */
+}
+
+.sectionTitle {
+  break-after: avoid;
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+  border-bottom: 1px solid var(--color-medium-light-grey);
+  padding-bottom: 4px;
+}
+
+.sectionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+/* FIXME: delete class? */
+.rowLabel {
+  /* color: var(--color-dark-grey); */
+}
+
+.stackedRow {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 1.4em;
+}
+
+.stackedRowValue {
+  margin-top: 0.7em;
+  padding-left: var(--annotation-indent-step);
+}
+
+.standaloneStack {
+  margin-top: 1.4em;
+}
+
+.standaloneStack .stackedRowValue {
+  margin-top: 0;
+}
+
+.strongValue {
+  font-weight: var(--font-weight-bold);
+}
+
+.optionChildren > .optionBlock + .optionBlock {
+  margin-top: 10px;
+}
+
+.optionChildren > * + .tableScroll {
+  margin-top: 10px;
+}
+
+.breakdownTable {
+  border-collapse: collapse;
+}
+
+.tableScroll {
+  overflow-x: auto;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.section,
+.sectionBody,
+.categoryBlock,
+.categoryChildren,
+.optionBlock,
+.optionChildren {
+  min-width: 0;
+}
+
+.breakdownTable th.alignRight,
+.breakdownTable td.alignRight {
+  text-align: right;
+}
+
+.breakdownTable th,
+.breakdownTable td {
+  text-align: left;
+  padding: 2px 8px 2px 0;
+  vertical-align: top;
+  max-width: 70ch;
+}
+
+.breakdownTable th:last-child,
+.breakdownTable td:last-child {
+  padding-right: 0;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.breakdownTable th {
+  font-size: 11px;
+  font-weight: var(--font-weight-light);
+  border-bottom: 1px solid var(--color-medium-light-grey);
+  padding-bottom: 3px;
+}
+
+.labelWithHelp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rowHelpIcon {
+  flex: none;
+}
+
+.listItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 8px;
+  overflow-wrap: anywhere;
+}
+
+.listRecord:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+.plainRow {
+  justify-content: flex-start;
+}
+
+.phenotypeToggle {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-blue);
+  font-size: inherit;
+}
+
+.stackedGrid {
+  display: grid;
+  grid-template-columns: repeat(
+    var(--stacked-columns, 1),
+    minmax(min-content, max-content)
+  );
+  align-items: baseline;
+  column-gap: 10px;
+  row-gap: 3px;
+  overflow-x: auto;
+}
+
+.ratedValue {
+  display: inline-flex;
+  align-items: baseline;
+  column-gap: 6px;
+}
+
+.inlineRating {
+  flex: none;
+  align-self: flex-start;
+  margin-top: 0.15em;
+}
+
+.emphasisedDetailRow {
+  color: var(--color-black);
+  font-weight: var(--font-weight-dark);
+}
+
+.splitLinks {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+}
+
+.expandableCellToggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.cellChevron {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  margin-top: 4px;
+}
+
+.expandedDetailRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  padding-left: var(--annotation-indent-step);
+  font-size: 10px;
+}

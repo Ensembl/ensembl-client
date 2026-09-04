@@ -29,18 +29,35 @@ import { fetchExampleObjectsForGenome } from 'src/shared/state/genome/genomeApiS
 
 import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { VepFormConfig } from 'src/content/app/tools/vep/types/vepFormConfig';
-import type { VepSubmissionPayload } from 'src/content/app/tools/vep/types/vepSubmission';
+import { resolveAnnotationPool } from 'src/content/app/tools/vep/utils/annotationPool';
+import type {
+  VepSubmissionPayload,
+  VepSelectedSpecies
+} from 'src/content/app/tools/vep/types/vepSubmission';
+import {
+  serializeResultsFilters,
+  type ResultsFilterCondition
+} from 'src/content/app/tools/vep/types/vepResultsFilters';
 
 const vepApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    vepFormConfig: builder.query<VepFormConfig, { genome_id: string }>({
-      query: (params) => ({
-        url: `${config.toolsApiBaseUrl}/vep/form_config/${params.genome_id}`
+    vepGenomeSuggestions: builder.query<VepSelectedSpecies[], void>({
+      query: () => ({
+        url: `${config.toolsApiBaseUrl}/vep/species_presets`
+      })
+    }),
+    vepFormConfig: builder.query<
+      VepFormConfig,
+      {
+        genome_id: string;
+      }
+    >({
+      query: ({ genome_id }) => ({
+        url: `${config.toolsApiBaseUrl}/vep/form_config/${genome_id}`
       })
     }),
     vepFormExampleInput: builder.query<
       { vcfString?: string },
-      // { submission_id: string },
       { genomeId: string }
     >({
       queryFn: async (params, { dispatch }) => {
@@ -119,11 +136,18 @@ const vepApiSlice = restApiSlice.injectEndpoints({
         submission_id: string;
         page: number;
         per_page: number;
+        filters?: ResultsFilterCondition[];
       }
     >({
-      query: ({ submission_id, page, per_page }) => ({
-        url: `${config.toolsApiBaseUrl}/vep/submissions/${submission_id}/results?page=${page}&per_page=${per_page}`
-      })
+      query: ({ submission_id, page, per_page, filters }) => {
+        let url = `${config.toolsApiBaseUrl}/vep/submissions/${submission_id}/results?page=${page}&per_page=${per_page}`;
+        const serializedFilters = serializeResultsFilters(filters ?? []);
+        if (serializedFilters) {
+          url += `&filters=${encodeURIComponent(serializedFilters)}`;
+        }
+        return { url };
+      },
+      transformResponse: resolveAnnotationPool
     })
   })
 });
@@ -145,6 +169,7 @@ const prepareSubmissionFormData = (payload: VepSubmissionPayload) => {
 };
 
 export const {
+  useVepGenomeSuggestionsQuery,
   useVepFormConfigQuery,
   useVepFormExampleInputQuery,
   useVepResultsQuery,

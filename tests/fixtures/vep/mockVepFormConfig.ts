@@ -29,20 +29,9 @@ const mockVepFormConfig = {
         }
       ],
       default_value: 'gencode_comprehensive'
-    },
-    symbol: {
-      label: 'Gene symbol',
-      description: null,
-      type: 'boolean',
-      default_value: true
-    },
-    biotype: {
-      label: 'Transcript biotype',
-      description: null,
-      type: 'boolean',
-      default_value: true
     }
-  }
+  },
+  panels: []
 } satisfies VepFormConfig;
 
 export default mockVepFormConfig;

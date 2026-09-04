@@ -32,7 +32,8 @@ import SimpleSelect, {
 import VepSubmitButton from '../vep-submit-button/VepSubmitButton';
 import EnsemblVepLogo from './EnsemblVepLogo';
 import EnsemblVepVersion from './EnsemblVepVersion';
-import VepTopBarNavButtons from './VepTopBarNavButton';
+import VepTopBarNavButton from './VepTopBarNavButton';
+import VepSubmissionName from 'src/content/app/tools/vep/views/vep-form/vep-submission-name/VepSubmissionName';
 
 import styles from './VepTopBar.module.css';
 
@@ -42,12 +43,15 @@ const VepFormTopBar = () => {
       <div className={styles.vepFormGrid}>
         <EnsemblVepLogo />
         <div className={styles.runAJob}>Run a job</div>
-        <div className={styles.transcriptSetAndSubmit}>
+        <div className={styles.transcriptSet}>
           <TranscriptSetSelector />
+        </div>
+        <div className={styles.submissionNameAndSubmit}>
+          <VepSubmissionName />
           <VepSubmitButton />
         </div>
         <EnsemblVepVersion />
-        <VepTopBarNavButtons />
+        <VepTopBarNavButton />
       </div>
     </ToolsTopBar>
   );

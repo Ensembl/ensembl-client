@@ -1,0 +1,21 @@
+/* Sized in `em` so a rating reads at the weight of whatever it sits beside —
+   a results row, or the smaller expanded detail under it. */
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  vertical-align: text-bottom;
+}
+
+.rating svg {
+  width: 1em;
+  height: 1em;
+}
+
+.filled {
+  fill: var(--color-dark-yellow);
+}
+
+.empty {
+  fill: var(--color-grey);
+}

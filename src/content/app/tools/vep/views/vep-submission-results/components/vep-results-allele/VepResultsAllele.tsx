@@ -26,13 +26,32 @@ import styles from './VepResultsAllele.module.css';
 
 type Props = {
   sequence: string;
+  // A secondary line shown beneath a symbolic allele: the span for a sized SV
+  // ("765 bp") or a breakend's two loci ("2:321681 - 17:198982"). Absent for
+  // simple alleles.
+  structuralVariantDetail?: string | null;
 };
 
 const MAX_DISPLAY_LENGTH = 5;
 
-const AlleleSequence = ({ sequence }: Props) => {
+// Symbolic structural alleles (`<DEL>`, `<BND>`) are not sequences: render them
+// verbatim, not truncated with a base count.
+const isStructuralAllele = (sequence: string) => sequence.startsWith('<');
+
+const AlleleSequence = ({ sequence, structuralVariantDetail }: Props) => {
   const [anchorRef, setAnchorRef] = useRefWithRerender<HTMLElement>(null);
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
+
+  if (isStructuralAllele(sequence)) {
+    return (
+      <div>
+        <span className={styles.symbolicAllele}>{sequence}</span>
+        {structuralVariantDetail && (
+          <div className={styles.sequenceLength}>{structuralVariantDetail}</div>
+        )}
+      </div>
+    );
+  }
 
   if (sequence.length <= MAX_DISPLAY_LENGTH) {
     return sequence;

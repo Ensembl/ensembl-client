@@ -1,6 +1,6 @@
 .grid {
   display: grid;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto auto [results] 1fr;
   margin-left: var(--global-padding-left);
   height: 100%;
 }

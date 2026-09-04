@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
@@ -38,11 +38,13 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import DeleteButton from 'src/shared/components/delete-button/DeleteButton';
-import DownloadLink from 'src/shared/components/download-button/DownloadLink';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import UnavailableResults from 'src/content/app/tools/shared/components/help-messages/UnavailableResults';
+import { ControlledDownloadButton } from 'src/shared/components/download-button/DownloadButton';
 
 import { UNAVAILABLE_RESULTS_WARNING } from 'src/content/app/tools/shared/constants/displayedMessages';
+
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from './VepSubmissionHeader.module.css';
 
@@ -52,11 +54,14 @@ type Props = {
     submittedAt: VepSubmission['submittedAt'];
     status: VepSubmission['status'];
   };
+  filtersString?: string; // filters might be applied on the page for submission results; they influence what is downloaded
 };
 
 const VepSubmissionHeader = (props: Props) => {
   const { submission } = props;
   const [isDeleting, setIsDeleting] = useState(false);
+  const [shouldShowDownloadOptions, setShouldShowDownloadOptions] =
+    useState(false);
   const submissionTime = submission.submittedAt
     ? getFormattedDateTime(new Date(submission.submittedAt))
     : null;
@@ -65,6 +70,10 @@ const VepSubmissionHeader = (props: Props) => {
 
   const toggleDeletionConfirmation = () => {
     setIsDeleting(!isDeleting);
+  };
+
+  const toggleDownloadOptions = () => {
+    setShouldShowDownloadOptions(!shouldShowDownloadOptions);
   };
 
   const onEditSubmission = () => {
@@ -97,16 +106,21 @@ const VepSubmissionHeader = (props: Props) => {
         <ControlButtons
           {...props}
           isDeleting={isDeleting}
+          areDownloadOptionsShowing={shouldShowDownloadOptions}
           onDelete={toggleDeletionConfirmation}
+          onDownload={toggleDownloadOptions}
         />
       </div>
       {isDeleting && (
-        <div className={styles.deletionConfirmationContainer}>
+        <div className={styles.confirmationContainer}>
           <DeletionConfirmation
             {...props}
             onCancel={toggleDeletionConfirmation}
           />
         </div>
+      )}
+      {shouldShowDownloadOptions && (
+        <DownloadOptions {...props} onCancel={toggleDownloadOptions} />
       )}
     </>
   );
@@ -123,13 +137,20 @@ const hasServerSideSubmissionId = (submission: { status: string }) => {
 const ControlButtons = (
   props: Props & {
     isDeleting: boolean;
+    areDownloadOptionsShowing: boolean;
     onDelete: () => void;
+    onDownload: () => void;
   }
 ) => {
-  const { submission, isDeleting, onDelete } = props;
+  const {
+    submission,
+    isDeleting,
+    areDownloadOptionsShowing,
+    onDelete,
+    onDownload
+  } = props;
 
   const canGetResults = submission.status === 'SUCCEEDED';
-  const downloadLink = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
   const vepResultsLink = urlFor.vepResults({
     submissionId: props.submission.id
   });
@@ -148,11 +169,20 @@ const ControlButtons = (
   } else {
     return (
       <div className={styles.controls}>
-        <DeleteButton onClick={onDelete} disabled={isDeleting} />
-        <DownloadLink
-          href={downloadLink}
-          disabled={isDeleting || !canGetResults}
+        <DeleteButton
+          onClick={onDelete}
+          disabled={isDeleting}
+          aria-label="Delete this submission"
         />
+
+        <ControlledDownloadButton
+          onClick={onDownload}
+          status={LoadingState.NOT_REQUESTED}
+          disabled={isDeleting}
+          aria-label="Show download options"
+          aria-expanded={areDownloadOptionsShowing}
+        />
+
         <ButtonLink
           isDisabled={isDeleting || !canGetResults}
           to={vepResultsLink}
@@ -179,7 +209,7 @@ const DeletionConfirmation = (
   return (
     <div className={styles.deletionConfirmation}>
       <span className={styles.deletionConfirmationMessage}>
-        Delete this submisison?
+        Delete this submission?
       </span>
       <PrimaryButton onClick={onDelete}>Delete</PrimaryButton>
       <TextButton onClick={onCancel}>Do not delete</TextButton>
@@ -187,4 +217,68 @@ const DeletionConfirmation = (
   );
 };
 
-export default VepSubmissionHeader;
+const DownloadOptions = ({
+  submission,
+  onCancel,
+  filtersString
+}: {
+  submission: Props['submission'];
+  filtersString?: Props['filtersString'];
+  onCancel: () => void;
+}) => {
+  // Raw VCF vs a flattened, fully-expanded table that is spreadsheet-friendly
+  const vcfDownloadLink = buildDownloadLink({
+    submission,
+    filtersString
+  });
+  const tsvDownloadLink = buildDownloadLink({
+    submission,
+    filtersString,
+    format: 'tsv'
+  });
+
+  return (
+    <div className={styles.confirmationContainer}>
+      <div className={styles.downloadOptionsWrapper}>
+        <span className={styles.downloadLabel}>Download:</span>
+        <div className={styles.downloadOptions}>
+          <a className={styles.option} href={vcfDownloadLink} download={true}>
+            VCF
+          </a>
+          <a className={styles.option} href={tsvDownloadLink} download={true}>
+            TSV
+          </a>
+        </div>
+
+        <TextButton onClick={onCancel}>Close</TextButton>
+      </div>
+    </div>
+  );
+};
+
+const buildDownloadLink = ({
+  submission,
+  format,
+  filtersString
+}: {
+  submission: Props['submission'];
+  format?: string;
+  filtersString?: string;
+}) => {
+  let url = `${config.toolsApiBaseUrl}/vep/submissions/${submission.id}/download`;
+  const searchParams = new URLSearchParams();
+  if (format) {
+    searchParams.set('format', format);
+  }
+  if (filtersString) {
+    searchParams.set('filters', filtersString);
+  }
+  const queryString = searchParams.toString();
+  if (queryString) {
+    url = `${url}?${queryString}`;
+  }
+
+  return url;
+};
+
+export default memo(VepSubmissionHeader);

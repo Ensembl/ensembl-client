@@ -1,0 +1,105 @@
+.panelSection:not(:last-child) {
+  border-bottom: none;
+}
+
+.panelBody {
+  background-color: var(--color-light-grey);
+  padding: 12px 42px 22px 62px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.selectAllButton {
+  margin-left: auto;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.groupLabel {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-dark-grey);
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  column-gap: 1.5rem;
+  row-gap: 10px;
+  align-items: start;
+}
+
+.optionsGridSources {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  column-gap: 2rem;
+}
+
+.optionCell {
+  display: flex;
+  flex-direction: column;
+}
+
+.optionHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.helpIcon {
+  flex: none;
+}
+
+/* A labelled group of nested options within a parent option's children. */
+.subOptionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.groupHeading {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-dark-grey);
+  margin-top: 4px;
+}
+
+/* Secondary options, indented under their parent checkbox. */
+.childOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid var(--color-medium-light-grey);
+}
+
+.subOptionRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.subOptionLabel {
+  color: var(--color-dark-grey);
+}
+
+.subOptionSelect {
+  width: 100%;
+}
+
+.numberInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border: 1px solid var(--color-medium-light-grey);
+  border-radius: 4px;
+}
+
+.customiseButton {
+  align-self: flex-start;
+  margin-top: 4px;
+}

@@ -5,6 +5,7 @@
 .outerContainer {
   height: 100%;
   overflow-y: auto;
+  padding-right: var(--standard-gutter);
 }
 
 /*
@@ -20,11 +21,10 @@
 /*
 *  THE TOPMOST AREA, ABOVE OTHER FORM SECTIONS
 */
-.topmostAreaGrid {
+.topmostArea {
   --padding-side: 40px;
-  display: grid;
-  grid-template-columns: [submission-name-field] 400px [form-reset] 1fr;
-  align-items: end;
+  display: flex;
+  justify-content: end;
   padding-left: var(--padding-side);
   padding-right: var(--padding-side);
   margin-bottom: 20px;

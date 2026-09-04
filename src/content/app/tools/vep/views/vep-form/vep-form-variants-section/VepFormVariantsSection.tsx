@@ -32,6 +32,8 @@ import {
   updateInputCommittedFlag
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 import { useVepFormExampleInputQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
+// input check (remove this import + the block in onCommitInput + error UI to disable)
+import { checkVepInput } from './checkVepInput';
 
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
 import PlusButton from 'src/shared/components/plus-button/PlusButton';
@@ -63,10 +65,10 @@ const VepFormVariantsSection = () => {
   );
 
   useEffect(() => {
-    // if the input form is reset (and thus the selected species is deleted)
-    // when this section is expanded,
-    // collapse the section
-    setIsExpanded(false);
+    // Automatically expand this section once a species has been selected, so the
+    // user can go straight to entering variants. If the species is cleared
+    // (e.g. the form is reset), collapse the section again.
+    setIsExpanded(!!selectedSpecies);
   }, [selectedSpecies]);
 
   // TODO: create a useEffect for component unmount, which will update stored VEP form
@@ -97,10 +99,8 @@ const VepFormVariantsSection = () => {
         <div className={commonFormStyles.topFormSectionMain}>
           <MainContentCollapsed
             isExpanded={isExpanded}
-            canExpand={canExpand}
             inputText={inputText}
             inputFileName={inputFileName}
-            toggleExpanded={toggleExpanded}
           />
         </div>
         <div className={commonFormStyles.topFormSectionToggle}>
@@ -131,22 +131,16 @@ const VepFormVariantsSection = () => {
 const MainContentCollapsed = ({
   inputText,
   inputFileName,
-  isExpanded,
-  canExpand,
-  toggleExpanded
+  isExpanded
 }: {
   inputText: string | null;
   inputFileName: string | null;
   isExpanded: boolean;
-  canExpand: boolean;
-  toggleExpanded: () => void;
 }) => {
   if (isExpanded || (!inputText && !inputFileName)) {
-    return (
-      <TextButton disabled={!canExpand} onClick={toggleExpanded}>
-        Add variants
-      </TextButton>
-    );
+    // No "Add variants" prompt: the section auto-expands once a species is
+    // selected, and the toggle button in the section header handles expansion.
+    return null;
   } else if (inputText) {
     return <div className={styles.rawVariantsTextContainer}>{inputText}</div>;
   } else if (inputFileName) {
@@ -179,9 +173,12 @@ const ExpandedContents = ({
   const [oversizedFileName, setOversizedFileName] = useState<string | null>(
     null
   );
+  // input check (remove this state + its uses to disable)
+  const [inputError, setInputError] = useState<string | null>(null);
   const dispatch = useAppDispatch();
 
   const onTextareaContentChange = (event: FormEvent<HTMLTextAreaElement>) => {
+    setInputError(null); // input check: clear error while editing
     setInputString(event.currentTarget.value);
   };
 
@@ -195,12 +192,23 @@ const ExpandedContents = ({
   };
 
   const onCommitInput = () => {
+    // --- input check (remove this block to disable) ---
+    if (inputString) {
+      const error = checkVepInput(inputString);
+      if (error) {
+        setInputError(error);
+        return;
+      }
+    }
+    setInputError(null);
+    // --- end input check ---
     dispatch(updateInputCommittedFlag(true));
     toggleExpanded();
   };
 
   const onClear = () => {
     setOversizedFileName(null);
+    setInputError(null); // input check: clear error on clear
     onReset();
   };
 
@@ -238,6 +246,8 @@ const ExpandedContents = ({
           placeholder="Paste data"
           disabled={shouldDisableTextInput}
         />
+        {/* input check: error message (remove to disable) */}
+        {inputError && <p className={styles.inputError}>{inputError}</p>}
       </div>
       <div className={styles.gridColumnRight}>
         <div className={styles.inputControlButtons}>

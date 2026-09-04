@@ -4,22 +4,24 @@
   grid-template-columns:
     [vep-logo] max-content
     [form-title] max-content
-    [transcript-set-and-submit] 1fr
+    [transcript-set] max-content
+    [submission-name] max-content
     [vep-version] max-content
     [job-list-navigation] max-content;
   grid-template-areas:
-    'vep-logo form-title transcript-set-and-submit vep-version job-list-navigation';
+    'vep-logo form-title transcript-set submission-name vep-version job-list-navigation';
   column-gap: 32px;
   max-width: var(--vep-container-max-width);
   white-space: nowrap;
-
 }
 
 /* Style overrides for some of the ToolsTopBar styles */
-.vepFormTopBar, .vepGenericTopBar {
+.vepFormTopBar,
+.vepGenericTopBar {
   padding-top: 0;
   padding-bottom: 0;
   justify-content: center; /* To achieve vertical alignment. ToolsTopBar is a flex box with flex-direction column */
+  white-space: nowrap;
 }
 
 .vepGenericGrid {
@@ -54,12 +56,13 @@
   font-weight: var(--font-weight-bold);
 }
 
-.transcriptSetAndSubmit {
-  grid-area: transcript-set-and-submit;
-  justify-self: end;
+.transcriptSet {
+  grid-area: transcript-set;
+  justify-self: start;
   display: flex;
   column-gap: var(--standard-gutter);
-  padding-right: 80px;
+  font-weight: var(--font-weight-light);
+  padding-left: 20px;
 }
 
 .transcriptSetWrapper {
@@ -72,6 +75,23 @@
   min-width: 300px;
 }
 
+.submissionNameAndSubmit {
+  grid-area: submission-name;
+  display: flex;
+  column-gap: var(--standard-gutter);
+  padding-left: 20px;
+}
+
+.submissionName {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.submissionNameLabel {
+  font-weight: var(--font-weight-light);
+}
+
 .vepVersion {
   grid-area: vep-version;
   justify-self: end;
@@ -80,6 +100,7 @@
   white-space: pre;
   color: var(--color-medium-dark-grey);
   line-height: 1px;
+  padding-left: 20px;
 }
 
 .vepVersion svg {
@@ -111,23 +132,24 @@
   white-space: normal;
 }
 
-@media (width > 1440px) {
+@media (width >= 1570px) {
   .vepFormGrid {
     padding-top: 0;
     padding-bottom: 0;
   }
 }
 
-@media (width <= 1440px) {
+@media (width < 1570px) {
   .vepFormGrid {
     grid-template-columns:
-      [vep-logo] max-content
-      [form-title] 1fr
-      [vep-version] max-content
-      [job-list-navigation] auto;
+      130px        /* logo */
+      max-content  /* Run job */
+      1fr          /* flexible space */
+      max-content  /* VEP */
+      max-content; /* Jobs */
     grid-template-areas:
-      'vep-logo form-title vep-version job-list-navigation'
-      'transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit transcript-set-and-submit';
+      "vep-logo       form-title      .               vep-version     job-list-navigation"
+      "transcript-set transcript-set  submission-name submission-name submission-name";
     row-gap: 8px;
   }
 
@@ -136,9 +158,8 @@
     padding-bottom: 8px;
   }
 
-  .transcriptSetAndSubmit {
-    padding-left: var(--standard-gutter);
-    justify-self: start;
+  .transcriptSet {
+    padding-left: 0;
   }
 }
 
@@ -163,6 +184,6 @@
   }
 
   .resultsAvailabilityNotice {
-      justify-self: end;
+    justify-self: end;
   }
 }

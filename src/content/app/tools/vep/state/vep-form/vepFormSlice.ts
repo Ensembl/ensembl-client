@@ -40,10 +40,7 @@ import {
 import { addSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 import { vepFormSubmit } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
-import type {
-  VepFormConfig,
-  VepFormParameterName
-} from 'src/content/app/tools/vep/types/vepFormConfig';
+import type { VepFormConfig } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { VepSelectedSpecies } from 'src/content/app/tools/vep/types/vepSubmission';
 import type {
   VepSubmission as StoredVepSubmission,
@@ -52,9 +49,7 @@ import type {
 } from 'src/content/app/tools/vep/types/vepSubmission';
 import type { RootState } from 'src/store';
 
-type VepFormParameters = Partial<
-  Record<VepFormParameterName, string | boolean>
->;
+type VepFormParameters = Record<string, string | boolean | number>;
 
 export type VepFormState = {
   submissionId: string | null; // temporary client-side submission id
@@ -216,7 +211,7 @@ export const fillVepFormWithExistingSubmissionData = createAsyncThunk(
       selectedSpecies: storedSubmission.species,
       inputFileName: storedSubmission.inputFile?.name ?? null,
       inputText: storedSubmission.inputText,
-      parameters: storedSubmission.parameters,
+      parameters: storedSubmission.parameters as VepFormParameters,
       isInputCommitted: true
     };
 
@@ -321,10 +316,19 @@ const vepFormSlice = createSlice({
       state,
       action: PayloadAction<{ species: VepSelectedSpecies }>
     ) => {
-      // NOTE: selecting a new species means that form parameters,
-      // whose values might remain from previously selected species,
-      // should be reset
+      // Switching a genome resets the rest of the form,
+      // because different genomes may have incompatible variant notations
+      // or sets of parameters.
+      //
+      // NOTE: this only clears redux state. A previously uploaded file still
+      // lives in browser storage (IndexedDB) under the temporary submission id;
+      // it is unreachable for submission (isInputCommitted is reset, and any new
+      // input replaces it), so it is left in place for now. TODO: purge the
+      // stored input file here too if orphaned files become a storage concern.
       state.selectedSpecies = action.payload.species;
+      state.inputText = '';
+      state.inputFileName = null;
+      state.isInputCommitted = false;
       state.parameters = {};
     },
     // replace the whole parameters object in the state
@@ -334,8 +338,7 @@ const vepFormSlice = createSlice({
       for (const [parameterName, parameter] of Object.entries(
         action.payload.parameters
       )) {
-        defaultParameters[parameterName as VepFormParameterName] =
-          parameter.default_value;
+        defaultParameters[parameterName] = parameter.default_value;
       }
 
       state.parameters = defaultParameters;

@@ -14,27 +14,43 @@
  * limitations under the License.
  */
 
+import { useAppDispatch } from 'src/store';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { resetForm } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import ToolsTopBar from 'src/content/app/tools/shared/components/tools-top-bar/ToolsTopBar';
 import ButtonLink from 'src/shared/components/button-link/ButtonLink';
 import EnsemblVepLogo from './EnsemblVepLogo';
 import EnsemblVepVersion from './EnsemblVepVersion';
-import VepTopBarNavButtons from './VepTopBarNavButton';
+import VepTopBarNavButton from './VepTopBarNavButton';
 
 import styles from './VepTopBar.module.css';
 
 const VepGenericTopBar = () => {
+  const dispatch = useAppDispatch();
+
+  // Starting a new job should present a blank form: clear any species, input
+  // and options left over from the previous submission before navigating.
+  const onNewJob = () => {
+    dispatch(resetForm());
+  };
+
   return (
     <ToolsTopBar className={styles.vepGenericTopBar}>
       <div className={styles.vepGenericGrid}>
         <EnsemblVepLogo />
-        <ButtonLink to={urlFor.vepForm()} className={styles.newJobButton}>
+        <ButtonLink
+          to={urlFor.vepForm()}
+          className={styles.newJobButton}
+          onClick={onNewJob}
+        >
           New job
         </ButtonLink>
         <ResultsAvailabilityNotice />
         <EnsemblVepVersion />
-        <VepTopBarNavButtons />
+        <VepTopBarNavButton />
       </div>
     </ToolsTopBar>
   );

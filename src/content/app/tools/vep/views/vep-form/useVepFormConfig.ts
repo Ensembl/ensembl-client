@@ -69,7 +69,7 @@ const useVepFormConfig = () => {
     }
 
     dispatch(setDefaultParameters(vepFormConfig));
-  }, [vepFormConfig, areFormParametersEmpty]);
+  }, [vepFormConfig, areFormParametersEmpty, dispatch]);
 };
 
 const isObjectEmpty = (obj: Record<string, unknown>) => {

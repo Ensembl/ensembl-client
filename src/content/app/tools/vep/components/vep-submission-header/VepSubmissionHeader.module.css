@@ -3,10 +3,12 @@ Note that the grid will have to be consistent with the grid
 for ListedVepSubmission, and for the VEP results
 */
 
-
 .container {
   display: grid;
-  grid-template-columns: [title] minmax(auto, 300px) [submission-id] 200px [rerun] auto [submission-date] auto [controls] 1fr; /* the grid will need updating */
+  grid-template-columns: [title] minmax(
+      auto,
+      300px
+    ) [submission-id] 200px [rerun] auto [submission-date] auto [controls] 1fr; /* the grid will need updating */
   align-items: center;
   column-gap: var(--standard-gutter);
   padding-left: var(--standard-gutter);
@@ -54,7 +56,7 @@ for ListedVepSubmission, and for the VEP results
   font-weight: var(--font-weight-light);
 }
 
-.deletionConfirmationContainer {
+.confirmationContainer {
   display: flex;
   justify-content: right;
   padding-bottom: 12px;
@@ -77,4 +79,24 @@ for ListedVepSubmission, and for the VEP results
   column-gap: 0.6rem;
   color: var(--color-red);
   margin-right: 16px;
+}
+
+.downloadOptionsWrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 2ch;
+  padding: 0.6rem 0;
+
+  > :last-child {
+    margin-left: 2rem;
+  }
+}
+
+.downloadLabel {
+  font-weight: var(--font-weight-light);
+}
+
+.downloadOptions {
+  display: flex;
+  column-gap: 2ch;
 }

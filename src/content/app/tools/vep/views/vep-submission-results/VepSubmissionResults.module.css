@@ -1,12 +1,12 @@
 .container {
   display: grid;
-  grid-template-rows: 40px minmax(0, 1fr);
+  grid-template-rows: 40px auto minmax(0, 1fr);
   height: 100%;
+  min-height: 0;
   padding-top: 20px;
   margin-left: var(--double-standard-gutter);
   margin-right: var(--standard-gutter);
   max-width: calc(var(--vep-container-max-width) - var(--standard-gutter));
-  overflow: hidden;
 }
 
 .fullPageSpinnerContainer {
@@ -17,6 +17,7 @@
 }
 
 .resultsBox {
+  grid-row: 3;
   display: grid;
   grid-template-rows: auto 1fr;
   border: 1px solid var(--color-grey);
@@ -32,10 +33,23 @@
     [input-summary] auto
     [per-page] 1fr
     [pagination] auto
+    [expand-toggle] auto
     [filters-toggle] auto;
   column-gap: var(--standard-gutter);
   align-items: center;
   margin-bottom: 16px;
+}
+
+.expandAllToggleWrapper {
+  grid-column: expand-toggle;
+  display: grid;
+  grid-template-columns: 9ch 11px;
+  column-gap: 6px;
+  justify-items: end;
+}
+
+.expandAllSpinner {
+  --circle-loader-diameter: 11px;
 }
 
 .perPage {
@@ -55,10 +69,8 @@
   grid-column: pagination;
 }
 
-.mockFiltersToggle {
-  --show-hide-label-color: var(--color-grey);
-  --chevron-fill: var(--color-grey);
-  pointer-events: none;
+.filtersToggle {
+  cursor: pointer;
 }
 
 .table {
@@ -70,14 +82,23 @@
   vertical-align: top;
 }
 
-
-/* The styling of column widths below will probably need to be adjusted */
-.table td:nth-child(2), th:nth-child(2) {
+/* Narrow columns of the table: Ref (2nd column) and Location (3rd column) */
+.table > thead > tr > th:nth-child(2),
+.table > tbody > tr > td:nth-child(2) {
   max-width: 50px;
 }
 
-.table td:nth-child(3), th:nth-child(3) {
+.table > thead > tr > th:nth-child(3),
+.table > tbody > tr > td:nth-child(3) {
   max-width: 100px;
+}
+
+.table tr:has(.detailCell) {
+  border-top: none;
+
+  td {
+    padding-top: 0;
+  }
 }
 
 /*
@@ -108,7 +129,9 @@
   right: 0;
   bottom: 0;
   background-color: rgb(255 255 255 / 30%);
-  backdrop-filter: blur(2px); /* this CSS rule requires a vendor -webkit prefix in Safari; postCSS adds it */
+  backdrop-filter: blur(
+    2px
+  ); /* this CSS rule requires a vendor -webkit prefix in Safari; postCSS adds it */
   z-index: 1;
 }
 
@@ -135,14 +158,26 @@
   font-weight: var(--font-weight-light);
 }
 
-.speciesName [data-part="common-name"] {
+.speciesName [data-part='common-name'] {
   font-size: 14px;
 }
 
-.speciesName [data-part="scientific-name"] {
+.speciesName [data-part='scientific-name'] {
   font-size: 14px;
 }
 
-.speciesName [data-part="assembly-name"] {
+.speciesName [data-part='assembly-name'] {
   font-size: 11px;
+}
+
+
+/* The annotation panel spans the full width between the row division lines.
+   The shared Table's own `td` rule outranks a plain class selector here (its
+   selector carries an element as well), so a bare `padding: 0` on this class
+   silently did nothing — the horizontal inset has to come off through the
+   variables that component exposes for the purpose. Vertical padding stays:
+   it separates the panel from the rows above and below. */
+.detailCell {
+  --table-cell-padding-left: 0;
+  --table-cell-padding-right: 0;
 }

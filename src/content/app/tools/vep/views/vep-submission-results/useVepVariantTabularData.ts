@@ -139,14 +139,28 @@ const buildGeneData = ({
     expandedTranscriptPaths.map(transcriptPathAccessor)
   );
 
-  // sort transcript consequences such that canonical transcripts go first
-  // (note that it is possible for a variant to not affect any of the canonical transcripts,
-  // in which case the sort shouldn't change the transcript order)
-  transcriptConsequences.sort((a, b) => {
-    const aScore = a.is_canonical ? 0 : 1;
-    const bScore = b.is_canonical ? 0 : 1;
-    return aScore - bScore;
-  });
+  // Sort transcript consequences so the one shown by default (the first per
+  // gene) is the preferred transcript: MANE (human GRCh38) first, then GENCODE
+  // primary, then canonical, then the original VEP order. This mirrors the badge
+  // precedence in VariantTranscript. A variant may not affect any MANE / GENCODE
+  // primary / canonical transcript, in which case the order is unchanged.
+  // Array.prototype.sort is stable, so equal-rank transcripts keep their order.
+  const transcriptRank = (consequence: PredictedTranscriptConsequence) => {
+    if (consequence.is_mane_select) {
+      return 0;
+    }
+    if (consequence.is_mane_plus_clinical) {
+      return 1;
+    }
+    if (consequence.is_gencode_primary) {
+      return 2;
+    }
+    if (consequence.is_canonical) {
+      return 3;
+    }
+    return 4;
+  };
+  transcriptConsequences.sort((a, b) => transcriptRank(a) - transcriptRank(b));
 
   for (const consequence of transcriptConsequences) {
     const geneId = consequence.gene_stable_id;
@@ -216,6 +230,7 @@ export type VepResultsTableRowData = {
   } | null;
   alternativeAllele: {
     allele_sequence: string;
+    structural_variant_detail?: string | null;
     rowspan: number;
   } | null;
   variant: {
@@ -233,7 +248,7 @@ export type VepResultsTableRowData = {
 /**
  * NOTE: this function will need updating after regulatory features are added
  */
-const getTabularData = ({
+export const getTabularData = ({
   variant,
   expandedTranscriptPaths
 }: {
@@ -276,6 +291,7 @@ const getTabularData = ({
         if (geneIndex === 0 && i === 0) {
           tableRowData.alternativeAllele = {
             allele_sequence: altAllele.allele_sequence,
+            structural_variant_detail: altAllele.structural_variant_detail,
             rowspan: getTotalRowsForAltAllele(altAllele)
           };
         }
@@ -306,21 +322,27 @@ const getTabularData = ({
         variant: null
       };
 
-      if (i === 0) {
-        const variantForRow = {
+      // The variant cell spans the whole variant, so — as in the transcript loop
+      // above — it belongs only on the very first row of the variant. Setting it
+      // again on a later allele's first intergenic row collides with that rowspan
+      // and pushes the row's cells into phantom columns (a wildly over-wide table
+      // and a header line that falls short of the row width).
+      if (!result.length) {
+        tableRowData.variant = {
           name: variant.name,
           allele_type: variant.allele_type,
           referenceAllele: variant.reference_allele.allele_sequence,
           location: variant.location,
           rowspan: getTotalRowsForVariant(reshapedVariant)
         };
-        const altAlleleForRow = {
+      }
+      // The alternative-allele cell belongs on each allele's first intergenic row.
+      if (i === 0) {
+        tableRowData.alternativeAllele = {
           allele_sequence: altAllele.allele_sequence,
+          structural_variant_detail: altAllele.structural_variant_detail,
           rowspan: getTotalRowsForAltAllele(altAllele)
         };
-
-        tableRowData.variant = variantForRow;
-        tableRowData.alternativeAllele = altAlleleForRow;
       }
 
       result.push(tableRowData);

@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-import { useAppSelector } from 'src/store';
+import { useMemo, useState } from 'react';
+
+import { useAppDispatch, useAppSelector } from 'src/store';
+
+import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
 import {
   getSelectedSpecies,
-  getVepFormInputCommittedFlag
+  getVepFormInputCommittedFlag,
+  getVepFormParameters
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSelectors';
+
+import { updateParameters } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 
 import { useVepFormConfigQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 
-import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
-import VepFormGeneOptions from './vep-form-gene-options/VepFormGeneOptions';
+import VepFormOptionsPanel from './vep-form-options-panel/VepFormOptionsPanel';
 import {
-  PseudoRadioButton,
-  PseudoRadioButtonGroup
-} from 'src/shared/components/pseudo-radio-button';
+  allPanelsSelectionUpdates,
+  areAllPanelsFullySelected
+} from './vep-form-options-panel/panelSelectionUpdates';
 import { CircleLoader } from 'src/shared/components/loader';
+import TextButton from 'src/shared/components/text-button/TextButton';
+
+import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 
 import styles from './VepFormOptionsSection.module.css';
 
@@ -54,72 +63,64 @@ const VepFormOptionsSection = () => {
     );
   }
 
-  if (!isVariantsInputCommitted || !formConfig) {
-    // TODO: should we handle the error state somehow?
-    return null;
+  if (selectedSpecies && isVariantsInputCommitted && !formConfig) {
+    return <div>The form is in an invalid state. Please clear the form.</div>;
   }
+
+  if (selectedSpecies && isVariantsInputCommitted && formConfig) {
+    return <OptionsSection panels={formConfig.panels} />;
+  }
+};
+
+const OptionsSection = (props: { panels: FormPanel[] }) => {
+  const { panels } = props;
+  const dispatch = useAppDispatch();
+  const formParameters = useAppSelector(getVepFormParameters);
+
+  // Derived, not held: unticking one option by hand must flip the toggle back,
+  // or it would offer to disable a set that is no longer all on.
+  const allSelected = useMemo(
+    () => areAllPanelsFullySelected(panels, formParameters),
+    [panels, formParameters]
+  );
+
+  // Bumped on each click so the panels can tell a fresh command from a
+  // re-render (see VepFormOptionsPanel's `expandCommand`).
+  const [expandCommand, setExpandCommand] = useState<{
+    expanded: boolean;
+    nonce: number;
+  }>();
+
+  const toggleAll = () => {
+    const enabling = !allSelected;
+    dispatch(updateParameters(allPanelsSelectionUpdates(panels, enabling)));
+    setExpandCommand((previous) => ({
+      expanded: enabling,
+      nonce: (previous?.nonce ?? 0) + 1
+    }));
+  };
 
   return (
     <div className={styles.container}>
-      <SectionHeader />
-      <VepFormGeneOptions config={formConfig} />
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>
-            Protein & functional
-          </span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>Predictions</span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>
-            Variant population frequencies
-          </span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>
-            Variant phenotypes
-          </span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>Variant citations</span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>
-            Regulatory annotation
-          </span>
-        </div>
-      </FormSection>
-      <FormSection>
-        <div className={styles.sectionTitleContainer}>
-          <span className={styles.disabledSectionTitle}>
-            Conservation & constraint
-          </span>
-        </div>
-      </FormSection>
-    </div>
-  );
-};
-
-const SectionHeader = () => {
-  return (
-    <div className={styles.sectionHeader}>
-      <span>Job options</span>
-      <PseudoRadioButtonGroup>
-        <PseudoRadioButton label="Short variants" />
-        <PseudoRadioButton label="Structural variants" disabled={true} />
-      </PseudoRadioButtonGroup>
+      <div className={styles.sectionHeader}>
+        <span>Job options</span>
+        {!isProductionEnvironment() && (
+          <TextButton
+            type="button"
+            className={styles.enableAllButton}
+            onClick={toggleAll}
+          >
+            {allSelected ? 'Disable all options' : 'Enable all default options'}
+          </TextButton>
+        )}
+      </div>
+      {panels.map((panel) => (
+        <VepFormOptionsPanel
+          key={panel.id}
+          panel={panel}
+          expandCommand={expandCommand}
+        />
+      ))}
     </div>
   );
 };
