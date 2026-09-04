@@ -280,23 +280,18 @@ describe('renderDisplayOption', () => {
       }
     });
     expect(screen.getByText('Gene Ontology')).toBeDefined();
-    // one headed section per aspect, named by the spec's `labels` rather than
-    // the raw underscored value the data carries
     expect(screen.getByText('Biological process')).toBeDefined();
     expect(screen.getByText('Molecular function')).toBeDefined();
     expect(screen.getByText('Cellular component')).toBeDefined();
     expect(screen.queryByText('biological_process')).toBeNull();
-    // The accession is not shown -- it is not useful to read -- but it is still
-    // what the link is built from, so the column links on a field it does not
-    // display.
     expect(screen.queryByText('GO:0006355')).toBeNull();
+
     const link = screen.getByText('regulation of transcription').closest('a');
     expect(link?.getAttribute('href')).toBe(
       'https://amigo.geneontology.org/amigo/term/GO:0006355'
     );
     expect(screen.getByText('DNA binding')).toBeDefined();
-    // a term sits under its own aspect, not merely somewhere on the page
-    // each group is its own OptionBlock: the heading span's nearest div
+
     const section = screen
       .getByText('Molecular function')
       .closest('div') as HTMLElement;
@@ -306,10 +301,7 @@ describe('renderDisplayOption', () => {
     ).toBeNull();
   });
 
-  test('a GO term missing the accession its link needs stays plain text', () => {
-    // The column reads `name` and links `{id}`, so a term with one and not the
-    // other used to link to `https://amigo.geneontology.org/amigo/term/` --
-    // a URL that goes somewhere, just not anywhere about this term.
+  test('a GO term missing the accession does not display a link', () => {
     renderOption('go', {
       consequence: {
         annotations: [
@@ -326,9 +318,7 @@ describe('renderDisplayOption', () => {
     expect(term.closest('a')).toBeNull();
   });
 
-  test('a condition whose resolved URL is not http(s) stays plain text', () => {
-    // `link_from` points at a URL the parse resolved, so its scheme is whatever
-    // came out of the data. Only the two web schemes are rendered as a link.
+  test('a condition whose resolved URL is not http(s) does not display a link', () => {
     renderOption('phenotypes', {
       consequence: {
         annotations: [
@@ -414,7 +404,6 @@ describe('renderDisplayOption', () => {
       }
     });
     expect(screen.getByText('Nearest exon junction boundary')).toBeDefined();
-    // each field is a labelled row (item.rows), not bare inline cells
     expect(screen.getByText('Exon')).toBeDefined();
     expect(screen.getByText('ENSE00004404283')).toBeDefined();
     expect(screen.getByText('Distance to exon boundary')).toBeDefined();
@@ -466,9 +455,8 @@ describe('renderDisplayOption', () => {
   });
 
   it('groups table rows into headed sections driven by the data', () => {
-    // Gene-associated phenotypes are narrowed to the gene their `id` names, so
-    // they arrive on the transcript consequence; variant-associated ones are
-    // narrowed by risk allele and stay on the allele.
+    // Gene-associated phenotypes are in the transcript consequence;
+    // variant-associated ones stay on the allele.
     renderOption('phenotypes', {
       consequence: {
         annotations: [
@@ -499,8 +487,7 @@ describe('renderDisplayOption', () => {
       ]
     });
     expect(screen.getByText('Phenotypes')).toBeDefined();
-    // the sections come from the data; `group_by.labels` words the two known
-    // types for display ("Variation" is the pipeline's term, not the reader's)
+    // group labels come from the data: `group_by.labels`
     expect(screen.getByText('Gene associated')).toBeDefined();
     expect(screen.getByText('Variant associated')).toBeDefined();
     // one table per section, Phenotype first then Source
@@ -511,7 +498,7 @@ describe('renderDisplayOption', () => {
         .getAllByRole('columnheader')
         .map((cell) => cell.textContent)
     ).toEqual(['Phenotype', 'Source']);
-    // normalizePhenotype: underscores -> spaces; all-caps -> sentence case
+    // check formatting: underscores -> spaces; all-caps -> sentence case
     expect(
       screen.getByRole('cell', { name: 'Li-Fraumeni syndrome' })
     ).toBeDefined();
@@ -523,9 +510,6 @@ describe('renderDisplayOption', () => {
   });
 
   it('links the phenotype source, not the phenotype', () => {
-    // The URL identifies the record in the source's own database, so it belongs
-    // on the source's name; the phenotype is what the reader is scanning for and
-    // reads better as plain text.
     renderOption('phenotypes', {
       consequence: {
         annotations: [
@@ -568,11 +552,11 @@ describe('renderDisplayOption', () => {
       'MIM morbid',
       'NHGRI-EBI GWAS catalog'
     ]);
-    // …and the phenotype itself carries no link of its own.
+    // The phenotype itself carries no link of its own.
     expect(screen.getByText('Li-Fraumeni syndrome').closest('a')).toBeNull();
   });
 
-  it('shows a type nobody anticipated rather than dropping it', () => {
+  it('shows a phenotype associated with a variant allele', () => {
     renderOption('phenotypes', {
       allele: [
         annotation('phenotype_data', 'allele', {
@@ -586,12 +570,6 @@ describe('renderDisplayOption', () => {
         })
       ]
     });
-    // A type the pipeline starts emitting is still shown. The gene-associated
-    // table reads a plugin that takes only `Gene`, and everything else falls to
-    // `phenotype_data` and so to the variant-associated table — which is why
-    // that one has no filter: whatever reaches it belongs there. It gets no
-    // heading of its own, but being filed under "Variant associated" beats
-    // vanishing between two tables that each name what they want.
     expect(screen.getByText('Melanoma')).toBeDefined();
     expect(screen.getByText('Variant associated')).toBeDefined();
     expect(screen.queryByText('Gene associated')).toBeNull();
@@ -625,8 +603,8 @@ describe('renderDisplayOption', () => {
         })
       ]
     });
-    // the gene-associated section shows 3 of 6 behind a toggle; the
-    // variant-associated one, with a single row, has none.
+    // the gene-associated section shows 3 of 6 behind a toggle;
+    // the variant-associated section shows a single row of data.
     expect(screen.getByText('+ 3 more')).toBeDefined();
     expect(screen.getByRole('cell', { name: 'disease 1' })).toBeDefined();
     expect(screen.queryByRole('cell', { name: 'disease 4' })).toBeNull();
@@ -666,8 +644,6 @@ describe('renderDisplayOption', () => {
   // --- option-level heading spanning multiple blocks (MaveDB) ---------------
 
   it('wraps a multi-block option under one option-level heading', () => {
-    // ProtVar rather than MaveDB: MaveDB used to be a rows block plus a list,
-    // and is now a single table, so it no longer exercises this at all.
     renderOption('protvar', {
       consequence: {
         annotations: [
@@ -680,8 +656,6 @@ describe('renderDisplayOption', () => {
       protvarUrl: 'https://protvar.example/x'
     });
     expect(screen.getByText('ProtVar')).toBeDefined(); // the option heading
-    // ...over content drawn from two different blocks beneath it: a rows block
-    // and a headed list.
     expect(screen.getByText('Protein Structure Stability')).toBeDefined();
     expect(screen.getByText('1.23')).toBeDefined();
     expect(screen.getByText('Protein Pockets')).toBeDefined();
@@ -702,8 +676,6 @@ describe('renderDisplayOption', () => {
       }
     });
     expect(screen.getByText('MaveDB')).toBeDefined(); // the option heading
-    // The plugin reports the score set, not the variant within it, so the link
-    // opens the score set's distribution.
     const link = screen.getByText('urn:mavedb:00000045-a-1').closest('a');
     expect(link?.getAttribute('href')).toBe(
       'https://www.mavedb.org/score-sets/urn:mavedb:00000045-a-1?calibration'
@@ -726,10 +698,10 @@ describe('renderDisplayOption', () => {
     );
 
   it('merges a column down the rows that share its group', () => {
-    // The publication belongs to the experiment, not the score set, and MaveDB
-    // states it on only some of an experiment's rows. All three rows here are
-    // one experiment, so the column is one cell spanning all three — drawn from
-    // the row that actually carries the DOI, not the first row.
+    // The publication belongs to the experiment, and MaveDB states it
+    // on only some of an experiment's rows. All three rows here are
+    // one experiment, the cell with the link is made to span all three rows.
+    // The link is generated from the row that actually carries the DOI.
     const { container } = renderOption('mavedb', {
       consequence: {
         annotations: [
@@ -750,17 +722,15 @@ describe('renderDisplayOption', () => {
     expect(link.getAttribute('href')).toBe(
       'https://europepmc.org/search?query=DOI:%2210.1038/s41589-020-0480-6%22'
     );
-    // One cell, spanning the run...
+    // One cell spanning the rows
     const merged = link.closest('td') as HTMLTableCellElement;
     expect(merged.getAttribute('rowspan')).toBe('3');
-    // ...so only the first row carries a third cell; the other two are absorbed.
     expect(publicationCells(container)).toEqual([3, 2, 2]);
   });
 
   it('does not merge a group whose stated values disagree', () => {
     // Two different publications inside one experiment is not something the
-    // data should contain, but if it does, spanning them would present one
-    // row's value as the whole group's. Repetition is the honest fallback.
+    // data should contain, but if it does, then they shouldn't be merged into one cell.
     const { container } = renderOption('mavedb', {
       consequence: {
         annotations: [
@@ -809,15 +779,7 @@ describe('renderDisplayOption', () => {
   });
 
   it('escapes a # inside a value so it cannot end the URL early', () => {
-    // Raw, the browser reads everything from the '#' as a fragment and never
-    // sends it — so the rest of the URL is lost.
-    //
-    // The value is synthetic: MaveDB used to report an accession ending
-    // `#<variant>`, and that is where this rule came from, but the plugin now
-    // reports the bare score set and no live value carries a '#'. The rule is a
-    // property of `interpolateUrl` rather than of MaveDB, and it is one half of
-    // a pair — the other half (leave a '#' alone when the value IS the URL,
-    // below) only makes sense against it — so it keeps its own test.
+    // MaveDB used to report an accession ending `#<variant>`
     renderOption('mavedb', {
       consequence: {
         annotations: [
@@ -839,18 +801,13 @@ describe('renderDisplayOption', () => {
       .getByText('urn:mavedb:00000045-a-1#2010')
       .closest('a')
       ?.getAttribute('href');
-    expect(href).toContain('%232010');
+    expect(href).toContain('%232010'); // the "#" sign in the url is replaced with a url entity
     expect(href).not.toContain('#');
     // The colons are still the source's own and stay as they are.
     expect(href).toContain('/score-sets/urn:mavedb:00000045-a-1');
   });
 
-  it('leaves a # alone when the value IS the URL', () => {
-    // The other half of the rule above, and it has to be the other half: a
-    // template that is nothing but the placeholder means the parse resolved the
-    // whole href, so a '#' in it is that URL's own structure. Geno2MP's variant
-    // pages are fragment-routed, and escaping theirs sends every one of them to
-    // the site's front page instead.
+  it('preserves "#" if it is in the URL', () => {
     renderOption('geno2mp', {
       allele: [
         annotation('geno2mp', 'allele', {
@@ -861,6 +818,7 @@ describe('renderDisplayOption', () => {
     });
 
     const href = screen.getByText('107').closest('a')?.getAttribute('href');
+    // notice that the "#" sign in the url is preserved
     expect(href).toBe(
       'https://geno2mp.gs.washington.edu/Geno2MP/#/variant/1/11022/G%3EA/snp'
     );
@@ -868,8 +826,6 @@ describe('renderDisplayOption', () => {
   });
 
   it('shows the count unlinked when its href is missing', () => {
-    // A count still says something without somewhere to follow it to, so the
-    // row must not vanish just because the URL did.
     renderOption('geno2mp', {
       allele: [
         annotation('geno2mp', 'allele', { hpo_profile_count: 42, url: null })
@@ -900,7 +856,7 @@ describe('renderDisplayOption', () => {
 
   // --- sub-option rows: Show-all enumeration (mutfunc) ----------------------
 
-  it('sub-option rows: default view shows only the ones with a value', () => {
+  test('sub-option rows: default view shows only the ones with a value', () => {
     renderOption('mutfunc', {
       consequence: {
         annotations: [
@@ -919,7 +875,7 @@ describe('renderDisplayOption', () => {
     expect(screen.queryByText('Protein interactions')).toBeNull();
   });
 
-  it('sub-option rows: Show-all lists selected ones (dash if empty), drops unselected', () => {
+  test('sub-option rows: Show-all lists selected ones (dash if empty), drops unselected', () => {
     renderOption('mutfunc', {
       consequence: {
         annotations: [
@@ -931,13 +887,14 @@ describe('renderDisplayOption', () => {
         ]
       },
       showAll: true,
+      // the below ids are checked against the fixture to filter the selected suboptions
       subOptionRan: (id) => id === 'mutfunc_motif' || id === 'mutfunc_int'
     });
     expect(screen.getByText('Linear motifs')).toBeDefined();
     expect(screen.getByText('0.5')).toBeDefined();
     expect(screen.getByText('Protein interactions')).toBeDefined();
     expect(screen.getByText('—')).toBeDefined();
-    // unselected, even with a value present (full-cache), stays hidden
+    // unselected, even with a value present, stays hidden
     expect(screen.queryByText('Protein structure')).toBeNull();
     expect(screen.queryByText('0.9')).toBeNull();
   });
@@ -1020,7 +977,7 @@ describe('renderDisplayOption', () => {
     expect(container.querySelectorAll('tbody a')).toHaveLength(0);
   });
 
-  it('links the variant to its OpenTargets page, icon first', () => {
+  it('links the variant to its OpenTargets page', () => {
     renderOption('opentargets', {
       allele: [
         annotation('opentargets', 'allele', {
@@ -1069,7 +1026,7 @@ describe('renderDisplayOption', () => {
   });
 
   it('leaves a table cell empty when its value is absent', () => {
-    renderOption('opentargets', {
+    const { container } = renderOption('opentargets', {
       allele: [
         annotation('opentargets', 'allele', {
           gwas_associations: [
@@ -1086,9 +1043,17 @@ describe('renderDisplayOption', () => {
         })
       ]
     });
-    // the row still renders; the cells with nothing in them are simply blank
+
+    const tableCells = container.querySelectorAll('tbody td');
+    expect(tableCells.length).toBe(5);
+
+    // table cells with values
     expect(screen.getByText('a disease')).toBeDefined();
     expect(screen.getByText('ENSG_A')).toBeDefined();
+
+    // empty table cells without value
+    const emptyTableCells = container.querySelectorAll('tbody td:empty');
+    expect(emptyTableCells.length).toBe(3);
   });
 
   it('truncates the GWAS table at visible_count (3)', () => {
@@ -1114,9 +1079,6 @@ describe('renderDisplayOption', () => {
 
   // --- conditional (`when`) + group + list-as-rows (ClinVar) ----------------
 
-  // The germline data is served under Phenotypes now: its blocks sit in that
-  // option and gate on the data (`when: present`), so there is no sub-option to
-  // select. Only the structural custom is still a sub-option of the master.
   const clinvarSvSelected = (id: string) => id === 'clinvar_sv';
 
   test('ClinVar: one Classification line per classification type', () => {
@@ -1159,8 +1121,7 @@ describe('renderDisplayOption', () => {
         '39/44 submission(s) contribute to aggregate classification'
       )
     ).toBeDefined();
-    // Shown as three words though the data says "SomaticClinicalImpact" — that
-    // spelling is the key the submission join matches on, so it stays put.
+    // Shown as three words though the data says "SomaticClinicalImpact"
     expect(screen.getByText('Somatic Clinical Impact')).toBeDefined();
     expect(screen.queryByText('SomaticClinicalImpact')).toBeNull();
     expect(screen.getByText('Tier I - Strong')).toBeDefined();
@@ -1170,17 +1131,14 @@ describe('renderDisplayOption', () => {
       )
     ).toBeDefined();
 
-    // Germline reads on the aggregate scale (expert panel = 3), somatic on its
-    // own (single submitter = 1) — the scales are not interchangeable.
+    // Germline reads on the aggregate scale (expert panel = 3),
+    // somatic on its own (single submitter = 1).
     expect(screen.getByRole('img', { name: '3 out of 4' })).toBeDefined();
     expect(screen.getByRole('img', { name: '1 out of 4' })).toBeDefined();
 
-    // The stack takes its own lines beneath the label, indented: opposite the
-    // label there is only a fraction of the panel's width, and four columns of
-    // content wrapped into it.
     const stacks = container.querySelectorAll('[class*="stackedRowValue"]');
     // Two blocks: the germline line under its label, the somatic ones on their
-    // own further down, directly above the table they describe.
+    // own further down
     expect(stacks.length).toBe(2);
     const labelled = stacks[0].parentElement;
     expect(labelled?.className).toMatch(/stackedRow/);
@@ -1243,9 +1201,6 @@ describe('renderDisplayOption', () => {
   });
 
   test('ClinVar: a derived classification no submitter asserts shows no count', () => {
-    // "Conflicting classifications of pathogenicity" is ClinVar's own summary of
-    // the submissions, not any submitter's word, so nothing matches it verbatim.
-    // "(0 of 12)" would read as a measure of support; it is a fact about wording.
     renderOption('phenotypes', {
       consequence: {
         annotations: [
@@ -1257,7 +1212,7 @@ describe('renderDisplayOption', () => {
                 classification: 'Conflicting_classifications_of_pathogenicity',
                 review_status: 'criteria_provided,_conflicting_classifications',
                 rating_scale: 'clinvar_aggregate',
-                supporting: 0,
+                supporting: 0, // <-- no supporting evidence
                 submissions: 12
               }
             ]
@@ -1301,16 +1256,12 @@ describe('renderDisplayOption', () => {
   });
 
   test('ClinVar renders nothing without an annotation', () => {
-    // The germline group gates on the data (`when: present`), so a variant
-    // ClinVar knows nothing about gets no ClinVar section at all.
     const { container } = renderOption('phenotypes', {});
     expect(container.innerHTML).toBe('');
   });
 
   test('the ClinVar option carries only the structural block now', () => {
-    // The germline data moved to Phenotypes, so a germline annotation renders
-    // nothing here however the sub-options are set — it is not this option's
-    // to draw any more.
+    // The germline data moved to Phenotypes.
     const { container } = renderOption('clinvar', {
       subOptionRan: clinvarSvSelected,
       consequence: {
@@ -1456,7 +1407,7 @@ describe('renderDisplayOption', () => {
               },
               {
                 // ClinVar has no usable ontology id for this one, so the name
-                // must still show — as plain text, not a dead link
+                // must show as plain text
                 names: [
                   {
                     name: 'WARS2-related_disorder',
@@ -1475,10 +1426,7 @@ describe('renderDisplayOption', () => {
       }
     });
     // The conditions are split by classification type, but neither table names
-    // itself: the classification lines above each say which it is, and a
-    // heading repeating them said nothing the position did not. ("Germline"
-    // does appear on the page — as the classification line's type — so this
-    // has to look at headings, not at text.)
+    // itself: the classification lines above each say which it is
     const headings = Array.from(
       container.querySelectorAll('[class*="optionLabel"]')
     ).map((h) => h.textContent);
@@ -1488,8 +1436,7 @@ describe('renderDisplayOption', () => {
 
     // The table still sits a step in, under the Classification above it. Two
     // indent wrappers, not one — the ClinVar group already indents everything
-    // it holds, so counting is what tells the block's own step from its
-    // parent's.
+    // it holds
     const table = screen.getByRole('table');
     let indents = 0;
     for (
@@ -1503,7 +1450,6 @@ describe('renderDisplayOption', () => {
     }
     expect(indents).toBe(2);
 
-    // The classification leads, then the condition it is about, then the record.
     const headers = screen.getAllByRole('columnheader');
     expect(headers.map((h) => h.textContent?.slice(0, 14))).toEqual([
       'Classification',
@@ -1551,7 +1497,7 @@ describe('renderDisplayOption', () => {
     // ClinVar files one submission against several conditions at once, so five
     // rows could be one classification by one submitter under five disease
     // names — identical in every column but the condition. The parse collapses
-    // them (see the `collapse` post-op); this is the cell that results.
+    // them.
     renderOption('phenotypes', {
       consequence: {
         annotations: [
@@ -1619,7 +1565,7 @@ describe('renderDisplayOption', () => {
   });
 
   test('ClinVar: the review status shows its star rating and cites ClinVar', async () => {
-    const { container } = renderOption('phenotypes', {
+    renderOption('phenotypes', {
       consequence: {
         annotations: [
           annotation('clinvar', 'transcript', {
@@ -1640,18 +1586,15 @@ describe('renderDisplayOption', () => {
         ]
       }
     });
-    // The wording stays — the stars summarise it, they don't replace it.
+
     expect(
       screen.getByText('criteria provided, multiple submitters, no conflicts')
     ).toBeDefined();
     expect(screen.getByRole('img', { name: '2 out of 4' })).toBeDefined();
 
-    // The (?) beside the label points at ClinVar's own account of the
-    // classification terms. (QuestionButton is a div with an onClick, so there
-    // is no button role to query.)
-    await userEvent.click(
-      container.querySelector('[class*="questionButton"]') as HTMLElement
-    );
+    // The question button beside the label points at ClinVar's own account of the
+    // classification terms.
+    await userEvent.click(screen.getByRole('button'));
     expect(
       screen.getByText(/For more detail regarding ClinVar's clinical/)
     ).toBeDefined();
@@ -1692,10 +1635,13 @@ describe('renderDisplayOption', () => {
   });
 
   test('ClinVar: a submission is rated on the submission scale, not the aggregate one', async () => {
-    // "no classification for the individual variant" is an aggregate-only term:
-    // ClinVar's scale for a single submission does not list it. So the same
-    // wording earns four empty stars at the top and none in the detail — which
-    // is what fails if the two scales are ever crossed.
+    // This test checks that the `clinvar_aggregate` and `clinvar_submission` scales
+    // are being used independently.
+    // Classification summary points at `clinvar_aggregate` scale via `stars_from` in the spec.
+    // The expanded submitter rows use the `clinvar_submission` scale via `stars: 'clinvar_submission` in the spec.
+    // The key 'no classification for the individual variant' exists only in `clinvar_aggregate` scale.
+    // The test confirms that when the rows for individual submitters are rendered,
+    // the star rating does not get looked up in the `clinvar_aggregate` scale.
     renderOption('phenotypes', {
       consequence: {
         annotations: [
@@ -1748,7 +1694,7 @@ describe('renderDisplayOption', () => {
       screen.getByRole('button', { expanded: false, name: /Pathogenic \(1\)/ })
     );
     expect(screen.getByText('Baylor Genetics')).toBeDefined();
-    // Still only the aggregate row's rating — the submission has none.
+    // One set of stars displaying only the aggregate row's rating.
     expect(screen.getAllByRole('img', { name: /out of 4/ }).length).toBe(1);
   });
 
@@ -1867,7 +1813,7 @@ describe('renderDisplayOption', () => {
       }
     });
 
-    // Collapsed: both summaries show, no submitter does.
+    // Individual submitter rows are collapsed
     expect(screen.getByText('Pathogenic (2)')).toBeDefined();
     expect(screen.getByText('Uncertain significance (1)')).toBeDefined();
     expect(screen.queryByText('Institute of Human Genetics')).toBeNull();
@@ -1877,9 +1823,7 @@ describe('renderDisplayOption', () => {
       screen.getByRole('button', { expanded: false, name: /Pathogenic \(2\)/ })
     );
 
-    // Expanded: a line per submitter, with the fields chosen for the detail —
-    // and only the ones behind *this* count. The other classification stays
-    // shut, which is the whole point of expanding per classification.
+    // Expand the first group of submitters.
     expect(screen.getByText('Institute of Human Genetics')).toBeDefined();
     expect(
       screen.getByText('Broad Center for Mendelian Genomics')
@@ -1887,6 +1831,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('2025-01-09')).toBeDefined();
     expect(screen.queryByText('Baylor Genetics')).toBeNull();
 
+    // Expand the second group of submitters.
     await userEvent.click(
       screen.getByRole('button', {
         expanded: false,
@@ -1962,12 +1907,12 @@ describe('renderDisplayOption', () => {
     expect(
       screen.getByRole('link', { name: /25599672/ }).getAttribute('href')
     ).toBe('https://europepmc.org/article/MED/25599672');
-    // A submission citing nothing adds no links of its own.
+    // All links are from the first submitter; there are no links from the second submitter
     expect(screen.getAllByRole('link').length).toBe(2);
   });
 
   test('ClinVar: a submission counting toward the aggregate is set apart', async () => {
-    // Contributing submissions sort first, so the emphasised one leads.
+    // Contributing submissions are visually emphasised in the output
     const { container } = renderOption('phenotypes', {
       consequence: {
         annotations: [
@@ -2071,7 +2016,6 @@ describe('renderDisplayOption', () => {
       }
     });
     expect(screen.getByText('Pathogenic (1)')).toBeDefined();
-    // no control, rather than one that opens onto nothing
     expect(screen.queryByRole('button', { name: /Pathogenic/ })).toBeNull();
   });
 
@@ -2113,17 +2057,14 @@ describe('renderDisplayOption', () => {
       protvarUrl: 'https://protvar.example/x'
     });
     expect(screen.getByText('ProtVar')).toBeDefined(); // option heading
-    // The names match Show all's exactly -- the two views used to disagree
-    // ("Stability" vs "Protein Structure Stability", and the lists were
-    // unheaded), so the same value was labelled differently either side of a
-    // toggle.
-    expect(screen.getByText('Protein Structure Stability')).toBeDefined();
+    expect(screen.getByText('Protein Structure Stability')).toBeDefined(); // from the fixture
     expect(screen.getByText('1.23')).toBeDefined();
-    expect(screen.getByText('Protein Pockets')).toBeDefined();
+    expect(screen.getByText('Protein Pockets')).toBeDefined(); // from the fixture
     expect(
       screen.getByText('Protein-Protein Interaction Interface')
-    ).toBeDefined();
-    // templated item labels, the detail Show all replaces with a count
+    ).toBeDefined(); // from the fixture
+
+    // templated item labels
     expect(screen.getByText('Pocket 1')).toBeDefined();
     expect(screen.getByText('0.5')).toBeDefined();
     expect(screen.getByText('Pocket 2')).toBeDefined();
@@ -2133,7 +2074,11 @@ describe('renderDisplayOption', () => {
     // out: were it also rendering, its three rows would each add a link.
     const links = screen.getAllByRole('link');
     expect(links).toHaveLength(4);
-    expect(links[0].getAttribute('href')).toBe('https://protvar.example/x');
+    expect(
+      links.every(
+        (link) => link.getAttribute('href') === 'https://protvar.example/x'
+      )
+    ).toBe(true);
   });
 
   test('ProtVar Show-all view: the same itemised detail as the default view', () => {
@@ -2156,20 +2101,18 @@ describe('renderDisplayOption', () => {
     });
     expect(screen.getByText('Protein Structure Stability')).toBeDefined();
     expect(screen.getByText('1.23')).toBeDefined();
-    // Pockets itemise here exactly as they do by default -- Show all used to
-    // collapse them to a count ("2"), so the same variant read differently
-    // either side of the toggle.
+
     expect(screen.getByText('Protein Pockets')).toBeDefined();
     expect(screen.getByText('Pocket 1')).toBeDefined();
     expect(screen.getByText('0.5')).toBeDefined();
     expect(screen.getByText('Pocket 2')).toBeDefined();
-    // ...but a sub-option that ran and found nothing still earns its dash,
-    // which is the whole point of Show all.
+
+    // A sub-option that ran and found nothing is displayed with a dash
     expect(
       screen.getByText('Protein-Protein Interaction Interface')
     ).toBeDefined();
     expect(screen.getByText('—')).toBeDefined();
-    // one link per value: stability + the two pockets. The dash carries none.
+    // one link per value: stability + the two pockets
     expect(screen.getAllByRole('link')).toHaveLength(3);
   });
 
@@ -2185,12 +2128,14 @@ describe('renderDisplayOption', () => {
         ]
       },
       showAll: true,
-      // only stability ran; the empty-list dash rows must respect that gate,
-      // or Show all would advertise sub-options the user never selected.
+      // only stability ran
       subOptionRan: (id: string) => id === 'protvar_stability',
       protvarUrl: 'https://protvar.example/x'
     });
+    // this is the only option that the user selected
     expect(screen.getByText('Protein Structure Stability')).toBeDefined();
+
+    // unselected options are not displayed
     expect(screen.queryByText('Protein Pockets')).toBeNull();
     expect(
       screen.queryByText('Protein-Protein Interaction Interface')
@@ -2263,7 +2208,7 @@ describe('renderDisplayOption', () => {
   // --- IntAct: view + when coalesce + count + sub-option counts --------------
 });
 
-test('IntAct: the interactions table is in the default view, not behind Show all', () => {
+test('IntAct: the interactions table is in the default view; Show all not enabled', () => {
   renderOption('intact', {
     consequence: {
       annotations: [
@@ -2275,7 +2220,6 @@ test('IntAct: the interactions table is in the default view, not behind Show all
         })
       ]
     }
-    // deliberately no showAll
   });
   expect(screen.getByText('IntAct')).toBeDefined();
   expect(screen.getByText('EBI-1')).toBeDefined();
@@ -2285,9 +2229,7 @@ test('IntAct: the interactions table is in the default view, not behind Show all
   );
 });
 
-describe('IntAct interactions table', () => {
-  // Two entries of a real IntAct return. The columns are parallel and
-  // positional; each object here is one zipped interaction.
+describe('IntAct interactions table with "Show all" enabled', () => {
   const interactions = [
     {
       interaction_ac: 'EBI-27104114',
@@ -2341,18 +2283,15 @@ describe('IntAct interactions table', () => {
     ).toBe('https://www.uniprot.org/uniprotkb/P37840/entry');
   });
 
-  it('stacks a split column one value per line, in the cell container', () => {
+  it('puts interaction participants with uniprotkb id from a combined string in a single table cell', () => {
     renderIntact();
 
-    // The participants share one cell and each takes a line of it, rather than
-    // running on inline: an inline run makes the column claim the width of all
-    // its values at once, which squeezed the accession beside it until it broke
-    // mid-id. They stack in the same container a cell of `items` uses.
+    // Participants uniprotkb:P00520_and_uniprotkb:P37840 go in one table cell
     const cell = screen.getByText('P00520').closest('td');
     const stack = cell?.firstElementChild;
 
     expect(stack?.className).toMatch(/cellItems/);
-    expect(stack?.querySelectorAll('a').length).toBeGreaterThan(1);
+    expect(stack?.querySelectorAll('a').length).toBe(2);
 
     // ...and no separator text was left between them.
     expect(cell?.textContent).toBe('P00520P37840');
@@ -2452,11 +2391,6 @@ describe('IntAct interactions table', () => {
       'https://www.uniprot.org/uniprotkb/P37840/entry'
     );
   });
-  /**
-   * The option's help hangs on whatever turns out to be its visible title, and
-   * that node differs by option shape. These pin all four shapes, because the
-   * anchor is claimed at render time rather than decided up front.
-   */
 });
 
 describe('option help on the results heading', () => {
@@ -2517,8 +2451,6 @@ describe('option help on the results heading', () => {
     expect(screen.getByText(/What this annotation means/)).toBeDefined();
   });
 
-  // The whole reason the anchor is claimed rather than assigned: ClinVar's
-  // two shapes are different blocks and only one of them draws.
   it('follows ClinVar to whichever of its shapes drew', async () => {
     const { container } = renderOption('phenotypes', {
       consequence: {
@@ -2579,19 +2511,11 @@ describe('option help on the results heading', () => {
         annotations: [annotation('revel', 'transcript', { score: 0.42 })]
       }
     });
-    expect(
-      container.querySelectorAll('[class*="questionButton"]')
-    ).toHaveLength(0);
+    expect(container.querySelectorAll('button')).toHaveLength(0);
   });
 });
 
 describe('table column alignment', () => {
-  /**
-   * The house rule is by data type: numbers right so a column of figures lines
-   * up on its digits, text left. Derived from the format, so a spec normally
-   * says nothing — `align` is only for a number the source publishes as a
-   * string (OpenTargets' p-value).
-   */
   const alignmentOf = (container: HTMLElement, selector: string) =>
     [...container.querySelectorAll(selector)].map((cell) =>
       cell.className.includes('alignRight') ? 'right' : 'left'
@@ -2654,18 +2578,8 @@ describe('table column alignment', () => {
   });
 });
 
-/**
- * A `map_rows` block draws one row per vocabulary entry rather than naming its
- * fields up front, because an allele frequency's populations are a dict chosen
- * per submission. These cover the three fields that steer it: `vocabulary`
- * (which shipped list supplies the rows), `scope` (which slice of it), and
- * `overall_from` (where the "" entry reads, since the all-ancestry figure sits
- * beside the dict rather than inside it).
- */
 describe('map_rows: rows from a shipped vocabulary', () => {
-  // As the response ships it: one list covering every source, each entry
-  // naming the source it belongs to. The "" population is the source's
-  // all-ancestry figure.
+  // The code that is an empty string ("") means all populations combined.
   const afPopulations: VocabularyEntry[] = [
     { scope: 'gnomad_exomes', code: '', label: 'All' },
     { scope: 'gnomad_genomes', code: '', label: 'All' },
@@ -2683,7 +2597,7 @@ describe('map_rows: rows from a shipped vocabulary', () => {
     vocabularies: { af_populations: afPopulations }
   });
 
-  it('reads the "" entry from overall_from, beside the dict rather than in it', () => {
+  it('reads the "" entry from the `overall_from` field rather than from the dict', () => {
     renderOption(
       'gnomad_genomes',
       genomes({
@@ -2694,12 +2608,12 @@ describe('map_rows: rows from a shipped vocabulary', () => {
     // Both rows come from the same vocabulary, but by different routes: "All"
     // via `overall_from`, the rest by key from the populations dict.
     expect(screen.getByText('All')).toBeDefined();
-    expect(screen.getByText('0.01142')).toBeDefined();
+    expect(screen.getByText('0.01142')).toBeDefined(); // notice the rounding to 4 significant digits
     expect(screen.getByText('Maximum across all groups')).toBeDefined();
     expect(screen.getByText('0.03')).toBeDefined();
   });
 
-  it('draws only its own scope, though one vocabulary covers every source', () => {
+  it('uses appropriate vocabulary scope', () => {
     renderOption(
       'gnomad_genomes',
       genomes({
@@ -2707,17 +2621,14 @@ describe('map_rows: rows from a shipped vocabulary', () => {
         populations: { grpmax: 0.03 }
       })
     );
-    // gnomAD Exomes and All of Us are in the same list. Their rows belong to
-    // their own blocks, so this one must not draw them — and "Maximum
-    // subpopulation" is All of Us's label, not a variant of this block's.
+
+    // verify that only gnomad_genomes scope is used, not gnomad_exomes
     expect(screen.queryByText('Maximum subpopulation')).toBeNull();
     // Two rows drawn: this source's "" and its one population.
     expect(screen.getAllByText('All')).toHaveLength(1);
   });
 
   it('draws nothing when the vocabulary it names was not shipped', () => {
-    // The block asks for `af_populations`; the job shipped something else. No
-    // rows can be discovered, so the block is absent rather than empty.
     const { container } = renderOption('gnomad_genomes', {
       allele: [
         annotation('gnomad_genomes', 'allele', {
@@ -2738,19 +2649,18 @@ describe('map_rows: rows from a shipped vocabulary', () => {
         populations: {}
       })
     );
-    // Selected, but this variant has no figure for it: the default view omits
-    // the row entirely rather than showing an empty one.
     expect(screen.getByText('All')).toBeDefined();
     expect(screen.queryByText('Maximum across all groups')).toBeNull();
   });
 
+  // Continued from the previous test: now the "Show all" option is selected
+  // Verify that the population that wasn't shown in the previous test
+  // now shows with a dash as its value
   it('lists that population with a dash under "Show all"', () => {
     renderOption('gnomad_genomes', {
       ...genomes({ overall: 0.0114171, populations: {} }),
       showAll: true
     });
-    // Every entry in the vocabulary was selected — that is what being there
-    // means — so "Show all" accounts for it rather than hiding it.
     expect(screen.getByText('Maximum across all groups')).toBeDefined();
     expect(screen.getByText('—')).toBeDefined();
   });
