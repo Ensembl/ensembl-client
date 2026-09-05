@@ -23,7 +23,6 @@ import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/Checkbo
 import type {
   FilterOption,
   ResultsFilterCondition,
-  ResultsFilterField,
   ResultsFilterOperator,
   ScoreOptionGroup
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
@@ -34,7 +33,7 @@ type Props = {
   // Which score this row tests, and the ones still free to choose, grouped by
   // category (genome wide / missense / splicing). A score taken by another row
   // is not offered again — one threshold per score.
-  field: ResultsFilterField;
+  field: string;
   scoreOptionGroups: ScoreOptionGroup[];
   operatorOptions: FilterOption[];
   operator: ResultsFilterOperator;
@@ -112,7 +111,7 @@ const ScoreInput = (props: Props) => {
           value={field}
           onInput={(event) =>
             onChange({
-              field: event.currentTarget.value as ResultsFilterField
+              field: event.currentTarget.value
             })
           }
         />

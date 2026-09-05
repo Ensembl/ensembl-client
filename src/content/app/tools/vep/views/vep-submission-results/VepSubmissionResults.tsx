@@ -82,8 +82,7 @@ import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
 import {
   serializeResultsFilters,
-  type ResultsFilterCondition,
-  type ResultsFilterField
+  type ResultsFilterCondition
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
 import styles from './VepSubmissionResults.module.css';
@@ -240,8 +239,7 @@ const VepSubmissionResults = () => {
       label: formatAfSourceLabel(source)
     })
   );
-  const scoreFields = (vepResults?.metadata.available_scores ??
-    []) as ResultsFilterField[];
+  const scoreFields = vepResults?.metadata.available_scores ?? [];
   // Which fields the query builder offers, and how each is presented. Absent on
   // a job pinned before the catalogue existed, which then offers no filters.
   const filterFields = vepResults?.metadata.filter_fields ?? [];

@@ -14,26 +14,6 @@
  * limitations under the License.
  */
 
-export type ResultsFilterField =
-  | 'consequence'
-  | 'transcript'
-  | 'gene_symbol'
-  | 'gene_id'
-  | 'transcript_group'
-  | 'allele_frequency'
-  | 'cadd_phred'
-  | 'cadd_raw'
-  | 'alphamissense'
-  | 'revel'
-  | 'clinpred'
-  | 'eve'
-  | 'popeve'
-  | 'spliceai_ag'
-  | 'spliceai_al'
-  | 'spliceai_dg'
-  | 'spliceai_dl'
-  | 'spliceai_any';
-
 // 'in' for set-membership fields; le/ge (<=, >=) for the numeric ones. There is
 // deliberately no '==': these are floats, so equality is a question the data can
 // rarely answer, and it was never the useful test for a frequency or a score.
@@ -45,7 +25,7 @@ export type ResultsFilterCondition = {
   // Stable client-side id, used to track which draft rows have been applied.
   // Not part of the wire format — stripped before serialising to the API.
   id: string;
-  field: ResultsFilterField;
+  field: string;
   operator: ResultsFilterOperator;
   values: string[];
   threshold?: number;
@@ -107,7 +87,7 @@ export type FilterOptionGroup = {
 };
 
 export type ScoreOption = {
-  value: ResultsFilterField;
+  value: string;
   label: string;
   /** Range hint for the threshold input; differs per score. */
   placeholder: string;
@@ -119,7 +99,7 @@ export type ScoreOptionGroup = {
 };
 
 export type FilterField = {
-  field: ResultsFilterField;
+  field: string;
   label: string;
   /** Text to show between the field and its value.
    * Absent where the editor chooses its own operator,
