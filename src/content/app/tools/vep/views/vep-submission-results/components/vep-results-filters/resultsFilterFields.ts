@@ -17,7 +17,6 @@
 import type {
   FilterField,
   ResultsFilterCondition,
-  ResultsFilterField,
   ScoreOption,
   ScoreOptionGroup
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
@@ -37,14 +36,12 @@ const scoreOptions = (fields: FilterField[]): ScoreOption[] =>
     (field) => field.score_groups?.flatMap((group) => group.options) ?? []
   );
 
-export const isScoreField = (
-  field: ResultsFilterField,
-  fields: FilterField[]
-): boolean => scoreOptions(fields).some((option) => option.value === field);
+export const isScoreField = (field: string, fields: FilterField[]): boolean =>
+  scoreOptions(fields).some((option) => option.value === field);
 
 /** The range hint for a score, for the row's threshold input. */
 export const scoreFieldOption = (
-  field: ResultsFilterField,
+  field: string,
   fields: FilterField[]
 ): ScoreOption | undefined =>
   scoreOptions(fields).find((option) => option.value === field);
@@ -53,7 +50,7 @@ export const scoreFieldOption = (
 // track which rows have been applied) and API-provided initial wire values.
 let conditionCounter = 0;
 export const createCondition = (
-  field: ResultsFilterField,
+  field: string,
   fields: FilterField[]
 ): ResultsFilterCondition => {
   const definition = definitionForField(field, fields);
@@ -72,7 +69,7 @@ export const createCondition = (
 const usedSingleInstanceFields = (
   conditions: ResultsFilterCondition[],
   fields: FilterField[]
-): Set<ResultsFilterField> => {
+): Set<string> => {
   const singleInstance = new Set(
     fields.filter((f) => f.single_instance).map((f) => f.field)
   );
@@ -87,7 +84,7 @@ const usedSingleInstanceFields = (
  * rather than in the field dropdown.
  */
 export const definitionForField = (
-  field: ResultsFilterField,
+  field: string,
   fields: FilterField[]
 ): FilterField | undefined =>
   isScoreField(field, fields)
@@ -101,7 +98,7 @@ export const definitionForField = (
 export const availableScoresForRow = (
   conditions: ResultsFilterCondition[],
   rowIndex: number,
-  offered: ResultsFilterField[],
+  offered: string[],
   fields: FilterField[]
 ): ScoreOptionGroup[] => {
   const takenElsewhere = new Set(
@@ -149,7 +146,7 @@ export const availableFieldsForRow = (
 export const nextAvailableField = (
   conditions: ResultsFilterCondition[],
   fields: FilterField[]
-): ResultsFilterField => {
+): string => {
   const used = usedSingleInstanceFields(conditions, fields);
   const field = fields.find((f) => !used.has(f.field));
   return (field ?? fields[0]).field;

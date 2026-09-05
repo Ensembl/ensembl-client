@@ -25,7 +25,6 @@ import {
 import {
   type FilterField,
   type ResultsFilterCondition,
-  type ResultsFilterField,
   type ScoreOptionGroup
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
@@ -109,7 +108,7 @@ const CATALOGUE: FilterField[] = [
   }
 ];
 
-const condition = (field: ResultsFilterField): ResultsFilterCondition =>
+const condition = (field: string): ResultsFilterCondition =>
   createCondition(field, CATALOGUE);
 
 // The scores the catalogue offers, which is what "a score field" now means.
