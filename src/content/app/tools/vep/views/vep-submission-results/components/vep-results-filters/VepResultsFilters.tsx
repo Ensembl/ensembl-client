@@ -54,21 +54,18 @@ type Props = {
   onClear: () => void;
   isDirty: boolean;
   hasAppliedFilters: boolean;
-  // Filtered / total record counts from the last applied request, if any.
   resultSummary: { filtered: number; total: number } | null;
   // The fields this job can be filtered on, and how each is presented, from the
-  // results response. Which transcript groups it offers is decided there, from
-  // the columns the output has.
+  // results response.
   filterFields: FilterField[];
   // Allele-frequency sources chosen at input; the AF filter is only offered when
   // this is non-empty.
   afSources: AfSourceOption[];
   // Impact-prediction scores chosen at input ('cadd_phred', 'revel',
-  // 'spliceai_dl', …); a score is only offered in the row's menu when it is
+  // 'spliceai_dl', etc.); a score is only offered in the row's menu when it is
   // among them.
   scoreFields: ResultsFilterField[];
-  // Ids of conditions already applied; their field (query type) select is frozen
-  // so the applied filter type can't change — only its values stay editable.
+  // Ids of conditions already applied
   appliedConditionIds: Set<string>;
 };
 
