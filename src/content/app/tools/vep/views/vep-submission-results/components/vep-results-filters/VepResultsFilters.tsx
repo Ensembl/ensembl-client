@@ -38,10 +38,9 @@ import {
   nextAvailableField
 } from './resultsFilterFields';
 
-import type { FilterField } from 'src/content/app/tools/vep/types/vepResultsFilters';
 import type {
-  ResultsFilterCondition,
-  ResultsFilterField
+  FilterField,
+  ResultsFilterCondition
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
 import styles from './VepResultsFilters.module.css';
@@ -64,17 +63,15 @@ type Props = {
   // Impact-prediction scores chosen at input ('cadd_phred', 'revel',
   // 'spliceai_dl', etc.); a score is only offered in the row's menu when it is
   // among them.
-  scoreFields: ResultsFilterField[];
+  scoreFields: string[];
   // Ids of conditions already applied
   appliedConditionIds: Set<string>;
 };
 
 // Every score resolves to the one "Variant impact predictions" entry; which
 // score a row tests lives in the row, not in the field dropdown.
-const fieldDefinition = (
-  field: ResultsFilterField,
-  fields: FilterField[]
-): FilterField => definitionForField(field, fields) ?? fields[0];
+const fieldDefinition = (field: string, fields: FilterField[]): FilterField =>
+  definitionForField(field, fields) ?? fields[0];
 
 /**
  * The results filter query builder: rows of (field, operator, values) conditions
@@ -109,7 +106,7 @@ const VepResultsFilters = (props: Props) => {
 
   // Replace a whole condition (used on field change, so field-specific defaults
   // apply cleanly and stale fields from the previous field don't linger).
-  const changeField = (index: number, field: ResultsFilterField) => {
+  const changeField = (index: number, field: string) => {
     // "Variant impact predictions" is one entry standing for several scores,
     // and its declared field is only the first of them. Landing on it would put
     // two rows on the same score, so take the first one still free.
@@ -203,10 +200,7 @@ const VepResultsFilters = (props: Props) => {
                 disabled={isFieldLocked}
                 onChange={() => undefined}
                 onInput={(event) =>
-                  changeField(
-                    index,
-                    event.currentTarget.value as ResultsFilterField
-                  )
+                  changeField(index, event.currentTarget.value)
                 }
               />
               {definition.operator_label && (
