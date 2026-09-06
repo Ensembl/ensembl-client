@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useRef } from 'react';
-import type { FormEvent } from 'react';
+import { useState, useRef, type InputEvent } from 'react';
 import classNames from 'classnames';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
@@ -68,9 +67,6 @@ const AlleleFrequencyInput = (props: Props) => {
   const sourcesRef = useRef<HTMLDivElement>(null);
   useOutsideClick(sourcesRef, () => setIsSourcesOpen(false));
 
-  // Scope is explicit local state: "specific" with no picks yet can't be derived
-  // from the condition (values would be empty, reading as "any"), so tracking it
-  // separately keeps the specific selector visible while the user chooses.
   const [scope, setScope] = useState<Scope>(
     values.length > 0 ? 'specific' : match === 'all' ? 'all' : 'any'
   );
@@ -82,7 +78,6 @@ const AlleleFrequencyInput = (props: Props) => {
     } else if (next === 'all') {
       onChange({ match: 'all', values: [] });
     } else {
-      // Specific: match across the chosen subset is "any"; keep any picks made.
       onChange({ match: 'any' });
     }
   };
@@ -99,7 +94,7 @@ const AlleleFrequencyInput = (props: Props) => {
     });
   };
 
-  const onThresholdInput = (event: FormEvent<HTMLInputElement>) => {
+  const onThresholdInput = (event: InputEvent<HTMLInputElement>) => {
     const text = event.currentTarget.value;
     setThresholdText(text);
     const parsed = Number.parseFloat(text);

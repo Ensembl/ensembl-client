@@ -37,11 +37,6 @@ import { groupByCategory } from 'src/content/app/tools/vep/utils/groupByCategory
 import { subOptionRan as didSubOptionRun } from 'src/content/app/tools/vep/utils/subOptionRan';
 import styles from './VepResultsAnnotationDetail.module.css';
 
-/**
- * Question: why does this component have allele frequency, protvar url,
- * and opentargets variant id as distinct properties?
- */
-
 const VepResultsAnnotationDetail = (props: {
   genomeId: string;
   consequence: PredictedMolecularConsequence;

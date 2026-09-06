@@ -104,12 +104,7 @@ const VepResultsFilters = (props: Props) => {
     );
   };
 
-  // Replace a whole condition (used on field change, so field-specific defaults
-  // apply cleanly and stale fields from the previous field don't linger).
   const changeField = (index: number, field: string) => {
-    // "Variant impact predictions" is one entry standing for several scores,
-    // and its declared field is only the first of them. Landing on it would put
-    // two rows on the same score, so take the first one still free.
     const resolved = isScoreField(field, filterFields)
       ? (flattenScoreOptions(
           availableScoresForRow(conditions, index, scoreFields, filterFields)
@@ -164,17 +159,10 @@ const VepResultsFilters = (props: Props) => {
                 className={styles.fieldSelect}
                 options={availableFieldsForRow(conditions, index, filterFields)
                   .filter((field) => {
-                    // A filter is only offered when the job carries the data it
-                    // tests: AF sources and impact-prediction scores are both
-                    // gated on what was actually selected at input.
                     if (field.field === 'allele_frequency') {
                       return afSources.length > 0;
                     }
                     if (field.editor === 'score') {
-                      // The group is offered while any of its scores, in any
-                      // category, is still free for this row. Empty categories
-                      // are already dropped, so a non-empty list of groups
-                      // means a genuinely available score.
                       return (
                         availableScoresForRow(
                           conditions,
@@ -190,8 +178,6 @@ const VepResultsFilters = (props: Props) => {
                     label: field.label,
                     value: field.field
                   }))}
-                // A score row's value is its score, which is not a field option
-                // — point the select at the group entry instead.
                 value={
                   isScoreField(condition.field, filterFields)
                     ? definition.field

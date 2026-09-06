@@ -42,11 +42,6 @@
   font-size: 13px;
 }
 
-/* The value editor trigger button (opens the consequence / AF-source popover).
-   Styled to read as the same control as the field dropdown beside it, which is
-   the shared SimpleSelect: same blue border, square corners, same padding, and
-   the same arrowhead below. It cannot simply *be* a SimpleSelect — that wraps a
-   native <select>, and this opens a panel of checkboxes. */
 .valueTrigger {
   display: inline-flex;
   align-items: center;
@@ -55,11 +50,7 @@
   justify-content: space-between;
   position: relative;
 
-  /* Right padding matches SimpleSelect's, to clear the arrowhead. The vertical
-     padding stays at 6px rather than its 3px: a native select is taller than a
-     button at the same padding (28px against 21px measured here), so copying
-     that number exactly would leave the two controls visibly different heights
-     side by side. 6px brings the button to 27px, which is what it was before. */
+  /* Right padding matches SimpleSelect's, to clear the arrowhead */
   padding: 6px 25px 6px 10px;
   background-color: var(--color-white);
   border: 1px solid var(--color-blue);
@@ -67,11 +58,7 @@
   font-size: 13px;
 }
 
-/* SimpleSelect's arrowhead. Geometry and colour are copied from
-   `simple-select/SimpleSelect.module.css`, which stays the source of truth — a
-   CSS-module class is scoped to its own file, and that one is bound to the
-   native-select markup, so it can't be shared directly. If the arrow changes
-   there, change it here too. */
+/* The arrowhead. Geometry and colour are copied from SimpleSelect */
 .valueTrigger::after {
   content: '';
   position: absolute;
@@ -84,8 +71,6 @@
   clip-path: polygon(100% 0%, 0 0%, 50% 100%);
 }
 
-/* The one thing a native select can't do, kept: the same arrowhead turned over
-   while the panel is open, so the control still shows its state. */
 .valueTriggerOpen::after {
   transform: translateY(-25%) rotate(180deg);
 }
@@ -144,10 +129,6 @@
   min-width: 56px;
 }
 
-/* Sized in `ch` (the advance of one digit in the monospace face) plus the
-   horizontal padding and borders, since box-sizing is border-box. 9 characters
-   fits the longest placeholder, "e.g. 0.5", with room for a typed value like
-   "-5.4712"; a fixed 80px cut the last character off the decimal placeholders. */
 .afThreshold {
   width: calc(9ch + 22px);
   padding: 6px 10px;
@@ -164,8 +145,6 @@
   flex: none;
 }
 
-/* Self-managed consequence dropdown (see ConsequenceMultiSelect for why it
-   doesn't use the shared PointerBox). */
 .multiSelect {
   position: relative;
 }
@@ -181,7 +160,6 @@
   box-shadow: 0 2px 6px var(--shadow-color, rgb(0 0 0 / 0.25));
 }
 
-/* A consequence option: colour swatch + term, matching the results table. */
 .optionLabel {
   display: inline-flex;
   align-items: center;
