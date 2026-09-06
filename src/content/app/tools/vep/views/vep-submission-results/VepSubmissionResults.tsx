@@ -510,6 +510,8 @@ export const hasAnySelectedOption = (
     panel.options.some((option) => Boolean(parameters[option.id]))
   );
 
+// Finds indices of rows that have content that can go into the expandable
+// detailed annotations panel
 export const detailBearingRowIndices = (
   rows: VepResultsTableRowData[],
   hasAllele: (sequence: string) => boolean

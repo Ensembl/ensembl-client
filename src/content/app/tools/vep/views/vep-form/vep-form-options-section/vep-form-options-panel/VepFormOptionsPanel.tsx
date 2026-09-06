@@ -54,10 +54,9 @@ type Props = {
 };
 
 /**
- * An option carrying a nested group — the gnomAD / All of Us allele-frequency
- * sources, each with its own ancestry (or subset) matrix. These need more room
- * than a standard 200px option column, so a group of them is laid out in wider
- * columns (see `optionsGridSources`).
+ * An option carrying a nested group.
+ * Examples: gnomAD / All of Us allele-frequency sources,
+ * each with its own ancestry (or subset) matrix.
  */
 const isSourceOption = (option: FormPanelOption) =>
   !!option.sub_options?.some((subOption) => subOption.type === 'group');
@@ -94,9 +93,6 @@ const VepFormOptionsPanel = (props: Props) => {
     }
   }, [hasSelectedOption]);
 
-  // Open/close on the section toggle's command. Keyed on the nonce, not on
-  // `expanded`, so clicking the section toggle twice back to the same value
-  // still lands — and so a re-render never reopens a panel the user just closed.
   const lastExpandNonce = useRef(expandCommand?.nonce);
   useEffect(() => {
     if (expandCommand && expandCommand.nonce !== lastExpandNonce.current) {
@@ -117,9 +113,6 @@ const VepFormOptionsPanel = (props: Props) => {
   const toggleSelectAll = () =>
     dispatch(updateParameters(panelSelectionUpdates(panel, !allSelected)));
 
-  // renderSubOption and renderOption are mutually recursive (a 'group'
-  // sub-option renders nested options, which may themselves have sub-options).
-  // Declared as hoisted functions so the forward reference is clean.
   /**
    * Whether a sub-option shows while a source is uncustomised. Only selections
    * are hidden: a setting like the SV overlap cutoff is part of the suggested
@@ -139,9 +132,9 @@ const VepFormOptionsPanel = (props: Props) => {
     return boolValue(option.id, option.default);
   }
 
-  // `owner` is the top-level option a boolean sub-option belongs to, passed
-  // only from the direct-children call site: it is what lets unticking the last
-  // sub-option switch the option itself off (see subOptionToggleUpdates).
+  // renderSubOption and renderOption are mutually recursive (a 'group'
+  // sub-option renders nested options, which may themselves have sub-options).
+
   function renderSubOption(
     subOption: FormPanelSubOption,
     showAll = true,

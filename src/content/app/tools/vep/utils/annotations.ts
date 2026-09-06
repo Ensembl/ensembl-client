@@ -25,9 +25,6 @@ export type AnnotatedEntity = {
 /**
  * Read the data of the given plugin's annotation
  * from the "annotated entity" (i.e. a variant allele, or a predicted transcript consequence object)
- *
- * The plugin id is a plain string, as it is on the wire and in the display spec.
- * A caller that knows the shape it wants asks for it: getAnnotation<Foo>(...)
  */
 export const getAnnotation = <Data = unknown>(
   entity: AnnotatedEntity | null | undefined,

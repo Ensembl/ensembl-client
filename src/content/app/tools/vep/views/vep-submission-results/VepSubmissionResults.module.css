@@ -170,13 +170,6 @@
   font-size: 11px;
 }
 
-
-/* The annotation panel spans the full width between the row division lines.
-   The shared Table's own `td` rule outranks a plain class selector here (its
-   selector carries an element as well), so a bare `padding: 0` on this class
-   silently did nothing — the horizontal inset has to come off through the
-   variables that component exposes for the purpose. Vertical padding stays:
-   it separates the panel from the rows above and below. */
 .detailCell {
   --table-cell-padding-left: 0;
   --table-cell-padding-right: 0;
