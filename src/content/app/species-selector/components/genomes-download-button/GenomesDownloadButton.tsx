@@ -28,7 +28,7 @@ type Props = {
   className?: string;
 };
 
-const endpointUrl = `${config.searchApiBaseUrl}/genomes/v2/download`;
+const endpointUrl = `${config.searchApiBaseUrl}/genomes/v3/download`;
 
 const GenomesDownloadButton = (props: Props) => {
   const searchParams = new URLSearchParams();
