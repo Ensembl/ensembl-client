@@ -19,8 +19,11 @@ import { defineConfig } from 'vitest/config';
 import viteReactPlugin from '@vitejs/plugin-react';
 import { playwright } from '@vitest/browser-playwright'
 
+const dirname = import.meta.dirname;
+
 export default defineConfig({
   plugins: [viteReactPlugin()],
+  publicDir: path.resolve(dirname, './tests/public'), // this directory contains service worker file for msw
   test: {
     globals: true,
     name: 'browser',
@@ -38,22 +41,22 @@ export default defineConfig({
   resolve: {
     alias: [
       // Handle absolute imports like "src/..."
-      { find: 'src', replacement: path.resolve(__dirname, './src') },
+      { find: 'src', replacement: path.resolve(dirname, './src') },
 
       // Map "config" to config.ts
-      { find: 'config', replacement: path.resolve(__dirname, './config.ts') },
+      { find: 'config', replacement: path.resolve(dirname, './config.ts') },
 
       // Handle static assets
-      { find: 'static', replacement: path.resolve(__dirname, './static') },
+      { find: 'static', replacement: path.resolve(dirname, './static') },
 
       // Stub out browser-specific static files
       {
         find: 'static/browser',
-        replacement: path.resolve(__dirname, './static/browser')
+        replacement: path.resolve(dirname, './static/browser')
       },
 
       // Resolve tests directory
-      { find: 'tests', replacement: path.resolve(__dirname, 'tests') }
+      { find: 'tests', replacement: path.resolve(dirname, 'tests') }
     ]
   }
 });
