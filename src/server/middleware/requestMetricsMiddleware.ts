@@ -29,17 +29,17 @@ const httpRequestsTotal = new Counter({
 const httpRequestDurationSeconds = new Histogram({
   name: 'http_request_duration_seconds',
   help: 'HTTP request duration in seconds',
-  labelNames: ['method', 'route', 'status_code'],
-  buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5]
+  labelNames: ['method', 'route'],
+  buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10]
 });
 
 // Do not collect metrics from utility paths
 const ignoredMetricPaths = new Set([HEALTHCHECK_URL_PATH, METRICS_URL_PATH]);
 
-const getRouteTemplate = (req: Request) => {
+const getRouteName = (req: Request) => {
   const fullPathname = req.baseUrl + req.path;
-  const [first, second] = fullPathname.split('/');
-  return [first, second].filter((part) => Boolean(part)).join('/');
+  const [, appPath] = fullPathname.split('/');
+  return appPath || 'home';
 };
 
 const requestMetricsMiddleware = (
@@ -54,16 +54,18 @@ const requestMetricsMiddleware = (
 
   const endRequestTimer = httpRequestDurationSeconds.startTimer();
 
-  res.on('finish', () => {
-    const route = getRouteTemplate(req);
-    const labels = {
+  res.once('finish', () => {
+    const commonLabels = {
       method: req.method,
-      route,
-      status_code: String(res.statusCode)
+      route: getRouteName(req)
     };
 
-    httpRequestsTotal.inc(labels);
-    endRequestTimer(labels);
+    httpRequestsTotal.inc({
+      ...commonLabels,
+      status_code: `${Math.floor(res.statusCode / 100)}xx`
+    });
+
+    endRequestTimer(commonLabels);
   });
 
   next();

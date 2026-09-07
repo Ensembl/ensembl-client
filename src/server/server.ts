@@ -48,9 +48,9 @@ if (!serverConfig.isEnsemblDeployment) {
   }
 }
 
+app.use(redirectMiddleware);
 app.use(healthcheckRouter);
 app.use(metricsRouter);
-app.use(redirectMiddleware);
 app.use(seoRouter);
 
 app.get('/unsupported-browser', unsupportedBrowserRouter);
