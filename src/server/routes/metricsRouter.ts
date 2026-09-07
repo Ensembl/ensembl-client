@@ -26,7 +26,7 @@ if (!defaultMetricsInitialized) {
 
 const router = Router();
 
-export const METRICS_URL_PATH = '/metrict';
+export const METRICS_URL_PATH = '/metrics';
 
 router.get(METRICS_URL_PATH, async (_req, res, next) => {
   try {
