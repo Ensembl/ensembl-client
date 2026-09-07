@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Filters } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
-
 import { metadataFields } from '../../gene-view/components/transcripts-filter/TranscriptsFilter';
+
+import type { Filters } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 type Transcript = {
   metadata: {

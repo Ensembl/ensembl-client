@@ -19,7 +19,7 @@ import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';
 import ViewInApp, {
-  LinksConfig
+  type LinksConfig
 } from 'src/shared/components/view-in-app/ViewInApp';
 
 import styles from './ViewInAppPopup.module.css';

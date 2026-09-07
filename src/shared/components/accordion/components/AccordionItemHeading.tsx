@@ -15,9 +15,11 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { InjectedHeadingAttributes } from '../helpers/AccordionStore';
-import { DivAttributes } from '../helpers/types';
-import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
+
+import { Consumer as ItemConsumer, type ItemContext } from './ItemContext';
+
+import type { InjectedHeadingAttributes } from '../helpers/AccordionStore';
+import type { DivAttributes } from '../helpers/types';
 
 type Props = DivAttributes;
 

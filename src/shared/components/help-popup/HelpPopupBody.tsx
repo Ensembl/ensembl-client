@@ -30,7 +30,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 import HistoryButtons from './HistoryButtons';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import { SlugReference } from './types';
+import type { SlugReference } from './types';
 
 import styles from './HelpPopupBody.module.css';
 

@@ -21,11 +21,11 @@ import {
   getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 import {
-  TranscriptsStatePerGene,
-  Filters,
-  SortingRule
+  SortingRule,
+  type TranscriptsStatePerGene,
+  type Filters
 } from './geneViewTranscriptsSlice';
 
 const getSliceForGene = createSelector(

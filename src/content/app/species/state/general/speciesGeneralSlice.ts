@@ -24,8 +24,7 @@ import set from 'lodash/fp/set';
 import { getActiveGenomeId } from './speciesGeneralSelectors';
 import speciesStorageService from '../../services/species-storage-service';
 
-import { SpeciesStatsSection } from 'src/content/app/species/state/general/speciesGeneralHelper';
-
+import type { SpeciesStatsSection } from 'src/content/app/species/state/general/speciesGeneralHelper';
 import type { RootState } from 'src/store';
 
 export type GenomeUIState = {

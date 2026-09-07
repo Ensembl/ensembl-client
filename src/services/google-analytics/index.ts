@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { CustomDimensionsOptions } from 'src/analyticsHelper';
 import loadGoogleAnalytics from './loadGoogleAnalytics';
+
+import type { CustomDimensionsOptions } from 'src/analyticsHelper';
 
 type TrackPageView = {
   page_title?: string;

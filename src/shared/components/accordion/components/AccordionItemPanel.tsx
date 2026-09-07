@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { DivAttributes } from '../helpers/types';
-import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
-import defaultStyles from '../css/Accordion.module.css';
 import classNames from 'classnames';
+
+import { Consumer as ItemConsumer, type ItemContext } from './ItemContext';
+
+import type { DivAttributes } from '../helpers/types';
+
+import defaultStyles from '../css/Accordion.module.css';
 
 type Props = DivAttributes & {
   extendDefaultStyles?: boolean;

@@ -29,7 +29,7 @@ import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/pro
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadProtein, {
-  OnDownloadPayload
+  type OnDownloadPayload
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
 import Chevron from 'src/shared/components/chevron/Chevron';
 
@@ -40,7 +40,7 @@ import {
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import {
   fetchProteinSummaryStats,
-  ProteinStats
+  type ProteinStats
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
 import { GENE_IMAGE_WIDTH } from 'src/content/app/entity-viewer/gene-view/constants/geneViewConstants';

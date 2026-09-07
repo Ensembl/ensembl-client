@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { Provider as ItemProvider, UUID } from './ItemContext';
 import classNames from 'classnames';
+
 import { generateId } from 'src/shared/helpers/generateId';
+
+import { Provider as ItemProvider, type UUID } from './ItemContext';
 
 import type { DivAttributes } from '../helpers/types';
 

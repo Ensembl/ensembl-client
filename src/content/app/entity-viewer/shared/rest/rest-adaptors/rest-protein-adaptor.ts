@@ -15,8 +15,8 @@
  */
 
 import {
-  ProteinStatsInResponse,
-  ProteinStats
+  type ProteinStatsInResponse,
+  type ProteinStats
 } from '../rest-data-fetchers/proteinData';
 
 export const restProteinSummaryAdaptor = (

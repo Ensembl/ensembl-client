@@ -16,7 +16,7 @@
 
 import { Link } from 'react-router';
 
-import {
+import type {
   IndexArticleData,
   IndexArticleItem
 } from 'src/shared/types/help-and-docs/article';

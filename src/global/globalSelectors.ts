@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { RootState } from '../store';
-import { BreakpointWidth, ScrollPosition } from './globalConfig';
+import { BreakpointWidth, type ScrollPosition } from './globalConfig';
+
+import type { RootState } from '../store';
 
 export const getBrowserTabId = (state: RootState) =>
   state.global.browserTabId || '';

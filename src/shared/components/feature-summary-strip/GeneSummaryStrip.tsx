@@ -20,8 +20,7 @@ import { getDisplayStableId } from 'src/shared/helpers/focusObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
-import { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
-
+import type { FocusGene } from 'src/shared/types/focus-object/focusObjectTypes';
 import type { Variety } from './types';
 
 import styles from './FeatureSummaryStrip.module.css';

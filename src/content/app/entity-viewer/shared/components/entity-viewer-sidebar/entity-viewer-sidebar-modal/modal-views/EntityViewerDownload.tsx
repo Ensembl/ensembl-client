@@ -29,7 +29,7 @@ import { isProteinCodingGene } from 'src/content/app/entity-viewer/shared/helper
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import InstantDownloadGene, {
-  OnDownloadPayload
+  type OnDownloadPayload
 } from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 
 const EntityViewerSidebarDownload = () => {

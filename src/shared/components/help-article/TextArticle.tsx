@@ -18,7 +18,7 @@ import { useRef, useEffect, RefObject } from 'react';
 import classNames from 'classnames';
 import { useNavigate } from 'react-router';
 
-import { TextArticleData } from 'src/shared/types/help-and-docs/article';
+import type { TextArticleData } from 'src/shared/types/help-and-docs/article';
 
 import styles from './HelpArticle.module.css';
 import cssVariables from './helpArticleVariables.module.css';

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Slice } from './slice';
-import { SplicedExon } from './exon';
-import { FullProductGeneratingContext } from './productGeneratingContext';
-import { LocationWithinRegion } from './location';
-import { ExternalReference } from './externalReference';
-import { TranscriptMetadata } from './metadata';
-import { FullGene } from './gene';
+import type { Slice } from './slice';
+import type { SplicedExon } from './exon';
+import type { FullProductGeneratingContext } from './productGeneratingContext';
+import type { LocationWithinRegion } from './location';
+import type { ExternalReference } from './externalReference';
+import type { TranscriptMetadata } from './metadata';
+import type { FullGene } from './gene';
 
 export type FullTranscript = {
   type: 'Transcript';

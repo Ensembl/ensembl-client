@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ProteinStats } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
+import type { ProteinStats } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
 import structuresUrl from 'static/icons/icon_protein_structures.svg?url';
 import ligandsUrl from 'static/icons/icon_protein_ligands.svg?url';

@@ -21,7 +21,7 @@ import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import { VideoArticleData } from 'src/shared/types/help-and-docs/article';
+import type { VideoArticleData } from 'src/shared/types/help-and-docs/article';
 
 import styles from './HelpArticle.module.css';
 

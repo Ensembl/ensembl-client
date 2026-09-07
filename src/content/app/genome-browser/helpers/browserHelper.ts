@@ -23,7 +23,7 @@ import {
   buildFocusObjectId
 } from 'src/shared/helpers/focusObjectHelpers';
 
-import { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import type { ChrLocation } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 type GenomeBrowserFocusIdConstituents = {
   genomeId: string;

@@ -21,7 +21,7 @@ import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 import Meta from './Meta';
 import { HotjarScript } from './ThirdParty';
 
-import type JSONValue from 'src/shared/types/JSON';
+import type { JSONValue } from 'src/shared/types/JSON';
 import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
 
 type Props = {

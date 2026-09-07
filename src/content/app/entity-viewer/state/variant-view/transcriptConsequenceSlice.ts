@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 type TranscriptConsequenceState = {
   [genomeId: string]: {

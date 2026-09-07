@@ -29,13 +29,13 @@ import {
 import {
   setFilters,
   setSortingRule,
-  Filter,
-  Filters,
-  SortingRule
+  SortingRule,
+  type Filter,
+  type Filters
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import RadioGroup, {
-  RadioOptions
+  type RadioOptions
 } from 'src/shared/components/radio-group/RadioGroup';
 
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';

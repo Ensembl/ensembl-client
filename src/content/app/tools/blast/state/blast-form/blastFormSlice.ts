@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { guessSequenceType } from 'src/content/app/tools/blast/utils/sequenceTypeGuesser';

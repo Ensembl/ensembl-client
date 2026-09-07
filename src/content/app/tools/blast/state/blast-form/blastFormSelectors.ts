@@ -16,7 +16,7 @@
 
 import { createSelector } from 'reselect';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export const getSequences = (state: RootState) =>
   state.blast.blastForm.sequences;

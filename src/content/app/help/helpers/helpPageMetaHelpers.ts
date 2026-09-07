@@ -16,7 +16,7 @@
 
 import { isHelpIndexRoute } from './isHelpIndexRoute';
 
-import {
+import type {
   TextArticleData,
   VideoArticleData
 } from 'src/shared/types/help-and-docs/article';

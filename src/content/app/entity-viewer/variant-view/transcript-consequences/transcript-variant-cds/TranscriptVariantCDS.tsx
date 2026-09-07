@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { scaleLinear, interpolateRound, ScaleLinear } from 'd3';
+import { scaleLinear, interpolateRound, type ScaleLinear } from 'd3';
 import type { SVGAttributes } from 'react';
 import type { Pick2 } from 'ts-multipick';
 

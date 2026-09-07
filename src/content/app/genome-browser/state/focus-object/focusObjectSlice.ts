@@ -46,7 +46,7 @@ import type {
   FocusTranscript,
   FocusVariant
 } from 'src/shared/types/focus-object/focusObjectTypes';
-import { FullTranscript } from 'src/shared/types/core-api/transcript';
+import type { FullTranscript } from 'src/shared/types/core-api/transcript';
 
 export type FocusObjectsState = Readonly<{
   [focusObjectId: string]: {

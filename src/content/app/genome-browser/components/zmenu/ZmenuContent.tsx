@@ -22,9 +22,9 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
 import {
-  ZmenuContentItem as ZmenuContentItemType,
   Markup,
-  ZmenuContent as ZmenuContentType
+  type ZmenuContentItem as ZmenuContentItemType,
+  type ZmenuContent as ZmenuContentType
 } from 'src/content/app/genome-browser/services/genome-browser-service/types/zmenu';
 
 import styles from './Zmenu.module.css';

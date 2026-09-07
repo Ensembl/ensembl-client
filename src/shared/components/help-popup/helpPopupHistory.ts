@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SlugReference } from './types';
+import type { SlugReference } from './types';
 
 class HelpPopupHistory {
   private references: SlugReference[] = [];

@@ -19,13 +19,13 @@ import {
   getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 import {
-  View,
-  ViewStatePerGene,
-  GeneViewTabData,
   GeneViewTabMap,
-  SelectedTabViews
+  View,
+  type ViewStatePerGene,
+  type GeneViewTabData,
+  type SelectedTabViews
 } from './geneViewViewSlice';
 
 const getSliceForGene = (state: RootState): ViewStatePerGene | undefined => {

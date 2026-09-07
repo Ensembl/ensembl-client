@@ -38,7 +38,6 @@ import { InstantDownloadTranscript } from 'src/shared/components/instant-downloa
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-import { TrackTranscriptDownloadPayload } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 
 import {
   toggleTranscriptDownload,
@@ -46,6 +45,7 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
+import type { TrackTranscriptDownloadPayload } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import type {
   DefaultEntityViewerGene,
   DefaultEntityViewerTranscript

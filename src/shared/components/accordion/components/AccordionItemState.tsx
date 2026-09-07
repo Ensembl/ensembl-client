@@ -16,8 +16,8 @@
 
 import type { ReactNode } from 'react';
 
-import { DivAttributes } from '../helpers/types';
-import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
+import type { DivAttributes } from '../helpers/types';
+import { Consumer as ItemConsumer, type ItemContext } from './ItemContext';
 
 type Props = Pick<DivAttributes, Exclude<keyof DivAttributes, 'children'>> & {
   children(args: Partial<{ expanded: boolean; disabled: boolean }>): ReactNode;

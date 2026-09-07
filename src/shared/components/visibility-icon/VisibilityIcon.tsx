@@ -17,7 +17,7 @@
 import classNames from 'classnames';
 
 import ImageButton, {
-  ImageButtonStatus
+  type ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 
 import Eye from 'static/icons/icon_eye.svg';

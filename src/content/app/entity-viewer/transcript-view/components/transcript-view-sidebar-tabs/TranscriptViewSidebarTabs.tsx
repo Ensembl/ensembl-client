@@ -32,7 +32,7 @@ import {
   getSidebarModalView
 } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSelectors';
 
-import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
+import Tabs, { type Tab } from 'src/shared/components/tabs/Tabs';
 
 import styles from './TranscriptViewSidebarTabs.module.css';
 

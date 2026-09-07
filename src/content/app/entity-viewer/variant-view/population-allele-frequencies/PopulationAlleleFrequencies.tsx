@@ -19,7 +19,7 @@ import { useState } from 'react';
 import { createSmallNumberFormatter } from 'src/shared/helpers/formatters/numberFormatter';
 
 import usePopulationAlleleFrequenciesData, {
-  PreparedPopulationFrequencyData
+  type PreparedPopulationFrequencyData
 } from './usePopulationAlleleFrequenciesData';
 
 import { Panel, PanelHead, PanelBody } from 'src/shared/components/panel/Panel';

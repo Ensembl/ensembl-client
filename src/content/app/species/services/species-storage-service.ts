@@ -15,11 +15,11 @@
  */
 
 import storageService, {
-  StorageServiceInterface,
-  StorageType
+  StorageType,
+  type StorageServiceInterface
 } from 'src/services/storage-service';
 
-import { UIState } from 'src/content/app/species/state/general/speciesGeneralSlice';
+import type { UIState } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 export enum StorageKeys {
   GENOME_UI_STATE = 'species.genomeUIState'

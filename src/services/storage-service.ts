@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import windowService, {
-  WindowServiceInterface
-} from 'src/services/window-service';
 import mergeWith from 'lodash/mergeWith';
-import JSONValue, { PrimitiveValue, ArrayValue } from 'src/shared/types/JSON';
 import isArray from 'lodash/isArray';
 import unset from 'lodash/unset';
+
+import windowService, {
+  type WindowServiceInterface
+} from 'src/services/window-service';
+
+import type { JSONValue, PrimitiveValue, ArrayValue } from 'src/shared/types/JSON';
 
 export enum StorageType {
   LOCAL_STORAGE = 'localstorage',

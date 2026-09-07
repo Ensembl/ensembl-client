@@ -23,11 +23,11 @@ import {
 } from 'react';
 
 import AccordionStore, {
-  InjectedButtonAttributes,
-  InjectedHeadingAttributes,
-  InjectedPanelAttributes
+  type InjectedButtonAttributes,
+  type InjectedHeadingAttributes,
+  type InjectedPanelAttributes
 } from '../helpers/AccordionStore';
-import { UUID } from './ItemContext';
+import type { UUID } from './ItemContext';
 
 export interface ProviderProps {
   preExpanded?: UUID[];

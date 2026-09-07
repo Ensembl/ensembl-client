@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {
+import type {
   FocusObject,
   FocusGene
 } from 'src/shared/types/focus-object/focusObjectTypes';

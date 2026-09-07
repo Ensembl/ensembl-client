@@ -31,8 +31,8 @@ import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon
 
 import Ellipsis from 'static/icons/icon_ellipsis.svg';
 
-import { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
+import type { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import styles from './TrackPanelItemLayout.module.css';
 

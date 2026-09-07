@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { DivAttributes } from '../helpers/types';
-import { Consumer, Provider } from './AccordionContext';
-import { UUID } from './ItemContext';
-import defaultStyles from '../css/Accordion.module.css';
 import classNames from 'classnames';
+
+import { Consumer, Provider } from './AccordionContext';
+
+import type { DivAttributes } from '../helpers/types';
+import type { UUID } from './ItemContext';
+
+import defaultStyles from '../css/Accordion.module.css';
 
 type AccordionProps = Pick<
   DivAttributes,

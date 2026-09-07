@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ScaleLinear } from 'd3';
+import type { ScaleLinear } from 'd3';
 
 export const getTicks = (scale: ScaleLinear<number, number>) => {
   // use d3 scale to get 'approximately' 10 ticks (exact number not guaranteed)
