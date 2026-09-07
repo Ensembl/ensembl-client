@@ -17,7 +17,7 @@
 import type { ReactNode } from 'react';
 
 import type { TransferredClientConfig } from 'src/server/helpers/getConfigForClient';
-import type JSONValue from 'src/shared/types/JSON';
+import type { JSONValue } from 'src/shared/types/JSON';
 
 type Props = {
   assets: Record<string, string>;

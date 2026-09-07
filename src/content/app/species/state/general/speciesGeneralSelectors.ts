@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export const getActiveGenomeId = (state: RootState) =>
   state.speciesPage.general.activeGenomeId;

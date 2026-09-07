@@ -21,7 +21,7 @@ import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormat
 
 import styles from './FeatureSummaryStrip.module.css';
 
-import { FocusLocation } from 'src/shared/types/focus-object/focusObjectTypes';
+import type { FocusLocation } from 'src/shared/types/focus-object/focusObjectTypes';
 
 type Props = {
   location: FocusLocation;

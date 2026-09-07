@@ -25,7 +25,7 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
-import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
+import Tabs, { type Tab } from 'src/shared/components/tabs/Tabs';
 
 import {
   GeneViewTabName,

@@ -16,7 +16,7 @@
 
 import { useState } from 'react';
 
-import { AppDispatch, useAppDispatch } from 'src/store';
+import { useAppDispatch, type AppDispatch } from 'src/store';
 
 import { getSequenceSlice } from 'src/shared/helpers/sequenceHelpers';
 

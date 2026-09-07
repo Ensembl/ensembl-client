@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Epic } from 'redux-observable';
 import { map, tap, filter } from 'rxjs';
 import { isFulfilled, type Action } from '@reduxjs/toolkit';
+import type { Epic } from 'redux-observable';
 
 import { saveMultipleSelectedSpecies } from 'src/content/app/species-selector/services/speciesSelectorStorageService';
 

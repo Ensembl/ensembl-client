@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { ExternalReference } from './externalReference';
-import { LocationWithinRegion } from './location';
-import { Sequence } from './sequence';
-import { Source } from './source';
+import type { ExternalReference } from './externalReference';
+import type { LocationWithinRegion } from './location';
+import type { Sequence } from './sequence';
+import type { Source } from './source';
 
 export enum ProductType {
   PROTEIN = 'Protein'

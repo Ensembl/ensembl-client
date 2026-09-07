@@ -31,8 +31,8 @@ import {
 } from 'src/content/app/entity-viewer/gene-view/constants/geneViewConstants';
 
 import UnsplicedTranscript, {
-  UnsplicedTranscriptProps,
-  UNSPLICED_TRANSCRIPT_HEIGHT
+  UNSPLICED_TRANSCRIPT_HEIGHT,
+  type UnsplicedTranscriptProps
 } from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import FeatureLengthRuler from 'src/shared/components/feature-length-ruler/FeatureLengthRuler';
 

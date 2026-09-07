@@ -17,7 +17,7 @@
 import { useMemo } from 'react';
 import classNames from 'classnames';
 
-import LaunchbarButton, { LaunchbarButtonProps } from './LaunchbarButton';
+import LaunchbarButton, { type LaunchbarButtonProps } from './LaunchbarButton';
 
 import styles from './Launchbar.module.css';
 

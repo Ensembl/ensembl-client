@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { type FeatureSearchAppName } from 'src/shared/helpers/featureSearchHelpers';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
+import type { FeatureSearchAppName } from 'src/shared/helpers/featureSearchHelpers';
 
 type Queries = {
   gene: string;

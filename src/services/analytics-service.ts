@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { type AnalyticsOptions } from 'src/analyticsHelper';
-
 import config from 'config';
 
 import GoogleAnalytics, {
-  TrackEventParams
+  type TrackEventParams
 } from 'src/services/google-analytics';
+
+import type { AnalyticsOptions } from 'src/analyticsHelper';
 
 const { googleAnalyticsKey } = config;
 

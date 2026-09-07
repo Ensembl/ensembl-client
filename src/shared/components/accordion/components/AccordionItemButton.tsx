@@ -17,12 +17,12 @@
 import noop from 'lodash/noop';
 import classNames from 'classnames';
 
-import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
+import { Consumer as ItemConsumer, type ItemContext } from './ItemContext';
 
 import Chevron from 'src/shared/components/chevron/Chevron';
 
-import { InjectedButtonAttributes } from '../helpers/AccordionStore';
-import { DivAttributes } from '../helpers/types';
+import type { InjectedButtonAttributes } from '../helpers/AccordionStore';
+import type { DivAttributes } from '../helpers/types';
 
 import defaultStyles from '../css/Accordion.module.css';
 

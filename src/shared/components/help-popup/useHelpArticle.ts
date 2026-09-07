@@ -16,8 +16,8 @@
 
 import useApiService from 'src/shared/hooks/useApiService';
 
-import { SlugReference } from './types';
-import {
+import type { SlugReference } from './types';
+import type {
   TextArticleData,
   VideoArticleData
 } from 'src/shared/types/help-and-docs/article';

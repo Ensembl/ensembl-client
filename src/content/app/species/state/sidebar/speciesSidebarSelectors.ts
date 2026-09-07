@@ -15,7 +15,8 @@
  */
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { RootState } from 'src/store';
+
+import type { RootState } from 'src/store';
 
 export const isSpeciesSidebarOpen = (state: RootState) => {
   const activeGenomeId = getActiveGenomeId(state);

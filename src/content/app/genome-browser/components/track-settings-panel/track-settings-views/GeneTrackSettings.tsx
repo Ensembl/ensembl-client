@@ -24,7 +24,7 @@ import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
 import { getTrackSettingsForTrackId } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
-import { GeneTrackSettings as GeneTrackSettingsType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
+import type { GeneTrackSettings as GeneTrackSettingsType } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 import ReorderTrack from 'static/icons/icon_move_tracks.svg';
 

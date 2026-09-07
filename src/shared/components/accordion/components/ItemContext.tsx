@@ -16,14 +16,14 @@
 
 import { createContext, type ReactNode } from 'react';
 
-import {
+import type {
   InjectedButtonAttributes,
   InjectedHeadingAttributes,
   InjectedPanelAttributes
 } from '../helpers/AccordionStore';
 import {
-  AccordionContext,
-  Consumer as AccordionContextConsumer
+  Consumer as AccordionContextConsumer,
+  type AccordionContext
 } from './AccordionContext';
 
 export type UUID = string | number;

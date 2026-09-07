@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
-import { NavLink, NavLinkProps } from 'react-router';
+import { type ReactNode } from 'react';
+import { NavLink, type NavLinkProps } from 'react-router';
 import classNames from 'classnames';
 
 import styles from './ButtonLink.module.css';

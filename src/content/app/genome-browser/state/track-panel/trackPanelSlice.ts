@@ -27,11 +27,11 @@ import { parseFocusObjectId } from 'src/shared/helpers/focusObjectHelpers';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActiveTrackPanel } from './trackPanelSelectors';
-import { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { closeBrowserSidebarModal } from '../browser-sidebar-modal/browserSidebarModalSlice';
 
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
+import type { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import type { RootState } from 'src/store';
 
 export type TrackPanelStateForGenome = Readonly<{

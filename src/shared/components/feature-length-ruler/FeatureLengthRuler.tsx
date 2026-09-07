@@ -30,7 +30,7 @@ It follows the following rules for displaying labelled and unlabelled ticks
 */
 
 import { useEffect } from 'react';
-import { scaleLinear, ScaleLinear } from 'd3';
+import { scaleLinear, type ScaleLinear } from 'd3';
 
 import { getTicks } from './featureLengthRulerHelper';
 

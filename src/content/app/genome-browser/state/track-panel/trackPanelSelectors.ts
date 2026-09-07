@@ -17,7 +17,7 @@
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { defaultTrackPanelStateForGenome } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export const getActiveTrackPanel = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);

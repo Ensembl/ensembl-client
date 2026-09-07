@@ -33,7 +33,7 @@ import TrackPanelItemsExpandLozenge from './TrackPanelItemsExpandLozenge';
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
-import { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
+import type { TrackActivityStatus } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
 import styles from './TrackPanelItem.module.css';
 

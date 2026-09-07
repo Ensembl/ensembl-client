@@ -45,11 +45,11 @@ import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 import HistoryButtons from 'src/shared/components/help-popup/HistoryButtons';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
-import {
+import type {
   Menu as MenuType,
   MenuItem
 } from 'src/shared/types/help-and-docs/menu';
-import {
+import type {
   TextArticleData,
   VideoArticleData
 } from 'src/shared/types/help-and-docs/article';

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
 import classNames from 'classnames';
-import { scaleLinear, ScaleLinear } from 'd3';
+import { scaleLinear, type ScaleLinear } from 'd3';
+import type { ReactNode } from 'react';
 import type { Pick2, Pick3 } from 'ts-multipick';
 
 import type { FullTranscript } from 'src/shared/types/core-api/transcript';

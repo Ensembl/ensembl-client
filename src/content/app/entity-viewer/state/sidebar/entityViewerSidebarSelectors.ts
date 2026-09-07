@@ -20,8 +20,8 @@ import {
 } from '../general/entityViewerGeneralSelectors';
 
 import { Status } from 'src/shared/types/status';
-import { RootState } from 'src/store';
-import { EntityViewerSidebarGenomeState } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
+import type { RootState } from 'src/store';
+import type { EntityViewerSidebarGenomeState } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 export const getEntityViewerGenomeState = (state: RootState) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);

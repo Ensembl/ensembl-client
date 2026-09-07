@@ -28,8 +28,8 @@ import PointerBox, {
 } from 'src/shared/components/pointer-box/PointerBox';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-import { SearchResults } from 'src/shared/types/search-api/search-results';
 
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
 import type { VariantSearchMatch as VariantSearchMatchType } from 'src/shared/types/search-api/search-match';
 import type { AppName as AppNameForViewInApp } from 'src/shared/components/view-in-app/ViewInApp';
 import type {

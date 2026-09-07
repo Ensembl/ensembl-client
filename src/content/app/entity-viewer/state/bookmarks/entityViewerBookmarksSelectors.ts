@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export const getAllPreviouslyViewedEntities = (state: RootState) =>
   state.entityViewer.bookmarks.previouslyViewed;

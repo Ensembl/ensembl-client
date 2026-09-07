@@ -25,7 +25,7 @@ import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 import styles from './SpeciesUsageToggle.module.css';
 

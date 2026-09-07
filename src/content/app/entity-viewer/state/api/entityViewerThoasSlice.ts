@@ -57,8 +57,8 @@ import {
 } from './queries/geneHomologiesQuery';
 import {
   transcriptPageMetaQuery,
-  TranscriptPageMetaQueryResult,
-  TranscriptPageMeta
+  type TranscriptPageMetaQueryResult,
+  type TranscriptPageMeta
 } from './queries/transcriptPageMetaQuery';
 import {
   defaultTranscriptQuery,

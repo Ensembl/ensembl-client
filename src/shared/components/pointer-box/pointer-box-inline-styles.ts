@@ -15,7 +15,7 @@
  */
 
 import { Position } from './pointer-box-types';
-import { PointerBoxProps, InlineStylesState } from './PointerBox';
+import type { PointerBoxProps, InlineStylesState } from './PointerBox';
 
 type Params = Required<
   Pick<

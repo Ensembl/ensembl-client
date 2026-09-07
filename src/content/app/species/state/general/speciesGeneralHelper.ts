@@ -17,11 +17,10 @@
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { SpeciesStatsProps as IndividualStat } from 'src/content/app/species/components/species-stats/SpeciesStats';
-import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
-
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
+import type { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
+import type { SpeciesStatsProps as IndividualStat } from 'src/content/app/species/components/species-stats/SpeciesStats';
 import type { LinksConfig } from 'src/shared/components/view-in-app/ViewInApp';
 import type { SpeciesStatistics } from 'src/content/app/species/state/api/speciesApiTypes';
 

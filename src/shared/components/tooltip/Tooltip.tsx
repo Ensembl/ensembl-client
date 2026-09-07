@@ -23,7 +23,7 @@ import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';
 
-import { TooltipPosition } from './tooltip-types';
+import type { TooltipPosition } from './tooltip-types';
 
 import styles from './Tooltip.module.css';
 import pointerBoxStyles from 'src/shared/components/pointer-box/PointerBox.module.css';

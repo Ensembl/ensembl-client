@@ -17,7 +17,7 @@
 import config from 'config';
 import LRUCache from 'src/shared/utils/lruCache';
 
-import JSONValue from 'src/shared/types/JSON';
+import type { JSONValue } from 'src/shared/types/JSON';
 
 export enum HTTPMethod {
   GET = 'GET',

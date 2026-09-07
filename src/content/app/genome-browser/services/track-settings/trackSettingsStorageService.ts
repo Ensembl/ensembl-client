@@ -16,12 +16,12 @@
 
 import IndexedDB from 'src/services/indexeddb-service';
 
-import { TrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
-
 import {
   GB_TRACK_SETTINGS_STORE_NAME,
   trackSettingFieldsMap
 } from './trackSettingsStorageConstants';
+
+import type { TrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 
 // the combination of genome id and track id will be used as a composite key
 export type StoredTrack = {

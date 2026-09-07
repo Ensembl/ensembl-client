@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { openDB, IDBPDatabase, type OpenDBCallbacks } from 'idb';
+import { openDB, type IDBPDatabase, type OpenDBCallbacks } from 'idb';
 
 import { GENERAL_STORE_NAME } from 'src/shared/services/generalStorageConstants';
 import { GENERAL_UI_STORE_NAME } from 'src/shared/services/generalUIStorageConstants';

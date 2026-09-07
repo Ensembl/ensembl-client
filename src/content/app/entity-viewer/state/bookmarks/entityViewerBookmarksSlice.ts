@@ -28,7 +28,7 @@ import {
 
 import { getPreviouslyViewedEntities } from './entityViewerBookmarksSelectors';
 
-import { RootState } from 'src/store';
+import type { RootState } from 'src/store';
 
 export type PreviouslyViewedEntity = {
   id: string;

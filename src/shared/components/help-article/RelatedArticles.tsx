@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import VideoIcon from 'static/icons/icon_video.svg';
 
-import { RelatedArticleData } from 'src/shared/types/help-and-docs/article';
+import type { RelatedArticleData } from 'src/shared/types/help-and-docs/article';
 
 import styles from './HelpArticle.module.css';
 

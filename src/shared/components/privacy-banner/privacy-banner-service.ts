@@ -16,7 +16,7 @@
 
 import privacyConfig from './privacyConfig';
 import storageService, {
-  StorageServiceInterface
+  type StorageServiceInterface
 } from 'src/services/storage-service';
 
 export class PrivacyBannerService {

@@ -17,7 +17,7 @@
 import { useState, useRef, type TouchEvent, type MouseEvent } from 'react';
 
 import classNames from 'classnames';
-import { scaleLinear, ScaleLinear } from 'd3';
+import { scaleLinear, type ScaleLinear } from 'd3';
 
 import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';

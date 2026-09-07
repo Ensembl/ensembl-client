@@ -29,7 +29,7 @@ import { getServerSideReduxStore } from '../serverSideReduxStore';
 import Html from 'src/content/html/Html';
 import Root from 'src/root/Root';
 
-import type JSONValue from 'src/shared/types/JSON';
+import type { JSONValue } from 'src/shared/types/JSON';
 
 const configForClient = getConfigForClient();
 

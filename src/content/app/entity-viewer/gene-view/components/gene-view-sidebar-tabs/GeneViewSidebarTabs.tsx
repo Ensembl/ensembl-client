@@ -32,7 +32,7 @@ import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEnt
 
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
-import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
+import Tabs, { type Tab } from 'src/shared/components/tabs/Tabs';
 
 import styles from './GeneViewSidebarTabs.module.css';
 

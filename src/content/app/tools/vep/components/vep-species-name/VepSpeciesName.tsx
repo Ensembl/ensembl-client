@@ -15,7 +15,8 @@
  */
 
 import SpeciesName from 'src/shared/components/species-name/SpeciesName';
-import { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
+
+import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 import styles from './VepSpeciesName.module.css';
 

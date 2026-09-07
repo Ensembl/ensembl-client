@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DataTableState, TableAction, AllTableActions } from './dataTableTypes';
+import { TableAction, type DataTableState, type AllTableActions } from './dataTableTypes';
 
 export const defaultDataTableState: DataTableState = {
   data: [],

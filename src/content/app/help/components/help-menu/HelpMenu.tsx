@@ -23,7 +23,7 @@ import useHelpAppAnalytics from '../../hooks/useHelpAppAnalytics';
 import Chevron from 'src/shared/components/chevron/Chevron';
 import HelpMenuLink from './HelpMenuLink';
 
-import {
+import type {
   Menu as MenuType,
   MenuArticleItem,
   MenuItem

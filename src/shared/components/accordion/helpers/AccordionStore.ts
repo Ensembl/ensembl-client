@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UUID } from '../components/ItemContext';
+import type { UUID } from '../components/ItemContext';
 
 export interface InjectedPanelAttributes {
   role: string | undefined;

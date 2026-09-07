@@ -21,7 +21,7 @@ import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormat
 
 import TextButton from 'src/shared/components/text-button/TextButton';
 
-import { Strand } from 'src/shared/types/core-api/strand';
+import type { Strand } from 'src/shared/types/core-api/strand';
 import type { GenePopupMessage } from '../activityViewerPopupMessageTypes';
 
 import styles from './AcrivityViewerPopupContent.module.css';
