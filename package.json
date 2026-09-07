@@ -38,6 +38,7 @@
     "@ensembl/ensembl-elements-common": "0.0.5",
     "@ensembl/ensembl-genome-browser": "0.6.14",
     "@ensembl/ensembl-structural-variants": "0.0.11",
+    "@prometheus-io/client": "0.16.1",
     "@reduxjs/toolkit": "2.12.0",
     "@sentry/browser": "10.73.0",
     "classnames": "2.5.1",

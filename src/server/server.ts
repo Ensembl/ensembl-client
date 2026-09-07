@@ -18,11 +18,14 @@ import express from 'express';
 import morgan from 'morgan';
 
 import createProxyMiddleware from './middleware/proxyMiddleware';
+import requestMetricsMiddleware from './middleware/requestMetricsMiddleware';
 import staticMiddleware from './middleware/staticMiddleware';
 import redirectMiddleware from './middleware/redirectMiddleware';
 
 import getConfigForServer from './helpers/getConfigForServer';
 
+import healthcheckRouter from './routes/healthcheckRouter';
+import metricsRouter from './routes/metricsRouter';
 import viewsRouter from './routes/viewsRouter';
 import unsupportedBrowserRouter from './routes/unsupportedBrowserRouter';
 import seoRouter from './routes/seoRouter';
@@ -32,6 +35,7 @@ const serverConfig = getConfigForServer();
 
 app.disable('x-powered-by'); // no need to announce to the world that we are running on Express
 app.use(morgan('combined'));
+app.use(requestMetricsMiddleware);
 
 if (!serverConfig.isEnsemblDeployment) {
   const proxyMiddleware = createProxyMiddleware();
@@ -44,6 +48,8 @@ if (!serverConfig.isEnsemblDeployment) {
   }
 }
 
+app.use(healthcheckRouter);
+app.use(metricsRouter);
 app.use(redirectMiddleware);
 app.use(seoRouter);
 
