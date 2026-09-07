@@ -46,7 +46,10 @@ export const serverFetch: ServerFetch = async (params) => {
   const dispatch: AppDispatch = store.dispatch;
   const { genomeId: genomeIdFromUrl, entityId } = getPathParameters<
     'genomeId' | 'entityId'
-  >(['/feature-explorer/:genomeId', '/feature-explorer/:genomeId/:entityId'], path);
+  >(
+    ['/feature-explorer/:genomeId', '/feature-explorer/:genomeId/:entityId'],
+    path
+  );
 
   // If the url is just /feature-explorer, update page meta and exit
   if (!genomeIdFromUrl) {
@@ -187,7 +190,7 @@ const fetchTranscriptData = async ({
   pageMetaPromise.unsubscribe();
 
   if (pageMetaQueryResult?.error) {
-    if ((pageMetaQueryResult.error as any)?.meta?.data?.gene === null) {
+    if ((pageMetaQueryResult.error as any)?.meta?.data?.transcript === null) {
       // this is graphql's way of telling us that there is no such transcript
       throw new NotFoundError();
     } else {
