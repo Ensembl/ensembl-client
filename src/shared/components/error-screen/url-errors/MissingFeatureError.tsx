@@ -47,7 +47,7 @@ const MissingFeatureError = (props: Props) => {
           We do not recognise "{featureId}" in {speciesDisplayName}
         </div>
         <div className={styles.suggestion}>
-          Use Find a gene or the example gene link
+          Search for your feature or use one of the example links
         </div>
         <div className={styles.continueButtonWrapper}>
           <PrimaryButton onClick={onContinue}>Continue</PrimaryButton>

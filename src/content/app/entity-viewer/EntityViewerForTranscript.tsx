@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
+import { useNavigate } from 'react-router';
+
 import { useAppSelector, useAppDispatch } from 'src/store';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
 import useTranscriptViewIds from 'src/content/app/entity-viewer/transcript-view/hooks/useTranscriptViewIds';
+import { useDefaultEntityViewerTranscriptQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import { getIsSidebarOpen } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSelectors';
+import { getGenomeById } from 'src/shared/state/genome/genomeSelectors';
 
+import { deleteActiveEntityIdAndSave } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/transcript-view/sidebar/transcriptViewSidebarSlice';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
@@ -30,14 +37,30 @@ import TranscriptView from './transcript-view/TranscriptView';
 import TranscriptViewSidebar from './transcript-view/components/transcript-view-sidebar/TranscriptViewSidebar';
 import TranscriptViewSidebarTabs from './transcript-view/components/transcript-view-sidebar-tabs/TranscriptViewSidebarTabs';
 import SidebarToolstrip from './transcript-view/components/transcript-view-sidebar/sidebar-toolstrip/SidebarToolstrip';
+import MissingFeatureError from 'src/shared/components/error-screen/url-errors/MissingFeatureError';
 
 const EntityViewerForTranscript = () => {
-  const { activeGenomeId, transcriptId } = useTranscriptViewIds();
+  const { activeGenomeId, genomeIdForUrl, transcriptId } =
+    useTranscriptViewIds();
   const isSidebarOpen = useAppSelector((state) =>
     getIsSidebarOpen(state, activeGenomeId ?? '', transcriptId ?? '')
   );
+  const genome = useAppSelector((state) =>
+    getGenomeById(state, activeGenomeId ?? '')
+  );
   const viewportWidth = useAppSelector(getBreakpointWidth);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const { isFetching, isError } = useDefaultEntityViewerTranscriptQuery(
+    {
+      genomeId: activeGenomeId || '',
+      transcriptId: transcriptId || ''
+    },
+    {
+      skip: !activeGenomeId || !transcriptId
+    }
+  );
 
   const onSidebarToggle = () => {
     if (!activeGenomeId || !transcriptId) {
@@ -51,6 +74,26 @@ const EntityViewerForTranscript = () => {
       })
     );
   };
+
+  const openEntityViewerInterstitial = () => {
+    dispatch(deleteActiveEntityIdAndSave());
+    navigate(urlFor.entityViewer({ genomeId: genomeIdForUrl }));
+  };
+
+  if (isFetching) {
+    return null;
+  }
+
+  if (isError) {
+    return (
+      <MissingFeatureError
+        featureId={transcriptId as string}
+        genome={genome}
+        showTopBar={true}
+        onContinue={openEntityViewerInterstitial}
+      />
+    );
+  }
 
   return (
     <StandardAppLayout
