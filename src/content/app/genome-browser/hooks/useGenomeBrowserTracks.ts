@@ -236,9 +236,9 @@ const hasGenomicTrackSettings = (
   trackSettings: TrackSettingsPerTrack,
   trackCategories: GenomeTrackCategory[]
 ) => {
-  const firstGenomicTrackId = trackCategories
-    .find((category) => category.track_list.length > 0)
-    ?.track_list[0].trigger.at(-1);
+  const firstGenomicTrackId = trackCategories.find(
+    (category) => category.track_list.length > 0
+  )?.track_list[0].track_id;
 
   return !!firstGenomicTrackId && firstGenomicTrackId in trackSettings;
 };

@@ -217,23 +217,15 @@ const useGenomeBrowser = () => {
  *     using a mechanism called 'expansion'.
  *
  * Ideally, the client shouldn't know any of this. Ideally, tracks would be identified
- * just by their ids. But, while this is not the case, the client will use a hack
- * as an easy option of generating a track path.
- *
- * The hack is: if track id is uuid-shaped, then it is an "expansion" track
- * that uses one path pattern; and in other cases, it is a "non-expansion" track,
- * which uses a different path pattern.
+ * Track API tracks are all registered through the common expansion node. Focus
+ * controls are boot-only and retain their explicit path.
  */
 
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 const getTrackPath = (trackId: string) => {
-  if (uuidRegex.test(trackId)) {
-    return ['track', 'expand', trackId];
-  } else {
+  if (trackId === 'focus') {
     return ['track', trackId];
   }
+  return ['track', 'expand', trackId];
 };
 
 export default useGenomeBrowser;

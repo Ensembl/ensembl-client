@@ -16,33 +16,11 @@
 
 import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
-/**
- * NOTE ON THE TRIGGER FIELD ON THE GenomicTrack TYPE
- *
- * Tracks are stored in genome browser's memory in a tree-like structure,
- * and a trigger is an array that represents the path to a given track node.
- * Sadly, the client needs to be aware of this implementation detail,
- * because it needs to use this trigger to toggle a track, or its settings
- * (which are represented as tree nodes inside the track node) on and off.
- *
- * The contents of a trigger array for a given track are vaguely predictable,
- * but not certain. For some tracks, the trigger to toggle the track on/off
- * will be ["track", track_id]. For other tracks, it will be ["track", expansion_node, track_id].
- * Since there is no way for the client to know which is which, it has
- * to rely on track api to tell it.
- *
- * The content of trigger arrays for track settings is predictable,
- * and consist of the contents of the track trigger followed by
- * the name of the setting. Thus, triggers for settings can be generated
- * on the client.
- */
-
 type GenomicTrackType = 'gene' | 'variant' | 'regular';
 
 export type GenomicTrack = {
   track_id: string;
   type: GenomicTrackType;
-  trigger: string[]; // <-- see the note about triggers above
   label: string;
   additional_info: string;
   description: string;

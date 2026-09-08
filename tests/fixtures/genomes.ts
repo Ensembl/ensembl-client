@@ -46,8 +46,7 @@ export const createGenomeCategories = (): GenomeTrackCategory[] => [
 
 const createTrack = (): GenomicTrack => {
   return {
-    track_id: 'gene-pc-fwd',
-    trigger: ['track', 'gene-pc-fwd'],
+    track_id: '238393ed-0f93-45ae-a91e-491b1c3a0b40',
     type: 'gene',
     additional_info: faker.lorem.words(),
     label: faker.lorem.words(),
