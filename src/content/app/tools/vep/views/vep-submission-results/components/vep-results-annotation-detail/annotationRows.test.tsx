@@ -122,9 +122,6 @@ describe('renderRows', () => {
     expect(screen.getByText('0.6')).toBeDefined();
   });
 
-  // A plain result is bolded so the answer, not the label naming it, is what
-  // the eye lands on. Which values qualify is decided here rather than at each
-  // call site, so these are the tests of that rule.
   describe('bolding the result', () => {
     it('bolds a plain formatted value', () => {
       renderSpecs([

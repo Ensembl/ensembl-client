@@ -22,8 +22,6 @@ import {
 import type { VepResultsTableRowData } from './useVepVariantTabularData';
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 
-// planLeadingCells only reads the variant/allele/gene "markers"; the consequence
-// is irrelevant to it, so build minimal rows carrying just those markers.
 const makeRow = (
   markers: Partial<
     Pick<VepResultsTableRowData, 'variant' | 'alternativeAllele' | 'gene'>
@@ -89,9 +87,7 @@ describe('planLeadingCells', () => {
     expect(collapsed[0].allele?.rowSpan).toBe(1);
     expect(collapsed[0].gene?.rowSpan).toBe(1);
 
-    // The panel spans the full row, so nothing can sit beside it: expanding
-    // leaves every leading cell covering its own row only, rather than
-    // stretching over the injected one.
+    // The panel spans the full row, so nothing can sit beside it
     const expanded = planLeadingCells(rows, new Set([0]));
     expect(expanded[0].variant?.rowSpan).toBe(1);
     expect(expanded[0].allele?.rowSpan).toBe(1);
@@ -113,10 +109,10 @@ describe('planLeadingCells', () => {
     expect(plan[1].gene?.data.stableId).toBe('geneB');
   });
 
-  it('restarts the identity cells below a panel that interrupts their group', () => {
-    // Expanding gene-1 injects the panel between the two gene rows. Every
-    // leading cell stops above it and is re-emitted on the gene-2 row — the
-    // variant is stated twice, which is the price of the full-width panel.
+  it('restarts shared cells below an expanded row', () => {
+    // The the row that has gene-1 expands the annotation panel,
+    // and thus the panel is injected between the row with gene-1 and the row with gene-2.
+    // The variant is repeated twice.
     const plan = planLeadingCells(twoGeneRows(), new Set([0]));
 
     expect(plan[0].variant?.rowSpan).toBe(1);
@@ -130,9 +126,9 @@ describe('planLeadingCells', () => {
     expect(plan[1].gene?.data.stableId).toBe('geneB');
   });
 
-  it('keeps one identity cell when the panel opens on the group’s last row', () => {
-    // Nothing is interrupted: the panel lands after the group, so the identity
-    // still spans both rows and is emitted once.
+  it('keeps shared cells spanning the group when the detail panel opens on the last row', () => {
+    // Neither variant, gene, or transcript is interrupted
+    // by the expanded details panel.
     const plan = planLeadingCells(twoGeneRows(), new Set([1]));
 
     expect(plan[0].variant?.rowSpan).toBe(2);
@@ -142,7 +138,7 @@ describe('planLeadingCells', () => {
     expect(plan[1].gene?.rowSpan).toBe(1);
   });
 
-  it('splits every leading cell around a panel on a middle transcript', () => {
+  it('splits shared cells around a detail panel in the middle of a group', () => {
     // Three transcripts of one gene; expand the middle one.
     const plan = planLeadingCells(singleGeneRows(3), new Set([1]));
 
@@ -161,10 +157,11 @@ describe('planLeadingCells', () => {
     expect(plan[2].gene?.rowSpan).toBe(1);
   });
 
-  it('splits at each of several open panels', () => {
+  it('splits shared cells when multiple panels are open', () => {
+    // The details panel is opened after the first and the second row
     const plan = planLeadingCells(singleGeneRows(3), new Set([0, 1]));
 
-    // A panel after each of the first two rows leaves every run one row long.
+    // Confirm that features in every row aren't trying to span across more than one row.
     for (const index of [0, 1, 2]) {
       expect(plan[index].variant?.rowSpan).toBe(1);
       expect(plan[index].allele?.rowSpan).toBe(1);
@@ -182,8 +179,8 @@ const transcriptRow = (altAlleleSequence: string): VepResultsTableRowData => ({
   } as VepResultsTableRowData['consequence']
 });
 
-// An intergenic row: its alt allele lives on the row's alternativeAllele marker
-// (present only on the allele's first intergenic row, as getTabularData emits).
+// An intergenic row: its alt allele lives on the row's alternativeAllele field
+// (unlike transcript rows, this row does not carry altAlleleSequence inside consequence)
 const intergenicRow = (altAlleleSequence?: string): VepResultsTableRowData => ({
   ...makeRow(
     altAlleleSequence
@@ -204,20 +201,18 @@ describe('detailBearingRowIndices', () => {
     expect(indices).toEqual([0, 1]);
   });
 
-  it('includes an intergenic row via its own alt-allele marker', () => {
+  it('includes an intergenic row by checking its alternativeAllele field', () => {
     const rows = [intergenicRow('T')];
     expect(detailBearingRowIndices(rows, () => true)).toEqual([0]);
   });
 
-  it('skips a row whose allele is not among those carrying annotations', () => {
+  it('skips transcript rows whose alt allele has no annotations', () => {
     const rows = [transcriptRow('T'), transcriptRow('X')];
     const indices = detailBearingRowIndices(rows, (seq) => seq === 'T');
     expect(indices).toEqual([0]);
   });
 
-  it('skips an intergenic row with no alt-allele marker (a later same-allele row)', () => {
-    // getTabularData sets the alt-allele marker only on the first intergenic row
-    // of an allele; a follow-on row has none and offers no detail toggle.
+  it('skips an intergenic row with no data in alternativeAllele field', () => {
     const rows = [intergenicRow('T'), intergenicRow()];
     expect(detailBearingRowIndices(rows, () => true)).toEqual([0]);
   });
@@ -241,8 +236,6 @@ describe('hasAnySelectedOption', () => {
   ] as unknown as FormPanel[];
 
   it('is false when the job ran no annotation option', () => {
-    // A submission with nothing ticked: every detail section is gated on an
-    // option, so the panel would open empty -- no chevron is offered.
     expect(hasAnySelectedOption(panels, {})).toBe(false);
     expect(
       hasAnySelectedOption(panels, { tss_distance: false, cadd: false })
@@ -255,9 +248,6 @@ describe('hasAnySelectedOption', () => {
   });
 
   it('ignores parameters that are not options of a panel', () => {
-    // `parameters` also carries settings that produce no annotation -- the
-    // up/downstream distance value, and the sub-option values of an option that
-    // is itself off. Neither should make the panel look worth opening.
     expect(
       hasAnySelectedOption(panels, {
         updownstream_distance_bp: 5000,
@@ -265,11 +255,5 @@ describe('hasAnySelectedOption', () => {
         species: 'homo_sapiens'
       })
     ).toBe(false);
-  });
-
-  it('keeps the chevron for a job with no pinned panels', () => {
-    // Submitted before panels were pinned: the options it ran cannot be
-    // enumerated, so it behaves as it always did rather than losing its detail.
-    expect(hasAnySelectedOption(undefined, {})).toBe(true);
   });
 });

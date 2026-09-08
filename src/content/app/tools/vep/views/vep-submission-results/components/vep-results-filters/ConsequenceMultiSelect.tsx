@@ -31,18 +31,8 @@ type Props = {
   optionGroups: FilterOptionGroup[];
 };
 
-/**
- * The value editor for a consequence condition: a button summarising the current
- * selection that opens a scrollable panel of grouped consequence checkboxes.
- *
- * Uses a self-managed dropdown rather than the shared PointerBox: PointerBox
- * closes itself on any scroll (to reposition against its anchor), which makes an
- * inner scrollable list impossible to scroll.
- */
 const ConsequenceMultiSelect = (props: Props) => {
   const { values, onChange, optionGroups } = props;
-  // All terms in catalogue order, so a selection is reported in a stable order
-  // regardless of the order the user ticked them.
   const allTerms = optionGroups.flatMap((group) => group.options);
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);

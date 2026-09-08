@@ -22,10 +22,7 @@ export type OptionGroup = {
 };
 
 /**
- * Cluster a panel's options by their `category`, preserving first-seen order.
- * Options without a category fall into a single unlabelled group. Shared by the
- * form's job-options panels and the results annotation detail so both render the
- * form_config panel -> category -> option hierarchy identically.
+ * Group a panel's options by their category
  */
 export const groupByCategory = (options: FormPanelOption[]): OptionGroup[] => {
   const groups: OptionGroup[] = [];

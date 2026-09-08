@@ -38,10 +38,9 @@ import {
   nextAvailableField
 } from './resultsFilterFields';
 
-import type { FilterField } from 'src/content/app/tools/vep/types/vepResultsFilters';
 import type {
-  ResultsFilterCondition,
-  ResultsFilterField
+  FilterField,
+  ResultsFilterCondition
 } from 'src/content/app/tools/vep/types/vepResultsFilters';
 
 import styles from './VepResultsFilters.module.css';
@@ -54,30 +53,25 @@ type Props = {
   onClear: () => void;
   isDirty: boolean;
   hasAppliedFilters: boolean;
-  // Filtered / total record counts from the last applied request, if any.
   resultSummary: { filtered: number; total: number } | null;
   // The fields this job can be filtered on, and how each is presented, from the
-  // results response. Which transcript groups it offers is decided there, from
-  // the columns the output has.
+  // results response.
   filterFields: FilterField[];
   // Allele-frequency sources chosen at input; the AF filter is only offered when
   // this is non-empty.
   afSources: AfSourceOption[];
   // Impact-prediction scores chosen at input ('cadd_phred', 'revel',
-  // 'spliceai_dl', …); a score is only offered in the row's menu when it is
+  // 'spliceai_dl', etc.); a score is only offered in the row's menu when it is
   // among them.
-  scoreFields: ResultsFilterField[];
-  // Ids of conditions already applied; their field (query type) select is frozen
-  // so the applied filter type can't change — only its values stay editable.
+  scoreFields: string[];
+  // Ids of conditions already applied
   appliedConditionIds: Set<string>;
 };
 
 // Every score resolves to the one "Variant impact predictions" entry; which
 // score a row tests lives in the row, not in the field dropdown.
-const fieldDefinition = (
-  field: ResultsFilterField,
-  fields: FilterField[]
-): FilterField => definitionForField(field, fields) ?? fields[0];
+const fieldDefinition = (field: string, fields: FilterField[]): FilterField =>
+  definitionForField(field, fields) ?? fields[0];
 
 /**
  * The results filter query builder: rows of (field, operator, values) conditions
@@ -110,12 +104,7 @@ const VepResultsFilters = (props: Props) => {
     );
   };
 
-  // Replace a whole condition (used on field change, so field-specific defaults
-  // apply cleanly and stale fields from the previous field don't linger).
-  const changeField = (index: number, field: ResultsFilterField) => {
-    // "Variant impact predictions" is one entry standing for several scores,
-    // and its declared field is only the first of them. Landing on it would put
-    // two rows on the same score, so take the first one still free.
+  const changeField = (index: number, field: string) => {
     const resolved = isScoreField(field, filterFields)
       ? (flattenScoreOptions(
           availableScoresForRow(conditions, index, scoreFields, filterFields)
@@ -170,17 +159,10 @@ const VepResultsFilters = (props: Props) => {
                 className={styles.fieldSelect}
                 options={availableFieldsForRow(conditions, index, filterFields)
                   .filter((field) => {
-                    // A filter is only offered when the job carries the data it
-                    // tests: AF sources and impact-prediction scores are both
-                    // gated on what was actually selected at input.
                     if (field.field === 'allele_frequency') {
                       return afSources.length > 0;
                     }
                     if (field.editor === 'score') {
-                      // The group is offered while any of its scores, in any
-                      // category, is still free for this row. Empty categories
-                      // are already dropped, so a non-empty list of groups
-                      // means a genuinely available score.
                       return (
                         availableScoresForRow(
                           conditions,
@@ -196,8 +178,6 @@ const VepResultsFilters = (props: Props) => {
                     label: field.label,
                     value: field.field
                   }))}
-                // A score row's value is its score, which is not a field option
-                // — point the select at the group entry instead.
                 value={
                   isScoreField(condition.field, filterFields)
                     ? definition.field
@@ -206,10 +186,7 @@ const VepResultsFilters = (props: Props) => {
                 disabled={isFieldLocked}
                 onChange={() => undefined}
                 onInput={(event) =>
-                  changeField(
-                    index,
-                    event.currentTarget.value as ResultsFilterField
-                  )
+                  changeField(index, event.currentTarget.value)
                 }
               />
               {definition.operator_label && (

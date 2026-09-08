@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, type FormEvent, type ReactNode } from 'react';
+import { useState, type ChangeEvent, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -32,7 +32,6 @@ import {
   updateInputCommittedFlag
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
 import { useVepFormExampleInputQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
-// input check (remove this import + the block in onCommitInput + error UI to disable)
 import { checkVepInput } from './checkVepInput';
 
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
@@ -64,14 +63,20 @@ const VepFormVariantsSection = () => {
     }
   );
 
-  useEffect(() => {
+  const [prevIsGenomeSelected, setPrevIsGenomeSelected] = useState(
+    Boolean(selectedSpecies)
+  );
+
+  if (
+    (selectedSpecies && !prevIsGenomeSelected) ||
+    (!selectedSpecies && prevIsGenomeSelected)
+  ) {
     // Automatically expand this section once a species has been selected, so the
     // user can go straight to entering variants. If the species is cleared
     // (e.g. the form is reset), collapse the section again.
-    setIsExpanded(!!selectedSpecies);
-  }, [selectedSpecies]);
-
-  // TODO: create a useEffect for component unmount, which will update stored VEP form
+    setPrevIsGenomeSelected(Boolean(selectedSpecies));
+    setIsExpanded(Boolean(selectedSpecies));
+  }
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
@@ -177,7 +182,7 @@ const ExpandedContents = ({
   const [inputError, setInputError] = useState<string | null>(null);
   const dispatch = useAppDispatch();
 
-  const onTextareaContentChange = (event: FormEvent<HTMLTextAreaElement>) => {
+  const onTextareaContentChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setInputError(null); // input check: clear error while editing
     setInputString(event.currentTarget.value);
   };

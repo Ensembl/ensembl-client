@@ -16,8 +16,6 @@
 
 import { useState } from 'react';
 
-import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
-
 import TextButton from 'src/shared/components/text-button/TextButton';
 import { Toolbox, ToolboxPosition } from 'src/shared/components/toolbox';
 import Copy from 'src/shared/components/copy/Copy';
@@ -39,7 +37,7 @@ const MAX_DISPLAY_LENGTH = 5;
 const isStructuralAllele = (sequence: string) => sequence.startsWith('<');
 
 const AlleleSequence = ({ sequence, structuralVariantDetail }: Props) => {
-  const [anchorRef, setAnchorRef] = useRefWithRerender<HTMLElement>(null);
+  const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
 
   if (isStructuralAllele(sequence)) {
@@ -61,6 +59,11 @@ const AlleleSequence = ({ sequence, structuralVariantDetail }: Props) => {
     setShouldShowTooltip(!shouldShowTooltip);
   };
 
+  const setAnchorRef = (element: HTMLElement) => {
+    setAnchorElement(element);
+    return () => setAnchorElement(null);
+  };
+
   const onOutsideClick = () => {
     setShouldShowTooltip(false);
   };
@@ -79,10 +82,10 @@ const AlleleSequence = ({ sequence, structuralVariantDetail }: Props) => {
       </span>
 
       <div className={styles.sequenceLength}>{sequence.length}</div>
-      {anchorRef.current && shouldShowTooltip && (
+      {anchorElement && shouldShowTooltip && (
         <Toolbox
           onOutsideClick={onOutsideClick}
-          anchor={anchorRef.current}
+          anchor={anchorElement}
           position={ToolboxPosition.RIGHT}
         >
           <div className={styles.toolboxContents}>
