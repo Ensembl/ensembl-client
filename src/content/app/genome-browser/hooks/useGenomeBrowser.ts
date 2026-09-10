@@ -207,33 +207,12 @@ const useGenomeBrowser = () => {
   };
 };
 
-/**
- * To toggle a genome browser track or its settings, the client has to generate
- * a "track path" — an array of strings that genome browser will use to identify the track.
- *
- * There are currently two types of genome browser tracks:
- *   - Older tracks with human-readable ids (e.g. protein-coding genes on the forward strand)
- *   - Newer tracks identified by uuids. They are registered by the genome browser
- *     using a mechanism called 'expansion'.
- *
- * Ideally, the client shouldn't know any of this. Ideally, tracks would be identified
- * just by their ids. But, while this is not the case, the client will use a hack
- * as an easy option of generating a track path.
- *
- * The hack is: if track id is uuid-shaped, then it is an "expansion" track
- * that uses one path pattern; and in other cases, it is a "non-expansion" track,
- * which uses a different path pattern.
- */
-
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
+// Focus tracks have a hard-coded identifier path in genome browser.
 const getTrackPath = (trackId: string) => {
-  if (uuidRegex.test(trackId)) {
-    return ['track', 'expand', trackId];
-  } else {
+  if (trackId === 'focus') {
     return ['track', trackId];
   }
+  return ['track', 'expand', trackId];
 };
 
 export default useGenomeBrowser;
