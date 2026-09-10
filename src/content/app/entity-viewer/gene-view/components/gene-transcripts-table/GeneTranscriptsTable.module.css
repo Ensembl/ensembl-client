@@ -15,25 +15,25 @@
 
 /* contains the table and control elements above it */
 .container {
-  container-type: inline-size;
   display: grid;
   grid-template-rows: auto 1fr;
   height: 100%;
   width: 100%;
-  height: 100%;
+  max-width: max-content;
   row-gap: calc(var(--standard-gutter) / 2);
   padding-top: calc(var(--standard-gutter) / 2);
 }
 
 .tableWrapper {
   height: 100%;
-  width: 100cqi;
+  width: fit-content;
   overflow: auto;
 }
 
 .controlsSection {
   display: flex;
   justify-content: flex-end;
+  padding-right: 16px;
 }
 
 .table {
