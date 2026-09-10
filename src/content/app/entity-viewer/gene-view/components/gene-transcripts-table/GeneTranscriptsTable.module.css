@@ -1,0 +1,60 @@
+.panelBody {
+  color: var(--color-black);
+}
+
+.panelHead {
+  position: sticky;
+  top: -5px;
+  color: var(--color-black);
+  padding: 0 var(--standard-gutter);
+}
+
+.selectedTab {
+  font-weight: var(--font-weight-bold);
+}
+
+/* contains the table and control elements above it */
+.container {
+  container-type: inline-size;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  width: 100%;
+  height: 100%;
+  row-gap: calc(var(--standard-gutter) / 2);
+  padding-top: calc(var(--standard-gutter) / 2);
+}
+
+.tableWrapper {
+  height: 100%;
+  width: 100cqi;
+  overflow: auto;
+}
+
+.controlsSection {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.table {
+  --table-height: calc(100% - 28px); /* the calc is a hack: apparently, the data table isn't laid out as a grid, so the height of the table portion isn't calculated automatically */
+  height: 100%;
+  margin-left: var(--standard-gutter);
+  margin-bottom: var(--global-padding-bottom);
+}
+
+.table tr {
+  background-color: var(--color-white);
+}
+
+.table td {
+  vertical-align: top;
+}
+
+.transcriptFlags {
+  --info-pill-color: var(--color-dark-grey);
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1ch;
+  row-gap: 0.6rem;
+}

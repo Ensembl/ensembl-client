@@ -30,12 +30,14 @@ import type { RootState } from 'src/store';
 
 export enum View {
   TRANSCRIPTS = 'transcripts',
+  TRANSCRIPTS_TABLE = 'transcripts_table',
   PROTEIN = 'protein',
   HOMOLOGY = 'homology'
 }
 
 export enum GeneViewTabName {
   TRANSCRIPTS = 'Transcripts',
+  TRANSCRIPTS_TABLE = 'Transcripts table',
   GENE_FUNCTION = 'Gene function',
   GENE_RELATIONSHIPS = 'Gene relationships'
 }
@@ -59,6 +61,11 @@ export const GeneViewTabMap: Map<View, GeneViewTabData> = new Map();
 GeneViewTabMap.set(View.TRANSCRIPTS, {
   view: View.TRANSCRIPTS,
   primaryTab: GeneViewTabName.TRANSCRIPTS,
+  secondaryTab: null
+});
+GeneViewTabMap.set(View.TRANSCRIPTS_TABLE, {
+  view: View.TRANSCRIPTS_TABLE,
+  primaryTab: GeneViewTabName.TRANSCRIPTS_TABLE,
   secondaryTab: null
 });
 GeneViewTabMap.set(View.PROTEIN, {

@@ -83,6 +83,7 @@ export const transcriptFieldsFragment = gql`
           accession_id
           name
           description
+          url
           source {
             id
           }
@@ -188,9 +189,9 @@ type ProductOnDefaultTranscript = Pick<
   external_references: ExternalReferenceInProduct[];
 };
 
-type ExternalReferenceInProduct = Pick<
+export type ExternalReferenceInProduct = Pick<
   Product['external_references'][number],
-  'accession_id' | 'name' | 'description'
+  'accession_id' | 'name' | 'description' | 'url'
 > &
   Pick2<Product['external_references'][number], 'source', 'id'>;
 
