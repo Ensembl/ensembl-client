@@ -134,8 +134,6 @@ const genomeBrowserRestApiSlice = restApiSlice.injectEndpoints({
         url: `${config.tracksApiBaseUrl}/track_categories/${genomeId}`
       }),
       transformResponse: (response: GenomeTrackCategoriesResponse) => {
-        // Track API UUIDs are the browser and persistence identity for every
-        // visual track. The backend translates the UUID into an expansion.
         return response.track_categories;
       }
     })
