@@ -57,7 +57,7 @@ const GeneTranscriptsTable = () => {
   return (
     <Panel>
       <PanelHead className={styles.panelHead}>
-        <span className={styles.selectedTab}>Proteins</span>
+        <span className={styles.selectedTab}>All transcripts</span>
       </PanelHead>
       <PanelBody className={styles.panelBody}>
         <MainContent />
