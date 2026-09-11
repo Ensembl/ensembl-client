@@ -27,6 +27,7 @@ import {
 } from './queries/genePageMetaQuery';
 import {
   defaultGeneQuery,
+  defaultGeneWithAllTranscriptsQuery,
   type DefaultEntityViewerGeneQueryResult,
   type DefaultEntityViewerGeneWithTranscriptsPage
 } from './queries/defaultGeneQuery';
@@ -138,6 +139,16 @@ const entityViewerThoasSlice = graphqlApiSlice.injectEndpoints({
       }) => {
         return transformGeneInResponse(response);
       }
+    }),
+    defaultEntityViewerGeneWithAllTranscripts: builder.query<
+      DefaultEntityViewerGeneQueryResult,
+      GeneQueryParams
+    >({
+      query: (params) => ({
+        url: config.coreApiUrl,
+        body: defaultGeneWithAllTranscriptsQuery,
+        variables: params
+      })
     }),
     geneSummary: builder.query<GeneSummaryQueryResult, GeneQueryParams>({
       query: (params) => ({
@@ -374,6 +385,7 @@ const addAlleleUrlId = <
 export const {
   useGenePageMetaQuery,
   useDefaultEntityViewerGeneQuery,
+  useDefaultEntityViewerGeneWithAllTranscriptsQuery,
   useGeneSummaryQuery,
   useGeneOverviewQuery,
   useGeneExternalReferencesQuery,
