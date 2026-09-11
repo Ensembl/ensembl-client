@@ -20,7 +20,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
 
-import { useDefaultEntityViewerGeneQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import { useDefaultEntityViewerGeneWithAllTranscriptsQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import {
@@ -69,16 +69,16 @@ const GeneTranscriptsTable = () => {
 const MainContent = () => {
   const { activeGenomeId, geneId, genomeIdForUrl } = useGeneViewIds();
 
-  // FIXME: change the query to load all gene transcripts
-  const { currentData, isFetching } = useDefaultEntityViewerGeneQuery(
-    {
-      geneId: geneId as string,
-      genomeId: activeGenomeId as string
-    },
-    {
-      skip: !geneId || !activeGenomeId
-    }
-  );
+  const { currentData, isFetching } =
+    useDefaultEntityViewerGeneWithAllTranscriptsQuery(
+      {
+        geneId: geneId as string,
+        genomeId: activeGenomeId as string
+      },
+      {
+        skip: !geneId || !activeGenomeId
+      }
+    );
 
   if (isFetching) {
     return <CircleLoader />;

@@ -161,6 +161,34 @@ export const defaultGeneQuery = gql`
   ${transcriptFieldsFragment}
 `;
 
+// Instead of requesting transcripts in pages, as defaultGeneQuery does,
+// this query requests all gene transcripts at once
+// TODO: extract gene fields (shared with defaultGeneQuery) into a fragment?
+export const defaultGeneWithAllTranscriptsQuery = gql`
+  query DefaultEntityViewerGene($genomeId: String!, $geneId: String!) {
+    gene(by_id: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
+      symbol
+      unversioned_stable_id
+      version
+      slice {
+        location {
+          start
+          end
+          length
+        }
+        strand {
+          code
+        }
+      }
+      transcripts {
+        ...transcriptFields
+      }
+    }
+  }
+  ${transcriptFieldsFragment}
+`;
+
 type GeneFields = Pick<
   FullGene,
   'stable_id' | 'unversioned_stable_id' | 'symbol' | 'version'
