@@ -209,7 +209,7 @@ const FlankingSequenceRow = ({
       <td>{strand}</td>
       <td>
         <span className={classNames(styles.sequence, styles.light)}>
-          {sequence}
+          {sequence.toLowerCase()}
         </span>
       </td>
     </tr>
@@ -294,7 +294,7 @@ const IntronRow = ({
       <td>{intron.strand}</td>
       <td>
         <div className={classNames(styles.sequence, styles.light)}>
-          {sequence}
+          {sequence.toLowerCase()}
         </div>
       </td>
     </tr>
