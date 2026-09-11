@@ -1,0 +1,6 @@
+interface:
+  display_name: "Ensembl Client Implementation Context"
+  short_description: "Pull current Ensembl implementation conventions"
+  default_prompt: "Use $ensembl-client-implementation-context to implement this change using current repository conventions."
+policy:
+  allow_implicit_invocation: true
