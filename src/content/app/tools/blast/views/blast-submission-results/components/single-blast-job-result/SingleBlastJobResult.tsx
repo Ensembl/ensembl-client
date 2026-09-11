@@ -22,6 +22,7 @@ import orderBy from 'lodash/orderBy';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { getStructuredContentFromCellInRow } from 'src/shared/components/data-table/dataTableHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import useGroupedBlastHits from './useGroupedBlastHits';
 
@@ -31,6 +32,7 @@ import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-diagram/BlastHitsDiagram';
 import { BlastGenomicHitsDiagram } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
 import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast-sequence-alignment/BlastSequenceAlignment';
+import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 import Chevron from 'src/shared/components/chevron/Chevron';
 
 import {
@@ -641,6 +643,8 @@ const getHitIdOrGenomicLocation = (
 
   if (['dna', 'dna_sm'].includes(blastDatabase)) {
     childNode = renderGenomicLocation(params, options);
+  } else if (blastDatabase === 'cdna') {
+    childNode = renderTranscriptId(params, options);
   } else {
     childNode = hit.hit_acc;
   }
@@ -681,6 +685,51 @@ const renderGenomicLocation = (
     focus: focusLocationString
   });
   return <Link to={genomeBrowserLink}>{locationString}</Link>;
+};
+
+const renderTranscriptId = (
+  params: {
+    species: Species;
+    hit: BlastHit;
+    // hitHsp: HSP;
+  },
+  options: {
+    exportable: boolean;
+  }
+) => {
+  const { species, hit } = params;
+  const { exportable } = options;
+  const genomeIdForUrl = species.genome_tag ?? species.genome_id;
+  const transcriptId = hit.hit_acc;
+
+  if (exportable) {
+    return transcriptId;
+  }
+
+  const transcriptIdForUrl = buildFocusIdForUrl({
+    type: 'transcript',
+    objectId: transcriptId
+  });
+
+  const featureExplorerUrl = urlFor.entityViewerTranscript({
+    genomeId: genomeIdForUrl,
+    transcriptId
+  });
+  const genomeBrowserUrl = urlFor.browser({
+    genomeId: genomeIdForUrl,
+    focus: transcriptIdForUrl
+  });
+
+  return (
+    <ViewInAppPopup
+      links={{
+        genomeBrowser: { url: genomeBrowserUrl },
+        entityViewer: { url: featureExplorerUrl}
+      }}
+    >
+      { transcriptId }
+    </ViewInAppPopup>
+  );
 };
 
 const countAlignments = (blastHits: BlastHit[]) => {
