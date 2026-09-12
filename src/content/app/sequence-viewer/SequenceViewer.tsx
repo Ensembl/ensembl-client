@@ -17,31 +17,34 @@
 import noop from 'lodash/noop';
 
 import SequenceViewerAppBar from './components/sequence-viewer-app-bar/SequenceViewerAppBar';
-
+import { SequenceViewerIdsContextProvider } from './contexts/SequenceViewerIdsContext';
 import { StandardAppLayout } from 'src/shared/components/layout';
+import LocationSequence from './components/location-sequence/LocationSequence';
 
 import styles from './SequenceViewer.module.css';
 
 const SequenceViewer = () => {
   return (
-    <div className={styles.container}>
-      <SequenceViewerAppBar />
-      <StandardAppLayout
-        mainContent={<MainContent />}
-        sidebarContent={null}
-        isSidebarOpen={true}
-        topbarContent={null}
-        sidebarNavigation={null}
-        sidebarToolstripContent={null}
-        onSidebarToggle={noop}
-        viewportWidth={1800}
-      />
-    </div>
+    <SequenceViewerIdsContextProvider>
+      <div className={styles.container}>
+        <SequenceViewerAppBar />
+        <StandardAppLayout
+          mainContent={<MainContent />}
+          sidebarContent={null}
+          isSidebarOpen={true}
+          topbarContent={null}
+          sidebarNavigation={null}
+          sidebarToolstripContent={null}
+          onSidebarToggle={noop}
+          viewportWidth={1800}
+        />
+      </div>
+    </SequenceViewerIdsContextProvider>
   );
 };
 
 const MainContent = () => {
-  return <div>This is main content of the sequence viewer</div>;
+  return <LocationSequence />;
 };
 
 export default SequenceViewer;
