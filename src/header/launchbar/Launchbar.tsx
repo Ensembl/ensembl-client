@@ -20,7 +20,11 @@ import classNames from 'classnames';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import useHeaderAnalytics from '../hooks/useHeaderAnalytics';
 
-import { GlobalSearchIcon, HelpIcon } from 'src/shared/components/app-icon';
+import {
+  GlobalSearchIcon,
+  SequenceViewerIcon,
+  HelpIcon
+} from 'src/shared/components/app-icon';
 import LaunchbarButton from './LaunchbarButton';
 import SpeciesSelectorLaunchbarButton from './SpeciesSelectorLaunchbarButton';
 import GenomeBrowserLaunchbarButton from './GenomeBrowserLaunchbarButton';
@@ -63,6 +67,11 @@ const Launchbar = () => {
           </div>
           <div className={styles.category}>
             <EntityViewerLaunchbarButton />
+            <LaunchbarButton
+              path="/sequence-viewer"
+              description="Sequence viewer"
+              icon={SequenceViewerIcon}
+            />
             <RegulatoryActivityViewerLaunchbarButton />
           </div>
           <div className={styles.category}>
