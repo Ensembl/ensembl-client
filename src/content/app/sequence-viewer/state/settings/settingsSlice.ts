@@ -20,7 +20,7 @@ import { TranscriptView } from 'src/content/app/sequence-viewer/types/transcript
 
 type GeneSequenceLineNumbering = 'region' | 'gene';
 
-type TranscriptSequenceLineNumbering =
+export type TranscriptSequenceLineNumbering =
   'region' | 'gene' | 'transcript' | 'cdna' | 'cds';
 
 type TranscriptSequenceSettings = {
