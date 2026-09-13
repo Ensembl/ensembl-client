@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-import type { RootState } from 'src/store';
+import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
+import TranscriptSequenceSetttings from './TranscriptSequenceSettings';
 
-export const getGeneSequenceSettings = (state: RootState) =>
-  state.sequenceViewer.settings.geneSequenceSettings;
+export type View = 'location' | 'gene' | 'transcript';
 
-export const getTranscriptSequenceSettings = (state: RootState) =>
-  state.sequenceViewer.settings.transcriptSequenceSettings;
+type Props = {
+  view: View;
+};
+
+const SequenceViewerSidebar = (props: Props) => {
+  return (
+    <Sidebar>
+      <div>
+        {props.view === 'transcript' && <TranscriptSequenceSetttings />}
+      </div>
+    </Sidebar>
+  );
+};
+
+export default SequenceViewerSidebar;
