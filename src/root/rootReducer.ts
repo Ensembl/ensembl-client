@@ -24,6 +24,7 @@ import featureSearch from 'src/shared/state/feature-search/featureSearchSlice';
 import communication from 'src/shared/state/communication/communicationSlice';
 import speciesSelector from 'src/content/app/species-selector/state/speciesSelectorReducer';
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
+import sequenceViewer from 'src/content/app/sequence-viewer/state/sequenceViewerReducer';
 import structuralVariants from 'src/content/app/structural-variants/state/structuralVariantsReducer';
 import regionActivityViewer from 'src/content/app/regulatory-activity-viewer/state/regulatoryActivityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
@@ -44,6 +45,7 @@ const createRootReducer = () =>
     speciesSelector,
     speciesPage,
     entityViewer,
+    sequenceViewer,
     structuralVariants,
     regionActivityViewer,
     blast,
