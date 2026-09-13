@@ -16,9 +16,13 @@
 
 import noop from 'lodash/noop';
 
+import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
+
 import SequenceViewerAppBar from './components/sequence-viewer-app-bar/SequenceViewerAppBar';
 import { SequenceViewerIdsContextProvider } from './contexts/SequenceViewerIdsContext';
 import { StandardAppLayout } from 'src/shared/components/layout';
+import GeneSequence from './components/gene-sequence/GeneSequence';
+import TranscriptSequence from './components/transcript-sequence/TranscriptSequence';
 import LocationSequence from './components/location-sequence/LocationSequence';
 
 import styles from './SequenceViewer.module.css';
@@ -44,7 +48,38 @@ const SequenceViewer = () => {
 };
 
 const MainContent = () => {
-  return <LocationSequence />;
+  const { genomeId, isFetchingGenomeId, parsedFocusObjectId, parsedLocation } =
+    useSequenceViewerIds();
+
+  if (!genomeId) {
+    return null;
+  }
+
+  if (isFetchingGenomeId) {
+    // some spinner?
+    return null;
+  }
+
+  // is there a feature
+  if (parsedFocusObjectId?.type === 'gene') {
+    return (
+      <GeneSequence genomeId={genomeId} geneId={parsedFocusObjectId.objectId} />
+    );
+  }
+
+  if (parsedFocusObjectId?.type === 'transcript') {
+    return (
+      <TranscriptSequence
+        genomeId={genomeId}
+        transcriptId={parsedFocusObjectId.objectId}
+      />
+    );
+  }
+
+  // is there a location
+  if (parsedLocation) {
+    return <LocationSequence />;
+  }
 };
 
 export default SequenceViewer;
