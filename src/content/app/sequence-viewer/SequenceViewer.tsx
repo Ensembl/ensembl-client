@@ -19,6 +19,9 @@ import noop from 'lodash/noop';
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
 import SequenceViewerAppBar from './components/sequence-viewer-app-bar/SequenceViewerAppBar';
+import SequenceViewerSidebar, {
+  type View as SidebarView
+} from './components/sequence-viewer-sidebar/SequenceViewerSidebar';
 import { SequenceViewerIdsContextProvider } from './contexts/SequenceViewerIdsContext';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import GeneSequence from './components/gene-sequence/GeneSequence';
@@ -34,7 +37,7 @@ const SequenceViewer = () => {
         <SequenceViewerAppBar />
         <StandardAppLayout
           mainContent={<MainContent />}
-          sidebarContent={null}
+          sidebarContent={<SidebarContent />}
           isSidebarOpen={true}
           topbarContent={null}
           sidebarNavigation={null}
@@ -80,6 +83,26 @@ const MainContent = () => {
   if (parsedLocation) {
     return <LocationSequence />;
   }
+};
+
+const SidebarContent = () => {
+  const { parsedFocusObjectId, parsedLocation } = useSequenceViewerIds();
+
+  let view: SidebarView | null = null;
+
+  if (parsedFocusObjectId?.type === 'gene') {
+    view = 'gene';
+  } else if (parsedFocusObjectId?.type === 'transcript') {
+    view = 'transcript';
+  } else if (parsedLocation) {
+    view = 'location';
+  }
+
+  if (!view) {
+    return null;
+  }
+
+  return <SequenceViewerSidebar view={view} />;
 };
 
 export default SequenceViewer;
