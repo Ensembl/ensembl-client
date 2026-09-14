@@ -91,7 +91,7 @@ const prepareFlankingSequenceRowData = ({
   return {
     name: title,
     strand,
-    sequence
+    sequence: sequence.toLowerCase()
   };
 };
 
@@ -118,7 +118,7 @@ const prepareIntronRowData = ({ intron }: { intron: Intron }): RowMap => {
     endPhase: '-',
     length: intron.length,
     strand: intron.strand,
-    sequence: intron.sequence
+    sequence: intron.sequence.toLowerCase()
   };
 };
 
