@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, type InputEvent, type SubmitEvent } from 'react';
+import { useId, useState, type InputEvent, type SubmitEvent } from 'react';
 import classNames from 'classnames';
 
 import {
@@ -22,28 +22,17 @@ import {
   useLazySearchTranscriptsQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
-import {
-  isMissingResourceError,
-  getErrorMessage
-} from 'src/shared/state/api-slices/restSlice';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import {
-  getFeatureSearchLabelsByMode,
-  getFeatureSearchModes,
-  type FeatureSearchMode,
-  type FeatureSearchAppName
+import type {
+  FeatureSearchMode,
+  FeatureSearchAppName
 } from 'src/shared/helpers/featureSearchHelpers';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
-import {
-  CollapsibleSection,
-  CollapsibleSectionBody,
-  CollapsibleSectionHead
-} from 'src/shared/components/collapsible-section/CollapsibleSection';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
-import { CircleLoader } from '../loader';
+import { CircleLoader } from 'src/shared/components/loader';
 import GeneSearchMatches from 'src/shared/components/search-match/GeneSearchMatches';
 import TranscriptSearchMatches from 'src/shared/components/search-match/TranscriptSearchMatches';
 import VariantSearchMatches from 'src/shared/components/search-match/VariantSearchMatches';
@@ -66,15 +55,9 @@ type Props = {
 const SidebarSearch = (props: Props) => {
   const { app, genomeId, genomeIdForUrl, onSearchSubmit, onMatchNavigation } =
     props;
-  const searchModes = getFeatureSearchModes();
-
-  const [searchInputs, setSearchInputs] = useState<
-    Record<FeatureSearchMode, string>
-  >({
-    gene: '',
-    transcript: '',
-    variant: ''
-  });
+  const [searchInput, setSearchInput] = useState('');
+  const [submittedQuery, setSubmittedQuery] = useState('');
+  const searchInputId = useId();
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const [triggerTranscriptSearch, transcriptSearchResults] =
@@ -82,293 +65,203 @@ const SidebarSearch = (props: Props) => {
   const [triggerVariantSearch, variantSearchResults] =
     useLazySearchVariantsQuery();
 
-  const submitSearch = (
-    searchMode: FeatureSearchMode,
-    query: string,
-    page: number,
-    per_page: number
-  ) => {
+  const resetSearchResults = () => {
+    geneSearchResults.reset();
+    transcriptSearchResults.reset();
+    variantSearchResults.reset();
+  };
+
+  const onFormSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const query = searchInput.trim();
+    if (!query) {
+      return;
+    }
+
     const searchParams = {
       genome_ids: [genomeId],
-      query: query.trim(),
-      page: page,
-      per_page: per_page
+      query,
+      page: 1,
+      per_page: 20
     };
 
-    if (searchMode === 'gene') {
-      if (!query.trim()) {
-        geneSearchResults.reset();
-        return;
-      }
+    resetSearchResults();
+    setSubmittedQuery(query);
+    triggerGeneSearch(searchParams);
+    triggerTranscriptSearch(searchParams);
+    triggerVariantSearch(searchParams);
+    onSearchSubmit?.(query);
+  };
 
-      triggerGeneSearch(searchParams);
-      return;
-    }
+  const onQueryChange = (event: InputEvent<HTMLInputElement>) => {
+    const query = event.currentTarget.value;
+    setSearchInput(query);
 
-    if (searchMode === 'transcript') {
-      if (!query.trim()) {
-        transcriptSearchResults.reset();
-        return;
-      }
-
-      triggerTranscriptSearch(searchParams);
-      return;
-    }
-
-    if (searchMode === 'variant') {
-      if (!query.trim()) {
-        variantSearchResults.reset();
-        return;
-      }
-
-      triggerVariantSearch(searchParams);
+    if (!query.trim()) {
+      setSubmittedQuery('');
+      resetSearchResults();
     }
   };
 
-  const onFormSubmit = (
-    event: SubmitEvent<HTMLFormElement>,
-    searchMode: FeatureSearchMode
-  ) => {
-    event.preventDefault();
-    const query = searchInputs[searchMode] || '';
-
-    submitSearch(searchMode, query, 1, 20);
-
-    if (onSearchSubmit) {
-      onSearchSubmit(query);
+  const searchResults = [
+    {
+      searchMode: 'gene' as const,
+      title: 'Gene search results',
+      results: geneSearchResults.currentData
+    },
+    {
+      searchMode: 'transcript' as const,
+      title: 'Transcript search results',
+      results: transcriptSearchResults.currentData
+    },
+    {
+      searchMode: 'variant' as const,
+      title: 'Variant search results',
+      results: variantSearchResults.currentData
     }
-  };
+  ].sort(
+    (first, second) =>
+      (second.results?.meta.total_hits ?? 0) -
+      (first.results?.meta.total_hits ?? 0)
+  );
 
-  const onQueryChange = (
-    event: InputEvent<HTMLInputElement>,
-    searchMode: FeatureSearchMode
-  ) => {
-    const newQuery = event.currentTarget.value;
-    setSearchInputs((currentSearchInputs) => ({
-      ...currentSearchInputs,
-      [searchMode]: newQuery
-    }));
-    if (!newQuery.trim()) {
-      submitSearch(searchMode, '', 1, 20);
-    }
-  };
+  const isLoading =
+    geneSearchResults.isFetching ||
+    transcriptSearchResults.isFetching ||
+    variantSearchResults.isFetching;
 
   return (
-    <div className={styles.sections}>
-      {searchModes.map((searchMode) => {
-        const searchModeLabels = getFeatureSearchLabelsByMode(searchMode);
-
-        return (
-          <CollapsibleSection
-            isOpen={searchMode === 'gene'}
-            className={styles.section}
-            key={searchMode}
-          >
-            <CollapsibleSectionHead className={styles.sectionHead}>
-              {searchModeLabels.label}
-            </CollapsibleSectionHead>
-            <CollapsibleSectionBody className={styles.sectionBody}>
-              <form
-                className={styles.searchFormSidebar}
-                onSubmit={(event) => onFormSubmit(event, searchMode)}
-              >
-                <ShadedInput
-                  onInput={(event) => onQueryChange(event, searchMode)}
-                  value={searchInputs[searchMode] || ''}
-                  help={searchModeLabels.help}
-                  placeholder={searchModeLabels.placeholder}
-                  type="search"
-                  autoFocus={true}
-                  size="small"
-                />
-                <div className={styles.sidebarBottomRow}>
-                  <FeaturePageDetails
-                    searchMode={searchMode}
-                    currentGeneSearchResults={geneSearchResults.currentData}
-                    currentTranscriptSearchResults={
-                      transcriptSearchResults.currentData
-                    }
-                    currentVariantSearchResults={
-                      variantSearchResults.currentData
-                    }
-                    submittedGeneQuery={geneSearchResults.originalArgs?.query}
-                    submittedTranscriptQuery={
-                      transcriptSearchResults.originalArgs?.query
-                    }
-                    submittedVariantQuery={
-                      variantSearchResults.originalArgs?.query
-                    }
-                    submitSearch={submitSearch}
-                  />
-                  <PrimaryButton
-                    type="submit"
-                    className={styles.submitSidebar}
-                    disabled={!searchInputs[searchMode]?.trim()}
-                  >
-                    Go
-                  </PrimaryButton>
-                </div>
-              </form>
-              <div className={styles.resultsSection}>
-                <div className={styles.matchesSection}>
-                  <ResultsContent
-                    app={app}
-                    genomeIdForUrl={genomeIdForUrl}
-                    searchMode={searchMode}
-                    geneSearchResults={geneSearchResults}
-                    transcriptSearchResults={transcriptSearchResults}
-                    variantSearchResults={variantSearchResults}
-                    onMatchNavigation={onMatchNavigation}
-                  />
-                </div>
-              </div>
-            </CollapsibleSectionBody>
-          </CollapsibleSection>
-        );
-      })}
-      <SidebarHelpSection />
+    <div>
+      <form className={styles.searchFormSidebar} onSubmit={onFormSubmit}>
+        <label htmlFor={searchInputId} className={styles.searchLabel}>
+          Find a feature in the selected genomes
+        </label>
+        <ShadedInput
+          id={searchInputId}
+          className={styles.searchInput}
+          onInput={onQueryChange}
+          value={searchInput}
+          help="Search for a gene, transcript or variant using a stable identifier, symbol or rsID."
+          placeholder="Gene, transcript or variant ID..."
+          type="search"
+          autoFocus={true}
+          autoComplete="off"
+          size="small"
+        />
+        <PrimaryButton
+          type="submit"
+          className={styles.submitSidebar}
+          disabled={!searchInput.trim()}
+        >
+          Go
+        </PrimaryButton>
+      </form>
+      {isLoading ? (
+        <CircleLoader className={styles.loader} size="small" />
+      ) : (
+        submittedQuery &&
+        searchResults.map(({ searchMode, title, results }) => (
+          <section className={styles.resultsSection} key={searchMode}>
+            <div className={styles.sectionTitle}>{title}</div>
+            <ResultDetails
+              searchMode={searchMode}
+              results={results}
+              submittedQuery={submittedQuery}
+              triggerGeneSearch={triggerGeneSearch}
+              genomeId={genomeId}
+            />
+            <ResultsContent
+              app={app}
+              genomeIdForUrl={genomeIdForUrl}
+              searchMode={searchMode}
+              results={results}
+              onMatchNavigation={onMatchNavigation}
+            />
+          </section>
+        ))
+      )}
     </div>
   );
 };
 
-type FeaturePageDetailsProps = {
+type ResultDetailsProps = {
   searchMode: FeatureSearchMode;
-  currentGeneSearchResults: SearchResults | undefined;
-  currentTranscriptSearchResults: SearchResults | undefined;
-  currentVariantSearchResults: SearchResults | undefined;
-  submittedGeneQuery: string | undefined;
-  submittedTranscriptQuery: string | undefined;
-  submittedVariantQuery: string | undefined;
-  submitSearch: (
-    searchMode: FeatureSearchMode,
-    query: string,
-    page: number,
-    per_page: number
-  ) => void;
+  results: SearchResults | undefined;
+  submittedQuery: string;
+  genomeId: string;
+  triggerGeneSearch: ReturnType<typeof useLazySearchGenesQuery>[0];
 };
 
-const FeaturePageDetails = (props: FeaturePageDetailsProps) => {
-  const {
-    searchMode,
-    currentGeneSearchResults,
-    currentTranscriptSearchResults,
-    currentVariantSearchResults,
-    submitSearch,
-    submittedGeneQuery,
-    submittedTranscriptQuery,
-    submittedVariantQuery
-  } = props;
+const ResultDetails = (props: ResultDetailsProps) => {
+  const { searchMode, results, submittedQuery, genomeId, triggerGeneSearch } =
+    props;
 
-  if (searchMode === 'gene' && currentGeneSearchResults) {
-    const { page, per_page, total_hits } = currentGeneSearchResults.meta;
-    const hasPreviousPage = page > 1;
-    const hasNextPage = total_hits > page * per_page;
-    const query = submittedGeneQuery ?? '';
+  if (!results || results.meta.total_hits === 0) {
+    return null;
+  }
 
+  if (searchMode !== 'gene') {
     return (
-      <PageDetails
-        results={currentGeneSearchResults}
-        hasPreviousPage={hasPreviousPage}
-        hasNextPage={hasNextPage}
-        onPreviousClick={() =>
-          submitSearch(searchMode, query, page - 1, per_page)
-        }
-        onNextClick={() => submitSearch(searchMode, query, page + 1, per_page)}
-      />
+      <div>
+        <span className={styles.totalHits}>
+          {formatNumber(results.meta.total_hits)}
+        </span>
+        <span className={styles.resultsText}> results</span>
+      </div>
     );
   }
 
-  if (searchMode === 'transcript' && currentTranscriptSearchResults) {
-    const { page, per_page, total_hits } = currentTranscriptSearchResults.meta;
-    const hasPreviousPage = page > 1;
-    const hasNextPage = total_hits > page * per_page;
-    const query = submittedTranscriptQuery ?? '';
+  const { page, per_page, total_hits } = results.meta;
 
-    return (
-      <PageDetails
-        results={currentTranscriptSearchResults}
-        hasPreviousPage={hasPreviousPage}
-        hasNextPage={hasNextPage}
-        onPreviousClick={() =>
-          submitSearch(searchMode, query, page - 1, per_page)
-        }
-        onNextClick={() => submitSearch(searchMode, query, page + 1, per_page)}
-      />
-    );
-  }
-
-  if (searchMode === 'variant' && currentVariantSearchResults) {
-    const { page, per_page, total_hits } = currentVariantSearchResults.meta;
-    const hasPreviousPage = page > 1;
-    const hasNextPage = total_hits > page * per_page;
-    const query = submittedVariantQuery ?? '';
-
-    return (
-      <PageDetails
-        results={currentVariantSearchResults}
-        hasPreviousPage={hasPreviousPage}
-        hasNextPage={hasNextPage}
-        onPreviousClick={() =>
-          submitSearch(searchMode, query, page - 1, per_page)
-        }
-        onNextClick={() => submitSearch(searchMode, query, page + 1, per_page)}
-      />
-    );
-  }
-
-  return null;
+  return (
+    <PageDetails
+      results={results}
+      hasPreviousPage={page > 1}
+      hasNextPage={total_hits > page * per_page}
+      onPreviousClick={() =>
+        triggerGeneSearch({
+          genome_ids: [genomeId],
+          query: submittedQuery,
+          page: page - 1,
+          per_page
+        })
+      }
+      onNextClick={() =>
+        triggerGeneSearch({
+          genome_ids: [genomeId],
+          query: submittedQuery,
+          page: page + 1,
+          per_page
+        })
+      }
+    />
+  );
 };
 
 type ResultsContentProps = {
   app: FeatureSearchAppName;
   genomeIdForUrl: string;
   searchMode: FeatureSearchMode;
-  geneSearchResults: ReturnType<typeof useLazySearchGenesQuery>[1];
-  transcriptSearchResults: ReturnType<typeof useLazySearchTranscriptsQuery>[1];
-  variantSearchResults: ReturnType<typeof useLazySearchVariantsQuery>[1];
+  results: SearchResults | undefined;
   onMatchNavigation?: () => void;
 };
 
 const ResultsContent = (props: ResultsContentProps) => {
-  const {
-    app,
-    searchMode,
-    geneSearchResults,
-    transcriptSearchResults,
-    variantSearchResults,
-    genomeIdForUrl,
-    onMatchNavigation
-  } = props;
-  const { currentData: currentGeneSearchResults } = geneSearchResults;
-  const { currentData: currentTranscriptSearchResults } =
-    transcriptSearchResults;
-  const {
-    currentData: currentVariantSearchResults,
-    error: variantSearchError
-  } = variantSearchResults;
+  const { app, searchMode, results, genomeIdForUrl, onMatchNavigation } = props;
 
-  const isCurrentModeLoading =
-    (searchMode === 'gene' && geneSearchResults.isFetching) ||
-    (searchMode === 'transcript' && transcriptSearchResults.isFetching) ||
-    (searchMode === 'variant' && variantSearchResults.isFetching);
-
-  if (isCurrentModeLoading) {
-    return <CircleLoader size="small" />;
+  if (!results || results.matches.length === 0) {
+    return (
+      <div className={styles.noResults}>
+        <p>No results found</p>
+      </div>
+    );
   }
 
-  if (searchMode === 'gene' && currentGeneSearchResults) {
-    if (currentGeneSearchResults.matches.length === 0) {
-      return (
-        <span>
-          <span className={styles.bold}>Tip:</span> Enter a valid gene symbol or
-          ID to find a gene in the species.
-        </span>
-      );
-    }
-
+  if (searchMode === 'gene') {
     return (
       <GeneSearchMatches
-        results={currentGeneSearchResults}
+        results={results}
         app={app}
         mode="sidebar"
         genomeIdForUrl={genomeIdForUrl}
@@ -377,19 +270,10 @@ const ResultsContent = (props: ResultsContentProps) => {
     );
   }
 
-  if (searchMode === 'transcript' && currentTranscriptSearchResults) {
-    if (currentTranscriptSearchResults.matches.length === 0) {
-      return (
-        <span>
-          <span className={styles.bold}>Tip:</span> Enter a valid transcript ID
-          to find a transcript in the species.
-        </span>
-      );
-    }
-
+  if (searchMode === 'transcript') {
     return (
       <TranscriptSearchMatches
-        results={currentTranscriptSearchResults}
+        results={results}
         app={app}
         mode="sidebar"
         genomeIdForUrl={genomeIdForUrl}
@@ -398,69 +282,14 @@ const ResultsContent = (props: ResultsContentProps) => {
     );
   }
 
-  if (searchMode === 'variant') {
-    if (isMissingResourceError(variantSearchError)) {
-      return (
-        <span className={styles.warning}>
-          {getErrorMessage(variantSearchError)}
-        </span>
-      );
-    }
-
-    if (currentVariantSearchResults) {
-      if (currentVariantSearchResults.matches.length === 0) {
-        return (
-          <span>
-            <span className={styles.bold}>Tip:</span> This may not be a valid
-            variant ID for the species.
-          </span>
-        );
-      }
-
-      return (
-        <VariantSearchMatches
-          results={currentVariantSearchResults}
-          app={app}
-          mode="sidebar"
-          genomeIdForUrl={genomeIdForUrl}
-          onMatchNavigation={onMatchNavigation}
-        />
-      );
-    }
-  }
-
-  return null;
-};
-
-const SidebarHelpSection = () => {
   return (
-    <div className={styles.section}>
-      <CollapsibleSection isOpen={false}>
-        <CollapsibleSectionHead className={styles.sectionHead}>
-          Help
-        </CollapsibleSectionHead>
-        <CollapsibleSectionBody
-          className={classNames(styles.sectionBody, styles.helpSectionBody)}
-        >
-          <p>
-            You can search for genes, transcripts or variants by selecting the
-            options above.
-          </p>
-          <p>
-            Genes can be searched for by symbol (e.g. MAPK10) or stable ID (e.g.
-            ENSG00000109339.24).
-          </p>
-          <p>
-            You can search for a transcript by stable ID (e.g.
-            ENST00000680071.1).
-          </p>
-          <p>
-            You can search for a variant by rsID (only exact matches will be
-            shown).
-          </p>
-        </CollapsibleSectionBody>
-      </CollapsibleSection>
-    </div>
+    <VariantSearchMatches
+      results={results}
+      app={app}
+      mode="sidebar"
+      genomeIdForUrl={genomeIdForUrl}
+      onMatchNavigation={onMatchNavigation}
+    />
   );
 };
 
@@ -480,21 +309,11 @@ const PageDetails = (props: PageDetailsProps) => {
     onPreviousClick,
     onNextClick
   } = props;
-  const { meta } = results;
-  const { total_hits, page, per_page } = meta;
+  const { total_hits, page, per_page } = results.meta;
 
   const from = formatNumber((page - 1) * per_page + 1);
   const to = formatNumber(Math.min(page * per_page, total_hits));
   const totalHitsFormatted = formatNumber(total_hits);
-
-  if (total_hits === 0) {
-    return (
-      <div>
-        <span className={styles.totalHits}>{totalHitsFormatted}</span>
-        <span className={styles.resultsText}> results</span>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.pageDetails}>
@@ -505,22 +324,27 @@ const PageDetails = (props: PageDetailsProps) => {
         <span className={styles.totalHits}> /{totalHitsFormatted}</span>
         <span className={styles.resultsText}> results</span>
       </div>
-      <div>
-        <ImageButton
-          status={hasPreviousPage ? Status.DEFAULT : Status.DISABLED}
-          description="Previous page"
-          className={styles.pageNavButton}
-          onClick={onPreviousClick}
-          image={NavigateLeftIcon}
-        />
-        <ImageButton
-          status={hasNextPage ? Status.DEFAULT : Status.DISABLED}
-          description="Next page"
-          className={classNames(styles.pageNavButton, styles.pageNavNextButton)}
-          onClick={onNextClick}
-          image={NavigateRightIcon}
-        />
-      </div>
+      {total_hits > per_page && (
+        <div>
+          <ImageButton
+            status={hasPreviousPage ? Status.DEFAULT : Status.DISABLED}
+            description="Previous page"
+            className={styles.pageNavButton}
+            onClick={onPreviousClick}
+            image={NavigateLeftIcon}
+          />
+          <ImageButton
+            status={hasNextPage ? Status.DEFAULT : Status.DISABLED}
+            description="Next page"
+            className={classNames(
+              styles.pageNavButton,
+              styles.pageNavNextButton
+            )}
+            onClick={onNextClick}
+            image={NavigateRightIcon}
+          />
+        </div>
+      )}
     </div>
   );
 };
