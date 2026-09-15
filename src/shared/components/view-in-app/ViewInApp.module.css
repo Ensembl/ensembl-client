@@ -20,13 +20,10 @@
 .viewInAppLink {
   --app-icon-size: 25px;
   --app-icon-bg-color: var(--color-blue);
+  --image-button-default-svg-color: var(--color-white);
   margin-left: 20px;
 }
 
 .viewInAppLink:first-of-type {
   margin-left: 15px;
-}
-
-.viewInAppLink svg {
-  fill: var(--color-white);
 }
