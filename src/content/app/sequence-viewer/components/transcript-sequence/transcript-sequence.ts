@@ -105,27 +105,26 @@ export class TranscriptSequence extends LitElement {
     }
 
     const lines = this.#getSequenceLines();
+    const padLeftLength =
+      this.transcript?.slice.location.length.toString().length ?? 0;
 
     return html`
-      <div class="container-left">
-        ${lines.map((_, index) => {
-          const number = LINE_LENGTH * index + 1;
-          return html`<span class="side-line">${number}</span> `;
-        })}
-      </div>
+      ${lines.map((line, index) => {
+        const numberStart = LINE_LENGTH * index + 1;
+        const numberEnd = numberStart + LINE_LENGTH;
 
-      <div class="container-center">
-        ${lines.map((line) => {
-          return html`<span class="line">${line}</span> `;
-        })}
-      </div>
-
-      <div class="container-right">
-        ${lines.map((_, index) => {
-          const number = LINE_LENGTH * index + LINE_LENGTH;
-          return html`<span class="side-line">${number}</span> `;
-        })}
-      </div>
+        return html`
+          <div class="block-line">
+            <div class="block-line-left">
+              <span class="padded-number"
+                >${numberStart.toString().padStart(padLeftLength, ' ')}</span
+              >
+            </div>
+            <div class="line">${line}</div>
+            <div class="block-line-right">${numberEnd}</div>
+          </div>
+        `;
+      })}
     `;
   }
 

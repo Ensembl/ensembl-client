@@ -16,6 +16,10 @@
 
 import { type DetailedHTMLProps, type HTMLAttributes } from 'react';
 
+import { useAppSelector } from 'src/store';
+
+import { getTranscriptSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+
 import useTranscriptSequence from './useTranscriptSequence';
 
 import './transcript-sequence';
@@ -35,6 +39,9 @@ const TranscriptSequence = (props: Props) => {
     genomeId,
     transcriptId
   });
+  const transcriptSequenceSettings = useAppSelector(
+    getTranscriptSequenceSettings
+  );
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -57,7 +64,7 @@ const TranscriptSequence = (props: Props) => {
         sequence={data.sequence}
         transcript={data.transcript}
         proteinSequence={data.proteinSequence}
-        view="genomic"
+        view={transcriptSequenceSettings.view}
       />
     </div>
   );
