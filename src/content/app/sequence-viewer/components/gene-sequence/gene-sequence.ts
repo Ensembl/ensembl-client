@@ -21,13 +21,30 @@ const LINE_LENGTH = 60;
 export class GeneSequence extends LitElement {
   static styles = css`
     :host {
-      display: block;
+      display: grid;
+      grid-template-columns: repeat(3, max-content);
+      column-gap: 1rem;
     }
 
     .line {
       display: block;
       font-family: var(--font-family-monospace);
+      width: max-content;
       content-visibility: auto;
+      contain-intrinsic-size: 60ch 1lh;
+    }
+
+    .container-left,
+    .container-right {
+      width: fit-content;
+    }
+
+    .container-left .side-line {
+      text-align: right;
+    }
+
+    .side-line {
+      display: block;
     }
   `;
 
@@ -64,9 +81,25 @@ export class GeneSequence extends LitElement {
     const lines = this.#getSequenceLines();
 
     return html`
-      ${lines.map((line) => {
-        return html` <span class="line">${line}</span> `;
-      })}
+      <div class="container-left">
+        ${lines.map((_, index) => {
+          const number = LINE_LENGTH * index + 1;
+          return html`<span class="side-line">${number}</span> `;
+        })}
+      </div>
+
+      <div class="container-center">
+        ${lines.map((line) => {
+          return html`<span class="line">${line}</span> `;
+        })}
+      </div>
+
+      <div class="container-right">
+        ${lines.map((_, index) => {
+          const number = LINE_LENGTH * index + LINE_LENGTH;
+          return html`<span class="side-line">${number}</span> `;
+        })}
+      </div>
     `;
   }
 }

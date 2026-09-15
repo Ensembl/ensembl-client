@@ -27,6 +27,7 @@ import type { TranscriptSummaryQueryResult } from 'src/content/app/genome-browse
 type Data = {
   transcript: TranscriptSummaryQueryResult['transcript'];
   sequence: string;
+  proteinSequence: string | null;
 };
 
 type State = {
@@ -110,6 +111,10 @@ async function* fetchData({
   const end = transcript.slice.location.end;
   const strand = transcript.slice.strand.code;
 
+  const proteinContext = transcript.product_generating_contexts
+    .find(context => context.product_type === 'Protein');
+
+
   const { data: sequence } = await reduxDispatch(
     fetchRefgetSequence.initiate({
       checksum: regionChecksum,
@@ -118,6 +123,20 @@ async function* fetchData({
       strand
     })
   );
+
+  let proteinSequence: string | null = null;
+
+  if (proteinContext) {
+    const {data: sequence } = await reduxDispatch(
+      fetchRefgetSequence.initiate({
+        checksum: proteinContext.product!.sequence.checksum
+      })
+    );
+    if (sequence) {
+      proteinSequence = sequence;
+    }
+  }
+
 
   if (!sequence) {
     yield {
@@ -131,7 +150,8 @@ async function* fetchData({
   yield {
     data: {
       transcript,
-      sequence
+      sequence,
+      proteinSequence
     },
     isLoading: false,
     isError: false

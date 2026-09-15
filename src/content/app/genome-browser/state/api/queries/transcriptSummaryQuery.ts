@@ -54,6 +54,8 @@ export const transcriptSummaryQuery = gql`
         default
         cds {
           protein_length
+          relative_start
+          relative_end
           sequence {
             checksum
           }
@@ -180,7 +182,7 @@ type ProductGeneratingContextOnSummaryTranscript = Pick<
   cds:
     | (Pick<
         NonNullable<FullProductGeneratingContext['cds']>,
-        'protein_length'
+        'protein_length' | 'relative_start' | 'relative_end'        
       > &
         Pick2<
           NonNullable<FullProductGeneratingContext['cds']>,
