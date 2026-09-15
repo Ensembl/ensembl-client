@@ -94,7 +94,7 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       SpeciesSearchRequestParams
     >({
       query: (params) => ({
-        url: `${config.searchApiBaseUrl}/genomes/v2?${prepareGenomeSearchParams(params)}`
+        url: `${config.searchApiBaseUrl}/genomes/v3?${prepareGenomeSearchParams(params)}`
       })
     }),
     getGenomesBySpeciesTaxonomyId: builder.query<
@@ -102,7 +102,7 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       GenomesSearchBySpeciesTaxonomyIdRequestParams
     >({
       query: (params) => ({
-        url: `${config.searchApiBaseUrl}/genomes/v2?${prepareGenomeSearchParams(params)}`
+        url: `${config.searchApiBaseUrl}/genomes/v3?${prepareGenomeSearchParams(params)}`
       })
     }),
     getGenomesByGenomeGroupId: builder.query<
@@ -110,7 +110,7 @@ const speciesSelectorApiSlice = restApiSlice.injectEndpoints({
       GenomesSearchByGenomeGroupIdRequestParams
     >({
       query: (params) => ({
-        url: `${config.searchApiBaseUrl}/genomes/v2?${prepareGenomeSearchParams(params)}`
+        url: `${config.searchApiBaseUrl}/genomes/v3?${prepareGenomeSearchParams(params)}`
       })
     })
   })
