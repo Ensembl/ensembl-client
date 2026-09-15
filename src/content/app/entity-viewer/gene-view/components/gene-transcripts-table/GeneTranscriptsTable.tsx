@@ -15,6 +15,7 @@
  */
 
 import { useState } from 'react';
+import { Link } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -98,8 +99,8 @@ const MainContent = () => {
           <thead>
             <tr>
               <ColumnHead>Transcript</ColumnHead>
-              <ColumnHead>cDNA length</ColumnHead>
-              <ColumnHead>Protein length</ColumnHead>
+              <ColumnHead>cDNA length&nbsp;(bp)</ColumnHead>
+              <ColumnHead>Protein length&nbsp;(aa)</ColumnHead>
               <ColumnHead>Biotype</ColumnHead>
               <ColumnHead>CCDS</ColumnHead>
               <ColumnHead>UniProt match</ColumnHead>
@@ -118,9 +119,10 @@ const MainContent = () => {
                 </td>
                 <td>{formatNumber(getSplicedRNALength(transcript))}</td>
                 <td>
-                  {isProteinCodingTranscript(transcript)
-                    ? formatNumber(getProductAminoAcidLength(transcript))
-                    : '—'}
+                  <ProteinLink
+                    genomeIdForUrl={genomeIdForUrl as string}
+                    transcript={transcript}
+                  />
                 </td>
                 <td>{getTranscriptBiotype(transcript)}</td>
                 <td>
@@ -210,6 +212,32 @@ const TranscriptStableId = ({
     >
       {transcriptId}
     </ViewInAppPopup>
+  );
+};
+
+const ProteinLink = ({
+  genomeIdForUrl,
+  transcript
+}: {
+  genomeIdForUrl: string;
+  transcript: Parameters<typeof isProteinCodingTranscript>[0] &
+    Parameters<typeof getProductAminoAcidLength>[0] & {
+      stable_id: string;
+    };
+}) => {
+  const hasProtein = isProteinCodingTranscript(transcript);
+  if (!hasProtein) {
+    return '—';
+  }
+
+  const url = urlFor.entityViewerTranscript({
+    genomeId: genomeIdForUrl,
+    transcriptId: transcript.stable_id,
+    view: 'protein'
+  });
+
+  return (
+    <Link to={url}>{formatNumber(getProductAminoAcidLength(transcript))}</Link>
   );
 };
 
