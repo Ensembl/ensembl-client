@@ -56,6 +56,7 @@ const TranscriptSequence = (props: Props) => {
       <ens-sequence-viewer-transcript-sequence
         sequence={data.sequence}
         transcript={data.transcript}
+        proteinSequence={data.proteinSequence}
         view="genomic"
       />
     </div>
@@ -68,6 +69,7 @@ type TranscriptSequenceElementProps = DetailedHTMLProps<
 > & {
   sequence: string;
   transcript: TranscriptSummaryQueryResult['transcript'] | null;
+  proteinSequence: string | null;
   view: TranscriptView;
 };
 
