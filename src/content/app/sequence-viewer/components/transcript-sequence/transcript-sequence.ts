@@ -21,7 +21,6 @@ import type { TranscriptView } from 'src/content/app/sequence-viewer/types/trans
 
 const LINE_LENGTH = 60;
 
-
 type CDNASequenceSpan = {
   startIndex: number; // from transcript start
   endIndex: number; // from transcript start
@@ -29,19 +28,6 @@ type CDNASequenceSpan = {
   transcriptEndIndex: number;
   sequence: string;
 };
-
-type CDSSequenceSpan = {
-  startIndex: number;
-  endIndex: number;
-  offsetFromStart: number;
-};
-
-type ProteinSequenceSpan = {
-  startIndex: number;
-  endIndex: number;
-  offsetFromStart: number;
-};
-
 
 export class TranscriptSequence extends LitElement {
   static styles = css`
@@ -96,15 +82,6 @@ export class TranscriptSequence extends LitElement {
     this.view = 'genomic';
   }
 
-  #getMarkedIntervals() {
-    if (!this.transcript) {
-      return [];
-    }
-
-    // it may not be a coding transcript
-    const cds = this.transcript.product_generating_contexts
-  }
-
   #getSequenceLines() {
     if (!this.sequence) {
       return [];
@@ -123,32 +100,33 @@ export class TranscriptSequence extends LitElement {
   }
 
   render() {
-    // const lines = this.#getSequenceLines();
+    if (this.view === 'cdna') {
+      return this.#renderCDNA();
+    }
 
-    return this.#renderCDNA();
+    const lines = this.#getSequenceLines();
 
+    return html`
+      <div class="container-left">
+        ${lines.map((_, index) => {
+          const number = LINE_LENGTH * index + 1;
+          return html`<span class="side-line">${number}</span> `;
+        })}
+      </div>
 
-    // return html`
-    //   <div class="container-left">
-    //     ${lines.map((_, index) => {
-    //       const number = LINE_LENGTH * index + 1;
-    //       return html`<span class="side-line">${number}</span> `;
-    //     })}
-    //   </div>
+      <div class="container-center">
+        ${lines.map((line) => {
+          return html`<span class="line">${line}</span> `;
+        })}
+      </div>
 
-    //   <div class="container-center">
-    //     ${lines.map((line) => {
-    //       return html`<span class="line">${line}</span> `;
-    //     })}
-    //   </div>
-
-    //   <div class="container-right">
-    //     ${lines.map((_, index) => {
-    //       const number = LINE_LENGTH * index + LINE_LENGTH;
-    //       return html`<span class="side-line">${number}</span> `;
-    //     })}
-    //   </div>
-    // `;
+      <div class="container-right">
+        ${lines.map((_, index) => {
+          const number = LINE_LENGTH * index + LINE_LENGTH;
+          return html`<span class="side-line">${number}</span> `;
+        })}
+      </div>
+    `;
   }
 
   #renderCDNA() {
@@ -158,10 +136,11 @@ export class TranscriptSequence extends LitElement {
 
     const transcript = this.transcript;
     const transcriptSequence = this.sequence;
-    const proteinContext = transcript.product_generating_contexts
-      .find(context => context.product_type === 'Protein');
+    const proteinContext = transcript.product_generating_contexts.find(
+      (context) => context.product_type === 'Protein'
+    );
     const cds = proteinContext?.cds ?? null;
-    const proteinSequence = this.proteinSequence;
+    // const proteinSequence = this.proteinSequence;
     const exons = transcript.spliced_exons;
 
     // Prepare cDNA spans
@@ -170,54 +149,51 @@ export class TranscriptSequence extends LitElement {
     let cdnaStartIndex = 0;
 
     for (const exon of exons) {
-      let relativeStart = exon.relative_location.start;
-      const relativeEnd = exon.relative_location.end;
-      const exonLength = relativeEnd - relativeStart + 1;
+      // API coordinates are 1-based and inclusive. Convert the start to a
+      // zero-based index and use the API end as the JS slice end.
+      let transcriptStartIndex = exon.relative_location.start - 1;
+      const transcriptEndIndex = exon.relative_location.end;
 
-      const lastCDNASpan = cdnaSpans.at(-1);
-      
-      if (lastCDNASpan && lastCDNASpan.sequence.length < LINE_LENGTH) {
-        const lastCDNASpanEndIndex = lastCDNASpan.endIndex;
-        const remainingCapacity = LINE_LENGTH - lastCDNASpan.sequence.length;
-        const remainder = Math.min(
+      while (transcriptStartIndex < transcriptEndIndex) {
+        let cdnaSpan = cdnaSpans.at(-1);
+
+        if (!cdnaSpan || cdnaSpan.sequence.length === LINE_LENGTH) {
+          cdnaSpan = {
+            startIndex: cdnaStartIndex,
+            endIndex: cdnaStartIndex,
+            transcriptStartIndex,
+            transcriptEndIndex: transcriptStartIndex,
+            sequence: ''
+          };
+          cdnaSpans.push(cdnaSpan);
+        }
+
+        const remainingCapacity = LINE_LENGTH - cdnaSpan.sequence.length;
+        const length = Math.min(
           remainingCapacity,
-          exonLength
+          transcriptEndIndex - transcriptStartIndex
         );
-        // FIXME: what if the exon is so tiny it is shorter than the line?
 
-        const newEndIndex = lastCDNASpanEndIndex + remainder;
-        const sequenceSlice = transcriptSequence.slice(lastCDNASpan.startIndex, newEndIndex);
-
-        lastCDNASpan.transcriptEndIndex = newEndIndex;
-        lastCDNASpan.endIndex += remainder;
-        lastCDNASpan.sequence = sequenceSlice;
-        relativeStart = relativeStart + remainder; // move the pointer that will be used in subsequent cycle
-      }
-
-      for (let i = relativeStart - 1; i < relativeEnd; i += LINE_LENGTH) {
-        const transcriptStartIndex = i;
-        const transcriptEndIndex = Math.min(i + LINE_LENGTH, relativeEnd);
-        const length = transcriptEndIndex - transcriptStartIndex;
-
-        const cdnaSpan: CDNASequenceSpan = {
-          startIndex: cdnaStartIndex,
-          endIndex: cdnaStartIndex + length,
+        // Slice from the exon/source coordinates, not from the cDNA
+        // coordinates. The latter no longer match after an intron is removed.
+        cdnaSpan.sequence += transcriptSequence.slice(
           transcriptStartIndex,
-          transcriptEndIndex,
-          sequence: transcriptSequence.slice(transcriptStartIndex, transcriptEndIndex)
-        };
-        cdnaSpans.push(cdnaSpan);
+          transcriptStartIndex + length
+        );
+        cdnaSpan.endIndex += length;
+        cdnaSpan.transcriptEndIndex = transcriptStartIndex + length;
 
         cdnaStartIndex += length;
+        transcriptStartIndex += length;
       }
-
     }
 
-
-    return cdnaSpans.map(span => this.#renderCDNABlock({
-      cdnaSpan: span,
-      cds
-    }));
+    return cdnaSpans.map((span) =>
+      this.#renderCDNABlock({
+        cdnaSpan: span,
+        cds
+      })
+    );
   }
 
   #renderCDNABlock({
@@ -236,41 +212,61 @@ export class TranscriptSequence extends LitElement {
     // FIXME: calculate padleft from the full cDNA length
     const padLeftLength = 5;
 
-
     // FIXME: change block / row
 
     const cdnaRow = html`
       <div class="block-line">
         <div class="block-line-left">
-          <span class="padded-number">${start.toString().padStart(padLeftLength, ' ')}</span>
+          <span class="padded-number"
+            >${start.toString().padStart(padLeftLength, ' ')}</span
+          >
         </div>
         <div>${cdnaSpan.sequence}</div>
-        <div class="block-line-right">
-          ${end}
-        </div>
+        <div class="block-line-right">${end}</div>
       </div>
     `;
 
-    const blockRows = [
-      cdnaRow
-    ];
+    const blockRows = [cdnaRow];
 
-    const {transcriptStartIndex, transcriptEndIndex} = cdnaSpan;
+    const { transcriptStartIndex, transcriptEndIndex } = cdnaSpan;
     const transcriptStart = transcriptStartIndex + 1;
     const transcriptEnd = transcriptEndIndex;
 
-    if (cds && cds.relative_end >= transcriptStart && cds.relative_start <= transcriptEnd) {
+    if (
+      cds &&
+      cds.relative_end >= transcriptStart &&
+      cds.relative_start <= transcriptEnd
+    ) {
       // CDS line
-      const cdsStartIndex = Math.max(cds.relative_start - 1, transcriptStart - 1);
+      const cdsStartIndex = Math.max(
+        cds.relative_start - 1,
+        transcriptStart - 1
+      );
       const cdsEndIndex = Math.min(cds.relative_end, transcriptEnd);
       let cdsSequence = this.sequence.slice(cdsStartIndex, cdsEndIndex);
-      const offsetLeft = cds.relative_start > transcriptStart ? LINE_LENGTH - cdsSequence.length : 0;
-      const offsetRight = cds.relative_end < transcriptEnd ? LINE_LENGTH - cdsSequence.length : 0;
-      
+      // Keep the annotation row aligned with the cDNA row. CDS coordinates
+      // currently refer to the source transcript sequence, while a cDNA span
+      // may be assembled from more than one exon. Therefore never use the
+      // raw coordinate difference as an unconstrained padding length.
+      const offsetLeft = Math.max(
+        0,
+        Math.min(cdnaSpan.sequence.length, cdsStartIndex - transcriptStartIndex)
+      );
+      const availableLength = Math.max(
+        0,
+        cdnaSpan.sequence.length - offsetLeft
+      );
+      cdsSequence = cdsSequence.slice(0, availableLength);
+      const offsetRight = Math.max(
+        0,
+        cdnaSpan.sequence.length - offsetLeft - cdsSequence.length
+      );
+
       if (offsetLeft) {
         const padding = Array(offsetLeft).fill('.').join('');
         cdsSequence = `${padding}${cdsSequence}`;
-      } if (offsetRight) {
+      }
+      if (offsetRight) {
         const padding = Array(offsetRight).fill('.').join('');
         cdsSequence = `${cdsSequence}${padding}`;
       }
@@ -278,42 +274,38 @@ export class TranscriptSequence extends LitElement {
       const cdsRow = html`
         <div class="block-line">
           <div class="block-line-left">
-            <span class="padded-number">${start.toString().padStart(padLeftLength, ' ')}</span>
+            <span class="padded-number"
+              >${start.toString().padStart(padLeftLength, ' ')}</span
+            >
           </div>
           <div>${cdsSequence}</div>
-          <div class="block-line-right">
-            ${end}
-          </div>
+          <div class="block-line-right">${end}</div>
         </div>
       `;
 
       blockRows.push(cdsRow);
 
       // Protein line
-      const phase = cds.relative_start > start + 1 ? 0 : (start + 1 - cds.relative_start) % 3;
+      // const phase = cds.relative_start > start + 1 ? 0 : (start + 1 - cds.relative_start) % 3;
     } else if (cds) {
       const emptySequence = Array(LINE_LENGTH).fill('.').join('');
 
       const cdsRow = html`
         <div class="block-line">
           <div class="block-line-left">
-            <span class="padded-number">${Array(padLeftLength).fill(' ').join('')}</span>
+            <span class="padded-number"
+              >${Array(padLeftLength).fill(' ').join('')}</span
+            >
           </div>
           <div>${emptySequence}</div>
-          <div class="block-line-right">
-            
-          </div>
+          <div class="block-line-right"></div>
         </div>
       `;
 
       blockRows.push(cdsRow);
     }
 
-    return html`
-      <div class="block">
-        ${blockRows}
-      </div>
-    `;
+    return html` <div class="block">${blockRows}</div> `;
   }
 }
 
