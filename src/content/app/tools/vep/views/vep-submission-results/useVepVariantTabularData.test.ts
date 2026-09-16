@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getTabularData } from './useVepVariantTabularData';
+import { getTabularData, getRowKeys } from './useVepVariantTabularData';
 
 import type {
   VepResultsResponse,
@@ -203,5 +203,92 @@ describe('getTabularData — regulatory consequences', () => {
     ).toEqual(['T', null, 'A']);
     expect(rows.filter((row) => row.variant !== null)).toHaveLength(1);
     expect(rows[0].variant?.rowspan).toBe(3);
+  });
+});
+
+describe('getRowKeys', () => {
+  it("keeps a row's key when expanding a gene's transcripts moves the row down", () => {
+    // Allele G has three transcripts in one gene, plus an enhancer. Collapsed,
+    // the gene shows one transcript and the enhancer is row 1. Expanded, the
+    // enhancer is row 3. An open detail panel follows the key, so the key must
+    // not change, or the panel jumps to whichever row now sits at index 1.
+    const variant = variantWith({
+      G: [
+        transcript('ENST1', 'ENSG1'),
+        transcript('ENST2', 'ENSG1'),
+        transcript('ENST3', 'ENSG1'),
+        regulatory('ENSR1_94XXBC', 'enhancer')
+      ]
+    });
+    const collapsed = getTabularData({ variant, expandedTranscriptPaths: [] });
+    const expanded = getTabularData({
+      variant,
+      expandedTranscriptPaths: [{ altAllele: 'G', geneId: 'ENSG1' }]
+    });
+    const enhancerKey = (rows: ReturnType<typeof getTabularData>) =>
+      getRowKeys(rows)[
+        rows.findIndex((row) => row.consequence.feature_type === 'regulatory')
+      ];
+
+    expect(rowKinds(collapsed)).toEqual(['transcript', 'regulatory']);
+    expect(rowKinds(expanded)).toEqual([
+      'transcript',
+      'transcript',
+      'transcript',
+      'regulatory'
+    ]);
+    expect(enhancerKey(expanded)).toBe(enhancerKey(collapsed));
+    expect(new Set(getRowKeys(expanded)).size).toBe(4);
+  });
+
+  it('keeps the key of a transcript that is listed under two genes', () => {
+    // ENST_SHARED sits under GENE_A, where it is hidden while GENE_A is
+    // collapsed, and under GENE_B, where it is shown. Expanding GENE_A reveals
+    // the GENE_A copy above the GENE_B row. The GENE_B row must keep its key,
+    // or its open panel jumps to the GENE_A copy.
+    const variant = variantWith({
+      G: [
+        transcript('ENST_A1', 'GENE_A'),
+        transcript('ENST_SHARED', 'GENE_A'),
+        transcript('ENST_SHARED', 'GENE_B')
+      ]
+    });
+    const collapsed = getTabularData({ variant, expandedTranscriptPaths: [] });
+    const expanded = getTabularData({
+      variant,
+      expandedTranscriptPaths: [{ altAllele: 'G', geneId: 'GENE_A' }]
+    });
+    const geneBKey = (rows: ReturnType<typeof getTabularData>) =>
+      getRowKeys(rows)[
+        rows.findIndex(
+          (row) =>
+            row.consequence.feature_type === 'transcript' &&
+            row.consequence.gene_stable_id === 'GENE_B'
+        )
+      ];
+
+    expect(collapsed).toHaveLength(2);
+    expect(expanded).toHaveLength(3);
+    expect(geneBKey(expanded)).toBe(geneBKey(collapsed));
+  });
+
+  it('gives every row its own key, even a feature listed twice', () => {
+    // Toggling one row's panel must not toggle another, so no two rows of a
+    // variant may share a key. That includes two alleles with an intergenic row
+    // each, and a regulatory feature that appears twice for one allele.
+    const rows = getTabularData({
+      variant: variantWith({
+        T: [
+          regulatory('ENSR1_D37Q', 'enhancer'),
+          regulatory('ENSR1_D37Q', 'enhancer'),
+          intergenic
+        ],
+        A: [intergenic]
+      }),
+      expandedTranscriptPaths: []
+    });
+
+    expect(rows).toHaveLength(4);
+    expect(new Set(getRowKeys(rows)).size).toBe(4);
   });
 });

@@ -39,6 +39,7 @@ import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepA
 import { updateSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 import useVepVariantTabularData, {
+  getRowKeys,
   type VepResultsTableRowData,
   type ExpandedTranscriptsPath
 } from './useVepVariantTabularData';
@@ -601,9 +602,9 @@ const VariantRow = (props: {
   const [expandedTranscriptPaths, setExpandedTranscriptPaths] = useState<
     ExpandedTranscriptsPath[]
   >([]);
-  const [expandedDetailRows, setExpandedDetailRows] = useState<Set<number>>(
-    new Set()
-  );
+  // Open detail panels are tracked by row key, not position, so a panel stays
+  // with its row when expanding a gene's transcripts adds rows above it.
+  const [openDetailKeys, setOpenDetailKeys] = useState<Set<string>>(new Set());
 
   const allelesBySequence = useMemo(
     () =>
@@ -620,6 +621,17 @@ const VariantRow = (props: {
     variant,
     expandedTranscriptPaths
   });
+
+  const rowKeys = useMemo(() => getRowKeys(tabularData), [tabularData]);
+  const expandedDetailRows = useMemo(
+    () =>
+      new Set(
+        rowKeys.flatMap((key, index) =>
+          openDetailKeys.has(key) ? [index] : []
+        )
+      ),
+    [rowKeys, openDetailKeys]
+  );
 
   const detailRowIndices = useMemo(
     () =>
@@ -638,20 +650,21 @@ const VariantRow = (props: {
     appliedExpansion.variant !== variant
   ) {
     setAppliedExpansion({ expansion: detailExpansion, variant });
-    setExpandedDetailRows(
+    setOpenDetailKeys(
       detailExpansion.action === 'expand'
-        ? new Set(detailRowIndices)
+        ? new Set(detailRowIndices.map((index) => rowKeys[index]))
         : new Set()
     );
   }
 
   const toggleDetail = (rowIndex: number) => {
-    setExpandedDetailRows((current) => {
+    const key = rowKeys[rowIndex];
+    setOpenDetailKeys((current) => {
       const next = new Set(current);
-      if (next.has(rowIndex)) {
-        next.delete(rowIndex);
+      if (next.has(key)) {
+        next.delete(key);
       } else {
-        next.add(rowIndex);
+        next.add(key);
       }
       return next;
     });
@@ -694,7 +707,8 @@ const VariantRow = (props: {
     } = leadingCells[index];
 
     return (
-      <Fragment key={index}>
+      // Keyed by row, so a panel's own state, such as Show all, moves with its row
+      <Fragment key={rowKeys[index]}>
         <tr>
           {variantCell && (
             <>

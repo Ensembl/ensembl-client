@@ -357,6 +357,30 @@ export const getTabularData = ({
   return result;
 };
 
+/**
+ * A key per row that stays the same when rows appear or disappear around it,
+ * as when a gene's transcripts are expanded. It is made of the row's allele,
+ * gene and feature id. The gene keeps a transcript listed under two genes apart,
+ * so the counter only ever numbers a feature repeated within one group, whose
+ * copies are never hidden from each other.
+ */
+export const getRowKeys = (rows: VepResultsTableRowData[]): string[] => {
+  const seen = new Map<string, number>();
+
+  return rows.map(({ consequence }) => {
+    const featureId =
+      consequence.feature_type === 'transcript'
+        ? `${consequence.gene_stable_id}|${consequence.stable_id}`
+        : consequence.feature_type === 'regulatory'
+          ? consequence.stable_id
+          : 'intergenic';
+    const baseKey = `${consequence.altAlleleSequence}|${featureId}`;
+    const repeats = seen.get(baseKey) ?? 0;
+    seen.set(baseKey, repeats + 1);
+    return repeats ? `${baseKey}|${repeats}` : baseKey;
+  });
+};
+
 // Note: the number of transcripts in allele->gene
 // will depend on whether the list of transcripts is collapsed or expanded
 // (see how transcripts are filtered out in the reshapeVariant function)
