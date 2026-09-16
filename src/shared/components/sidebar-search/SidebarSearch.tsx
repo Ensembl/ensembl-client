@@ -107,17 +107,17 @@ const SidebarSearch = (props: Props) => {
 
   const searchResults = [
     {
-      searchMode: 'gene' as const,
+      searchMode: 'gene' as FeatureSearchMode,
       title: 'Gene search results',
       results: geneSearchResults.currentData
     },
     {
-      searchMode: 'transcript' as const,
+      searchMode: 'transcript' as FeatureSearchMode,
       title: 'Transcript search results',
       results: transcriptSearchResults.currentData
     },
     {
-      searchMode: 'variant' as const,
+      searchMode: 'variant' as FeatureSearchMode,
       title: 'Variant search results',
       results: variantSearchResults.currentData
     }
