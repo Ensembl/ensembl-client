@@ -45,7 +45,7 @@ import Chevron from 'src/shared/components/chevron/Chevron';
 import StarRating from 'src/content/app/tools/vep/components/star-rating/StarRating';
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 
-import type { PredictedTranscriptConsequence } from 'src/content/app/tools/vep/types/vepResultsResponse';
+import type { PredictedMolecularConsequence } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { OptionHelp } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type {
   DisplayBlockSpec,
@@ -488,10 +488,11 @@ const LINK_BUILDERS: Record<
   // The protein id as an in-app "View in" popup
   protein_popup: (context, value) => {
     const consequence = context.consequence as
-      PredictedTranscriptConsequence | null | undefined;
-    const transcriptId = consequence?.stable_id;
+      PredictedMolecularConsequence | null | undefined;
+    const transcriptId =
+      consequence?.feature_type === 'transcript' ? consequence.stable_id : null;
     if (!transcriptId) {
-      return value; // no transcript (e.g. intergenic variant) — plain id, no popup
+      return value; // not a transcript row, so a plain id with no popup
     }
     return (
       <ViewInAppPopup

@@ -21,7 +21,8 @@ import type {
   AlternativeVariantAllele,
   PredictedMolecularConsequence,
   PredictedTranscriptConsequence,
-  PredictedIntergenicConsequence
+  PredictedIntergenicConsequence,
+  PredictedRegulatoryConsequence
 } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
 type VariantInResponse = VepResultsResponse['variants'][number];
@@ -76,6 +77,7 @@ type VariantAffectedGene = {
 
 type UpdatedAlternativeAllele = AlternativeVariantAllele & {
   genes: VariantAffectedGene[];
+  regulatoryConsequences: PredictedRegulatoryConsequence[];
   intergenicConsequences: PredictedIntergenicConsequence[];
 };
 
@@ -95,8 +97,13 @@ const reshapeVariant = ({
 }) => {
   const alternativeAlleles: UpdatedAlternativeAllele[] =
     variant.alternative_alleles.map((allele) => {
-      const { transcriptConsequences, intergenicConsequences } =
-        groupAlleleConsequencesByType(allele.predicted_molecular_consequences);
+      const {
+        transcriptConsequences,
+        regulatoryConsequences,
+        intergenicConsequences
+      } = groupAlleleConsequencesByType(
+        allele.predicted_molecular_consequences
+      );
 
       const genes = buildGeneData({
         transcriptConsequences,
@@ -107,6 +114,7 @@ const reshapeVariant = ({
       return {
         ...allele,
         genes,
+        regulatoryConsequences,
         intergenicConsequences
       };
     });
@@ -194,6 +202,7 @@ const buildGeneData = ({
 
 type ConsequenceGroups = {
   transcriptConsequences: PredictedTranscriptConsequence[];
+  regulatoryConsequences: PredictedRegulatoryConsequence[];
   intergenicConsequences: PredictedIntergenicConsequence[];
 };
 
@@ -202,12 +211,15 @@ const groupAlleleConsequencesByType = (
 ) => {
   const consequenceGroups: ConsequenceGroups = {
     transcriptConsequences: [],
+    regulatoryConsequences: [],
     intergenicConsequences: []
   };
 
   for (const consequence of consequences) {
     if (consequence.feature_type === 'transcript') {
       consequenceGroups.transcriptConsequences.push(consequence);
+    } else if (consequence.feature_type === 'regulatory') {
+      consequenceGroups.regulatoryConsequences.push(consequence);
     } else if (consequence.feature_type === null) {
       consequenceGroups.intergenicConsequences.push(consequence);
     } else {
@@ -224,13 +236,16 @@ const groupAlleleConsequencesByType = (
 };
 
 export type VepResultsTableRowData = {
-  consequence:
+  // Every row carries its alt allele's sequence, because only the allele's
+  // first row holds the allele cell.
+  consequence: (
     | PredictedIntergenicConsequence
+    | PredictedRegulatoryConsequence
     | (PredictedTranscriptConsequence & {
         totalTranscriptsCount: number;
         isLastTranscript: boolean;
-        altAlleleSequence: string;
-      });
+      })
+  ) & { altAlleleSequence: string };
   gene: {
     stableId: string;
     symbol: string | null;
@@ -256,7 +271,8 @@ export type VepResultsTableRowData = {
 };
 
 /**
- * NOTE: this function will need updating after regulatory features are added
+ * Each consequence gets its own row. Within an alt allele, rows run from most
+ * to least interesting: transcripts, then regulatory features, then intergenic.
  */
 export const getTabularData = ({
   variant,
@@ -271,133 +287,94 @@ export const getTabularData = ({
     expandedTranscriptPaths
   });
 
-  // First, start by creating table row data for transcript consequences of each of variant's alt alleles
   for (const altAllele of reshapedVariant.alternative_alleles) {
-    for (let geneIndex = 0; geneIndex < altAllele.genes.length; geneIndex++) {
-      const gene = altAllele.genes[geneIndex];
+    const altAlleleSequence = altAllele.allele_sequence;
+    const alleleRows: VepResultsTableRowData[] = [];
 
+    for (const gene of altAllele.genes) {
       for (let i = 0; i < gene.transcripts.length; i++) {
         const transcriptConsequence = gene.transcripts[i];
-        const tableRowData: VepResultsTableRowData = {
+        alleleRows.push({
           consequence: {
             ...transcriptConsequence,
             totalTranscriptsCount: gene.transcriptsCount,
             isLastTranscript: i === gene.transcripts.length - 1,
-            altAlleleSequence: altAllele.allele_sequence
+            altAlleleSequence
           },
-          gene: null,
+          gene:
+            i === 0
+              ? {
+                  stableId: gene.stable_id,
+                  symbol: gene.symbol,
+                  strand: transcriptConsequence.strand,
+                  transcriptsCount: gene.transcriptsCount,
+                  rowspan: Math.max(gene.transcripts.length, 1)
+                }
+              : null,
           alternativeAllele: null,
           variant: null
-        };
-        if (!result.length) {
-          tableRowData.variant = {
-            name: variant.name,
-            allele_type: variant.allele_type,
-            referenceAllele: variant.reference_allele.allele_sequence,
-            location: variant.location,
-            rowspan: getTotalRowsForVariant(reshapedVariant)
-          };
-        }
-        if (geneIndex === 0 && i === 0) {
-          tableRowData.alternativeAllele = {
-            allele_sequence: altAllele.allele_sequence,
-            structural_variant_detail: altAllele.structural_variant_detail,
-            rowspan: getTotalRowsForAltAllele(altAllele)
-          };
-        }
-        if (i === 0) {
-          tableRowData.gene = {
-            stableId: gene.stable_id,
-            symbol: gene.symbol,
-            strand: transcriptConsequence.strand,
-            transcriptsCount: gene.transcriptsCount,
-            rowspan: Math.max(gene.transcripts.length, 1)
-          };
-        }
-
-        result.push(tableRowData);
+        });
       }
     }
 
-    // Run the loop for intergenic consequences after the loop for transcript consequences
-    // Note: unless something went very wrong, it should be impossible for an alt allele
-    // to have both transcript consequences and intergenic consequences at the same time.
-    for (let i = 0; i < altAllele.intergenicConsequences.length; i++) {
-      const intergenicConsequence = altAllele.intergenicConsequences[i];
-
-      const tableRowData: VepResultsTableRowData = {
-        consequence: intergenicConsequence,
+    for (const consequence of [
+      ...altAllele.regulatoryConsequences,
+      ...altAllele.intergenicConsequences
+    ]) {
+      alleleRows.push({
+        consequence: { ...consequence, altAlleleSequence },
         gene: null,
         alternativeAllele: null,
         variant: null
-      };
-
-      // The variant cell spans the whole variant, so — as in the transcript loop
-      // above — it belongs only on the very first row of the variant. Setting it
-      // again on a later allele's first intergenic row collides with that rowspan
-      // and pushes the row's cells into phantom columns (a wildly over-wide table
-      // and a header line that falls short of the row width).
-      if (!result.length) {
-        tableRowData.variant = {
-          name: variant.name,
-          allele_type: variant.allele_type,
-          referenceAllele: variant.reference_allele.allele_sequence,
-          location: variant.location,
-          rowspan: getTotalRowsForVariant(reshapedVariant)
-        };
-      }
-      // The alternative-allele cell belongs on each allele's first intergenic row.
-      if (i === 0) {
-        tableRowData.alternativeAllele = {
-          allele_sequence: altAllele.allele_sequence,
-          structural_variant_detail: altAllele.structural_variant_detail,
-          rowspan: getTotalRowsForAltAllele(altAllele)
-        };
-      }
-
-      result.push(tableRowData);
+      });
     }
+
+    // The allele cell spans all of the allele's rows, so it goes on the first
+    // one, whatever kind of consequence that row holds.
+    if (alleleRows.length) {
+      alleleRows[0].alternativeAllele = {
+        allele_sequence: altAlleleSequence,
+        structural_variant_detail: altAllele.structural_variant_detail,
+        rowspan: getTotalRowsForAltAllele(altAllele)
+      };
+    }
+    result.push(...alleleRows);
+  }
+
+  // The variant cell spans every row of the variant, so it goes on the very
+  // first row only. A second one collides with that rowspan and pushes the
+  // row's cells into phantom columns.
+  if (result.length) {
+    result[0].variant = {
+      name: variant.name,
+      allele_type: variant.allele_type,
+      referenceAllele: variant.reference_allele.allele_sequence,
+      location: variant.location,
+      rowspan: getTotalRowsForVariant(reshapedVariant)
+    };
   }
 
   return result;
 };
 
-// Note: the number of transcripts in variant->alternative_allele->gene
-// will depend on whether the list of transcripts is collapsed or expanded
-// (see how transcripts are filtered out in the reshapeVariant function)
-const getTotalRowsForVariant = (variant: ReshapedVariant) => {
-  let count = 0;
-
-  for (const altAllele of variant.alternative_alleles) {
-    for (const gene of altAllele.genes) {
-      for (let i = 0; i < gene.transcripts.length; i++) {
-        count++;
-      }
-    }
-    for (let i = 0; i < altAllele.intergenicConsequences.length; i++) {
-      count++;
-    }
-  }
-
-  return Math.max(count, 1);
-};
-
 // Note: the number of transcripts in allele->gene
 // will depend on whether the list of transcripts is collapsed or expanded
 // (see how transcripts are filtered out in the reshapeVariant function)
-const getTotalRowsForAltAllele = (allele: UpdatedAlternativeAllele) => {
-  let count = 0;
+const countAlleleRows = (allele: UpdatedAlternativeAllele) =>
+  allele.genes.reduce((count, gene) => count + gene.transcripts.length, 0) +
+  allele.regulatoryConsequences.length +
+  allele.intergenicConsequences.length;
 
-  for (const gene of allele.genes) {
-    for (let i = 0; i < gene.transcripts.length; i++) {
-      count++;
-    }
-  }
-  for (let i = 0; i < allele.intergenicConsequences.length; i++) {
-    count++;
-  }
+const getTotalRowsForVariant = (variant: ReshapedVariant) =>
+  Math.max(
+    variant.alternative_alleles.reduce(
+      (count, allele) => count + countAlleleRows(allele),
+      0
+    ),
+    1
+  );
 
-  return Math.max(count, 1);
-};
+const getTotalRowsForAltAllele = (allele: UpdatedAlternativeAllele) =>
+  Math.max(countAlleleRows(allele), 1);
 
 export default useVepVariantTabularData;

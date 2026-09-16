@@ -179,16 +179,21 @@ const transcriptRow = (altAlleleSequence: string): VepResultsTableRowData => ({
   } as VepResultsTableRowData['consequence']
 });
 
-// An intergenic row: its alt allele lives on the row's alternativeAllele field
-// (unlike transcript rows, this row does not carry altAlleleSequence inside consequence)
-const intergenicRow = (altAlleleSequence?: string): VepResultsTableRowData => ({
-  ...makeRow(
-    altAlleleSequence
-      ? { alternativeAllele: alleleMarker(altAlleleSequence, 1) }
-      : {}
-  ),
+// Regulatory and intergenic rows carry their allele's sequence, as transcript
+// rows do, because only an allele's first row holds the allele cell.
+const regulatoryRow = (altAlleleSequence: string): VepResultsTableRowData => ({
+  ...makeRow({}),
   consequence: {
-    feature_type: null
+    feature_type: 'regulatory',
+    altAlleleSequence
+  } as VepResultsTableRowData['consequence']
+});
+
+const intergenicRow = (altAlleleSequence: string): VepResultsTableRowData => ({
+  ...makeRow({}),
+  consequence: {
+    feature_type: null,
+    altAlleleSequence
   } as VepResultsTableRowData['consequence']
 });
 
@@ -201,9 +206,22 @@ describe('detailBearingRowIndices', () => {
     expect(indices).toEqual([0, 1]);
   });
 
-  it('includes an intergenic row by checking its alternativeAllele field', () => {
-    const rows = [intergenicRow('T')];
-    expect(detailBearingRowIndices(rows, () => true)).toEqual([0]);
+  it('includes rows below the first that have no allele cell of their own', () => {
+    // An intergenic allele shows its enhancer row first, so the intergenic row
+    // at the bottom has no allele cell. The same goes for a regulatory row
+    // under an allele's transcripts. Each must still find its allele.
+    expect(
+      detailBearingRowIndices(
+        [regulatoryRow('T'), intergenicRow('T')],
+        (seq) => seq === 'T'
+      )
+    ).toEqual([0, 1]);
+    expect(
+      detailBearingRowIndices(
+        [transcriptRow('G'), regulatoryRow('G')],
+        (seq) => seq === 'G'
+      )
+    ).toEqual([0, 1]);
   });
 
   it('skips transcript rows whose alt allele has no annotations', () => {
@@ -212,9 +230,9 @@ describe('detailBearingRowIndices', () => {
     expect(indices).toEqual([0]);
   });
 
-  it('skips an intergenic row with no data in alternativeAllele field', () => {
-    const rows = [intergenicRow('T'), intergenicRow()];
-    expect(detailBearingRowIndices(rows, () => true)).toEqual([0]);
+  it('skips regulatory and intergenic rows whose alt allele has no annotations', () => {
+    const rows = [regulatoryRow('T'), regulatoryRow('X'), intergenicRow('X')];
+    expect(detailBearingRowIndices(rows, (seq) => seq === 'T')).toEqual([0]);
   });
 });
 

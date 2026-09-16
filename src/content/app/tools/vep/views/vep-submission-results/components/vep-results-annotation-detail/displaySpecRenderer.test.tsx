@@ -24,6 +24,7 @@ import { displaySpecFixture } from './displaySpec.fixture';
 
 import type {
   PredictedTranscriptConsequence,
+  PredictedRegulatoryConsequence,
   Annotation
 } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { AnnotatedEntity } from 'src/content/app/tools/vep/utils/annotations';
@@ -2171,6 +2172,7 @@ describe('renderDisplayOption', () => {
             ensembl_protein_id: 'ENSP00000269305'
           })
         ],
+        feature_type: 'transcript',
         stable_id: 'ENST00000357654'
       } as unknown as PredictedTranscriptConsequence,
       genomeId: 'homo_sapiens_GCA_000001405_29'
@@ -2179,6 +2181,24 @@ describe('renderDisplayOption', () => {
     // the app_popup builder wraps the id in the popup trigger button
     const trigger = screen.getByText('ENSP00000269305').closest('button');
     expect(trigger).not.toBeNull();
+  });
+
+  test('protein: plain id (no popup) on a regulatory row', () => {
+    // A regulatory row has a stable_id too (ENSR1_D37Q), but it isn't a
+    // transcript, so it mustn't become a link to a transcript's protein view.
+    renderOption('protein', {
+      consequence: {
+        annotations: [
+          annotation('protein', 'transcript', {
+            ensembl_protein_id: 'ENSP00000269305'
+          })
+        ],
+        feature_type: 'regulatory',
+        stable_id: 'ENSR1_D37Q'
+      } as unknown as PredictedRegulatoryConsequence,
+      genomeId: 'homo_sapiens_GCA_000001405_29'
+    });
+    expect(screen.getByText('ENSP00000269305').closest('button')).toBeNull();
   });
 
   test('protein: plain id (no popup) when the consequence has no gene', () => {
