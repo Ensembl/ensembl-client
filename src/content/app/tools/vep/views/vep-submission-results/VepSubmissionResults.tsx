@@ -53,6 +53,7 @@ import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summ
 import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
 import VepResultsGene from './components/vep-results-gene/VepResultsGene';
 import VepResultsTranscript from './components/vep-results-transcript/VepResultsTranscript';
+import VepResultsRegulatoryFeature from './components/vep-results-regulatory-feature/VepResultsRegulatoryFeature';
 import VepResultsLocation from './components/vep-results-location/VepResultsLocation';
 import VepResultsAllele from './components/vep-results-allele/VepResultsAllele';
 import VepResultsAnnotationDetail from './components/vep-results-annotation-detail/VepResultsAnnotationDetail';
@@ -442,6 +443,7 @@ const VepResultsTable = (props: {
           <ColumnHead>Alt allele</ColumnHead>
           <ColumnHead>Genes</ColumnHead>
           <ColumnHead>Transcripts</ColumnHead>
+          <ColumnHead>Regulatory</ColumnHead>
           <ColumnHead>Predicted molecular consequence</ColumnHead>
           <ColumnHead>Annotations</ColumnHead>
         </tr>
@@ -466,7 +468,7 @@ const VepResultsTable = (props: {
   );
 };
 
-const TABLE_COLUMN_COUNT = 8;
+const TABLE_COLUMN_COUNT = 9;
 
 const DETAIL_PANEL_COLSPAN = TABLE_COLUMN_COUNT;
 
@@ -506,11 +508,7 @@ export const detailBearingRowIndices = (
 ): number[] => {
   const indices: number[] = [];
   rows.forEach((row, index) => {
-    const alleleSequence =
-      row.consequence.feature_type === 'transcript'
-        ? row.consequence.altAlleleSequence
-        : row.alternativeAllele?.allele_sequence;
-    if (alleleSequence && hasAllele(alleleSequence)) {
+    if (hasAllele(row.consequence.altAlleleSequence)) {
       indices.push(index);
     }
   });
@@ -684,17 +682,8 @@ const VariantRow = (props: {
   };
 
   return tabularData.map((row, index) => {
-    const transcriptConsequence =
-      row.consequence.feature_type === 'transcript' ? row.consequence : null;
     const isDetailOpen = expandedDetailRows.has(index);
-    // The allele this row belongs to: from the transcript consequence, or (for
-    // an intergenic row) from the row's alt-allele cell.
-    const alleleSequence =
-      transcriptConsequence?.altAlleleSequence ??
-      row.alternativeAllele?.allele_sequence;
-    const allele = alleleSequence
-      ? allelesBySequence.get(alleleSequence)
-      : undefined;
+    const allele = allelesBySequence.get(row.consequence.altAlleleSequence);
 
     const hasDetail = Boolean(allele) && hasSelectedOptions;
 
@@ -740,6 +729,7 @@ const VariantRow = (props: {
             expandedTranscriptPaths={expandedTranscriptPaths}
             toggleExpanded={toggleExpandedTranscripts}
           />
+          <RegulatoryTableCell row={row} />
           <td>
             <VariantConsequences consequences={row.consequence.consequences} />
           </td>
@@ -796,12 +786,26 @@ const GeneTableCell = (props: {
         <VepResultsGene {...geneCell.data} genomeId={genomeId} />
       </td>
     );
-  } else if (row.consequence.feature_type === null) {
-    // for an intergenic consequence, render an empty cell
+  } else if (row.consequence.feature_type !== 'transcript') {
+    // intergenic and regulatory rows have no gene
     return <td />;
   } else {
     return null;
   }
+};
+
+const RegulatoryTableCell = (props: { row: VepResultsTableRowData }) => {
+  const { consequence } = props.row;
+
+  if (consequence.feature_type !== 'regulatory') {
+    return <td />;
+  }
+
+  return (
+    <td>
+      <VepResultsRegulatoryFeature feature={consequence} />
+    </td>
+  );
 };
 
 const TranscriptTableCell = (props: {

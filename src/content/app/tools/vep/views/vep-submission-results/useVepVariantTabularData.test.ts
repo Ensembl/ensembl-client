@@ -16,7 +16,13 @@
 
 import { getTabularData } from './useVepVariantTabularData';
 
-import type { VepResultsResponse } from 'src/content/app/tools/vep/types/vepResultsResponse';
+import type {
+  VepResultsResponse,
+  PredictedMolecularConsequence,
+  PredictedTranscriptConsequence,
+  PredictedRegulatoryConsequence,
+  PredictedIntergenicConsequence
+} from 'src/content/app/tools/vep/types/vepResultsResponse';
 
 type Variant = VepResultsResponse['variants'][number];
 
@@ -70,5 +76,132 @@ describe('getTabularData — multi-allele intergenic variants', () => {
     expect(rows).toHaveLength(1);
     expect(rows[0].variant?.rowspan).toBe(1);
     expect(rows[0].alternativeAllele?.allele_sequence).toBe('C');
+  });
+});
+
+const transcript = (
+  stable_id: string,
+  gene_stable_id: string
+): PredictedTranscriptConsequence => ({
+  feature_type: 'transcript',
+  stable_id,
+  gene_stable_id,
+  gene_symbol: null,
+  is_canonical: true,
+  biotype: 'protein_coding',
+  strand: 'forward',
+  consequences: ['intron_variant']
+});
+
+const regulatory = (
+  stable_id: string,
+  biotype: string | null
+): PredictedRegulatoryConsequence => ({
+  feature_type: 'regulatory',
+  stable_id,
+  biotype,
+  consequences: [
+    biotype ? 'regulatory_region_variant' : 'TF_binding_site_variant'
+  ]
+});
+
+const intergenic: PredictedIntergenicConsequence = {
+  feature_type: null,
+  consequences: ['intergenic_variant']
+};
+
+// A variant whose alt alleles carry the given consequences, in the given order.
+const variantWith = (
+  alleles: Record<string, PredictedMolecularConsequence[]>
+): Variant => ({
+  name: 'rs1',
+  allele_type: 'SNV',
+  location: { region_name: '1', start: 905160, end: 905160 },
+  reference_allele: { allele_sequence: 'C' },
+  alternative_alleles: Object.entries(alleles).map(
+    ([allele_sequence, predicted_molecular_consequences]) => ({
+      allele_sequence,
+      allele_type: 'SNV',
+      predicted_molecular_consequences
+    })
+  )
+});
+
+const rowKinds = (rows: ReturnType<typeof getTabularData>) =>
+  rows.map((row) => row.consequence.feature_type);
+
+describe('getTabularData — regulatory consequences', () => {
+  it('gives a regulatory feature its own row, above the intergenic row', () => {
+    // chr1:905160 C>T has an intergenic entry and an enhancer. Intergenic is the
+    // least interesting row, so the enhancer comes first even though the
+    // intergenic entry is listed first here.
+    const rows = getTabularData({
+      variant: variantWith({
+        T: [intergenic, regulatory('ENSR1_D37Q', 'enhancer')]
+      }),
+      expandedTranscriptPaths: []
+    });
+
+    expect(rowKinds(rows)).toEqual(['regulatory', null]);
+    // The allele and variant cells sit on the first row and span both rows.
+    expect(rows[0].alternativeAllele?.rowspan).toBe(2);
+    expect(rows[0].variant?.rowspan).toBe(2);
+    expect(rows[1].alternativeAllele).toBeNull();
+    expect(rows[1].variant).toBeNull();
+    // With no allele cell of its own, the bottom row carries the allele itself.
+    expect(rows.map((row) => row.consequence.altAlleleSequence)).toEqual([
+      'T',
+      'T'
+    ]);
+  });
+
+  it('puts regulatory rows after transcript rows and counts them in the rowspans', () => {
+    // An allele in two genes that also hits an enhancer and a motif, listed
+    // in mixed order.
+    const rows = getTabularData({
+      variant: variantWith({
+        G: [
+          regulatory('ENSR1_94XXBC', 'enhancer'),
+          transcript('ENST1', 'ENSG1'),
+          regulatory('ENSM00000071889', null),
+          transcript('ENST2', 'ENSG2')
+        ]
+      }),
+      expandedTranscriptPaths: []
+    });
+
+    expect(rowKinds(rows)).toEqual([
+      'transcript',
+      'transcript',
+      'regulatory',
+      'regulatory'
+    ]);
+    expect(rows[0].alternativeAllele?.rowspan).toBe(4);
+    expect(rows[0].variant?.rowspan).toBe(4);
+    expect(rows.map((row) => row.gene?.stableId ?? null)).toEqual([
+      'ENSG1',
+      'ENSG2',
+      null,
+      null
+    ]);
+  });
+
+  it("puts each allele's cell on its own first row when that row is regulatory", () => {
+    // Allele T starts with an enhancer row, and allele A is intergenic only. The
+    // variant cell still appears once, spanning all three rows.
+    const rows = getTabularData({
+      variant: variantWith({
+        T: [intergenic, regulatory('ENSR1_D37Q', 'enhancer')],
+        A: [intergenic]
+      }),
+      expandedTranscriptPaths: []
+    });
+
+    expect(rowKinds(rows)).toEqual(['regulatory', null, null]);
+    expect(
+      rows.map((row) => row.alternativeAllele?.allele_sequence ?? null)
+    ).toEqual(['T', null, 'A']);
+    expect(rows.filter((row) => row.variant !== null)).toHaveLength(1);
+    expect(rows[0].variant?.rowspan).toBe(3);
   });
 });
