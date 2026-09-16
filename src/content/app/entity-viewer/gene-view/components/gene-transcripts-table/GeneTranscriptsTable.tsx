@@ -19,10 +19,10 @@ import { Link } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
+import { useAppSelector } from 'src/store';
 
-import { useDefaultEntityViewerGeneWithAllTranscriptsQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
-
+import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import {
   isProteinCodingTranscript,
@@ -39,6 +39,15 @@ import {
 } from './transcriptTableHelpers';
 import { downloadTextAsFile } from 'src/shared/helpers/downloadAsFile';
 import { getDownloadableTranscriptTable } from './geneTranscriptsTableDownload';
+
+import useGeneViewIds from 'src/content/app/entity-viewer/gene-view/hooks/useGeneViewIds';
+
+import {
+  getFilters,
+  getSortingRule
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
+
+import { useDefaultEntityViewerGeneWithAllTranscriptsQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import { Panel, PanelHead, PanelBody } from 'src/shared/components/panel/Panel';
 import { Table, ColumnHead } from 'src/shared/components/table';
@@ -69,6 +78,8 @@ const GeneTranscriptsTable = () => {
 
 const MainContent = () => {
   const { activeGenomeId, geneId, genomeIdForUrl } = useGeneViewIds();
+  const sortingRule = useAppSelector(getSortingRule);
+  const filters = useAppSelector(getFilters);
 
   const { currentData, isFetching } =
     useDefaultEntityViewerGeneWithAllTranscriptsQuery(
@@ -91,6 +102,12 @@ const MainContent = () => {
   const gene = currentData.gene;
   const transcripts = gene.transcripts;
 
+  const filteredTranscripts = filterTranscripts(gene.transcripts, filters);
+
+  const sortingFunction =
+    getTranscriptSortingFunction<DefaultEntityViewerTranscript>(sortingRule);
+  const sortedTranscripts = sortingFunction(filteredTranscripts);
+
   return (
     <div className={styles.container}>
       <ControlsSection geneId={gene.stable_id} transcripts={transcripts} />
@@ -109,7 +126,7 @@ const MainContent = () => {
             </tr>
           </thead>
           <tbody>
-            {transcripts.map((transcript) => (
+            {sortedTranscripts.map((transcript) => (
               <tr key={transcript.stable_id}>
                 <td>
                   <TranscriptStableId
