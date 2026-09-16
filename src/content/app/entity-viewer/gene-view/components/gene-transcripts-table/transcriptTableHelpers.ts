@@ -55,7 +55,7 @@ export const getUniprotXref = (transcript: {
   }>;
 }) => {
   const productGeneratingContext = transcript.product_generating_contexts.find(
-    (context) => context.product_type === 'product'
+    (context) => context.product_type === 'Protein'
   );
   if (!productGeneratingContext) {
     return null;
