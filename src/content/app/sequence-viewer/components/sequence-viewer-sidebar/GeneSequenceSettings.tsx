@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
-import GeneSequenceSetttings from './GeneSequenceSettings';
-import TranscriptSequenceSetttings from './TranscriptSequenceSettings';
+import { Link } from 'react-router';
 
-export type View = 'location' | 'gene' | 'transcript';
+const GeneSequenceSetttings = () => {
+  const brca2Url =
+    '/sequence-viewer/GCA_000001405.29?focus=gene:ENSG00000139618';
+  const mapk10Url =
+    '/sequence-viewer/GCA_000001405.29?focus=gene:ENSG00000109339'; // 604,619
+  const dmdUrl = '/sequence-viewer/GCA_000001405.29?focus=gene:ENSG00000198947'; // 2,241,933
 
-type Props = {
-  view: View;
-};
-
-const SequenceViewerSidebar = (props: Props) => {
   return (
-    <Sidebar>
-      <div>
-        {props.view === 'gene' && <GeneSequenceSetttings />}
-        {props.view === 'transcript' && <TranscriptSequenceSetttings />}
-      </div>
-    </Sidebar>
+    <div style={{ display: 'flex', flexDirection: 'column', rowGap: '0.6rem' }}>
+      <Link to={brca2Url}>BRCA2 (85,183 bp)</Link>
+      <Link to={mapk10Url}>MAPK10 (604,619 bp)</Link>
+      <Link to={dmdUrl}>DMD (2,241,933 bp)</Link>
+    </div>
   );
 };
 
-export default SequenceViewerSidebar;
+export default GeneSequenceSetttings;
