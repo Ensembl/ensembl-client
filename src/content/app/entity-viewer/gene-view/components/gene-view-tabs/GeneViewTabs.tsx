@@ -36,6 +36,7 @@ import styles from './GeneViewTabs.module.css';
 
 const tabsData: Tab[] = [
   { title: 'Transcripts' },
+  { title: 'Transcripts table' },
   { title: 'Gene function' },
   { title: 'Gene relationships' }
 ];
@@ -64,7 +65,9 @@ const GeneViewTabs = (props: Props) => {
 
   const onTabChange = (selectedTabName: string) => {
     let view = View.TRANSCRIPTS;
-    if (selectedTabName === GeneViewTabName.GENE_FUNCTION) {
+    if (selectedTabName === GeneViewTabName.TRANSCRIPTS_TABLE) {
+      view = View.TRANSCRIPTS_TABLE;
+    } else if (selectedTabName === GeneViewTabName.GENE_FUNCTION) {
       view = selectedTabViews?.geneFunctionTab || View.PROTEIN;
     } else if (selectedTabName === GeneViewTabName.GENE_RELATIONSHIPS) {
       view = selectedTabViews?.geneRelationshipsTab || View.HOMOLOGY;

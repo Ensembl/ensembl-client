@@ -50,6 +50,7 @@ import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImag
 import DefaultTranscriptsList from './components/default-transcripts-list/DefaultTranscriptsList';
 import GeneViewTabs from './components/gene-view-tabs/GeneViewTabs';
 import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
+import GeneTranscriptsTable from './components/gene-transcripts-table/GeneTranscriptsTable';
 import GeneFunction from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
@@ -213,6 +214,10 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
           rulerTicks && (
             <DefaultTranscriptsList gene={props.gene} rulerTicks={rulerTicks} />
           )}
+
+        {selectedTabs.primaryTab === GeneViewTabName.TRANSCRIPTS_TABLE && (
+          <GeneTranscriptsTable />
+        )}
 
         {selectedTabs.primaryTab === GeneViewTabName.GENE_FUNCTION && (
           <GeneFunction gene={props.gene} />

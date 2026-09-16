@@ -26,10 +26,15 @@ export type ExternalLinkProps = {
   children: ReactNode;
   className?: string;
   onClick?: () => void;
+  nowrap?: boolean;
 };
 
 const ExternalLink = (props: ExternalLinkProps) => {
-  const componentClasses = classNames(styles.link, props.className);
+  const componentClasses = classNames(
+    styles.link,
+    { [styles.nowrap]: props.nowrap },
+    props.className
+  );
 
   return (
     <a
