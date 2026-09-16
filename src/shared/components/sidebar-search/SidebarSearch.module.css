@@ -1,25 +1,12 @@
 .searchFormSidebar {
-  display: grid;
-  grid-template-areas:
-    'label label'
-    'input submit';
-  grid-template-columns: minmax(0, 1fr) max-content;
+  display: flex;
+  flex-direction: column;
   row-gap: 10px;
-  column-gap: 15px;
   margin: 8px 0 24px;
 }
 
-.searchLabel {
-  grid-area: label;
-}
-
-.searchInput {
-  grid-area: input;
-}
-
 .submitSidebar {
-  grid-area: submit;
-  align-self: center;
+  align-self: flex-end;
 }
 
 .loader {

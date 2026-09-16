@@ -22,12 +22,9 @@ import {
   useLazySearchTranscriptsQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
+import { isMissingResourceError } from 'src/shared/state/api-slices/restSlice';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import type {
-  FeatureSearchMode,
-  FeatureSearchAppName
-} from 'src/shared/helpers/featureSearchHelpers';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
@@ -40,6 +37,10 @@ import NavigateLeftIcon from 'static/icons/navigate-left.svg';
 import NavigateRightIcon from 'static/icons/navigate-right.svg';
 
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import type {
+  FeatureSearchAppName,
+  FeatureSearchMode
+} from 'src/shared/helpers/featureSearchHelpers';
 import { Status } from 'src/shared/types/status';
 
 import styles from './SidebarSearch.module.css';
@@ -120,11 +121,17 @@ const SidebarSearch = (props: Props) => {
       title: 'Variant search results',
       results: variantSearchResults.currentData
     }
-  ].sort(
-    (first, second) =>
-      (second.results?.meta.total_hits ?? 0) -
-      (first.results?.meta.total_hits ?? 0)
-  );
+  ]
+    .filter(
+      ({ searchMode }) =>
+        searchMode !== 'variant' ||
+        !isMissingResourceError(variantSearchResults.error)
+    )
+    .sort(
+      (first, second) =>
+        (second.results?.meta.total_hits ?? 0) -
+        (first.results?.meta.total_hits ?? 0)
+    );
 
   const isLoading =
     geneSearchResults.isFetching ||
@@ -134,12 +141,11 @@ const SidebarSearch = (props: Props) => {
   return (
     <div>
       <form className={styles.searchFormSidebar} onSubmit={onFormSubmit}>
-        <label htmlFor={searchInputId} className={styles.searchLabel}>
+        <label htmlFor={searchInputId}>
           Find a feature in the selected genomes
         </label>
         <ShadedInput
           id={searchInputId}
-          className={styles.searchInput}
           onInput={onQueryChange}
           value={searchInput}
           help="Search for a gene, transcript or variant using a stable identifier, symbol or rsID."
