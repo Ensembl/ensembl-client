@@ -41,7 +41,7 @@ const optionSpec = (optionId: string): DisplayOptionSpec =>
 
 const annotation = (
   plugin: string,
-  scope: 'allele' | 'transcript',
+  scope: Annotation['scope'],
   data: Record<string, unknown>
 ): Annotation => ({ plugin, scope, data });
 
@@ -101,6 +101,39 @@ describe('renderDisplayOption', () => {
     });
     expect(screen.getByText('0.123')).toBeDefined();
     expect(screen.queryByText('9')).toBeNull();
+  });
+
+  it('reads a regulatory-scoped plugin from the regulatory row', () => {
+    // Motif details belong to one motif row (ENSM00000018397 here), so they
+    // come from that row's own annotations. VEP leaves HIGH_INF_POS and
+    // MOTIF_SCORE_CHANGE empty without the motif's weight matrix, so those two
+    // rows don't render.
+    const motifRow: PredictedRegulatoryConsequence = {
+      feature_type: 'regulatory',
+      stable_id: 'ENSM00000018397',
+      biotype: null,
+      consequences: ['TF_binding_site_variant'],
+      annotations: [
+        annotation('motif', 'regulatory', {
+          name: 'ENSPFM0015',
+          transcription_factors: ['FOS', 'ATF7', 'JUN'],
+          position: 11,
+          high_information_position: null,
+          score_change: null
+        })
+      ]
+    };
+    renderOption('regulatory', {
+      consequence: motifRow,
+      allele: [annotation('motif', 'allele', { name: 'ALLELE_DECOY' })]
+    });
+    expect(screen.getByText('Binding motif')).toBeDefined();
+    expect(screen.getByText('ENSPFM0015')).toBeDefined();
+    expect(screen.getByText('FOS, ATF7, JUN')).toBeDefined();
+    expect(screen.getByText('11')).toBeDefined();
+    expect(screen.queryByText('ALLELE_DECOY')).toBeNull();
+    expect(screen.queryByText('High information position')).toBeNull();
+    expect(screen.queryByText('Score change')).toBeNull();
   });
 
   it('renders the pLI score from the consequence', () => {

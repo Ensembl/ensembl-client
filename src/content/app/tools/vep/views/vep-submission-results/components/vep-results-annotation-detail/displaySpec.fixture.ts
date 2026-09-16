@@ -1353,6 +1353,38 @@ export const displaySpecFixture: DisplaySpec = {
       ]
     },
     {
+      option_id: 'regulatory',
+      blocks: [
+        {
+          heading: 'Binding motif',
+          kind: 'rows',
+          rows: [
+            {
+              label: 'Motif',
+              from: 'motif.name'
+            },
+            {
+              label: 'Transcription factors',
+              from: 'motif.transcription_factors',
+              format: 'join'
+            },
+            {
+              label: 'Position in motif',
+              from: 'motif.position'
+            },
+            {
+              label: 'High information position',
+              from: 'motif.high_information_position'
+            },
+            {
+              label: 'Score change',
+              from: 'motif.score_change'
+            }
+          ]
+        }
+      ]
+    },
+    {
       option_id: 'tss_distance',
       blocks: [
         {
@@ -1548,6 +1580,7 @@ export const displaySpecFixture: DisplaySpec = {
     spdi: 'allele',
     protein: 'transcript',
     hgvsg: 'allele',
-    tss_distance: 'transcript'
+    tss_distance: 'transcript',
+    motif: 'regulatory'
   }
 };
