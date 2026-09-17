@@ -1,3 +1,7 @@
+.sidebarSearch {
+  padding-right: 1rem;
+}
+
 .searchFormSidebar {
   display: flex;
   flex-direction: column;

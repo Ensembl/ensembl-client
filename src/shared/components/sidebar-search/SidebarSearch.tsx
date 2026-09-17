@@ -139,7 +139,7 @@ const SidebarSearch = (props: Props) => {
     variantSearchResults.isFetching;
 
   return (
-    <div>
+    <div className={styles.sidebarSearch}>
       <form className={styles.searchFormSidebar} onSubmit={onFormSubmit}>
         <label htmlFor={searchInputId}>
           Find a feature in the selected genomes
