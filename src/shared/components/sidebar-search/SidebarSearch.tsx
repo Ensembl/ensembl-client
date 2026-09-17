@@ -142,7 +142,7 @@ const SidebarSearch = (props: Props) => {
     <div className={styles.sidebarSearch}>
       <form className={styles.searchFormSidebar} onSubmit={onFormSubmit}>
         <label htmlFor={searchInputId}>
-          Find a feature in the selected genomes
+          Find a feature in the selected genome
         </label>
         <ShadedInput
           id={searchInputId}

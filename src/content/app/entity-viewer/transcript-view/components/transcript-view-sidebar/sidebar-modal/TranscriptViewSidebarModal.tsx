@@ -33,7 +33,7 @@ type Props = {
 };
 
 const entityViewerSidebarModalTitles = {
-  search: 'Search this species',
+  search: 'Search this genome',
   bookmarks: 'Previously viewed',
   download: 'Download'
 } as const;
