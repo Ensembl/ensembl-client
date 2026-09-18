@@ -132,14 +132,14 @@ export type PredictedIntergenicConsequence = {
   consequences: string[];
 };
 
-// A regulatory feature (ENSR id) or a transcription factor binding motif
-// (ENSM id). A motif has no biotype.
+// A regulatory consequence falls on a regulatory feature (ENSR id) or a
+// transcription factor binding motif (ENSM id). A motif has no biotype.
 export type PredictedRegulatoryConsequence = {
   feature_type: 'regulatory';
   stable_id: string;
   biotype: string | null;
   consequences: string[];
-  // Regulatory-scoped plugin output
+  // Plugins scoped to regulatory rows fill these annotations.
   annotations?: Annotation[];
   annotation_refs?: number[];
 };

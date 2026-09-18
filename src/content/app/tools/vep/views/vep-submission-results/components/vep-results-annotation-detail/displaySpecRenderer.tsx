@@ -492,7 +492,7 @@ const LINK_BUILDERS: Record<
     const transcriptId =
       consequence?.feature_type === 'transcript' ? consequence.stable_id : null;
     if (!transcriptId) {
-      return value; // not a transcript row, so a plain id with no popup
+      return value;
     }
     return (
       <ViewInAppPopup

@@ -24,7 +24,6 @@ type Props = {
   feature: PredictedRegulatoryConsequence;
 };
 
-// The feature's id, with its biotype beneath. A motif has no biotype.
 const VepResultsRegulatoryFeature = (props: Props) => {
   const { stable_id, biotype } = props.feature;
 
