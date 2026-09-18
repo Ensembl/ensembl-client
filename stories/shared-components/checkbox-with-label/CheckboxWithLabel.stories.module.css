@@ -27,3 +27,11 @@
 .controlledCheckboxesStory button {
   margin-top: 0.6rem;
 }
+
+.checkboxWithQuestionButtonGrid {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 6px;
+  justify-content: start;
+  justify-items: start;
+}
