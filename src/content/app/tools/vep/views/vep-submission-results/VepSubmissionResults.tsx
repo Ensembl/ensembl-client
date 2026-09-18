@@ -602,8 +602,6 @@ const VariantRow = (props: {
   const [expandedTranscriptPaths, setExpandedTranscriptPaths] = useState<
     ExpandedTranscriptsPath[]
   >([]);
-  // Open detail panels are tracked by row key, not position, so a panel stays
-  // with its row when expanding a gene's transcripts adds rows above it.
   const [openDetailKeys, setOpenDetailKeys] = useState<Set<string>>(new Set());
 
   const allelesBySequence = useMemo(
@@ -707,7 +705,7 @@ const VariantRow = (props: {
     } = leadingCells[index];
 
     return (
-      // Keyed by row, so a panel's own state, such as Show all, moves with its row
+      // A row key keeps a panel's own state, such as Show all, with its row.
       <Fragment key={rowKeys[index]}>
         <tr>
           {variantCell && (

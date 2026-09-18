@@ -110,7 +110,6 @@ const intergenic: PredictedIntergenicConsequence = {
   consequences: ['intergenic_variant']
 };
 
-// A variant whose alt alleles carry the given consequences, in the given order.
 const variantWith = (
   alleles: Record<string, PredictedMolecularConsequence[]>
 ): Variant => ({
@@ -132,9 +131,6 @@ const rowKinds = (rows: ReturnType<typeof getTabularData>) =>
 
 describe('getTabularData — regulatory consequences', () => {
   it('gives a regulatory feature its own row, above the intergenic row', () => {
-    // chr1:905160 C>T has an intergenic entry and an enhancer. Intergenic is the
-    // least interesting row, so the enhancer comes first even though the
-    // intergenic entry is listed first here.
     const rows = getTabularData({
       variant: variantWith({
         T: [intergenic, regulatory('ENSR1_D37Q', 'enhancer')]
@@ -143,12 +139,10 @@ describe('getTabularData — regulatory consequences', () => {
     });
 
     expect(rowKinds(rows)).toEqual(['regulatory', null]);
-    // The allele and variant cells sit on the first row and span both rows.
     expect(rows[0].alternativeAllele?.rowspan).toBe(2);
     expect(rows[0].variant?.rowspan).toBe(2);
     expect(rows[1].alternativeAllele).toBeNull();
     expect(rows[1].variant).toBeNull();
-    // With no allele cell of its own, the bottom row carries the allele itself.
     expect(rows.map((row) => row.consequence.altAlleleSequence)).toEqual([
       'T',
       'T'
@@ -156,8 +150,6 @@ describe('getTabularData — regulatory consequences', () => {
   });
 
   it('puts regulatory rows after transcript rows and counts them in the rowspans', () => {
-    // An allele in two genes that also hits an enhancer and a motif, listed
-    // in mixed order.
     const rows = getTabularData({
       variant: variantWith({
         G: [
@@ -187,8 +179,6 @@ describe('getTabularData — regulatory consequences', () => {
   });
 
   it("puts each allele's cell on its own first row when that row is regulatory", () => {
-    // Allele T starts with an enhancer row, and allele A is intergenic only. The
-    // variant cell still appears once, spanning all three rows.
     const rows = getTabularData({
       variant: variantWith({
         T: [intergenic, regulatory('ENSR1_D37Q', 'enhancer')],
@@ -208,10 +198,6 @@ describe('getTabularData — regulatory consequences', () => {
 
 describe('getRowKeys', () => {
   it("keeps a row's key when expanding a gene's transcripts moves the row down", () => {
-    // Allele G has three transcripts in one gene, plus an enhancer. Collapsed,
-    // the gene shows one transcript and the enhancer is row 1. Expanded, the
-    // enhancer is row 3. An open detail panel follows the key, so the key must
-    // not change, or the panel jumps to whichever row now sits at index 1.
     const variant = variantWith({
       G: [
         transcript('ENST1', 'ENSG1'),
@@ -242,10 +228,7 @@ describe('getRowKeys', () => {
   });
 
   it('keeps the key of a transcript that is listed under two genes', () => {
-    // ENST_SHARED sits under GENE_A, where it is hidden while GENE_A is
-    // collapsed, and under GENE_B, where it is shown. Expanding GENE_A reveals
-    // the GENE_A copy above the GENE_B row. The GENE_B row must keep its key,
-    // or its open panel jumps to the GENE_A copy.
+    // Collapsed GENE_A hides its ENST_SHARED; GENE_B shows its own copy.
     const variant = variantWith({
       G: [
         transcript('ENST_A1', 'GENE_A'),
@@ -273,9 +256,6 @@ describe('getRowKeys', () => {
   });
 
   it('gives every row its own key, even a feature listed twice', () => {
-    // Toggling one row's panel must not toggle another, so no two rows of a
-    // variant may share a key. That includes two alleles with an intergenic row
-    // each, and a regulatory feature that appears twice for one allele.
     const rows = getTabularData({
       variant: variantWith({
         T: [

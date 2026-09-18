@@ -104,10 +104,6 @@ describe('renderDisplayOption', () => {
   });
 
   it('reads a regulatory-scoped plugin from the regulatory row', () => {
-    // Motif details belong to one motif row (ENSM00000018397 here), so they
-    // come from that row's own annotations. VEP leaves HIGH_INF_POS and
-    // MOTIF_SCORE_CHANGE empty without the motif's weight matrix, so those two
-    // rows don't render.
     const motifRow: PredictedRegulatoryConsequence = {
       feature_type: 'regulatory',
       stable_id: 'ENSM00000018397',
@@ -2358,8 +2354,6 @@ describe('renderDisplayOption', () => {
   });
 
   test('protein: plain id (no popup) on a regulatory row', () => {
-    // A regulatory row has a stable_id too (ENSR1_D37Q), but it isn't a
-    // transcript, so it mustn't become a link to a transcript's protein view.
     renderOption('protein', {
       consequence: {
         annotations: [

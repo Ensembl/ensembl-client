@@ -180,8 +180,6 @@ const transcriptRow = (altAlleleSequence: string): VepResultsTableRowData => ({
   } as VepResultsTableRowData['consequence']
 });
 
-// Regulatory and intergenic rows carry their allele's sequence, as transcript
-// rows do, because only an allele's first row holds the allele cell.
 const regulatoryRow = (altAlleleSequence: string): VepResultsTableRowData => ({
   ...makeRow({}),
   consequence: {
@@ -208,9 +206,6 @@ describe('detailBearingRowIndices', () => {
   });
 
   it('includes rows below the first that have no allele cell of their own', () => {
-    // An intergenic allele shows its enhancer row first, so the intergenic row
-    // at the bottom has no allele cell. The same goes for a regulatory row
-    // under an allele's transcripts. Each must still find its allele.
     expect(
       detailBearingRowIndices(
         [regulatoryRow('T'), intergenicRow('T')],

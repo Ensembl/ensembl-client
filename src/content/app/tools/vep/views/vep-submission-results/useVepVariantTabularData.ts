@@ -60,8 +60,7 @@ const useVepVariantTabularData = (params: Params) => {
 
   const tabularData = useMemo(() => {
     return getTabularData(params);
-    // `params` is rebuilt every render, so depending on it would memoise
-    // nothing. Its two fields are the real dependencies, and they are both here.
+    // `params` is a new object every render, so its fields are the dependencies.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [variant, expandedTranscriptPaths]);
 
@@ -223,11 +222,8 @@ const groupAlleleConsequencesByType = (
     } else if (consequence.feature_type === null) {
       consequenceGroups.intergenicConsequences.push(consequence);
     } else {
-      // Every kind of consequence has to be grouped into something, or its row
-      // never reaches the table — silently, since there is nothing to render
-      // and nothing to report. `feature_type` discriminates the union, so a
-      // kind added to it without a branch here narrows to something other than
-      // `never` and fails to compile.
+      // A new feature_type with no branch here fails to compile. Ungrouped, its
+      // rows would silently never reach the table.
       consequence satisfies never;
     }
   }
@@ -329,8 +325,6 @@ export const getTabularData = ({
       });
     }
 
-    // The allele cell spans all of the allele's rows, so it goes on the first
-    // one, whatever kind of consequence that row holds.
     if (alleleRows.length) {
       alleleRows[0].alternativeAllele = {
         allele_sequence: altAlleleSequence,
@@ -341,9 +335,8 @@ export const getTabularData = ({
     result.push(...alleleRows);
   }
 
-  // The variant cell spans every row of the variant, so it goes on the very
-  // first row only. A second one collides with that rowspan and pushes the
-  // row's cells into phantom columns.
+  // A variant cell on any later row collides with this rowspan and pushes
+  // cells into phantom columns.
   if (result.length) {
     result[0].variant = {
       name: variant.name,
@@ -358,11 +351,9 @@ export const getTabularData = ({
 };
 
 /**
- * A key per row that stays the same when rows appear or disappear around it,
- * as when a gene's transcripts are expanded. It is made of the row's allele,
- * gene and feature id. The gene keeps a transcript listed under two genes apart,
- * so the counter only ever numbers a feature repeated within one group, whose
- * copies are never hidden from each other.
+ * Gives each row a key that holds steady as a gene's transcripts expand or
+ * collapse around it. The key joins allele, gene and feature id, and a counter
+ * separates repeats of one feature within a group.
  */
 export const getRowKeys = (rows: VepResultsTableRowData[]): string[] => {
   const seen = new Map<string, number>();
