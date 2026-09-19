@@ -16,7 +16,7 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { TranscriptView } from 'src/content/app/sequence-viewer/types/transcriptView';
+import type { TranscriptView } from 'src/content/app/sequence-viewer/types/transcriptView';
 
 type GeneSequenceLineNumbering = 'region' | 'gene';
 
