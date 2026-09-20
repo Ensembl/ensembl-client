@@ -21,6 +21,10 @@ import useGeneSequence from './useGeneSequence';
 import './gene-sequence';
 
 import type { GeneSequence as GeneSequenceElement } from './gene-sequence';
+import type { SequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/queries/geneQuery';
+
+// Example url:
+// http://localhost:8080/sequence-viewer/GCA_000001405.29?focus=gene:ENSG00000139618
 
 type Props = {
   genomeId: string;
@@ -38,12 +42,12 @@ const GeneSequence = (props: Props) => {
     return 'Loading...';
   }
 
-  const { sequence } = data;
+  const { gene, sequence } = data;
 
   return (
     <div>
       Gene sequence
-      <ens-sequence-viewer-gene-sequence sequence={sequence} />
+      <ens-sequence-viewer-gene-sequence gene={gene} sequence={sequence} />
     </div>
   );
 };
@@ -52,6 +56,7 @@ type GeneSequenceElementProps = DetailedHTMLProps<
   HTMLAttributes<GeneSequenceElement>,
   GeneSequenceElement
 > & {
+  gene: SequenceViewerGene;
   sequence: string;
 };
 

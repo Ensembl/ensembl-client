@@ -16,6 +16,8 @@
 
 import { html, css, LitElement } from 'lit';
 
+import type { SequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/queries/geneQuery';
+
 const LINE_LENGTH = 60;
 
 export class GeneSequence extends LitElement {
@@ -54,10 +56,12 @@ export class GeneSequence extends LitElement {
 
   // FIXME: change this to @property
   declare sequence: string;
+  declare gene: SequenceViewerGene | null;
 
   constructor() {
     super();
     this.sequence = '';
+    this.gene = null;
   }
 
   #getSequenceLines() {

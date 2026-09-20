@@ -33,6 +33,9 @@ type Props = {
   transcriptId: string;
 };
 
+// Example url:
+// http://localhost:8080/sequence-viewer/GCA_000001405.29?focus=transcript:ENST00000380152&location=13:32272786-32444334
+
 const TranscriptSequence = (props: Props) => {
   const { genomeId, transcriptId } = props;
   const { data, isLoading, isError } = useTranscriptSequence({
