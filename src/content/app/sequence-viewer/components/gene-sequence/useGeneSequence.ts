@@ -19,13 +19,13 @@ import { from } from 'rxjs';
 
 import { useAppDispatch, type AppDispatch } from 'src/store';
 
-import { getGBGeneSummary } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import { fetchSequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 import { fetchRefgetSequence } from 'src/shared/state/api-slices/refgetSlice';
 
-import type { GeneSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/geneSummaryQuery';
+import type { SequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/queries/geneQuery';
 
 type Data = {
-  gene: GeneSummaryQueryResult['gene'];
+  gene: SequenceViewerGene;
   sequence: string;
 };
 
@@ -86,7 +86,7 @@ async function* fetchData({
   };
 
   const { data: geneResponse } = await reduxDispatch(
-    getGBGeneSummary.initiate(
+    fetchSequenceViewerGene.initiate(
       {
         geneId,
         genomeId
