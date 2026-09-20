@@ -64,6 +64,8 @@ export const transcriptFieldsFragment = gql`
     product_generating_contexts {
       product_type
       cds {
+        start
+        end
         relative_start
         relative_end
       }
@@ -175,6 +177,8 @@ type ProductGeneratingContextOnQueriedTranscript = Pick<
   'product_type'
 > & {
   cds: {
+    start: NonNullable<FullProductGeneratingContext['cds']>['start'];
+    end: NonNullable<FullProductGeneratingContext['cds']>['end'];
     relative_start: NonNullable<
       FullProductGeneratingContext['cds']
     >['relative_start'];
