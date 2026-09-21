@@ -74,8 +74,6 @@ const VepResultsAnnotationDetail = (props: {
     [availableAfSources]
   );
 
-  const optionRan = (optionId: string) => Boolean(parameters?.[optionId]);
-
   const optionsById = useMemo(() => {
     const map = new Map<string, FormPanelOption>();
     for (const panel of panels ?? []) {
@@ -114,24 +112,6 @@ const VepResultsAnnotationDetail = (props: {
   };
 
   const renderOption = (option: FormPanelOption): ReactNode | null => {
-    if (option.id === 'hgvs') {
-      if (!optionRan('hgvs')) {
-        return null;
-      }
-      const content = optionContent('hgvs');
-      if (content) {
-        return <Fragment key="hgvs">{content}</Fragment>;
-      }
-      return showAll ? (
-        <Row
-          key="hgvs"
-          label={withOptionHelp(option.label, helpFor('hgvs'))}
-          value="—"
-          emphasis
-        />
-      ) : null;
-    }
-
     if (!didSubOptionRun(parameters, option.id, option.default)) {
       return null;
     }
@@ -181,18 +161,17 @@ const VepResultsAnnotationDetail = (props: {
     );
   };
 
-  const renderedSections: { id: string; node: ReactNode }[] = (panels ?? [])
-    .map((panel) => ({ id: panel.id, node: renderPanel(panel) }))
-    .filter((section): section is { id: string; node: ReactNode } =>
-      Boolean(section.node)
-    );
+  type RenderedSection = { id: string; node: ReactNode; fullWidth: boolean };
+  const renderedSections: RenderedSection[] = (panels ?? [])
+    .map((panel) => ({
+      id: panel.id,
+      node: renderPanel(panel),
+      fullWidth: Boolean(panel.full_width)
+    }))
+    .filter((section) => Boolean(section.node));
 
-  const columned = renderedSections.filter(
-    (section) => section.id !== FULL_WIDTH_PANEL_ID
-  );
-  const fullWidth = renderedSections.filter(
-    (section) => section.id === FULL_WIDTH_PANEL_ID
-  );
+  const columned = renderedSections.filter((section) => !section.fullWidth);
+  const fullWidth = renderedSections.filter((section) => section.fullWidth);
 
   return (
     <div className={styles.detail}>
@@ -232,9 +211,6 @@ const VepResultsAnnotationDetail = (props: {
     </div>
   );
 };
-
-// NOTE: it is probably bad that the client stores id of a panel that it has to treat specially
-const FULL_WIDTH_PANEL_ID = 'phenotype_and_disease_associations';
 
 const Section = (props: { title: ReactNode; children: ReactNode }) => (
   <div className={styles.section}>

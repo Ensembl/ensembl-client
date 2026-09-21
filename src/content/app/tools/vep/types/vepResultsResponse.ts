@@ -58,6 +58,7 @@ export type AfSource = {
   source: string; // gnomad_exomes | gnomad_genomes | all_of_us
   population: string;
   label: string;
+  source_label?: string | null; // the source's display name
 };
 
 export type Variant = {

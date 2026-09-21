@@ -87,16 +87,8 @@ import {
 
 import styles from './VepSubmissionResults.module.css';
 
-const AF_SOURCE_LABELS: Record<string, string> = {
-  gnomad_exomes: 'gnomAD exomes',
-  gnomad_genomes: 'gnomAD genomes',
-  all_of_us: 'All of Us',
-  gnomad_sv: 'gnomAD SV',
-  gnomad_cnv: 'gnomAD CNV'
-};
-
-const formatAfSourceLabel = (source: AfSource): string => {
-  const base = AF_SOURCE_LABELS[source.source] ?? source.source;
+export const formatAfSourceLabel = (source: AfSource): string => {
+  const base = source.source_label ?? source.source;
   return source.population ? `${base} — ${source.label}` : `${base} (overall)`;
 };
 

@@ -17,7 +17,8 @@
 import {
   planLeadingCells,
   detailBearingRowIndices,
-  hasAnySelectedOption
+  hasAnySelectedOption,
+  formatAfSourceLabel
 } from './VepSubmissionResults';
 import type { VepResultsTableRowData } from './useVepVariantTabularData';
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
@@ -255,5 +256,38 @@ describe('hasAnySelectedOption', () => {
         species: 'homo_sapiens'
       })
     ).toBe(false);
+  });
+});
+
+describe('formatAfSourceLabel', () => {
+  const source = {
+    key: 'gnomAD_exomes_AF_afr',
+    source: 'gnomad_exomes',
+    population: 'afr',
+    label: 'African/African American'
+  };
+
+  it('names the source with its source_label', () => {
+    expect(
+      formatAfSourceLabel({ ...source, source_label: 'gnomAD exomes' })
+    ).toBe('gnomAD exomes — African/African American');
+    expect(
+      formatAfSourceLabel({
+        ...source,
+        key: 'gnomAD_exomes_AF',
+        population: '',
+        label: 'All',
+        source_label: 'gnomAD exomes'
+      })
+    ).toBe('gnomAD exomes (overall)');
+  });
+
+  it('falls back to the source id when there is no source_label', () => {
+    expect(formatAfSourceLabel(source)).toBe(
+      'gnomad_exomes — African/African American'
+    );
+    expect(formatAfSourceLabel({ ...source, source_label: null })).toBe(
+      'gnomad_exomes — African/African American'
+    );
   });
 });

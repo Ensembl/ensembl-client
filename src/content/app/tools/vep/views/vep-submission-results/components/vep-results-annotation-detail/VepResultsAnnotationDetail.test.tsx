@@ -143,7 +143,8 @@ const phenotypePanels: FormPanel[] = [
   {
     id: 'phenotype_and_disease_associations',
     label: 'Phenotype & disease associations',
-    options: [option('phenotypes', 'Phenotypes')]
+    options: [option('phenotypes', 'Phenotypes')],
+    full_width: true
   }
 ];
 
@@ -206,6 +207,27 @@ describe('VepResultsAnnotationDetail', () => {
 
     expect(screen.getByText('c.123A>G')).toBeDefined();
     expect(screen.queryByText('19:g.7676154A>G')).toBeNull();
+  });
+
+  it('shows an HGVS placeholder row in "Show all" when HGVS ran with no content', async () => {
+    const user = userEvent.setup();
+    render(
+      <VepResultsAnnotationDetail
+        genomeId="grch38"
+        consequence={{ ...transcriptConsequence, annotations: [] }}
+        allele={makeAllele({ annotations: [] })}
+        parameters={{ hgvs: true }}
+        panels={panels}
+        display={displaySpecFixture}
+      />
+    );
+
+    expect(screen.queryByText('HGVS')).toBeNull();
+
+    await user.click(screen.getByText('Show all'));
+
+    expect(screen.getByText('HGVS')).toBeDefined();
+    expect(screen.getByText('—')).toBeDefined();
   });
 
   it('reveals a dash for options that ran but returned nothing in "Show all"', async () => {
@@ -944,7 +966,7 @@ describe('VepResultsAnnotationDetail columns', () => {
   });
 
   describe('the full-width phenotypes section', () => {
-    const renderWithPhenotypes = () =>
+    const renderWithPhenotypes = (displayPanels = phenotypePanels) =>
       render(
         <VepResultsAnnotationDetail
           genomeId="grch38"
@@ -976,7 +998,7 @@ describe('VepResultsAnnotationDetail columns', () => {
             ]
           })}
           parameters={{ phenotypes: true, spdi: true }}
-          panels={phenotypePanels}
+          panels={displayPanels}
           display={displaySpecFixture}
         />
       );
@@ -993,6 +1015,18 @@ describe('VepResultsAnnotationDetail columns', () => {
       expect(columns.contains(heading)).toBe(false);
       expect(columns.textContent).toContain('Variant representation');
       expect(columns.textContent).not.toContain('ClinVar');
+    });
+
+    it('stays in the columns when its panel is not full_width', () => {
+      const { container } = renderWithPhenotypes(
+        phenotypePanels.map((panel) => ({ ...panel, full_width: null }))
+      );
+
+      const heading = screen.getByText('Phenotype & disease associations');
+      expect(columnedSections(container).contains(heading)).toBe(true);
+      expect(
+        container.querySelector('[class*="fullWidthSections"]')
+      ).toBeNull();
     });
   });
 });
