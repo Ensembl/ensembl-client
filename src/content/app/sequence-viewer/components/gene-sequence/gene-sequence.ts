@@ -28,18 +28,20 @@ const LINE_LENGTH = 60;
 export class GeneSequence extends LitElement {
   static styles = css`
     :host {
-      display: grid;
-      grid-template-columns: repeat(3, max-content);
-      column-gap: 1rem;
+      display: block;
     }
 
     .line {
-      display: block;
+      --_column-gap: 1rem;
+      display: grid;
+      grid-template-columns: [gutter-left] var(
+          --gutter-width
+        ) [main] 60ch [gutter-right] var(--gutter-width);
+      column-gap: 1rem;
       font-family: var(--font-family-monospace);
-      width: 60ch;
+      width: calc(2 * var(--gutter-width) + 60ch + 2 * var(--_column-gap));
       contain: size layout;
       contain: strict;
-      /* width: max-content; */
       content-visibility: auto;
       contain-intrinsic-size: 60ch 1lh;
     }
@@ -50,19 +52,12 @@ export class GeneSequence extends LitElement {
 
     .container-left,
     .container-right {
-      width: fit-content;
-      width: 6ch;
-      contain: strict;
-      content-visibility: auto;
-      contain-intrinsic-size: 6ch 1lh;
+      width: var(--gutter-width);
+      user-select: none;
     }
 
-    .container-left .side-line {
+    .container-left {
       text-align: right;
-    }
-
-    .side-line {
-      display: block;
     }
   `;
 
@@ -159,8 +154,50 @@ export class GeneSequence extends LitElement {
     const lines = this.#getSequenceLines();
     const featureLookup = generateFeatureLookup(this.gene);
     const codingIntervals = this.#getCodingIntervals({ featureLookup });
+    const geneLength = this.gene.slice.location.length;
+    const gutterWidth = `${geneLength}`.length;
+
+    const gutterWidthStyleRule = `--gutter-width: ${gutterWidth}ch;`;
 
     return html`
+      ${lines.map((line, index) => {
+        const parts = this.#getLineParts({
+          lineIndex: index,
+          lineSequence: line,
+          codingIntervals
+        });
+        const lineNumStart = LINE_LENGTH * index + 1;
+        const lineNumEnd = lineNumStart + LINE_LENGTH - 1;
+        const paddedLineNumStart = lineNumStart
+          .toString()
+          .padStart(gutterWidth, ' ');
+        const paddedLineNumEnd = lineNumEnd.toString().padEnd(gutterWidth, ' ');
+
+        return html`
+          <div class="line" style="${gutterWidthStyleRule}">
+            <div class="container-left">${paddedLineNumStart}</div>
+
+            <div>
+              ${parts.map(
+                (part) =>
+                  html`<span class=${part.coding ? 'coding' : ''}
+                    >${part.text}</span
+                  >`
+              )}
+            </div>
+
+            <div class="container-right">${paddedLineNumEnd}</div>
+          </div>
+        `;
+      })}
+    `;
+  }
+}
+
+window.customElements.define('ens-sequence-viewer-gene-sequence', GeneSequence);
+
+/**
+
       <div class="container-left">
         ${lines.map((_, index) => {
           const number = LINE_LENGTH * index + 1;
@@ -169,23 +206,7 @@ export class GeneSequence extends LitElement {
       </div>
 
       <div class="container-center">
-        ${lines.map((line, index) => {
-          const parts = this.#getLineParts({
-            lineIndex: index,
-            lineSequence: line,
-            codingIntervals
-          });
-          return html`
-            <span class="line">
-              ${parts.map(
-                (part) =>
-                  html`<span class=${part.coding ? 'coding' : ''}
-                    >${part.text}</span
-                  >`
-              )}
-            </span>
-          `;
-        })}
+
       </div>
 
       <div class="container-right">
@@ -194,8 +215,6 @@ export class GeneSequence extends LitElement {
           return html`<span class="side-line">${number}</span> `;
         })}
       </div>
-    `;
-  }
-}
 
-window.customElements.define('ens-sequence-viewer-gene-sequence', GeneSequence);
+
+ */
