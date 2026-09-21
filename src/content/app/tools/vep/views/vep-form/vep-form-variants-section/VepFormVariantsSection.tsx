@@ -31,7 +31,10 @@ import {
   clearVariantsInput,
   updateInputCommittedFlag
 } from 'src/content/app/tools/vep/state/vep-form/vepFormSlice';
-import { useVepFormExampleInputQuery } from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
+import {
+  useVepFormConfigQuery,
+  useVepFormExampleInputQuery
+} from 'src/content/app/tools/vep/state/vep-api/vepApiSlice';
 import { checkVepInput } from './checkVepInput';
 
 import FormSection from 'src/content/app/tools/vep/components/form-section/FormSection';
@@ -56,6 +59,10 @@ const VepFormVariantsSection = () => {
   const inputFileName = useAppSelector(getVepFormInputFileName);
   const dispatch = useAppDispatch();
 
+  const { currentData: formConfig } = useVepFormConfigQuery(
+    { genome_id: selectedSpecies?.genome_id ?? '' },
+    { skip: !selectedSpecies }
+  );
   const { currentData: exampleInputs } = useVepFormExampleInputQuery(
     { genomeId: selectedSpecies?.genome_id ?? '' },
     {
@@ -125,6 +132,7 @@ const VepFormVariantsSection = () => {
           inputFileName={inputFileName}
           exampleInputs={exampleInputs}
           setInputFile={onInputFileUpdate}
+          maxUploadBytes={formConfig?.max_upload_bytes}
           toggleExpanded={toggleExpanded}
           onReset={onReset}
         />
@@ -162,6 +170,7 @@ const ExpandedContents = ({
   exampleInputs,
   setInputString,
   setInputFile,
+  maxUploadBytes,
   toggleExpanded,
   onReset
 }: {
@@ -169,6 +178,7 @@ const ExpandedContents = ({
   setInputString: (val: string) => void;
   inputFileName: string | null;
   setInputFile: (file: File) => void;
+  maxUploadBytes?: number;
   exampleInputs?: {
     vcfString?: string;
   };
@@ -188,7 +198,7 @@ const ExpandedContents = ({
   };
 
   const onFileDrop = (file: File) => {
-    if (isBelowMaxFileSize(file)) {
+    if (isWithinUploadLimit(file, maxUploadBytes)) {
       setInputFile(file);
     } else {
       const fileName = file.name;
@@ -266,7 +276,10 @@ const ExpandedContents = ({
             Clear
           </TextButton>
         </div>
-        <MaxUploadSize isError={!!oversizedFileName} />
+        <MaxUploadSize
+          maxUploadBytes={maxUploadBytes}
+          isError={!!oversizedFileName}
+        />
       </div>
       {!shouldDisableFileInput && (
         <>
@@ -307,7 +320,13 @@ const FileDropZoneLabel = () => {
   );
 };
 
-const MaxUploadSize = (props: { isError: boolean }) => {
+export const MaxUploadSize = (props: {
+  maxUploadBytes?: number;
+  isError: boolean;
+}) => {
+  if (props.maxUploadBytes === undefined) {
+    return null;
+  }
   const componentClasses = classNames(styles.maxUploadSize, {
     [styles.maxUploadSizeError]: props.isError
   });
@@ -316,7 +335,9 @@ const MaxUploadSize = (props: { isError: boolean }) => {
     <div className={componentClasses}>
       <span>Max upload size</span>
       <span>
-        <span className={styles.maxUploadSizeNumber}>250 </span>
+        <span className={styles.maxUploadSizeNumber}>
+          {formatMegabytes(props.maxUploadBytes)}{' '}
+        </span>
         MB
       </span>
     </div>
@@ -335,12 +356,13 @@ const ExampleVariantInput = (props: {
   return <TextButton onClick={onClick}>{props.children}</TextButton>;
 };
 
-const isBelowMaxFileSize = (file: File) => {
-  const fileSize = file.size; // number in bytes
-  const megabyte = 10 ** 6; // it is unclear whether to use the SI conventions (a megabyte is a million bytes), or earlier conventions (a megabyte is 2 ** 20 bytes)
-  const maxFileSize = 250 * megabyte;
+// The backend states its upload limit in bytes and counts a megabyte as a
+// million of them. Until the limit arrives, the backend's own check is the
+// only one.
+export const isWithinUploadLimit = (file: File, maxUploadBytes?: number) =>
+  maxUploadBytes === undefined || file.size <= maxUploadBytes;
 
-  return fileSize < maxFileSize;
-};
+export const formatMegabytes = (bytes: number) =>
+  String(Math.round(bytes / 10 ** 5) / 10);
 
 export default VepFormVariantsSection;

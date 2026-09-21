@@ -104,6 +104,7 @@ export type VepFormConfig = {
     transcript_set: SelectParameter;
   };
   panels: FormPanel[];
+  max_upload_bytes?: number;
 };
 
 export type VepFormParameterName = keyof VepFormConfig['parameters'];
