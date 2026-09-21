@@ -14,8 +14,33 @@
  * limitations under the License.
  */
 
-import { useState, Fragment, type ReactNode, type SyntheticEvent } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  Fragment,
+  type ReactNode,
+  type SyntheticEvent
+} from 'react';
 import { flushSync } from 'react-dom';
+
+/**
+ * Expand state owned by something outside the list.
+ *
+ * A list normally owns whether it is open, because normally it is the only one
+ * of its kind on the page. The flat table splits one table into a column each,
+ * so several lists end up showing slices of the same rows and have to open
+ * together. Without a group the list keeps its own state, and that is what
+ * every other caller gets.
+ */
+export type TruncationGroup = {
+  isExpanded: boolean;
+  toggle: () => void;
+};
+
+export const TruncationGroupContext = createContext<TruncationGroup | null>(
+  null
+);
 
 export type TruncatedListToggleProps = {
   hiddenCount: number; // How many items are hidden while collapsed
@@ -55,7 +80,17 @@ const findNearestScrollableAncestor = (
  */
 const TruncatedList = <Item,>(props: Props<Item>) => {
   const { items, visibleCount, renderItem, renderToggle, toggleFirst } = props;
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [ownExpanded, setOwnExpanded] = useState(false);
+
+  // A shared group governs a truncation, never a collapsed detail.
+  // `toggleFirst` tells the two shapes apart. A detail stays per-item, because
+  // the chevron on one ClinVar classification says nothing about the next one.
+  const group = useContext(TruncationGroupContext);
+  const shared = group && !toggleFirst ? group : null;
+  const isExpanded = shared ? shared.isExpanded : ownExpanded;
+  const setIsExpanded = shared
+    ? shared.toggle
+    : () => setOwnExpanded((expanded) => !expanded);
 
   const visible = isExpanded ? items : items.slice(0, visibleCount);
   const hiddenCount = Math.max(items.length - visibleCount, 0);
@@ -77,11 +112,11 @@ const TruncatedList = <Item,>(props: Props<Item>) => {
     if (!isExpanded || !control) {
       // Expanding the list does not require any additional DOM manipulations
       // to correct the element's position.
-      setIsExpanded((expanded) => !expanded);
+      setIsExpanded();
       return;
     }
     const before = control.getBoundingClientRect().top;
-    flushSync(() => setIsExpanded(false));
+    flushSync(() => setIsExpanded());
     const delta = control.getBoundingClientRect().top - before;
     if (delta === 0) {
       return;
