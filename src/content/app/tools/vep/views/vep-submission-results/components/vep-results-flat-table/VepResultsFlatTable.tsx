@@ -130,6 +130,11 @@ export type FlatColumn = {
    * the block draws this population and no other.
    */
   vocabularyEntry?: { name: string; entry: VocabularyEntry };
+  /**
+   * The column draws a whole table rather than one column split out of one.
+   * Its headers name what the values are, so the cell keeps them.
+   */
+  wholeTable?: boolean;
 };
 
 /** The stand-in for an option the spec renderer will not be asked to draw. */
@@ -361,7 +366,8 @@ export const flatColumnsForOption = (
           headingPath: (segment ? [...headings, segment] : headings).filter(
             (heading) => heading !== optionLabel
           ),
-          renderSpec: { ...specOption, heading: null, blocks: [block] }
+          renderSpec: { ...specOption, heading: null, blocks: [block] },
+          wholeTable: true
         });
       } else if (block.kind === 'table') {
         const path = (segment ? [...headings, segment] : headings).filter(
@@ -990,7 +996,11 @@ const VepResultsFlatTable = (props: {
                 {columns.map(({ column, key }) => (
                   <td
                     key={key}
-                    className={styles.cell}
+                    className={
+                      column.wholeTable
+                        ? `${styles.cell} ${styles.wholeTable}`
+                        : styles.cell
+                    }
                     data-table-key={column.tableKey}
                   >
                     <TruncationGroupContext.Provider

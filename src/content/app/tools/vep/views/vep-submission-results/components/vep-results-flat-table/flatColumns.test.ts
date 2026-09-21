@@ -40,6 +40,20 @@ const header = (column: {
     .join(' / ');
 
 describe('flatColumnsForOption', () => {
+  it('marks a fixed-mode table as one the cell keeps whole', () => {
+    const columns = flatColumnsForOption(option('spliceai'), 'SpliceAI');
+
+    expect(columns).toHaveLength(1);
+    expect(columns[0].wholeTable).toBe(true);
+  });
+
+  it('does not mark a table it splits into columns', () => {
+    const columns = flatColumnsForOption(option('phenotypes'), 'Phenotypes');
+
+    expect(columns.some((column) => column.tableKey)).toBe(true);
+    expect(columns.every((column) => !column.wholeTable)).toBe(true);
+  });
+
   it('takes a column name the spec states over one it would derive', () => {
     const named = JSON.parse(
       JSON.stringify(option('phenotypes'))

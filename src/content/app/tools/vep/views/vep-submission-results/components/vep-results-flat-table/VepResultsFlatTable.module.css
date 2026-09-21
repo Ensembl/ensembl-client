@@ -185,6 +185,19 @@
   padding: 2px 0;
 }
 
+/* A cell holding a whole table keeps what that table says about itself. Its
+   header names the values (SpliceAI's splicing events against ΔS and ΔP), and
+   without the horizontal padding a row label runs straight into its first
+   number. */
+.cell.wholeTable table thead {
+  display: table-header-group;
+}
+
+.cell.wholeTable table td,
+.cell.wholeTable table th {
+  padding: 2px 8px 2px 0;
+}
+
 /* Likewise the scroll wrapper a wide breakdown table sits in: its column is
    already a fixed width that scrolls with the grid. */
 .cell :global(div[class*='tableScroll']) {
