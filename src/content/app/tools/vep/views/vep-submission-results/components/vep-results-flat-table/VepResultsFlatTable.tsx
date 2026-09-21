@@ -25,9 +25,9 @@ import {
 } from 'react';
 
 import { renderDisplayOption } from '../vep-results-annotation-detail/displaySpecRenderer';
+import type { VocabularyEntry } from '../vep-results-annotation-detail/displaySpecRenderer';
 import { subOptionRan as didSubOptionRun } from 'src/content/app/tools/vep/utils/subOptionRan';
-import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
-import { num } from 'src/content/app/tools/vep/utils/annotationFormatters';
+import { displayVocabularies } from 'src/content/app/tools/vep/utils/afVocabulary';
 import { TruncationGroupContext } from 'src/content/app/tools/vep/components/truncated-list/TruncatedList';
 
 import type {
@@ -125,110 +125,15 @@ export type FlatColumn = {
   tableKey?: string;
   renderSpec: DisplayOptionSpec;
   /**
-   * An allele-frequency column, which the spec renderer cannot draw here.
-   *
-   * The AF options are drawn from a `map_rows` block whose vocabulary comes
-   * from the job's population list, so there is no per-population spec to
-   * split. They are read off the allele instead: `plugin` names the parsed
-   * annotation, `population` which frequency inside it ('' being the
-   * all-ancestry overall), and `field` the two identity values a structural
-   * source carries in place of a frequency.
+   * A column split out of a `map_rows` block, holding the one vocabulary entry
+   * it draws. The renderer is handed a vocabulary narrowed to that entry, so
+   * the block draws this population and no other.
    */
-  af?: {
-    plugin: string;
-    population?: string;
-    field?: 'id' | 'svtype';
-  };
+  vocabularyEntry?: { name: string; entry: VocabularyEntry };
 };
 
 /** The stand-in for an option the spec renderer will not be asked to draw. */
 const EMPTY_OPTION: DisplayOptionSpec = { option_id: '', blocks: [] };
-
-/**
- * The parsed allele-frequency annotation, as the flat cells read it. gnomAD SV
- * and CNV carry the overlapping structural variant's identity beside the
- * frequencies; the other sources do not.
- */
-type AfAnnotation = {
-  overall?: number | null;
-  populations?: Record<string, number | null>;
-  id?: string | null;
-  svtype?: string | null;
-  /** All of Us publishes a "max" frequency without naming its subpopulation. */
-  max_subpopulation_label?: string | null;
-};
-
-/**
- * The `source` value used in metadata.available_af_sources for each
- * allele-frequency option id. Only All of Us differs (option `allofus` vs
- * source `all_of_us`).
- *
- * Teaching `flatColumnsForOption` to split a `map_rows` block into a column per
- * vocabulary entry would delete both this map and `afColumnsForOption` below.
- */
-const AF_SOURCE_KEY_BY_OPTION: Record<string, string> = {
-  gnomad_exomes: 'gnomad_exomes',
-  gnomad_genomes: 'gnomad_genomes',
-  allofus: 'all_of_us',
-  gnomad_sv: 'gnomad_sv',
-  gnomad_cnv: 'gnomad_cnv'
-};
-
-/**
- * One column per population, per source — the AF equivalent of splitting a
- * table into its columns.
- *
- * Which populations exist is a property of the job rather than of a row,
- * because a variant carries frequencies only for the populations it was seen
- * in. Building the columns from the data would give a different grid for every
- * page, so the job's own `available_af_sources` is the fixed set.
- *
- * A structural source leads with the overlapping variant's id and type, as its
- * panel block does, because a frequency with no variant beside it says nothing
- * about which structural variant it belongs to.
- */
-export const afColumnsForOption = (
-  optionId: string,
-  optionLabel: string,
-  afSources: AfSource[] | undefined
-): FlatColumn[] => {
-  const sourceKey = AF_SOURCE_KEY_BY_OPTION[optionId];
-  if (!sourceKey) {
-    return [];
-  }
-  const plugin = sourceKey;
-  const structural = sourceKey === 'gnomad_sv' || sourceKey === 'gnomad_cnv';
-  const identity: FlatColumn[] = structural
-    ? [
-        {
-          optionLabel,
-          headingPath: [],
-          columnLabel: 'Structural variant',
-          renderSpec: EMPTY_OPTION,
-          af: { plugin, field: 'id' }
-        },
-        {
-          optionLabel,
-          headingPath: [],
-          columnLabel: 'Type',
-          renderSpec: EMPTY_OPTION,
-          af: { plugin, field: 'svtype' }
-        }
-      ]
-    : [];
-
-  return identity.concat(
-    (afSources ?? [])
-      .filter((source) => source.source === sourceKey)
-      .map((source) => ({
-        optionLabel,
-        headingPath: [],
-        columnLabel: source.label,
-        renderSpec: EMPTY_OPTION,
-        af: { plugin, population: source.population }
-      }))
-  );
-};
 
 /**
  * Line up the columns that came from one table.
@@ -407,7 +312,8 @@ export const fieldLabel = (
  */
 export const flatColumnsForOption = (
   specOption: DisplayOptionSpec | undefined,
-  optionLabel: string
+  optionLabel: string,
+  vocabularies: Record<string, VocabularyEntry[]> = {}
 ): FlatColumn[] => {
   const whole: FlatColumn[] = [
     {
@@ -471,6 +377,30 @@ export const flatColumnsForOption = (
           path,
           key: `${specOption.option_id}#${tableIndex++}`
         });
+      } else if (block.kind === 'map_rows') {
+        // The rows a `map_rows` block draws are its vocabulary's entries, so
+        // its columns are those entries. The job's population list is the
+        // fixed set, because a variant carries frequencies only for the
+        // populations it was seen in.
+        const path = (
+          block.heading ? [...headings, block.heading] : headings
+        ).filter((heading) => heading !== optionLabel);
+        for (const entry of vocabularies[block.vocabulary] ?? []) {
+          if (entry.scope !== block.scope) {
+            continue;
+          }
+          rowColumns.push({
+            optionLabel,
+            headingPath: path,
+            columnLabel: entry.label,
+            renderSpec: {
+              ...specOption,
+              heading: null,
+              blocks: [{ ...block, heading: null }]
+            },
+            vocabularyEntry: { name: block.vocabulary, entry }
+          });
+        }
       } else if (block.kind === 'rows' && (block.rows ?? []).length) {
         const path = (
           block.heading ? [...headings, block.heading] : headings
@@ -575,39 +505,6 @@ export const flatColumnsForOption = (
   // state them (EVE's own score ahead of its popEVE block).
   const found = [...rowColumns, ...tableColumns];
   return found.length ? found : whole;
-};
-
-/**
- * One allele-frequency cell, holding the figure for this column's population,
- * or the structural variant's identity where the column asks for that.
- *
- * The value is read straight off the allele rather than through the spec
- * renderer (see FlatColumn.af). Absent is genuinely absent, because a
- * population this variant was not seen in has no row in the panel either, so
- * the cell stays empty rather than showing a zero it was never given.
- */
-export const afCellValue = (
-  allele: AlternativeVariantAllele,
-  af: NonNullable<FlatColumn['af']>
-): ReactNode => {
-  const data = getAnnotation<AfAnnotation>(allele, af.plugin);
-  if (!data) {
-    return null;
-  }
-  if (af.field) {
-    return data[af.field] ?? null;
-  }
-  // '' is the all-ancestry overall, which the parse keeps beside the
-  // per-population map rather than inside it.
-  const value = af.population
-    ? data.populations?.[af.population]
-    : data.overall;
-  if (value === null || value === undefined) {
-    return null;
-  }
-  // The number alone would be the one AF a reader cannot attribute.
-  const bracket = af.population === 'max' ? data.max_subpopulation_label : null;
-  return bracket ? `${num(value)} (${bracket})` : num(value);
 };
 
 /**
@@ -716,34 +613,32 @@ const VepResultsFlatTable = (props: {
   parameters: Record<string, unknown>;
   panels: FormPanel[] | undefined;
   display: DisplaySpec | null | undefined;
-  /** The AF populations this job ran with — the fixed column set for the
-   *  frequency sources (see afColumnsForOption). */
+  /** The AF populations this job ran with, which become the vocabulary the
+   *  frequency options' `map_rows` blocks draw from. */
   afSources: AfSource[] | undefined;
 }) => {
   const { genomeId, variants, parameters, panels, display, afSources } = props;
 
   const allRows = useMemo(() => flattenRows(variants), [variants]);
 
-  // Every option this job ran, each split into as many columns as it has table
-  // columns. Options without a table contribute one. The allele-frequency
-  // options take the other route, because their columns come from the job's
-  // population list.
+  const vocabularies = useMemo(
+    () => displayVocabularies(afSources),
+    [afSources]
+  );
+
+  // Every option this job ran, each split into as many columns as its blocks
+  // hold: one per table column, one per stacked cell, one per population. An
+  // option whose blocks do not split contributes one column.
   const columns = useMemo(
     () =>
       columnOptions(panels, parameters).flatMap(({ panel, option }) => {
-        const afColumns = afColumnsForOption(
-          option.id,
+        const built = flatColumnsForOption(
+          display?.options.find(
+            (candidate) => candidate.option_id === option.id
+          ),
           option.label,
-          afSources
+          vocabularies
         );
-        const built = afColumns.length
-          ? afColumns
-          : flatColumnsForOption(
-              display?.options.find(
-                (candidate) => candidate.option_id === option.id
-              ),
-              option.label
-            );
         return built.map((column, index) => ({
           panel,
           option,
@@ -751,7 +646,7 @@ const VepResultsFlatTable = (props: {
           key: `${panel.id}-${option.id}-${index}`
         }));
       }),
-    [panels, parameters, display, afSources]
+    [panels, parameters, display, vocabularies]
   );
 
   // A page of rows, inside the page of variants the request already fetched.
@@ -774,9 +669,6 @@ const VepResultsFlatTable = (props: {
 
   const renderCell = useCallback(
     (row: FlatRow, column: FlatColumn): ReactNode => {
-      if (column.af) {
-        return afCellValue(row.allele, column.af);
-      }
       if (!display || !column.renderSpec.option_id) {
         return null;
       }
@@ -794,10 +686,15 @@ const VepResultsFlatTable = (props: {
         // stripped back off afterwards, because only the renderer knows which
         // node the title turned out to be, and that depends on which blocks the
         // data let draw.
-        showTitle: false
+        showTitle: false,
+        // A column drawn from a `map_rows` block gets the one entry it is for,
+        // so the block draws that population alone.
+        vocabularies: column.vocabularyEntry
+          ? { [column.vocabularyEntry.name]: [column.vocabularyEntry.entry] }
+          : vocabularies
       });
     },
-    [display, parameters, genomeId]
+    [display, parameters, genomeId, vocabularies]
   );
 
   // Go back to the first row-page whenever the fetched variants change (paging

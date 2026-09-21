@@ -770,7 +770,13 @@ const renderMapRowsBlock = (
     };
   });
 
-  const nodes = renderRows(rows);
+  // A caller showing the labels itself, such as a table heading each column
+  // with its population, gets the figures alone.
+  const nodes = renderRows(
+    titleHidden(entities, level)
+      ? rows.map((row) => ({ ...row, label: null, plain: true }))
+      : rows
+  );
   if (!nodes.length) {
     return null;
   }

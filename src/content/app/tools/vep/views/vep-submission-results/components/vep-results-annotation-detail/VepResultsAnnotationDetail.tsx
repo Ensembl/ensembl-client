@@ -35,6 +35,7 @@ import type {
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
 import { groupByCategory } from 'src/content/app/tools/vep/utils/groupByCategory';
 import { subOptionRan as didSubOptionRun } from 'src/content/app/tools/vep/utils/subOptionRan';
+import { displayVocabularies } from 'src/content/app/tools/vep/utils/afVocabulary';
 import styles from './VepResultsAnnotationDetail.module.css';
 
 const VepResultsAnnotationDetail = (props: {
@@ -60,13 +61,7 @@ const VepResultsAnnotationDetail = (props: {
   const [showAll, setShowAll] = useState(false);
 
   const vocabularies = useMemo(
-    () => ({
-      af_populations: (availableAfSources ?? []).map((af) => ({
-        scope: af.source,
-        code: af.population,
-        label: af.label
-      }))
-    }),
+    () => displayVocabularies(availableAfSources),
     [availableAfSources]
   );
 

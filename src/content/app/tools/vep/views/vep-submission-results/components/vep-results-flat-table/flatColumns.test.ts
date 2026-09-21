@@ -40,6 +40,39 @@ const header = (column: {
     .join(' / ');
 
 describe('flatColumnsForOption', () => {
+  it('splits a map_rows block into a column per population', () => {
+    const columns = flatColumnsForOption(
+      option('gnomad_exomes'),
+      'gnomAD Exomes',
+      {
+        af_populations: [
+          { scope: 'gnomad_exomes', code: '', label: 'Overall' },
+          { scope: 'gnomad_exomes', code: 'afr', label: 'African' },
+          { scope: 'gnomad_genomes', code: 'afr', label: 'African' }
+        ]
+      }
+    );
+
+    expect(columns.map(header)).toEqual([
+      'gnomAD Exomes / Overall',
+      'gnomAD Exomes / African'
+    ]);
+    expect(columns[1].vocabularyEntry).toEqual({
+      name: 'af_populations',
+      entry: { scope: 'gnomad_exomes', code: 'afr', label: 'African' }
+    });
+  });
+
+  it('gives a map_rows option one whole column when the job ran no populations', () => {
+    const columns = flatColumnsForOption(
+      option('gnomad_exomes'),
+      'gnomAD Exomes'
+    );
+
+    expect(columns).toHaveLength(1);
+    expect(columns[0].vocabularyEntry).toBeUndefined();
+  });
+
   it('splits a stacked row into a column per cell', () => {
     const headers = flatColumnsForOption(
       option('phenotypes'),
