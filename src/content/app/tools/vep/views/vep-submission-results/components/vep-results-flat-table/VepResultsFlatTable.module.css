@@ -1,0 +1,214 @@
+/* PROTOTYPE styling — deliberately plain. The point of this view is the shape
+   of the grid, not its finish. */
+
+.scroller {
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+
+  /* Grab-to-pan across the width, for a grid several screens wide. */
+  cursor: grab;
+}
+
+.table {
+  /* Separate, not collapsed, and the frozen columns are why.
+
+     Collapsed borders belong to the *table*, not to the cells: the browser
+     resolves them once and paints them in the table's own layer. A sticky cell
+     sits above that layer for its background but not for those borders, so the
+     grid lines of the columns scrolling underneath carried on straight through
+     the frozen ones. Separated borders belong to each cell and travel with it.
+
+     `border-spacing: 0` keeps the grid looking collapsed; the cells below draw
+     a right and bottom edge each, with the top and left closed by the first row
+     and column, so nothing doubles up. */
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+
+  /* Fixed, so a single wide cell (a phenotype table, a ClinVar conditions
+     block) cannot stretch its column and drag the whole grid wider still. */
+  table-layout: fixed;
+}
+
+.table th,
+.table td {
+  border-right: 1px solid var(--color-medium-light-grey);
+  border-bottom: 1px solid var(--color-medium-light-grey);
+  padding: 6px 8px;
+  vertical-align: top;
+  text-align: left;
+}
+
+/* Close the two outer edges the per-cell rules above leave open. */
+.table thead > tr > th {
+  border-top: 1px solid var(--color-medium-light-grey);
+}
+
+.table > thead > tr > *:first-child,
+.table > tbody > tr > *:first-child {
+  border-left: 1px solid var(--color-medium-light-grey);
+}
+
+/* The identity columns stay put while the annotation columns scroll past —
+   without them a row loses which variant it belongs to within a screen or two
+   of scrolling, which is most of what makes a very wide table unreadable.
+
+   `left` and the widths come from IDENTITY_COLUMNS as inline styles, so adding
+   or resizing one cannot leave a stale offset behind here. */
+.identity {
+  position: sticky;
+
+  /* Above everything that scrolls under it. The annotation cells are static, so
+     any positioned thing inside one — a popup, a tooltip anchor — would
+     otherwise paint over the frozen columns as it passed beneath. */
+  z-index: 3;
+  background-color: var(--color-white);
+
+  /* Wrap rather than truncate. The widths above are sized for what these
+     normally hold, so wrapping is the escape hatch for the long tail — a
+     variant with an unusually long name, or a consequence list of several
+     terms — instead of hiding it behind an ellipsis. `anywhere` because
+     transcript and gene ids have nowhere to break. */
+  overflow-wrap: anywhere;
+}
+
+/* The division between what identifies a row and what annotates it. */
+.identity:last-of-type {
+  border-right: 2px solid var(--color-medium-dark-grey);
+}
+
+/* These columns do not move, so they do not offer to be dragged. The grab hand
+   belongs over the part that pans; here it would promise something that cannot
+   happen. `!important` because .dragging sets the cursor on the scroller, which
+   would otherwise win over this while a drag is in progress elsewhere. */
+.identity,
+.dragging .identity {
+  cursor: default !important;
+}
+
+.optionHead {
+  min-width: 180px;
+  max-width: 180px;
+  background-color: var(--color-light-grey);
+  vertical-align: bottom;
+}
+
+.panelName {
+  display: block;
+  color: var(--color-dark-grey);
+  font-size: 11px;
+  font-weight: normal;
+}
+
+.optionName {
+  display: block;
+  font-weight: var(--font-weight-bold);
+}
+
+.cell {
+  min-width: 180px;
+  max-width: 180px;
+
+  /* Wrap, never scroll. A scrollbar inside a cell of a grid that already
+     scrolls horizontally means two scrollers under one pointer, and it hides
+     the value it is holding — the row can simply be as tall as it needs.
+     `anywhere` because much of this is unbroken text (transcript ids, HGVS
+     notation) that has no space to wrap at. */
+  overflow-wrap: anywhere;
+}
+
+.empty {
+  margin: 0;
+  padding: 16px;
+  color: var(--color-dark-grey);
+}
+
+/* Paging the rows, not the variants — see ROWS_PER_PAGE. Outside the scrolling
+   area, so it stays put however far right the grid is scrolled without needing
+   to be stuck there. */
+.rowPager {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  width: max-content;
+}
+
+.pagerButton {
+  appearance: none;
+  border: 1px solid var(--color-blue);
+  background: none;
+  padding: 3px 8px;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--color-blue);
+}
+
+.pagerButton:disabled {
+  border-color: var(--color-medium-light-grey);
+  color: var(--color-medium-dark-grey);
+  cursor: default;
+}
+
+.rowRange {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.rowPagerNote {
+  color: var(--color-dark-grey);
+}
+
+/* The table column's own label, under the option and its headings. */
+.subColumnName {
+  display: block;
+  font-weight: var(--font-weight-bold);
+}
+
+/* A split-out table column renders as a one-column table whose header repeats
+   the column label this cell already sits under. Hidden rather than pruned from
+   the spec: the header is the renderer's business, and the pruning here is only
+   meant to choose *which* column, not to restyle it. */
+.cell table thead {
+  display: none;
+}
+
+/* Data that was a table in the expandable view brings its own row rules and
+   indent with it. Inside a grid cell that reads as a table within a table, and
+   the grid already draws the edges — so what is left is a stack of values, not
+   a table, and it should look like one. */
+.cell table td,
+.cell table th {
+  border: none;
+  padding: 2px 0;
+}
+
+/* Likewise the scroll wrapper a wide breakdown table sits in: its column is
+   already a fixed width that scrolls with the grid. */
+.cell :global(div[class*='tableScroll']) {
+  overflow: visible;
+}
+
+/* A second scrollbar above the grid. The one at the bottom of a table this tall
+   is often off screen when the rows being read are not, so the reader has to
+   leave the place they are looking at to move sideways. */
+.topScrollBar {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}
+
+/* Nothing to show: it exists to give the bar above something to scroll, and is
+   kept as wide as the table by the layout effect. */
+.topScrollSpacer {
+  height: 1px;
+}
+
+.dragging {
+  cursor: grabbing;
+
+  /* Without this a drag selects the text it passes over instead of panning. */
+  user-select: none;
+}

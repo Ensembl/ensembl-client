@@ -57,6 +57,7 @@ import VepResultsLocation from './components/vep-results-location/VepResultsLoca
 import VepResultsAllele from './components/vep-results-allele/VepResultsAllele';
 import VepResultsAnnotationDetail from './components/vep-results-annotation-detail/VepResultsAnnotationDetail';
 import VepResultsFilters from './components/vep-results-filters/VepResultsFilters';
+import VepResultsFlatTable from './components/vep-results-flat-table/VepResultsFlatTable';
 
 import { Table, ColumnHead } from 'src/shared/components/table';
 import Pill from 'src/shared/components/pill/Pill';
@@ -112,6 +113,12 @@ const VepSubmissionResults = () => {
   const [appliedFilters, setAppliedFilters] = useState<
     ResultsFilterCondition[]
   >([]);
+
+  // PROTOTYPE — swaps the expandable table for a flat, one-row-per-
+  // consequence grid with a column per annotation option. The state stays
+  // local and out of the URL, because this view is here to be looked at rather
+  // than linked to.
+  const [isFlatView, setIsFlatView] = useState(false);
 
   const [detailExpansion, setDetailExpansion] = useState<DetailExpansion>({
     action: 'collapse',
@@ -267,6 +274,27 @@ const VepSubmissionResults = () => {
             appliedConditionIds={appliedConditionIds}
           />
         )}
+        {/* PROTOTYPE — this bar switches between the expandable table and the
+            flat grid. */}
+        <div className={styles.prototypeBar}>
+          <button
+            type="button"
+            className={styles.prototypeToggle}
+            aria-pressed={isFlatView}
+            aria-busy={isExpansionPending}
+            onClick={() =>
+              // Wrapped in a transition for the same reason the bulk expand is,
+              // because switching view re-renders a whole page of rows and the
+              // click would otherwise be dead until that finishes.
+              startExpansionTransition(() => setIsFlatView((flat) => !flat))
+            }
+          >
+            {isFlatView ? 'Expandable view' : 'Flat table view'}
+            {isExpansionPending && (
+              <CircleLoader size="small" className={styles.expandAllSpinner} />
+            )}
+          </button>
+        </div>
         <div className={styles.tableViewportWrapper}>
           {isFetching && (
             <div className={styles.tableLoadingOverlay}>
@@ -274,18 +302,29 @@ const VepSubmissionResults = () => {
             </div>
           )}
           <div className={styles.tableViewport}>
-            <VepResultsTable
-              genomeId={genomeIdForUrl}
-              variants={vepResults.variants}
-              parameters={submission.parameters}
-              hasSelectedOptions={hasSelectedOptions}
-              panels={resultsPanels}
-              display={vepResults.metadata.display}
-              availableAfSources={
-                vepResults.metadata.available_af_sources ?? []
-              }
-              detailExpansion={detailExpansion}
-            />
+            {isFlatView ? (
+              <VepResultsFlatTable
+                genomeId={genomeIdForUrl}
+                variants={vepResults.variants}
+                parameters={submission.parameters}
+                panels={resultsPanels}
+                display={vepResults.metadata.display}
+                afSources={vepResults.metadata.available_af_sources}
+              />
+            ) : (
+              <VepResultsTable
+                genomeId={genomeIdForUrl}
+                variants={vepResults.variants}
+                parameters={submission.parameters}
+                hasSelectedOptions={hasSelectedOptions}
+                panels={resultsPanels}
+                display={vepResults.metadata.display}
+                availableAfSources={
+                  vepResults.metadata.available_af_sources ?? []
+                }
+                detailExpansion={detailExpansion}
+              />
+            )}
           </div>
         </div>
       </div>
