@@ -994,9 +994,10 @@ export const displaySpecFixture: DisplaySpec = {
           rows: [
             {
               label: '',
+              from: 'opentargets.variant_id',
               link: {
                 kind: 'external',
-                builder: 'opentargets_variant'
+                template: 'https://platform.opentargets.org/variant/{value}'
               }
             }
           ]
@@ -1132,8 +1133,9 @@ export const displaySpecFixture: DisplaySpec = {
               },
               link: {
                 kind: 'external',
-                builder: 'protvar'
-              }
+                template: '{value}'
+              },
+              link_from: 'protvar.url'
             }
           ]
         },
@@ -1157,8 +1159,9 @@ export const displaySpecFixture: DisplaySpec = {
             ],
             link: {
               kind: 'external',
-              builder: 'protvar'
-            }
+              template: '{value}'
+            },
+            link_from: 'protvar.url'
           }
         },
         {
@@ -1199,8 +1202,9 @@ export const displaySpecFixture: DisplaySpec = {
             ],
             link: {
               kind: 'external',
-              builder: 'protvar'
-            }
+              template: '{value}'
+            },
+            link_from: 'protvar.url'
           }
         },
         {

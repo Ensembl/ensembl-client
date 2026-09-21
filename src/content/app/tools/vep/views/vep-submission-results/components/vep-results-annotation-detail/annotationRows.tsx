@@ -57,7 +57,7 @@ export const Row = (props: {
   /**
    * A row that is only its value (no label opposite it).
    * Rendered left-aligned under its heading
-   * Example: the OpenTargets variant link.
+   * Example: a row drawn entirely by a link builder.
    */
   plain?: boolean;
   /**

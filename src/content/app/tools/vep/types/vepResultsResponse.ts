@@ -122,10 +122,6 @@ export type PredictedTranscriptConsequence = {
   annotation_refs?: number[];
 };
 
-export type HgvsgRepresentation = {
-  genomic: string | null;
-};
-
 export type PredictedIntergenicConsequence = {
   feature_type: null;
   consequences: string[];

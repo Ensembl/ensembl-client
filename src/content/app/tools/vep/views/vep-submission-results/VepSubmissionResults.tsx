@@ -47,9 +47,6 @@ import {
   areVepSubmissionResultsExpired,
   isFailedVepSubmission
 } from 'src/content/app/tools/vep/utils/vepResultsAvailability';
-import { buildProtvarUrlFromHgvsg } from 'src/content/app/tools/vep/utils/buildProtvarUrlFromHgvsg';
-import { buildOpenTargetsVariantId } from 'src/content/app/tools/vep/utils/openTargetsVariantId';
-import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
 import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
@@ -75,8 +72,7 @@ import TextButton from 'src/shared/components/text-button/TextButton';
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 import type {
   VepResultsResponse,
-  AfSource,
-  HgvsgRepresentation
+  AfSource
 } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
@@ -702,15 +698,6 @@ const VariantRow = (props: {
 
     const hasDetail = Boolean(allele) && hasSelectedOptions;
 
-    const protvarUrl = buildProtvarUrlFromHgvsg(
-      getAnnotation<HgvsgRepresentation>(allele, 'hgvsg')?.genomic
-    );
-
-    const openTargetsVariantId = buildOpenTargetsVariantId(
-      variant,
-      allele?.allele_sequence
-    );
-
     const {
       variant: variantCell,
       allele: alleleCell,
@@ -781,8 +768,6 @@ const VariantRow = (props: {
                 panels={panels}
                 display={display}
                 availableAfSources={availableAfSources}
-                protvarUrl={protvarUrl}
-                openTargetsVariantId={openTargetsVariantId}
                 onCollapse={() => toggleDetail(index)}
               />
             </td>

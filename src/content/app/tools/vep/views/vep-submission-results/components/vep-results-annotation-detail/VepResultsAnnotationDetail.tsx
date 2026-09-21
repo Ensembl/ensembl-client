@@ -45,8 +45,6 @@ const VepResultsAnnotationDetail = (props: {
   panels?: FormPanel[];
   display: DisplaySpec;
   availableAfSources?: AfSource[];
-  protvarUrl?: string;
-  openTargetsVariantId?: string;
   onCollapse?: () => void;
 }) => {
   const {
@@ -57,8 +55,6 @@ const VepResultsAnnotationDetail = (props: {
     panels,
     display,
     availableAfSources,
-    protvarUrl,
-    openTargetsVariantId,
     onCollapse
   } = props;
   const [showAll, setShowAll] = useState(false);
@@ -104,8 +100,6 @@ const VepResultsAnnotationDetail = (props: {
       showAll,
       subOptionRan,
       genomeId,
-      protvarUrl,
-      openTargetsVariantId,
       help: helpFor(optionId),
       vocabularies
     });
