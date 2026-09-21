@@ -16,6 +16,11 @@
 
 import { html, css, LitElement } from 'lit';
 
+import {
+  generateFeatureLookup,
+  type GeneFeaturesLookup
+} from './getSequenceIntervals';
+
 import type { SequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/queries/geneQuery';
 
 const LINE_LENGTH = 60;
@@ -31,14 +36,25 @@ export class GeneSequence extends LitElement {
     .line {
       display: block;
       font-family: var(--font-family-monospace);
-      width: max-content;
+      width: 60ch;
+      contain: size layout;
+      contain: strict;
+      /* width: max-content; */
       content-visibility: auto;
       contain-intrinsic-size: 60ch 1lh;
+    }
+
+    .coding {
+      background: var(--color-grey);
     }
 
     .container-left,
     .container-right {
       width: fit-content;
+      width: 6ch;
+      contain: strict;
+      content-visibility: auto;
+      contain-intrinsic-size: 6ch 1lh;
     }
 
     .container-left .side-line {
@@ -81,8 +97,68 @@ export class GeneSequence extends LitElement {
     return lines;
   }
 
+  #getCodingIntervals({
+    featureLookup
+  }: {
+    featureLookup: GeneFeaturesLookup;
+  }) {
+    const geneStart = this.gene!.slice.location.start;
+
+    const codingExonIntervals = featureLookup.cds_regions.flatMap((cds) =>
+      featureLookup.exons.flatMap((exon) => {
+        const start = Math.max(cds.start, exon.start);
+        const end = Math.min(cds.end, exon.end);
+
+        return start <= end ? [{ start, end }] : [];
+      })
+    );
+
+    return codingExonIntervals.map(({ start, end }) => ({
+      start: start - geneStart,
+      end: end - geneStart + 1
+    }));
+  }
+
+  #getLineParts({
+    lineIndex,
+    lineSequence,
+    codingIntervals
+  }: {
+    lineIndex: number;
+    lineSequence: string;
+    codingIntervals: { start: number; end: number }[];
+  }) {
+    const lineStart = lineIndex * LINE_LENGTH;
+    const lineEnd = lineStart + lineSequence.length;
+    const boundaries = new Set([lineStart, lineEnd]);
+
+    for (const interval of codingIntervals) {
+      if (interval.start < lineEnd && interval.end > lineStart) {
+        boundaries.add(Math.max(interval.start, lineStart));
+        boundaries.add(Math.min(interval.end, lineEnd));
+      }
+    }
+
+    const sortedBoundaries = [...boundaries].sort((a, b) => a - b);
+
+    return sortedBoundaries.slice(0, -1).map((start, index) => {
+      const end = sortedBoundaries[index + 1];
+      const text = lineSequence.slice(start - lineStart, end - lineStart);
+      const coding = codingIntervals.some(
+        (interval) => interval.start < end && interval.end > start
+      );
+
+      return { text, coding };
+    });
+  }
+
   render() {
+    if (!this.gene) {
+      return null;
+    }
     const lines = this.#getSequenceLines();
+    const featureLookup = generateFeatureLookup(this.gene);
+    const codingIntervals = this.#getCodingIntervals({ featureLookup });
 
     return html`
       <div class="container-left">
@@ -93,8 +169,22 @@ export class GeneSequence extends LitElement {
       </div>
 
       <div class="container-center">
-        ${lines.map((line) => {
-          return html`<span class="line">${line}</span> `;
+        ${lines.map((line, index) => {
+          const parts = this.#getLineParts({
+            lineIndex: index,
+            lineSequence: line,
+            codingIntervals
+          });
+          return html`
+            <span class="line">
+              ${parts.map(
+                (part) =>
+                  html`<span class=${part.coding ? 'coding' : ''}
+                    >${part.text}</span
+                  >`
+              )}
+            </span>
+          `;
         })}
       </div>
 
