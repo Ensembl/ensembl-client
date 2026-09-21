@@ -453,7 +453,6 @@ const interpolateUrl = (
   return usable && /^https?:\/\//i.test(url) ? url : null;
 };
 
-/** A link template filled from the `<plugin>.<field>` that `ref` names. */
 const linkFromHref = (
   template: string,
   ref: string,
@@ -462,10 +461,8 @@ const linkFromHref = (
 ): string | null =>
   interpolateUrl(template, { value: readField(ref, spec, entities) });
 
-// Named link builders, for links a template cannot express. Each gets the job
-// context so it can build a link the annotation field alone cannot. A row or
-// item names one in its `link.builder`; renderLink returns null for a name
-// that is not here.
+// Builders make the links a template cannot express. A spec names one in
+// `link.builder`, and renderLink returns null for a name not listed here.
 const LINK_BUILDERS: Record<
   string,
   (context: LinkBuilderContext, value: ReactNode) => ReactNode
@@ -501,8 +498,7 @@ const renderLink = (
   context: LinkBuilderContext,
   value: ReactNode = ''
 ): ReactNode => {
-  // A spec names builders by string, so a name such as `constructor` must not
-  // reach something on the object's prototype.
+  // A spec name such as `constructor` must not reach the object's prototype.
   const builder =
     link.builder && Object.hasOwn(LINK_BUILDERS, link.builder)
       ? LINK_BUILDERS[link.builder]

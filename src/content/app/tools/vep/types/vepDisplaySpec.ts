@@ -145,9 +145,8 @@ export type DisplayItemSpec = {
   label?: DisplayItemLabelSpec | null;
   cells?: DisplayCellSpec[] | null;
   rows?: DisplayItemFieldRowSpec[] | null;
-  /** A link on a label/value item's value. */
   link?: DisplayLinkSpec | null;
-  /** A `<plugin>.<field>` read from the entity whose value fills the link's `{value}`. */
+  /** A `<plugin>.<field>` whose value fills the link's `{value}`. */
   link_from?: string | null;
 };
 

@@ -96,7 +96,7 @@ export type FormPanel = {
   id: string;
   label: string;
   options: FormPanelOption[];
-  full_width?: boolean | null; // set on results display panels only
+  full_width?: boolean | null; // Only results display panels set this.
 };
 
 export type VepFormConfig = {

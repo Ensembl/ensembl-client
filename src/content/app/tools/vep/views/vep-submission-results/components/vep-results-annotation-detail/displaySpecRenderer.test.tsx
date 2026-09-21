@@ -2055,9 +2055,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('0.5')).toBeDefined();
     expect(screen.getByText('Pocket 2')).toBeDefined();
     expect(screen.getByText('Interface P12345')).toBeDefined();
-    // the protvar.url link is on every row. Now that both views
-    // share their labels this count is what proves the Show-all block is gated
-    // out: were it also rendering, its three rows would each add a link.
+    // Every row has a link. A rendered Show-all block would add three more.
     const links = screen.getAllByRole('link');
     expect(links).toHaveLength(4);
     expect(

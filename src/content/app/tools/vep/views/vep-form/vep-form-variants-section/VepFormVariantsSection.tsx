@@ -356,9 +356,8 @@ const ExampleVariantInput = (props: {
   return <TextButton onClick={onClick}>{props.children}</TextButton>;
 };
 
-// The backend states its upload limit in bytes and counts a megabyte as a
-// million of them. Until the limit arrives, the backend's own check is the
-// only one.
+// The backend counts a megabyte as a million bytes. Until its limit arrives,
+// only the backend checks the size.
 export const isWithinUploadLimit = (file: File, maxUploadBytes?: number) =>
   maxUploadBytes === undefined || file.size <= maxUploadBytes;
 
