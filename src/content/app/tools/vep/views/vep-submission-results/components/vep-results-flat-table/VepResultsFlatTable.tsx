@@ -252,6 +252,9 @@ const sentence = (words: string): string =>
   words.charAt(0).toUpperCase() + words.slice(1).replace(/_/g, ' ');
 
 export const cellLabel = (cell: DisplayCellSpec): string | undefined => {
+  if (cell.column_label) {
+    return cell.column_label;
+  }
   if (cell.label) {
     return cell.label;
   }
@@ -344,11 +347,9 @@ export const flatColumnsForOption = (
   let tableIndex = 0;
   const walk = (blocks: DisplayBlockSpec[], headings: string[]) => {
     for (const block of blocks) {
+      const segment = block.column_label ?? block.heading;
       if (block.kind === 'group') {
-        walk(
-          block.blocks,
-          block.heading ? [...headings, block.heading] : headings
-        );
+        walk(block.blocks, segment ? [...headings, segment] : headings);
       } else if (block.kind === 'table' && block.rows?.length) {
         // A fixed-mode table is a matrix rather than a list, because its
         // columns are headers and the values live on the rows (SpliceAI's
@@ -357,16 +358,13 @@ export const flatColumnsForOption = (
         // matrix.
         rowColumns.push({
           optionLabel,
-          headingPath: (block.heading
-            ? [...headings, block.heading]
-            : headings
-          ).filter((heading) => heading !== optionLabel),
+          headingPath: (segment ? [...headings, segment] : headings).filter(
+            (heading) => heading !== optionLabel
+          ),
           renderSpec: { ...specOption, heading: null, blocks: [block] }
         });
       } else if (block.kind === 'table') {
-        const path = (
-          block.heading ? [...headings, block.heading] : headings
-        ).filter(
+        const path = (segment ? [...headings, segment] : headings).filter(
           // An option's outermost group often repeats its name, and the header
           // already leads with the option, so this would read "Phenotypes -
           // Phenotypes - Gene associated".
@@ -382,9 +380,9 @@ export const flatColumnsForOption = (
         // its columns are those entries. The job's population list is the
         // fixed set, because a variant carries frequencies only for the
         // populations it was seen in.
-        const path = (
-          block.heading ? [...headings, block.heading] : headings
-        ).filter((heading) => heading !== optionLabel);
+        const path = (segment ? [...headings, segment] : headings).filter(
+          (heading) => heading !== optionLabel
+        );
         for (const entry of vocabularies[block.vocabulary] ?? []) {
           if (entry.scope !== block.scope) {
             continue;
@@ -402,9 +400,9 @@ export const flatColumnsForOption = (
           });
         }
       } else if (block.kind === 'rows' && (block.rows ?? []).length) {
-        const path = (
-          block.heading ? [...headings, block.heading] : headings
-        ).filter((heading) => heading !== optionLabel);
+        const path = (segment ? [...headings, segment] : headings).filter(
+          (heading) => heading !== optionLabel
+        );
         for (const rowSpec of block.rows ?? []) {
           const cells = rowSpec.item?.cells ?? [];
           // A row that stacks several values is a table lying down. ClinVar's
@@ -413,17 +411,20 @@ export const flatColumnsForOption = (
           // one sentence. A grid column is a few characters wide, so that
           // sentence wraps one letter per line. Split it as a table is split.
           if (cells.length > 1) {
-            // The column is named by what divides it and by what it stacks,
-            // rather than by the row's own label. ClinVar labels the germline
-            // summary "Classification" and leaves the somatic one unlabelled,
-            // and the records table beneath each has a "Classification" column
-            // of its own. Taking both names from the data gives every column a
-            // header no sibling shares.
-            const stackPath = [
-              ...path,
-              whereLabel(rowSpec.where) ?? rowSpec.label ?? '',
-              fieldLabel(rowSpec.from) ?? ''
-            ].filter(Boolean);
+            // A row that names itself for a grid says it in one segment. Where
+            // it does not, the name is taken from what divides the row and what
+            // it stacks, rather than from the row's own label. ClinVar labels
+            // the germline summary "Classification" and leaves the somatic one
+            // unlabelled, and the records table beneath each has a
+            // "Classification" column of its own, so a derived header is what
+            // keeps every column distinct from its siblings.
+            const stackPath = rowSpec.column_label
+              ? [...path, rowSpec.column_label]
+              : [
+                  ...path,
+                  whereLabel(rowSpec.where) ?? rowSpec.label ?? '',
+                  fieldLabel(rowSpec.from) ?? ''
+                ].filter(Boolean);
             for (const cell of cells) {
               rowColumns.push({
                 optionLabel,
@@ -455,7 +456,7 @@ export const flatColumnsForOption = (
           rowColumns.push({
             optionLabel,
             headingPath: path,
-            columnLabel: rowSpec.label ?? undefined,
+            columnLabel: rowSpec.column_label ?? rowSpec.label ?? undefined,
             renderSpec: {
               ...specOption,
               heading: null,
@@ -481,13 +482,13 @@ export const flatColumnsForOption = (
 
   const tableColumns: FlatColumn[] = tables.flatMap(({ block, path, key }) => {
     const divider = sharedHeading.has(path.join(PATH_KEY))
-      ? whereLabel(block.where)
+      ? (block.column_label ?? whereLabel(block.where))
       : undefined;
     const headingPath = divider ? [...path, divider] : path;
     return block.columns.map((column) => ({
       optionLabel,
       headingPath,
-      columnLabel: column.label ?? undefined,
+      columnLabel: column.column_label ?? column.label ?? undefined,
       tableKey: key,
       // Each column draws the table alone, one column wide and with no option
       // heading, because the headings it sat under are in this column's header
