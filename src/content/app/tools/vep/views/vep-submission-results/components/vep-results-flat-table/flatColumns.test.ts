@@ -40,6 +40,28 @@ const header = (column: {
     .join(' / ');
 
 describe('flatColumnsForOption', () => {
+  it('takes a column name the spec states over one it would derive', () => {
+    const named = JSON.parse(
+      JSON.stringify(option('phenotypes'))
+    ) as DisplayOptionSpec;
+    const stacked = named.blocks
+      .flatMap((block) => (block.kind === 'group' ? block.blocks : [block]))
+      .flatMap((block) => (block.kind === 'rows' ? block.rows : []))
+      .find((row) => (row.item?.cells ?? []).length > 1);
+
+    stacked!.column_label = 'Germline classification';
+    stacked!.item!.cells![0].column_label = 'Type';
+    const headers = flatColumnsForOption(named, 'Phenotypes').map(header);
+
+    expect(headers).toContain(
+      'Phenotypes / ClinVar / Germline classification / Type'
+    );
+    // The somatic row was left unnamed, so it still derives its header.
+    expect(headers).toContain(
+      'Phenotypes / ClinVar / Somatic / Classification summary / Type'
+    );
+  });
+
   it('splits a map_rows block into a column per population', () => {
     const columns = flatColumnsForOption(
       option('gnomad_exomes'),
