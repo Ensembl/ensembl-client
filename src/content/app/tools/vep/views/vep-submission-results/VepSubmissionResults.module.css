@@ -174,3 +174,30 @@
   --table-cell-padding-left: 0;
   --table-cell-padding-right: 0;
 }
+
+/* PROTOTYPE — the flat-view toggle. */
+.prototypeBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 40px;
+  border-bottom: 1px solid var(--color-medium-light-grey);
+}
+
+.prototypeToggle {
+  appearance: none;
+  border: 1px solid var(--color-blue);
+  background: none;
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--color-blue);
+  white-space: nowrap;
+
+  /* Inline-flex so the pending spinner sits beside the label rather than
+     displacing it, as on the Expand all control. */
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
