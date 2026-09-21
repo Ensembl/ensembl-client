@@ -224,23 +224,26 @@ export const formatValue = (
 export const renderRows = (
   rows: RowSpec[],
   emphasis = false,
-  decorateFirstLabel?: (label: ReactNode) => ReactNode // A function that adds the help button to the label
+  /**
+   * Applied to the first row that actually renders, not to rows[0], which may
+   * be dropped for an absent value. It takes the whole spec rather than the
+   * label, because a caller can change the row's shape as well as its text —
+   * adding the help button, or dropping a title the caller draws itself.
+   */
+  decorateFirstRow?: (row: RowSpec) => RowSpec
 ): ReactNode[] => {
   const nodes: ReactNode[] = [];
-  const label = (raw: ReactNode): ReactNode => {
-    if (!decorateFirstLabel || nodes.length > 0) {
-      return raw;
-    }
-    return decorateFirstLabel(raw);
-  };
-  rows.forEach((row, index) => {
+  const first = (row: RowSpec): RowSpec =>
+    decorateFirstRow && nodes.length === 0 ? decorateFirstRow(row) : row;
+  rows.forEach((spec, index) => {
     // A pre-rendered value (valueNode) bypasses formatting
-    if (row.valueNode !== undefined) {
-      if (row.valueNode !== null) {
+    if (spec.valueNode !== undefined) {
+      if (spec.valueNode !== null) {
+        const row = first(spec);
         nodes.push(
           <Row
             key={row.key ?? index}
-            label={label(row.label)}
+            label={row.label}
             value={row.valueNode}
             emphasis={emphasis}
             plain={row.plain}
@@ -250,17 +253,18 @@ export const renderRows = (
       }
       return;
     }
-    const formatted = isAbsent(row.value)
+    const formatted = isAbsent(spec.value)
       ? null
-      : formatValue(row.value, row.format);
+      : formatValue(spec.value, spec.format);
     if (formatted === null) {
-      if (row.placeholder === undefined) {
+      if (spec.placeholder === undefined) {
         return;
       }
+      const row = first(spec);
       nodes.push(
         <Row
           key={row.key ?? index}
-          label={label(row.label)}
+          label={row.label}
           value={row.placeholder}
           emphasis={emphasis}
           plain={row.plain}
@@ -270,10 +274,11 @@ export const renderRows = (
     }
 
     // Note that the value of this row is bolded.
+    const row = first(spec);
     nodes.push(
       <Row
         key={row.key ?? index}
-        label={label(row.label)}
+        label={row.label}
         value={
           row.link ? (
             <>
@@ -295,9 +300,9 @@ export const renderRows = (
 export const renderRowGroup = (
   rows: RowSpec[],
   level = 0, // rows' own nesting depth
-  decorateFirstLabel?: (label: ReactNode) => ReactNode
+  decorateFirstRow?: (row: RowSpec) => RowSpec
 ): ReactNode | null => {
-  const nodes = renderRows(rows, level === 0, decorateFirstLabel);
+  const nodes = renderRows(rows, level === 0, decorateFirstRow);
   return nodes.length ? <>{nodes}</> : null;
 };
 

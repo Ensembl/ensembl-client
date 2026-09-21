@@ -21,8 +21,8 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { withScore } from 'src/content/app/tools/vep/utils/annotationFormatters';
 import {
   renderRows,
-  renderRowGroup,
   renderRowBlock,
+  renderRowGroup,
   formatValue,
   isAbsent,
   withOptionHelp,
@@ -89,6 +89,13 @@ type Entities = {
    */
   helpAnchor?: { take: () => OptionHelp | null };
   vocabularies?: Record<string, VocabularyEntry[]>;
+  /**
+   * Set when the caller draws the option's title itself, so the option must not
+   * draw it again. Claimed the same way the help is, and by the same node,
+   * because which node is the visible title depends on which blocks the data
+   * lets draw.
+   */
+  hideTitle?: { take: () => true | null };
 };
 
 /** One row a `map_rows` block can draw: which slice it belongs to, the key it
@@ -99,16 +106,17 @@ export type VocabularyEntry = {
   label: string;
 };
 
-/** The first level-0 heading or row to call this function takes the help. */
-const makeHelpAnchor = (help: OptionHelp) => {
+/** A one-shot claim. The first taker gets the value, and every taker after it
+ *  gets null. */
+const oneShot = <T,>(value: T) => {
   let taken = false;
   return {
-    take: () => {
+    take: (): T | null => {
       if (taken) {
         return null;
       }
       taken = true;
-      return help;
+      return value;
     }
   };
 };
@@ -122,6 +130,53 @@ const claimHelp = (
     heading,
     (level === 0 ? entities.helpAnchor?.take() : null) ?? undefined
   );
+
+/**
+ * Whether this node is the option's visible title and the caller is already
+ * showing that title, in which case the node draws its content alone.
+ *
+ * Only level 0 can be the title. A nested heading divides the option up, and
+ * the reader needs it whatever the caller's own header says. The help hangs on
+ * the title, so it is taken here too rather than migrating onto whichever
+ * sub-heading draws next.
+ */
+const titleHidden = (entities: Entities, level: number): boolean => {
+  if (level !== 0 || !entities.hideTitle?.take()) {
+    return false;
+  }
+  entities.helpAnchor?.take();
+  return true;
+};
+
+/**
+ * A heading with its content beneath it, or the content alone when that heading
+ * is the option's title and the caller is showing it. Every heading an option
+ * can draw goes through here, so which heading is the title is answered once.
+ */
+const headingSection = (
+  heading: ReactNode,
+  entities: Entities,
+  level: number,
+  children: ReactNode
+): ReactNode =>
+  titleHidden(entities, level) ? (
+    <>{children}</>
+  ) : (
+    <OptionBlock label={claimHelp(heading, entities, level)} level={level}>
+      {children}
+    </OptionBlock>
+  );
+
+/**
+ * Does the same for an option with no heading at all, whose first surviving
+ * row is its title (REVEL, CADD, SPDI). A suppressed title keeps its value and
+ * sheds its label, and `plain` is the Row's own "value with nothing opposite
+ * it" mode.
+ */
+const titleRow = (row: RowSpec, entities: Entities, level: number): RowSpec =>
+  titleHidden(entities, level)
+    ? { ...row, label: null, plain: true }
+    : { ...row, label: claimHelp(row.label, entities, level) };
 
 /** Resolve a `<plugin>.<field>` reference against the right entity. */
 const readField = (
@@ -720,7 +775,7 @@ const renderMapRowsBlock = (
     return null;
   }
   return block.heading ? (
-    renderRowBlock(claimHelp(block.heading, entities, level), rows, level)
+    headingSection(block.heading, entities, level, nodes)
   ) : (
     <>{nodes}</>
   );
@@ -771,12 +826,7 @@ const renderListBlock = (
     : renderItems(items);
 
   return block.heading ? (
-    <OptionBlock
-      label={claimHelp(block.heading, entities, level)}
-      level={level}
-    >
-      {body}
-    </OptionBlock>
+    headingSection(block.heading, entities, level, body)
   ) : (
     <>{body}</>
   );
@@ -1144,16 +1194,9 @@ const withHeading = (
   table: ReactNode,
   entities: Entities
 ): ReactNode => {
-  const headed = block.heading ? (
-    <OptionBlock
-      label={claimHelp(block.heading, entities, level)}
-      level={level}
-    >
-      {table}
-    </OptionBlock>
-  ) : (
-    table
-  );
+  const headed = block.heading
+    ? headingSection(block.heading, entities, level, table)
+    : table;
   return block.indent ? (
     <Indented className={styles.optionChildren}>{headed}</Indented>
   ) : (
@@ -1429,12 +1472,7 @@ const renderBlock = (
       <Fragment key={index}>{node}</Fragment>
     ));
     return block.heading ? (
-      <OptionBlock
-        label={claimHelp(block.heading, entities, level)}
-        level={level}
-      >
-        {body}
-      </OptionBlock>
+      headingSection(block.heading, entities, level, body)
     ) : (
       <>{body}</>
     );
@@ -1454,6 +1492,10 @@ const renderBlock = (
   }
   const rows = block.rows.map((row) => toRowSpec(row, spec, entities));
   if (block.heading) {
+    if (titleHidden(entities, level)) {
+      const nodes = renderRows(rows);
+      return nodes.length ? <>{nodes}</> : null;
+    }
     return renderRowBlock(
       claimHelp(block.heading, entities, level),
       rows,
@@ -1463,9 +1505,7 @@ const renderBlock = (
   // When there is no designated heading at the option's level,
   // then the first available row becomes the option's visible title.
   // Examples: REVEL, CADD, SPDI.
-  return renderRowGroup(rows, level, (label) =>
-    claimHelp(label, entities, level)
-  );
+  return renderRowGroup(rows, level, (row) => titleRow(row, entities, level));
 };
 
 export const renderDisplayOption = (args: {
@@ -1478,6 +1518,14 @@ export const renderDisplayOption = (args: {
   genomeId?: string;
   help?: OptionHelp;
   vocabularies?: Record<string, VocabularyEntry[]>;
+  /**
+   * Whether the option draws its own title. Pass false from a caller that
+   * already shows it, such as the flat table, which heads each column with the
+   * option's name. The content then arrives with no title to strip back off.
+   * The detail panel lists every option together, where the title tells one
+   * option from the next, so this defaults to true.
+   */
+  showTitle?: boolean;
 }): ReactNode | null => {
   const {
     option,
@@ -1488,7 +1536,8 @@ export const renderDisplayOption = (args: {
     subOptionRan = () => false,
     genomeId = '',
     help,
-    vocabularies
+    vocabularies,
+    showTitle = true
   } = args;
   const entities: Entities = {
     consequence,
@@ -1497,7 +1546,8 @@ export const renderDisplayOption = (args: {
     showAll,
     subOptionRan,
     linkContext: { genomeId, consequence },
-    helpAnchor: help ? makeHelpAnchor(help) : undefined
+    helpAnchor: help ? oneShot(help) : undefined,
+    hideTitle: showTitle ? undefined : oneShot(true as const)
   };
   // The option heading is the top level (0); its blocks are sub-options one
   // level deeper. Without an option heading the blocks are themselves the
@@ -1514,9 +1564,7 @@ export const renderDisplayOption = (args: {
   ));
 
   return option.heading ? (
-    <OptionBlock label={claimHelp(option.heading, entities, 0)} level={0}>
-      {body}
-    </OptionBlock>
+    headingSection(option.heading, entities, 0, body)
   ) : (
     <>{body}</>
   );
