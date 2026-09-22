@@ -58,6 +58,7 @@ export type AfSource = {
   source: string; // gnomad_exomes | gnomad_genomes | all_of_us
   population: string;
   label: string;
+  source_label?: string | null;
 };
 
 export type Variant = {
@@ -119,10 +120,6 @@ export type PredictedTranscriptConsequence = {
   // pathogenicity predictions, gene constraint, ...).
   annotations?: Annotation[];
   annotation_refs?: number[];
-};
-
-export type HgvsgRepresentation = {
-  genomic: string | null;
 };
 
 export type PredictedIntergenicConsequence = {

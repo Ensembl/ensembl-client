@@ -145,8 +145,9 @@ export type DisplayItemSpec = {
   label?: DisplayItemLabelSpec | null;
   cells?: DisplayCellSpec[] | null;
   rows?: DisplayItemFieldRowSpec[] | null;
-  /** A trailing link on a label/value item's value (ProtVar's per-pocket icon). */
   link?: DisplayLinkSpec | null;
+  /** A `<plugin>.<field>` whose value fills the link's `{value}`. */
+  link_from?: string | null;
 };
 
 /**

@@ -96,6 +96,7 @@ export type FormPanel = {
   id: string;
   label: string;
   options: FormPanelOption[];
+  full_width?: boolean | null; // Only results display panels set this.
 };
 
 export type VepFormConfig = {
@@ -103,6 +104,7 @@ export type VepFormConfig = {
     transcript_set: SelectParameter;
   };
   panels: FormPanel[];
+  max_upload_bytes?: number;
 };
 
 export type VepFormParameterName = keyof VepFormConfig['parameters'];

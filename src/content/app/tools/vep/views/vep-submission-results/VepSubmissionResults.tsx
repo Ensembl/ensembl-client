@@ -47,9 +47,6 @@ import {
   areVepSubmissionResultsExpired,
   isFailedVepSubmission
 } from 'src/content/app/tools/vep/utils/vepResultsAvailability';
-import { buildProtvarUrlFromHgvsg } from 'src/content/app/tools/vep/utils/buildProtvarUrlFromHgvsg';
-import { buildOpenTargetsVariantId } from 'src/content/app/tools/vep/utils/openTargetsVariantId';
-import { getAnnotation } from 'src/content/app/tools/vep/utils/annotations';
 
 import VepSubmissionHeader from 'src/content/app/tools/vep/components/vep-submission-header/VepSubmissionHeader';
 import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summary/VepInputSummary';
@@ -75,8 +72,7 @@ import TextButton from 'src/shared/components/text-button/TextButton';
 import type { VepSubmissionWithoutInputFile } from 'src/content/app/tools/vep/types/vepSubmission';
 import type {
   VepResultsResponse,
-  AfSource,
-  HgvsgRepresentation
+  AfSource
 } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
 import type { DisplaySpec } from 'src/content/app/tools/vep/types/vepDisplaySpec';
@@ -87,16 +83,8 @@ import {
 
 import styles from './VepSubmissionResults.module.css';
 
-const AF_SOURCE_LABELS: Record<string, string> = {
-  gnomad_exomes: 'gnomAD exomes',
-  gnomad_genomes: 'gnomAD genomes',
-  all_of_us: 'All of Us',
-  gnomad_sv: 'gnomAD SV',
-  gnomad_cnv: 'gnomAD CNV'
-};
-
-const formatAfSourceLabel = (source: AfSource): string => {
-  const base = AF_SOURCE_LABELS[source.source] ?? source.source;
+export const formatAfSourceLabel = (source: AfSource): string => {
+  const base = source.source_label ?? source.source;
   return source.population ? `${base} — ${source.label}` : `${base} (overall)`;
 };
 
@@ -710,15 +698,6 @@ const VariantRow = (props: {
 
     const hasDetail = Boolean(allele) && hasSelectedOptions;
 
-    const protvarUrl = buildProtvarUrlFromHgvsg(
-      getAnnotation<HgvsgRepresentation>(allele, 'hgvsg')?.genomic
-    );
-
-    const openTargetsVariantId = buildOpenTargetsVariantId(
-      variant,
-      allele?.allele_sequence
-    );
-
     const {
       variant: variantCell,
       allele: alleleCell,
@@ -789,8 +768,6 @@ const VariantRow = (props: {
                 panels={panels}
                 display={display}
                 availableAfSources={availableAfSources}
-                protvarUrl={protvarUrl}
-                openTargetsVariantId={openTargetsVariantId}
                 onCollapse={() => toggleDetail(index)}
               />
             </td>

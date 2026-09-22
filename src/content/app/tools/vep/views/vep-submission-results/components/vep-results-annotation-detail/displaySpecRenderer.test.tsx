@@ -52,10 +52,8 @@ const renderOption = (
     spec?: DisplaySpec;
     showAll?: boolean;
     subOptionRan?: (optionId: string, defaultValue: boolean) => boolean;
-    protvarUrl?: string;
     genomeId?: string;
     help?: OptionHelp;
-    openTargetsVariantId?: string;
     vocabularies?: Record<string, VocabularyEntry[]>;
   }
 ) =>
@@ -68,10 +66,8 @@ const renderOption = (
         allele: { annotations: entities.allele ?? [] },
         showAll: entities.showAll,
         subOptionRan: entities.subOptionRan,
-        protvarUrl: entities.protvarUrl,
         genomeId: entities.genomeId,
         help: entities.help,
-        openTargetsVariantId: entities.openTargetsVariantId,
         vocabularies: entities.vocabularies
       })}
     </>
@@ -652,8 +648,7 @@ describe('renderDisplayOption', () => {
             pockets: [{ pocket_id: '1', score: 0.5 }]
           })
         ]
-      },
-      protvarUrl: 'https://protvar.example/x'
+      }
     });
     expect(screen.getByText('ProtVar')).toBeDefined(); // the option heading
     expect(screen.getByText('Protein Structure Stability')).toBeDefined();
@@ -977,17 +972,17 @@ describe('renderDisplayOption', () => {
     expect(container.querySelectorAll('tbody a')).toHaveLength(0);
   });
 
-  it('links the variant to its OpenTargets page', () => {
+  it('links opentargets.variant_id to its OpenTargets page', () => {
     renderOption('opentargets', {
       allele: [
         annotation('opentargets', 'allele', {
+          variant_id: '1_230710048_A_G',
           gwas_associations: [],
           qtl_associations: [
             { gene_id: 'ENSG_A', biosample: 'blood', p_value: null, beta: null }
           ]
         })
-      ],
-      openTargetsVariantId: '1_230710048_A_G'
+      ]
     });
     expect(screen.getByText('Variant link')).toBeDefined();
     const link = screen.getByText('1_230710048_A_G').closest('a');
@@ -995,23 +990,14 @@ describe('renderDisplayOption', () => {
       'https://platform.opentargets.org/variant/1_230710048_A_G'
     );
     expect(link?.getAttribute('target')).toBe('_blank');
-    // the link sits on its own line under the heading rather than being
-    // pushed to the far edge as the value half of a label/value row
-    expect(link?.closest('[class*="row"]')?.className).toMatch(/plainRow/);
   });
 
   it('renders nothing at all when the variant has no OpenTargets data', () => {
-    // The link is built from the variant's own coordinates, so without a gate
-    // it would appear on every variant in the results whether OpenTargets had
-    // anything to say about it or not.
-    const { container } = renderOption('opentargets', {
-      allele: [],
-      openTargetsVariantId: '1_230710048_A_G'
-    });
+    const { container } = renderOption('opentargets', { allele: [] });
     expect(container.innerHTML).toBe('');
   });
 
-  it('drops the variant link when the allele could not be resolved', () => {
+  it('drops the variant link when opentargets.variant_id is absent', () => {
     renderOption('opentargets', {
       allele: [
         annotation('opentargets', 'allele', {
@@ -2050,11 +2036,11 @@ describe('renderDisplayOption', () => {
               { pocket_id: '1', score: 0.5 },
               { pocket_id: '2', score: null } // no score, still renders + links
             ],
-            interaction_interfaces: [{ partner: 'P12345', score: 0.9 }]
+            interaction_interfaces: [{ partner: 'P12345', score: 0.9 }],
+            url: 'https://protvar.example/x'
           })
         ]
-      },
-      protvarUrl: 'https://protvar.example/x'
+      }
     });
     expect(screen.getByText('ProtVar')).toBeDefined(); // option heading
     expect(screen.getByText('Protein Structure Stability')).toBeDefined(); // from the fixture
@@ -2069,9 +2055,7 @@ describe('renderDisplayOption', () => {
     expect(screen.getByText('0.5')).toBeDefined();
     expect(screen.getByText('Pocket 2')).toBeDefined();
     expect(screen.getByText('Interface P12345')).toBeDefined();
-    // the ProtVar builder link (same href) is on every row. Now that both views
-    // share their labels this count is what proves the Show-all block is gated
-    // out: were it also rendering, its three rows would each add a link.
+    // Every row has a link. A rendered Show-all block would add three more.
     const links = screen.getAllByRole('link');
     expect(links).toHaveLength(4);
     expect(
@@ -2091,13 +2075,13 @@ describe('renderDisplayOption', () => {
               { pocket_id: '1', score: 0.5 },
               { pocket_id: '2', score: 1 }
             ],
-            interaction_interfaces: [] // none -> dash, no link
+            interaction_interfaces: [], // none -> dash, no link
+            url: 'https://protvar.example/x'
           })
         ]
       },
       showAll: true,
-      subOptionRan: () => true, // all three ProtVar sub-options ran
-      protvarUrl: 'https://protvar.example/x'
+      subOptionRan: () => true // all three ProtVar sub-options ran
     });
     expect(screen.getByText('Protein Structure Stability')).toBeDefined();
     expect(screen.getByText('1.23')).toBeDefined();
@@ -2129,8 +2113,7 @@ describe('renderDisplayOption', () => {
       },
       showAll: true,
       // only stability ran
-      subOptionRan: (id: string) => id === 'protvar_stability',
-      protvarUrl: 'https://protvar.example/x'
+      subOptionRan: (id: string) => id === 'protvar_stability'
     });
     // this is the only option that the user selected
     expect(screen.getByText('Protein Structure Stability')).toBeDefined();
@@ -2142,23 +2125,180 @@ describe('renderDisplayOption', () => {
     ).toBeNull();
   });
 
-  test('ProtVar: builder link on a row and on list items', () => {
+  test('ProtVar: the row and both lists link to protvar.url', () => {
+    const url = 'https://www.ebi.ac.uk/ProtVar/g/1/11022/G/T?annotation=fun';
     renderOption('protvar', {
       consequence: {
         annotations: [
           annotation('protvar', 'transcript', {
             structure_stability_score: 1.23,
-            pockets: [{ pocket_id: 'P34', energy: 2, score: 0.324 }]
+            pockets: [{ pocket_id: 'P34', energy: 2, score: 0.324 }],
+            interaction_interfaces: [{ partner: 'P12345', score: 0.9 }],
+            url
           })
         ]
-      },
-      protvarUrl: 'https://www.ebi.ac.uk/ProtVar/query?chromosome=1',
-      subOptionRan: () => true
+      }
     });
-    const scoreLink = screen.getByText('0.324').closest('a');
-    expect(scoreLink?.getAttribute('href')).toBe(
-      'https://www.ebi.ac.uk/ProtVar/query?chromosome=1'
+    for (const text of ['1.23', '0.324', '0.9']) {
+      expect(screen.getByText(text).closest('a')?.getAttribute('href')).toBe(
+        url
+      );
+    }
+  });
+
+  test('ProtVar: without protvar.url the values show unlinked', () => {
+    renderOption('protvar', {
+      consequence: {
+        annotations: [
+          annotation('protvar', 'transcript', {
+            structure_stability_score: 1.23,
+            pockets: [{ pocket_id: 'P34', score: 0.324 }]
+          })
+        ]
+      }
+    });
+    expect(screen.getByText('1.23')).toBeDefined();
+    expect(screen.getByText('Pocket P34')).toBeDefined();
+    expect(screen.getByText('0.324')).toBeDefined();
+    expect(screen.queryAllByRole('link')).toHaveLength(0);
+  });
+
+  test('a builder named after an object prototype member renders the plain value', () => {
+    const option: DisplayOptionSpec = {
+      option_id: 'protvar',
+      blocks: [
+        {
+          kind: 'rows',
+          rows: [
+            {
+              label: 'Protein Structure Stability',
+              from: 'protvar.structure_stability_score',
+              link: { kind: 'external', builder: 'constructor' }
+            }
+          ]
+        }
+      ]
+    };
+    render(
+      <>
+        {renderDisplayOption({
+          option,
+          spec: { ...spec, options: [option] },
+          consequence: {
+            annotations: [
+              annotation('protvar', 'transcript', {
+                structure_stability_score: 0.5
+              })
+            ]
+          },
+          allele: { annotations: [] }
+        })}
+      </>
     );
+
+    expect(screen.getByText('0.5')).toBeDefined();
+  });
+
+  test('a link naming an unknown builder renders the plain value', () => {
+    const unknownBuilder = { kind: 'external', builder: 'protvar' } as const;
+    const option: DisplayOptionSpec = {
+      option_id: 'protvar',
+      blocks: [
+        {
+          kind: 'rows',
+          rows: [
+            {
+              label: 'Protein Structure Stability',
+              from: 'protvar.structure_stability_score',
+              link: unknownBuilder
+            },
+            {
+              label: 'Variant link',
+              link: { kind: 'external', builder: 'opentargets_variant' }
+            },
+            {
+              label: 'Protein ID',
+              from: 'protvar.protein_id',
+              link: { kind: 'app_popup', builder: 'retired_popup' }
+            }
+          ]
+        },
+        {
+          heading: 'Protein Pockets',
+          kind: 'list',
+          from: 'protvar.pockets',
+          item: {
+            label: { template: 'Pocket {pocket_id}' },
+            cells: [{ from: 'score' }],
+            link: unknownBuilder
+          }
+        }
+      ]
+    };
+    render(
+      <>
+        {renderDisplayOption({
+          option,
+          spec,
+          consequence: {
+            annotations: [
+              annotation('protvar', 'transcript', {
+                structure_stability_score: 1.23,
+                protein_id: 'ENSP1',
+                pockets: [{ pocket_id: 'P34', score: 0.324 }]
+              })
+            ]
+          },
+          allele: { annotations: [] }
+        })}
+      </>
+    );
+    expect(screen.getByText('1.23')).toBeDefined();
+    expect(screen.getByText('ENSP1')).toBeDefined();
+    expect(screen.getByText('Pocket P34')).toBeDefined();
+    expect(screen.getByText('0.324')).toBeDefined();
+    expect(screen.queryByText('Variant link')).toBeNull();
+    expect(screen.queryAllByRole('link')).toHaveLength(0);
+  });
+
+  test('a list item without link_from keeps its builder link', () => {
+    const option: DisplayOptionSpec = {
+      option_id: 'protein',
+      blocks: [
+        {
+          heading: 'Proteins',
+          kind: 'list',
+          from: 'protein.entries',
+          item: {
+            label: { template: 'Protein {n}' },
+            cells: [{ from: 'id' }],
+            link: { kind: 'app_popup', builder: 'protein_popup' }
+          }
+        }
+      ]
+    };
+    render(
+      <>
+        {renderDisplayOption({
+          option,
+          spec,
+          consequence: {
+            annotations: [
+              annotation('protein', 'transcript', {
+                entries: [{ n: '1', id: 'ENSP00000269305' }]
+              })
+            ],
+            stable_id: 'ENST00000357654'
+          } as unknown as PredictedTranscriptConsequence,
+          allele: { annotations: [] },
+          genomeId: 'homo_sapiens_GCA_000001405_29'
+        })}
+      </>
+    );
+    expect(screen.getByText('Protein 1')).toBeDefined();
+    expect(
+      screen.getByText('ENSP00000269305').closest('button')
+    ).not.toBeNull();
   });
 
   // --- app_popup link builder (protein) -------------------------------------
@@ -2557,8 +2697,7 @@ describe('table column alignment', () => {
           ],
           qtl_associations: []
         })
-      ],
-      openTargetsVariantId: '1_1_A_G'
+      ]
     });
     // Disease | Gene | Lead variant p-value | beta coefficient | L2G
     expect(alignmentOf(container, 'th')).toEqual([

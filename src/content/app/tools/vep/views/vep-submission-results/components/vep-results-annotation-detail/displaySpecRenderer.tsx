@@ -71,16 +71,7 @@ import styles from './VepResultsAnnotationDetail.module.css';
 
 export type LinkBuilderContext = {
   genomeId: string;
-  protvarUrl?: string;
   consequence: AnnotatedEntity | null | undefined;
-  /**
-   * This variant in OpenTargets' own notation — `1_230710048_A_G`, i.e.
-   * chromosome_position_reference_alternate. Built upstream from the variant
-   * and allele (see VepSubmissionResults) because it comes from the results
-   * row rather than from anything a plugin parsed, so no `<plugin>.<field>`
-   * can name it.
-   */
-  openTargetsVariantId?: string;
 };
 
 type Entities = {
@@ -293,7 +284,8 @@ const toRowSpec = (
       value,
       valueNode: absent
         ? null
-        : renderLink(row.link, entities.linkContext, String(value))
+        : (renderLink(row.link, entities.linkContext, String(value)) ??
+          String(value))
     };
   }
 
@@ -313,9 +305,6 @@ const toRowSpec = (
   }
 
   if (row.link?.kind === 'external' && row.link.template) {
-    const href = row.link_from
-      ? readField(row.link_from, spec, entities)
-      : value;
     // One value holding several, each its own link: a ClinVar custom joins the
     // records that matched a variant with `&`, and one URL built from all of
     // them points nowhere.
@@ -342,9 +331,9 @@ const toRowSpec = (
         )
       };
     }
-    const hrefString = interpolateUrl(row.link.template, {
-      value: String(href)
-    });
+    const hrefString = row.link_from
+      ? linkFromHref(row.link.template, row.link_from, spec, entities)
+      : interpolateUrl(row.link.template, { value });
     return {
       key: row.key ?? undefined,
       label: rowLabel(row),
@@ -464,27 +453,20 @@ const interpolateUrl = (
   return usable && /^https?:\/\//i.test(url) ? url : null;
 };
 
-// Named link builders, for links that are not a simple `{field}` template: an
-// algorithmic URL (ProtVar) or an in-app "View in" popup (the protein id). Each
-// gets the job context (genome / ProtVar URL / consequence) so it can build a
-// link the annotation field alone cannot. Referenced by name from a row's or
-// item's `link.builder`.
+const linkFromHref = (
+  template: string,
+  ref: string,
+  spec: DisplaySpec,
+  entities: Entities
+): string | null =>
+  interpolateUrl(template, { value: readField(ref, spec, entities) });
+
+// Builders make the links a template cannot express. A spec names one in
+// `link.builder`, and renderLink returns null for a name not listed here.
 const LINK_BUILDERS: Record<
   string,
   (context: LinkBuilderContext, value: ReactNode) => ReactNode
 > = {
-  protvar: (context, value) =>
-    context.protvarUrl ? (
-      <ExternalLink to={context.protvarUrl}>{value}</ExternalLink>
-    ) : null,
-  opentargets_variant: (context) =>
-    context.openTargetsVariantId ? (
-      <ExternalLink
-        to={`https://platform.opentargets.org/variant/${context.openTargetsVariantId}`}
-      >
-        {context.openTargetsVariantId}
-      </ExternalLink>
-    ) : null,
   // The protein id as an in-app "View in" popup
   protein_popup: (context, value) => {
     const consequence = context.consequence as
@@ -516,7 +498,11 @@ const renderLink = (
   context: LinkBuilderContext,
   value: ReactNode = ''
 ): ReactNode => {
-  const builder = link.builder ? LINK_BUILDERS[link.builder] : undefined;
+  // A spec name such as `constructor` must not reach the object's prototype.
+  const builder =
+    link.builder && Object.hasOwn(LINK_BUILDERS, link.builder)
+      ? LINK_BUILDERS[link.builder]
+      : undefined;
   return builder ? builder(context, value) : null;
 };
 
@@ -621,6 +607,20 @@ const renderItemLabel = (
   return label.wrap ? label.wrap.replace('{}', text) : text;
 };
 
+const renderItemLink = (
+  item: DisplayItemSpec,
+  content: ReactNode,
+  entities: Entities,
+  spec: DisplaySpec
+): ReactNode => {
+  const link = item.link!;
+  if (link.kind === 'external' && link.template && item.link_from) {
+    const href = linkFromHref(link.template, item.link_from, spec, entities);
+    return href ? <ExternalLink to={href}>{content}</ExternalLink> : null;
+  }
+  return renderLink(link, entities.linkContext, content);
+};
+
 const renderListItem = (
   item: DisplayItemSpec,
   element: unknown,
@@ -656,7 +656,7 @@ const renderListItem = (
   }
   const label = renderItemLabel(item.label, element);
   const linkNode = item.link
-    ? renderLink(item.link, entities.linkContext, <>{cells}</>)
+    ? renderItemLink(item, <>{cells}</>, entities, spec)
     : null;
   if (!label && !cells.length && !linkNode) {
     return null;
@@ -1476,8 +1476,6 @@ export const renderDisplayOption = (args: {
   showAll?: boolean;
   subOptionRan?: (optionId: string, defaultValue: boolean) => boolean;
   genomeId?: string;
-  protvarUrl?: string;
-  openTargetsVariantId?: string;
   help?: OptionHelp;
   vocabularies?: Record<string, VocabularyEntry[]>;
 }): ReactNode | null => {
@@ -1489,8 +1487,6 @@ export const renderDisplayOption = (args: {
     showAll = false,
     subOptionRan = () => false,
     genomeId = '',
-    protvarUrl,
-    openTargetsVariantId,
     help,
     vocabularies
   } = args;
@@ -1500,7 +1496,7 @@ export const renderDisplayOption = (args: {
     vocabularies,
     showAll,
     subOptionRan,
-    linkContext: { genomeId, protvarUrl, openTargetsVariantId, consequence },
+    linkContext: { genomeId, consequence },
     helpAnchor: help ? makeHelpAnchor(help) : undefined
   };
   // The option heading is the top level (0); its blocks are sub-options one
