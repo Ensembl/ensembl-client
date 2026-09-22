@@ -1,33 +1,22 @@
-/* PROTOTYPE styling — deliberately plain. The point of this view is the shape
-   of the grid, not its finish. */
+/* PROTOTYPE — the styling is deliberately plain. */
 
 .scroller {
   overflow-x: auto;
   overflow-y: visible;
   max-width: 100%;
 
-  /* Grab-to-pan across the width, for a grid several screens wide. */
+  /* Dragging pans the grid sideways. */
   cursor: grab;
 }
 
 .table {
-  /* Separate, not collapsed, and the frozen columns are why.
-
-     Collapsed borders belong to the *table*, not to the cells: the browser
-     resolves them once and paints them in the table's own layer. A sticky cell
-     sits above that layer for its background but not for those borders, so the
-     grid lines of the columns scrolling underneath carried on straight through
-     the frozen ones. Separated borders belong to each cell and travel with it.
-
-     `border-spacing: 0` keeps the grid looking collapsed; the cells below draw
-     a right and bottom edge each, with the top and left closed by the first row
-     and column, so nothing doubles up. */
+  /* Collapsed borders paint in the table's layer and show through the sticky
+     columns. Separate borders move with their cells. */
   border-collapse: separate;
   border-spacing: 0;
   font-size: 13px;
 
-  /* Fixed, so a single wide cell (a phenotype table, a ClinVar conditions
-     block) cannot stretch its column and drag the whole grid wider still. */
+  /* A fixed layout stops one wide cell from stretching its column. */
   table-layout: fixed;
 }
 
@@ -40,7 +29,7 @@
   text-align: left;
 }
 
-/* Close the two outer edges the per-cell rules above leave open. */
+/* Close the top and left edges that the per-cell borders leave open. */
 .table thead > tr > th {
   border-top: 1px solid var(--color-medium-light-grey);
 }
@@ -50,38 +39,28 @@
   border-left: 1px solid var(--color-medium-light-grey);
 }
 
-/* The identity columns stay put while the annotation columns scroll past —
-   without them a row loses which variant it belongs to within a screen or two
-   of scrolling, which is most of what makes a very wide table unreadable.
-
-   `left` and the widths come from IDENTITY_COLUMNS as inline styles, so adding
-   or resizing one cannot leave a stale offset behind here. */
+/* The identity columns stay put while the annotation columns scroll. Their
+   `left` offsets and widths come from IDENTITY_COLUMNS as inline styles. */
 .identity {
   position: sticky;
 
-  /* Above everything that scrolls under it. The annotation cells are static, so
-     any positioned thing inside one — a popup, a tooltip anchor — would
-     otherwise paint over the frozen columns as it passed beneath. */
+  /* Positioned content in the annotation cells, such as a popup, would
+     otherwise paint over these columns. */
   z-index: 3;
   background-color: var(--color-white);
 
-  /* Wrap rather than truncate. The widths above are sized for what these
-     normally hold, so wrapping is the escape hatch for the long tail — a
-     variant with an unusually long name, or a consequence list of several
-     terms — instead of hiding it behind an ellipsis. `anywhere` because
-     transcript and gene ids have nowhere to break. */
+  /* Long values wrap instead of truncating. `anywhere` breaks ids that have no
+     spaces. */
   overflow-wrap: anywhere;
 }
 
-/* The division between what identifies a row and what annotates it. */
+/* A heavier rule separates the identity columns from the annotations. */
 .identity:last-of-type {
   border-right: 2px solid var(--color-medium-dark-grey);
 }
 
-/* These columns do not move, so they do not offer to be dragged. The grab hand
-   belongs over the part that pans; here it would promise something that cannot
-   happen. `!important` because .dragging sets the cursor on the scroller, which
-   would otherwise win over this while a drag is in progress elsewhere. */
+/* The identity columns do not pan, so they show no grab cursor. `!important`
+   keeps it that way while .dragging sets the cursor on the scroller. */
 .identity,
 .dragging .identity {
   cursor: default !important;
@@ -110,11 +89,8 @@
   min-width: 180px;
   max-width: 180px;
 
-  /* Wrap, never scroll. A scrollbar inside a cell of a grid that already
-     scrolls horizontally means two scrollers under one pointer, and it hides
-     the value it is holding — the row can simply be as tall as it needs.
-     `anywhere` because much of this is unbroken text (transcript ids, HGVS
-     notation) that has no space to wrap at. */
+  /* Wrap instead of scrolling, because a scrollbar here would nest inside the
+     grid's own. `anywhere` breaks ids and HGVS strings that have no spaces. */
   overflow-wrap: anywhere;
 }
 
@@ -124,9 +100,8 @@
   color: var(--color-dark-grey);
 }
 
-/* Paging the rows, not the variants — see ROWS_PER_PAGE. Outside the scrolling
-   area, so it stays put however far right the grid is scrolled without needing
-   to be stuck there. */
+/* The row pager sits outside the scroller, so it stays in view when the grid
+   scrolls sideways. See ROWS_PER_PAGE. */
 .rowPager {
   display: flex;
   align-items: center;
@@ -161,34 +136,28 @@
   color: var(--color-dark-grey);
 }
 
-/* The table column's own label, under the option and its headings. */
+/* The table column's label sits under the option and its headings. */
 .subColumnName {
   display: block;
   font-weight: var(--font-weight-bold);
 }
 
-/* A split-out table column renders as a one-column table whose header repeats
-   the column label this cell already sits under. Hidden rather than pruned from
-   the spec: the header is the renderer's business, and the pruning here is only
-   meant to choose *which* column, not to restyle it. */
+/* A split table column renders as a one-column table whose header repeats the
+   grid's column header. CSS hides it because the renderer owns the header. */
 .cell table thead {
   display: none;
 }
 
-/* Data that was a table in the expandable view brings its own row rules and
-   indent with it. Inside a grid cell that reads as a table within a table, and
-   the grid already draws the edges — so what is left is a stack of values, not
-   a table, and it should look like one. */
+/* The grid already draws cell edges, so a table inside a cell drops its own
+   borders and indent. */
 .cell table td,
 .cell table th {
   border: none;
   padding: 2px 0;
 }
 
-/* A cell holding a whole table keeps what that table says about itself. Its
-   header names the values (SpliceAI's splicing events against ΔS and ΔP), and
-   without the horizontal padding a row label runs straight into its first
-   number. */
+/* A cell holding a whole table keeps its header, which names the values (such
+   as SpliceAI's ΔS and ΔP), and pads its row labels away from the numbers. */
 .cell.wholeTable table thead {
   display: table-header-group;
 }
@@ -198,23 +167,22 @@
   padding: 2px 8px 2px 0;
 }
 
-/* Likewise the scroll wrapper a wide breakdown table sits in: its column is
-   already a fixed width that scrolls with the grid. */
+/* A wide table's scroll wrapper stops scrolling, because the grid already
+   scrolls. */
 .cell :global(div[class*='tableScroll']) {
   overflow: visible;
 }
 
-/* A second scrollbar above the grid. The one at the bottom of a table this tall
-   is often off screen when the rows being read are not, so the reader has to
-   leave the place they are looking at to move sideways. */
+/* A second scrollbar sits above the grid, because the bottom one is often off
+   screen. */
 .topScrollBar {
   overflow-x: auto;
   overflow-y: hidden;
   max-width: 100%;
 }
 
-/* Nothing to show: it exists to give the bar above something to scroll, and is
-   kept as wide as the table by the layout effect. */
+/* The layout effect keeps this spacer as wide as the table, so the top bar has
+   something to scroll. */
 .topScrollSpacer {
   height: 1px;
 }

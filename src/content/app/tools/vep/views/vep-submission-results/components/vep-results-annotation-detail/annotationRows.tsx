@@ -225,10 +225,8 @@ export const renderRows = (
   rows: RowSpec[],
   emphasis = false,
   /**
-   * Applied to the first row that actually renders, not to rows[0], which may
-   * be dropped for an absent value. It takes the whole spec rather than the
-   * label, because a caller can change the row's shape as well as its text —
-   * adding the help button, or dropping a title the caller draws itself.
+   * Runs on the first row that renders, since an absent value can drop
+   * rows[0]. A caller uses it to add the help button or to hide the title.
    */
   decorateFirstRow?: (row: RowSpec) => RowSpec
 ): ReactNode[] => {

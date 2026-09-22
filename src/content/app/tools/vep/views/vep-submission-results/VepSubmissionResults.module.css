@@ -195,8 +195,7 @@
   color: var(--color-blue);
   white-space: nowrap;
 
-  /* Inline-flex so the pending spinner sits beside the label rather than
-     displacing it, as on the Expand all control. */
+  /* Inline-flex keeps the pending spinner beside the label. */
   display: inline-flex;
   align-items: center;
   gap: 6px;
