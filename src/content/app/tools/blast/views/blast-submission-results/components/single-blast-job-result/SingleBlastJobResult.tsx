@@ -33,7 +33,6 @@ import BlastHitsDiagram from 'src/content/app/tools/blast/components/blast-hits-
 import { BlastGenomicHitsDiagram } from 'src/content/app/tools/blast/components/blast-genomic-hits-diagram';
 import BlastSequenceAlignment from 'src/content/app/tools/blast/components/blast-sequence-alignment/BlastSequenceAlignment';
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
-import Chevron from 'src/shared/components/chevron/Chevron';
 
 import {
   createTSVForGenomicBlast,
@@ -235,9 +234,6 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         <div className={styles.failedJobStatus}>Job failed</div>
         <BlastSpecies
           species={speciesInfo}
-          isExpanded={false}
-          toggleExpanded={setExpanded}
-          jobResult={jobResult}
         />
       </div>
     );
@@ -258,9 +254,11 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         )}
         <BlastSpecies
           species={speciesInfo}
+        />
+        <ResultsTableToggle
           isExpanded={isExpanded}
-          toggleExpanded={setExpanded}
           jobResult={jobResult}
+          toggleExpanded={setExpanded}
         />
         {isExpanded && (
           <HitsTable
@@ -376,48 +374,52 @@ const NonGenomicHitsDiagramContainer = (props: {
   );
 };
 
-const BlastSpecies = (props: {
+const BlastSpecies = ({
+  species
+}: {
   species: Species;
-  isExpanded: boolean;
-  toggleExpanded: (isExpanded: boolean) => void;
-  jobResult: BlastJobWithResults;
 }) => {
-  const { species, isExpanded, toggleExpanded, jobResult } = props;
-  const hasHits = jobResult.data.hits.length > 0;
-
-  const onClick = () => {
-    if (hasHits) {
-      toggleExpanded(!isExpanded);
-    }
-  };
-
-  const elementClasses = classNames(styles.blastSpecies, {
-    [styles.blastSpeciesActive]: hasHits
-  });
-
-  const speciesName = (
-    <>
+  return (
+    <span className={styles.blastSpecies}>
       {species.common_name && <span>{species.common_name}</span>}
       <span className={styles.speciesScientificName}>
         {species.scientific_name}
       </span>
       <span className={styles.speciesAssemblyName}>
         {species.assembly.name}
-        {hasHits && (
-          <Chevron
-            className={styles.blastSpeciesChevron}
-            direction={isExpanded ? 'up' : 'down'}
-            animate={true}
-          />
-        )}
       </span>
-    </>
+    </span>
   );
+};
+
+const ResultsTableToggle = ({
+  isExpanded,
+  toggleExpanded,
+  jobResult
+}: {
+  isExpanded: boolean;
+  toggleExpanded: (isExpanded: boolean) => void;
+  jobResult: BlastJobWithResults;
+}) => {
+  const hasHits = jobResult.data.hits.length > 0;
+  if (!hasHits) {
+    return null;
+  }
+
+  const label = isExpanded
+    ? 'Hide results table'
+    : 'Show results table';
+
+  const onClick = () => {
+    toggleExpanded(!isExpanded);
+  };
 
   return (
-    <span className={elementClasses} onClick={onClick}>
-      {speciesName}
-    </span>
+    <ShowHide
+      label={label}
+      isExpanded={isExpanded}
+      onClick={onClick}
+    />
   );
 };
 
