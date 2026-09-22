@@ -121,7 +121,6 @@ describe('flatColumnsForOption', () => {
     expect(headers).toContain(`${germline} / Review status`);
     expect(headers).toContain(`${germline} / Supporting`);
 
-    // The somatic row carries no label of its own, so it is named the same way.
     expect(headers).toContain(
       'Phenotypes / ClinVar / Somatic / Classification summary / Type'
     );
@@ -136,9 +135,6 @@ describe('flatColumnsForOption', () => {
   });
 
   it('gives every column a header no sibling shares', () => {
-    // A duplicate header is silent, because the grid still renders and only
-    // the columns become impossible to tell apart. Every option is checked, so
-    // the next duplicate is caught here.
     for (const specOption of displaySpecFixture.options) {
       const headers = flatColumnsForOption(
         specOption,
@@ -175,8 +171,6 @@ describe('flatColumnsForOption', () => {
   });
 
   it('leaves the shared spec alone', () => {
-    // The same option object draws the detail panel, where the sentence is the
-    // point.
     const before = JSON.stringify(option('phenotypes'));
     flatColumnsForOption(option('phenotypes'), 'Phenotypes');
     expect(JSON.stringify(option('phenotypes'))).toBe(before);
@@ -195,9 +189,8 @@ describe('flatColumnsForOption', () => {
 
     expect(row?.item?.cells).toHaveLength(1);
     expect(row?.item?.cells?.[0].from).toBe('type');
-    // The header carries the row's name now, so the cell must not draw it too.
     expect(row?.label).toBeNull();
-    // The `where` survives, or the germline column would draw both.
+    // Without the `where`, the germline column would draw the somatic row too.
     expect(row?.where).toEqual({ field: 'type', equals: 'Germline' });
   });
 });

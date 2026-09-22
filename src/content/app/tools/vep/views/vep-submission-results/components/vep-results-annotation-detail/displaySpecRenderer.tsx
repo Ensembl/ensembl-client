@@ -90,10 +90,9 @@ type Entities = {
   helpAnchor?: { take: () => OptionHelp | null };
   vocabularies?: Record<string, VocabularyEntry[]>;
   /**
-   * Set when the caller draws the option's title itself, so the option must not
-   * draw it again. Claimed the same way the help is, and by the same node,
-   * because which node is the visible title depends on which blocks the data
-   * lets draw.
+   * Set when the caller draws the option's title itself. Like the help, the
+   * first level-0 node to draw claims it, because which node is the title
+   * depends on the data.
    */
   hideTitle?: { take: () => true | null };
 };
@@ -106,8 +105,6 @@ export type VocabularyEntry = {
   label: string;
 };
 
-/** A one-shot claim. The first taker gets the value, and every taker after it
- *  gets null. */
 const oneShot = <T,>(value: T) => {
   let taken = false;
   return {
@@ -132,13 +129,10 @@ const claimHelp = (
   );
 
 /**
- * Whether this node is the option's visible title and the caller is already
- * showing that title, in which case the node draws its content alone.
- *
- * Only level 0 can be the title. A nested heading divides the option up, and
- * the reader needs it whatever the caller's own header says. The help hangs on
- * the title, so it is taken here too rather than migrating onto whichever
- * sub-heading draws next.
+ * Returns true when this node is the option's title and the caller already
+ * shows it. Only level 0 can be the title, because a nested heading still
+ * divides the option up. A hidden title also takes the help, so no later
+ * heading gets it.
  */
 const titleHidden = (entities: Entities, level: number): boolean => {
   if (level !== 0 || !entities.hideTitle?.take()) {
@@ -149,9 +143,8 @@ const titleHidden = (entities: Entities, level: number): boolean => {
 };
 
 /**
- * A heading with its content beneath it, or the content alone when that heading
- * is the option's title and the caller is showing it. Every heading an option
- * can draw goes through here, so which heading is the title is answered once.
+ * Draws a heading over its content, or the content alone when the heading is
+ * the option's title and the caller already shows it.
  */
 const headingSection = (
   heading: ReactNode,
@@ -168,10 +161,9 @@ const headingSection = (
   );
 
 /**
- * Does the same for an option with no heading at all, whose first surviving
- * row is its title (REVEL, CADD, SPDI). A suppressed title keeps its value and
- * sheds its label, and `plain` is the Row's own "value with nothing opposite
- * it" mode.
+ * Prepares the title row of an option with no heading, where the first row
+ * that renders is the title (REVEL, CADD, SPDI). The row gets the help, or
+ * loses its label when the caller shows the title.
  */
 const titleRow = (row: RowSpec, entities: Entities, level: number): RowSpec =>
   titleHidden(entities, level)
@@ -770,8 +762,8 @@ const renderMapRowsBlock = (
     };
   });
 
-  // A caller showing the labels itself, such as a table heading each column
-  // with its population, gets the figures alone.
+  // A hidden title drops the row labels, because the caller's column header
+  // already names the population.
   const nodes = renderRows(
     titleHidden(entities, level)
       ? rows.map((row) => ({ ...row, label: null, plain: true }))
@@ -1525,11 +1517,8 @@ export const renderDisplayOption = (args: {
   help?: OptionHelp;
   vocabularies?: Record<string, VocabularyEntry[]>;
   /**
-   * Whether the option draws its own title. Pass false from a caller that
-   * already shows it, such as the flat table, which heads each column with the
-   * option's name. The content then arrives with no title to strip back off.
-   * The detail panel lists every option together, where the title tells one
-   * option from the next, so this defaults to true.
+   * Set to false when the caller shows the option's title itself, as the flat
+   * table does in its column headers. It defaults to true.
    */
   showTitle?: boolean;
 }): ReactNode | null => {

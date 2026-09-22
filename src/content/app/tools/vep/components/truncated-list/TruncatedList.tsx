@@ -25,13 +25,9 @@ import {
 import { flushSync } from 'react-dom';
 
 /**
- * Expand state owned by something outside the list.
- *
- * A list normally owns whether it is open, because normally it is the only one
- * of its kind on the page. The flat table splits one table into a column each,
- * so several lists end up showing slices of the same rows and have to open
- * together. Without a group the list keeps its own state, and that is what
- * every other caller gets.
+ * Expand state that several lists share. The flat table splits one table into
+ * columns, and their lists must open and close together. A list outside any
+ * group keeps its own state.
  */
 export type TruncationGroup = {
   isExpanded: boolean;
@@ -82,9 +78,9 @@ const TruncatedList = <Item,>(props: Props<Item>) => {
   const { items, visibleCount, renderItem, renderToggle, toggleFirst } = props;
   const [ownExpanded, setOwnExpanded] = useState(false);
 
-  // A shared group governs a truncation, never a collapsed detail.
-  // `toggleFirst` tells the two shapes apart. A detail stays per-item, because
-  // the chevron on one ClinVar classification says nothing about the next one.
+  // A group governs truncated lists only. A collapsed detail (`toggleFirst`)
+  // keeps its own state, because one ClinVar classification's chevron says
+  // nothing about the next.
   const group = useContext(TruncationGroupContext);
   const shared = group && !toggleFirst ? group : null;
   const isExpanded = shared ? shared.isExpanded : ownExpanded;

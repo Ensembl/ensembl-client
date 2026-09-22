@@ -52,17 +52,7 @@ import type {
 
 import styles from './VepResultsFlatTable.module.css';
 
-/**
- * PROTOTYPE — a flat, one-row-per-consequence view of the same results the
- * expandable table shows.
- *
- * Every annotation that would sit in a row's detail panel becomes a column
- * instead, so a whole consequence is readable on one line and the grid can be
- * scanned down a column. The cost is inherent, because the panel is a tree
- * rendered only where there is something to show, so flattening it into
- * columns means every row carries a cell for every option any row might have.
- * The result is wide and mostly empty.
- */
+/** PROTOTYPE — this view flattens the results to one row per consequence. */
 
 export type FlatRow = {
   variant: VepResultsResponse['variants'][number];
@@ -70,7 +60,6 @@ export type FlatRow = {
   consequence: PredictedMolecularConsequence;
 };
 
-/** Every (variant, allele, consequence) triple, in display order. */
 export const flattenRows = (
   variants: VepResultsResponse['variants']
 ): FlatRow[] => {
@@ -86,9 +75,8 @@ export const flattenRows = (
 };
 
 /**
- * The options that become columns are those this job ran, in the order the
- * pinned panels state. This uses the same selection gate as the detail panel,
- * so the two views never disagree about what was run.
+ * Returns the options this job ran, in the pinned panels' order. It uses the
+ * detail panel's gate, so both views agree on what ran.
  */
 export const columnOptions = (
   panels: FormPanel[] | undefined,
@@ -102,63 +90,50 @@ export const columnOptions = (
       .map((option) => ({ panel, option }))
   );
 
-/**
- * One flat column, holding what to head it with and the option spec that draws
- * it.
- *
- * `renderSpec` is the option pruned to exactly this column's content, so the
- * real renderer still does the formatting, the links and the truncation. This
- * file decides what each column contains, never how it looks.
- */
+/** One grid column, with its header parts and the spec that draws it. */
 export type FlatColumn = {
   /** The option's own name, e.g. "Phenotypes". */
   optionLabel: string;
-  /** Group headings between the option and the table, e.g. ["Gene associated"]. */
+  /** Group headings under the option, e.g. ["Gene associated"]. */
   headingPath: string[];
   /** The table column's label, e.g. "Phenotype". Absent for a whole option. */
   columnLabel?: string;
   /**
-   * Identifies the table these columns were split from, so the ones from the
-   * same table can be lined back up (see alignSplitColumns). Absent for a
-   * column that was never part of a table.
+   * Keys the table this column was split from, so that table's columns stay
+   * aligned and expand together.
    */
   tableKey?: string;
+  /**
+   * The option pruned to this column's content. The shared renderer draws it,
+   * so this file decides what a column holds but not how it looks.
+   */
   renderSpec: DisplayOptionSpec;
   /**
-   * A column split out of a `map_rows` block, holding the one vocabulary entry
-   * it draws. The renderer is handed a vocabulary narrowed to that entry, so
-   * the block draws this population and no other.
+   * Holds the one vocabulary entry a `map_rows` column draws. The renderer
+   * gets only that entry, so the column shows one population.
    */
   vocabularyEntry?: { name: string; entry: VocabularyEntry };
-  /**
-   * The column draws a whole table rather than one column split out of one.
-   * Its headers name what the values are, so the cell keeps them.
-   */
+  /** The column draws a whole table, headers included. */
   wholeTable?: boolean;
 };
 
-/** The stand-in for an option the spec renderer will not be asked to draw. */
+/** Stands in for a missing spec. It has no blocks, so the cell stays blank. */
 const EMPTY_OPTION: DisplayOptionSpec = { option_id: '', blocks: [] };
 
 /**
- * Line up the columns that came from one table.
- *
- * Splitting a table into a column each hands its rows to separate cells, and a
- * cell only knows its own heights — so a phenotype wrapping to three lines
- * leaves its source stranded beside the wrong one. Inside a single table the
- * browser does this for free; across cells it has to be measured.
- *
- * This runs after layout, on the rendered heights. For each row of the grid,
- * the cells from one table are compared row by row and every one is set to the
- * tallest. Heights are cleared first, so re-running never compounds them.
+ * Lines up the inner rows of columns split from one table. Each split column
+ * is its own cell, so a phenotype that wraps to three lines would leave its
+ * source beside the wrong row. After layout, each inner row is set to the
+ * height of the tallest matching row. Heights are cleared first, so re-running
+ * does not compound them.
  */
 export const alignSplitColumns = (table: HTMLTableElement | null): void => {
   if (!table) {
     return;
   }
 
-  // Gather first, touching no styles. Each entry is one table's worth of
-  // columns on one grid row, held as a list of inner-row lists to be levelled.
+  // Each group holds one table's cells on one grid row, and each cell is a
+  // list of its inner rows.
   const groups: HTMLTableRowElement[][][] = [];
   for (const gridRow of table.querySelectorAll(':scope > tbody > tr')) {
     const byTable = new Map<string, HTMLTableRowElement[][]>();
@@ -180,11 +155,9 @@ export const alignSplitColumns = (table: HTMLTableElement | null): void => {
     }
   }
 
-  // Then all the writes, then all the reads, then all the writes. A row at a
-  // time instead makes every measurement follow a style change, and each one
-  // then forces a layout of a grid thousands of pixels wide. A hundred rows of
-  // that was four and a half seconds of blocked main thread; batching the
-  // phases makes it two layouts in total.
+  // Clear every height, read every height, then set every height. Mixing reads
+  // and writes forces a layout of the whole wide grid per row, which blocks the
+  // main thread for seconds on a page of rows. Batching costs two layouts.
   for (const cells of groups) {
     for (const rows of cells) {
       for (const row of rows) {
@@ -212,21 +185,16 @@ export const alignSplitColumns = (table: HTMLTableElement | null): void => {
 };
 
 /**
- * What a `where` divides on, as a heading, for telling apart two tables that
- * otherwise share one.
- *
- * `equals` names itself. `not_equals` is a complement, and only the data knows
- * what the other side is called, so the one case that arises is stated below.
- * ClinVar splits classification_type into germline and somatic.
+ * Maps a `not_equals` value to a heading for the other side, which the spec
+ * does not name. ClinVar's germline and somatic split is the only case.
  */
 const WHERE_COMPLEMENT: Record<string, string> = {
   Germline: 'Somatic'
 };
 
 /**
- * What joins a heading path into a key two paths can be compared by. It is a
- * character no heading can contain, so ["A", "B C"] and ["A B", "C"] stay
- * different keys, which a space would quietly make identical.
+ * Joins a heading path into a comparable key. No heading contains it, so
+ * ["A", "B C"] and ["A B", "C"] give different keys.
  */
 const PATH_KEY = '\u0000';
 
@@ -242,20 +210,15 @@ export const whereLabel = (
   return undefined;
 };
 
-/**
- * What to head a column split out of a stacked row's cells.
- *
- * A table column carries its own `label`; a cell of a stacked item does not,
- * because in the panel it is one clause of a sentence rather than a heading
- * over a column of values. So the heading is derived from the field the cell
- * reads, unless the cell carries a `label` prefix, which is already the words
- * its author chose for that value. A `label` on a cell renders as a prefix on the
- * value in the detail panel, so adding one to the spec to serve this view
- * would change the other.
- */
 const sentence = (words: string): string =>
   words.charAt(0).toUpperCase() + words.slice(1).replace(/_/g, ' ');
 
+/**
+ * Returns the header for a column split from a stacked row. It prefers the
+ * cell's `column_label`, then its `label`, then its field name. A cell's
+ * `label` prefixes its value in the panel, so a name meant only for the grid
+ * goes in `column_label`.
+ */
 export const cellLabel = (cell: DisplayCellSpec): string | undefined => {
   if (cell.column_label) {
     return cell.column_label;
@@ -266,19 +229,13 @@ export const cellLabel = (cell: DisplayCellSpec): string | undefined => {
   return cell.from ? sentence(cell.from) : undefined;
 };
 
-/** Every `{field}` a template interpolates, with where it sits in the string. */
 const PLACEHOLDER = /\{\w+\}/g;
 
 /**
- * A cell's template with its prose stripped, keeping the span from its first
- * `{field}` to its last and nothing either side.
- *
- * ClinVar's supporting count is written `{supporting}/{submissions}
- * submission(s) contribute to aggregate classification`, which is the right
- * sentence in the panel. In a grid the column header says that, and repeating
- * it in every cell wraps four lines deep. The placeholders are the data and the
- * rest is prose, so `{a} of {b}` keeps its "of" and a single placeholder
- * collapses to that value alone.
+ * Trims a template to the span from its first `{field}` to its last, because
+ * the column header already carries the prose. ClinVar's
+ * "{supporting}/{submissions} submission(s) contribute to aggregate
+ * classification" shows as "{supporting}/{submissions}".
  */
 export const compactTemplate = (template: string): string => {
   const matches = [...template.matchAll(PLACEHOLDER)];
@@ -290,16 +247,14 @@ export const compactTemplate = (template: string): string => {
   return template.slice(first.index, last.index + last[0].length);
 };
 
-/** A cell as a grid column shows it. The cell is copied and never mutated,
- *  because the spec is shared with the panel. */
+/** Never mutates the cell, because the panel shares the spec. */
 const compactCell = (cell: DisplayCellSpec): DisplayCellSpec =>
   cell.template ? { ...cell, template: compactTemplate(cell.template) } : cell;
 
 /**
- * A `<plugin>.<field>` reference as a heading — "Classification summary" from
- * `clinvar.classification_summary`. This names a stacked row by what it
- * stacks, because the field name is always there and is never the same as a
- * sibling table's column name.
+ * Turns `clinvar.classification_summary` into "Classification summary". A
+ * stacked row is named by its field, because every row has one and no sibling
+ * table column shares it.
  */
 export const fieldLabel = (
   reference: string | null | undefined
@@ -309,14 +264,10 @@ export const fieldLabel = (
 };
 
 /**
- * Split an option into one column per table column, named by the group
- * headings above it.
- *
- * An option that draws a table is really several columns. "Phenotypes" holds a
- * Phenotype and a Source under "Gene associated", and the same again under
- * "Variant associated". In a grid that nesting has to become what a grid has,
- * or the cell is a table inside a table. Anything that is not a table stays one
- * column, because there is no inner structure to promote.
+ * Splits an option into grid columns, each headed by the groups above it, so
+ * no cell holds a table inside a table. "Phenotypes" becomes a Phenotype and a
+ * Source column under "Gene associated", and the same under "Variant
+ * associated". An option with nothing to split stays one column.
  */
 export const flatColumnsForOption = (
   specOption: DisplayOptionSpec | undefined,
@@ -334,21 +285,19 @@ export const flatColumnsForOption = (
     return whole;
   }
 
-  // Tables are gathered first and turned into columns after, because whether a
-  // table needs its `where` in the heading depends on whether a sibling shares
-  // that heading, which is not known until every table has been seen.
+  // Tables become columns after the walk, because a table needs its `where` in
+  // its heading only when a sibling shares that heading.
   const tables: {
     block: DisplayTableBlockSpec;
     path: string[];
     key: string;
   }[] = [];
-  // Rows blocks split too, and more simply, because a row is already one value
-  // under one label, so it becomes a column with nothing to align. HGVS is
-  // HGVSc and HGVSp, CADD is its PHRED and its RAW.
+  // Everything except a split table lands here, because only split tables
+  // need aligning. A `rows` block gives a column per row, so HGVS gives HGVSc
+  // and HGVSp, and CADD gives PHRED and RAW.
   const rowColumns: FlatColumn[] = [];
-  // The index counts tables rather than deriving a key from the headings,
-  // because two tables can sit under one heading, divided only by a `where`,
-  // and columns from different tables must not be lined up with each other.
+  // Table keys count tables, because two tables can share a heading and differ
+  // only by `where`. Their columns must not be aligned together.
   let tableIndex = 0;
   const walk = (blocks: DisplayBlockSpec[], headings: string[]) => {
     for (const block of blocks) {
@@ -356,11 +305,9 @@ export const flatColumnsForOption = (
       if (block.kind === 'group') {
         walk(block.blocks, segment ? [...headings, segment] : headings);
       } else if (block.kind === 'table' && block.rows?.length) {
-        // A fixed-mode table is a matrix rather than a list, because its
-        // columns are headers and the values live on the rows (SpliceAI's
-        // splicing events against ΔS and ΔP). Pruning the columns leaves every
-        // row carrying all its values, so each "column" would show the whole
-        // matrix.
+        // A fixed-mode table is a matrix, such as SpliceAI's events against ΔS
+        // and ΔP. Its values live on the rows, so pruning its columns splits
+        // nothing, and it stays one whole column.
         rowColumns.push({
           optionLabel,
           headingPath: (segment ? [...headings, segment] : headings).filter(
@@ -371,9 +318,8 @@ export const flatColumnsForOption = (
         });
       } else if (block.kind === 'table') {
         const path = (segment ? [...headings, segment] : headings).filter(
-          // An option's outermost group often repeats its name, and the header
-          // already leads with the option, so this would read "Phenotypes -
-          // Phenotypes - Gene associated".
+          // The header already leads with the option, so drop a group that
+          // repeats its name.
           (heading) => heading !== optionLabel
         );
         tables.push({
@@ -382,10 +328,9 @@ export const flatColumnsForOption = (
           key: `${specOption.option_id}#${tableIndex++}`
         });
       } else if (block.kind === 'map_rows') {
-        // The rows a `map_rows` block draws are its vocabulary's entries, so
-        // its columns are those entries. The job's population list is the
-        // fixed set, because a variant carries frequencies only for the
-        // populations it was seen in.
+        // Each vocabulary entry in the block's scope becomes a column. The
+        // job's population list sets the columns, because a variant has
+        // frequencies only for the populations it was seen in.
         const path = (segment ? [...headings, segment] : headings).filter(
           (heading) => heading !== optionLabel
         );
@@ -411,19 +356,15 @@ export const flatColumnsForOption = (
         );
         for (const rowSpec of block.rows ?? []) {
           const cells = rowSpec.item?.cells ?? [];
-          // A row that stacks several values is a table lying down. ClinVar's
-          // classification is a type, a starred term, a review status and a
-          // submission count, drawn inline because in the panel they read as
-          // one sentence. A grid column is a few characters wide, so that
-          // sentence wraps one letter per line. Split it as a table is split.
+          // A row that stacks several values splits into a column per value.
+          // ClinVar's classification reads as one sentence in the panel, but a
+          // narrow grid column would wrap it one letter per line.
           if (cells.length > 1) {
-            // A row that names itself for a grid says it in one segment. Where
-            // it does not, the name is taken from what divides the row and what
-            // it stacks, rather than from the row's own label. ClinVar labels
-            // the germline summary "Classification" and leaves the somatic one
-            // unlabelled, and the records table beneath each has a
-            // "Classification" column of its own, so a derived header is what
-            // keeps every column distinct from its siblings.
+            // Without a `column_label`, the header comes from the row's
+            // `where`, or from its label when the row has no `where`, and then
+            // its field. ClinVar labels its germline row "Classification" and
+            // leaves the somatic row unlabelled, so the `where` gives both rows
+            // matching names.
             const stackPath = rowSpec.column_label
               ? [...path, rowSpec.column_label]
               : [
@@ -436,8 +377,7 @@ export const flatColumnsForOption = (
                 optionLabel,
                 headingPath: stackPath,
                 columnLabel: cellLabel(cell),
-                // The label moves into the header, so the cell must not draw it
-                // again — same reason a split table drops its heading.
+                // The label is in the header, so the cell must not draw it too.
                 renderSpec: {
                   ...specOption,
                   heading: null,
@@ -475,11 +415,9 @@ export const flatColumnsForOption = (
   };
   walk(specOption.blocks, []);
 
-  // Tables sharing a heading are told apart by what divides them. ClinVar
-  // files its germline and its somatic classifications through one "ClinVar"
-  // heading, separated only by a `where`. The divider is added only where it is
-  // needed, because the phenotypes tables already have "Gene associated" and
-  // "Variant associated" of their own.
+  // Tables that share a heading add a divider from their `column_label` or
+  // `where`, as ClinVar's germline and somatic tables do. Tables with their own
+  // headings get none.
   const sharedHeading = new Set(
     tables
       .map(({ path }) => path.join(PATH_KEY))
@@ -496,10 +434,9 @@ export const flatColumnsForOption = (
       headingPath,
       columnLabel: column.column_label ?? column.label ?? undefined,
       tableKey: key,
-      // Each column draws the table alone, one column wide and with no option
-      // heading, because the headings it sat under are in this column's header
-      // now. `where` is untouched, so each column still draws only its own
-      // table's rows.
+      // The column draws its table one column wide and without a heading,
+      // because the header carries the headings. Keeping `where` limits it to
+      // its own table's rows.
       renderSpec: {
         ...specOption,
         heading: null,
@@ -508,28 +445,24 @@ export const flatColumnsForOption = (
     }));
   });
 
-  // Rows come before tables, which is the order the options that have both
-  // state them (EVE's own score ahead of its popEVE block).
+  // Rows go before tables, as options with both order them. EVE puts its own
+  // score ahead of its popEVE block.
   const found = [...rowColumns, ...tableColumns];
   return found.length ? found : whole;
 };
 
 /**
- * A column's heading lines, below the panel. The first line is the option and
- * the groups it was nested under, and the last is the column's own label.
+ * Returns the header lines under a column's panel name. The first is the
+ * option and its groups, and the last is the column's own label.
  *
- * A segment the label already opens with is dropped, because it is being said
- * twice — "HGVS / HGVSc" is just HGVSc. The test is a prefix rather than an
- * equality, since that is the shape these take, and it runs one way only, so
- * "Phenotypes / Phenotype" keeps both because "Phenotype" opening "Phenotypes"
- * is a coincidence of plurals.
+ * The first line is dropped when it holds only the option and the label opens
+ * with it, so "HGVS / HGVSc" reads as HGVSc. A first line with headings stays,
+ * because the headings name the column's section (ClinVar's germline or
+ * somatic). The label must open with the option, so "Phenotypes / Phenotype"
+ * keeps both.
  */
 export const headingLines = (column: FlatColumn): string[] => {
   const label = column.columnLabel;
-  // Only the option's own name is dropped, and only when it is the whole line.
-  // A heading is never dropped, because "ClinVar record" opens with "ClinVar"
-  // and losing that heading would strand the column from its germline/somatic
-  // section.
   const drop =
     label &&
     !column.headingPath.length &&
@@ -539,17 +472,15 @@ export const headingLines = (column: FlatColumn): string[] => {
 };
 
 /**
- * Rows shown at once. The grid's cost is per row times per column, and the
- * column count is fixed by the options chosen, so this is the only dimension
- * left to bound.
+ * The grid's cost is rows times columns. The chosen options fix the columns, so
+ * paging bounds the rows.
  */
 export const ROWS_PER_PAGE = 100;
 
 /**
- * The columns identifying the row, before any annotation. They are stated as
- * data with their own widths, so the sticky offsets can be computed rather than
- * written out. Intergenic consequences carry no gene or transcript, so those
- * cells are legitimately blank.
+ * These frozen columns identify the row. Each states its width, so the sticky
+ * offsets can be computed. Intergenic consequences have no gene or transcript,
+ * so those cells stay blank.
  */
 const IDENTITY_COLUMNS: {
   key: string;
@@ -596,9 +527,8 @@ const IDENTITY_COLUMNS: {
 ];
 
 /**
- * How much of the grid never moves. The mirror scrollbar is inset by this and
- * its range shortened to match, because a scrollbar drawn above columns that
- * cannot scroll offers to move something that will not.
+ * The top scrollbar is inset by the frozen columns' width, so it spans only
+ * the columns that scroll.
  */
 export const IDENTITY_WIDTH = IDENTITY_COLUMNS.reduce(
   (total, column) => total + column.width,
@@ -620,8 +550,7 @@ const VepResultsFlatTable = (props: {
   parameters: Record<string, unknown>;
   panels: FormPanel[] | undefined;
   display: DisplaySpec | null | undefined;
-  /** The AF populations this job ran with, which become the vocabulary the
-   *  frequency options' `map_rows` blocks draw from. */
+  /** The job's AF populations, which frequency `map_rows` blocks draw from. */
   afSources: AfSource[] | undefined;
 }) => {
   const { genomeId, variants, parameters, panels, display, afSources } = props;
@@ -633,9 +562,6 @@ const VepResultsFlatTable = (props: {
     [afSources]
   );
 
-  // Every option this job ran, each split into as many columns as its blocks
-  // hold: one per table column, one per stacked cell, one per population. An
-  // option whose blocks do not split contributes one column.
   const columns = useMemo(
     () =>
       columnOptions(panels, parameters).flatMap(({ panel, option }) => {
@@ -656,13 +582,9 @@ const VepResultsFlatTable = (props: {
     [panels, parameters, display, vocabularies]
   );
 
-  // A page of rows, inside the page of variants the request already fetched.
-  //
-  // The two do not line up, and cannot, because the backend pages by variant
-  // while a row here is one consequence, and a variant carries anywhere from
-  // one to sixty of them. 50 variants came to 936 rows, so "100 per page" in
-  // the header buys a grid nine times that size. Paging the rows is what bounds
-  // it.
+  // Rows are paged inside the page of variants already fetched. The backend
+  // pages by variant, and one variant can have dozens of consequences, so only
+  // paging the rows bounds the grid.
   const [rowPage, setRowPage] = useState(0);
   const lastRowPage = Math.max(
     0,
@@ -688,14 +610,10 @@ const VepResultsFlatTable = (props: {
         subOptionRan: (id: string, defaultValue: boolean) =>
           didSubOptionRun(parameters, id, defaultValue),
         genomeId,
-        // The column header already carries the option's title, so the cell
-        // must not repeat it. The title is suppressed up front rather than
-        // stripped back off afterwards, because only the renderer knows which
-        // node the title turned out to be, and that depends on which blocks the
-        // data let draw.
+        // The header already shows the option's title. The renderer is told to
+        // skip it, because only the renderer knows which node the title is.
         showTitle: false,
-        // A column drawn from a `map_rows` block gets the one entry it is for,
-        // so the block draws that population alone.
+        // A `map_rows` column gets a vocabulary of just its own population.
         vocabularies: column.vocabularyEntry
           ? { [column.vocabularyEntry.name]: [column.vocabularyEntry.entry] }
           : vocabularies
@@ -704,27 +622,23 @@ const VepResultsFlatTable = (props: {
     [display, parameters, genomeId, vocabularies]
   );
 
-  // Go back to the first row-page whenever the fetched variants change (paging
-  // or filtering the request). The rows are compared against the last set
-  // rendered rather than reset from an effect, which is what
-  // `react-hooks/set-state-in-effect` objects to. A different set of rows means
-  // a different page 1.
+  // Return to the first row page when the fetched variants change. This
+  // compares against the last rows rendered instead of resetting in an effect,
+  // which `react-hooks/set-state-in-effect` forbids.
   const [renderedRows, setRenderedRows] = useState(allRows);
   if (renderedRows !== allRows) {
     setRenderedRows(allRows);
     setRowPage(0);
   }
 
-  // A second scrollbar above the grid, and drag-to-scroll across it.
-  //
-  // The grid is several screens wide, so the bar at the bottom is often off
-  // screen when the part being read is not. The mirror scrolls nothing itself,
-  // because it is a spacer as wide as the table, in a box that scrolls.
+  // The grid's own scrollbar is at the bottom and often off screen, so a second
+  // one runs above the grid. The top bar scrolls a spacer as wide as the table,
+  // and mirrorScroll keeps the two in step.
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const topBarRef = useRef<HTMLDivElement | null>(null);
   const spacerRef = useRef<HTMLDivElement | null>(null);
-  // Setting one scrollLeft fires the other's onScroll, which would set this one
-  // back; the flag makes an echo a no-op rather than a loop.
+  // Setting one bar's scrollLeft fires the other's onScroll. The flag stops
+  // that echo from looping back.
   const echoing = useRef(false);
   const mirrorScroll = (
     from: HTMLDivElement | null,
@@ -738,21 +652,16 @@ const VepResultsFlatTable = (props: {
     echoing.current = false;
   };
 
-  // This drags the grid sideways, for a table too wide to reach the ends of.
-  // `moved` outlives the drag by one event so the click that follows a drag can
-  // be swallowed — otherwise dragging from a link follows it on release.
+  // Drag-to-scroll pans the grid sideways. `moved` stays set after a drag, so
+  // the click that ends it can be swallowed.
   const [isDragging, setIsDragging] = useState(false);
   const dragFrom = useRef<{ x: number; scrollLeft: number } | null>(null);
   const moved = useRef(false);
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    // A drag starts on the left button only, never from something already
-    // interactive, and never from the frozen columns, which do not move. Links
-    // are a click-only zone, because a cell can hold several, and a link that
-    // sometimes follows and sometimes pans is worse than one that always
-    // follows. The click-after-drag guard
-    // below still matters, because a drag begun on open space can end over a
-    // link.
+    // Drags start only with the left button, and never on a control, a link
+    // or a frozen column. Links stay click-only, because a link that sometimes
+    // pans is worse than one that always follows.
     if (
       event.button !== 0 ||
       (event.target as HTMLElement).closest(
@@ -774,7 +683,7 @@ const VepResultsFlatTable = (props: {
       return;
     }
     const dx = event.clientX - from.x;
-    // A few pixels of slack, so a click with an unsteady hand stays a click.
+    // Allow a few pixels of slack, so an unsteady click stays a click.
     if (!moved.current && Math.abs(dx) < 4) {
       return;
     }
@@ -789,21 +698,16 @@ const VepResultsFlatTable = (props: {
     setIsDragging(false);
   };
 
-  // Which split tables are open, as "<grid row>:<table key>".
-  //
-  // The key is per row as well as per table, because a variant's ClinVar
-  // records have nothing to do with the next variant's. The state is held here
-  // rather than in each column's own list, because the columns of one table
-  // show slices of the same rows and have to open together — see
-  // TruncationGroupContext.
+  // Each entry is an open split table, as "<grid row>:<table key>". The state
+  // lives here because one table's columns show slices of the same rows and
+  // must open together (see TruncationGroupContext).
   const [expandedGroups, setExpandedGroups] = useState<ReadonlySet<string>>(
     () => new Set()
   );
   const truncationGroup = useCallback(
     (rowIndex: number, tableKey: string | undefined) => {
       if (!tableKey) {
-        // This column was not split from anything, so the list keeps its own
-        // state, exactly as it does in the detail panel.
+        // An unsplit column's list keeps its own state, as in the detail panel.
         return null;
       }
       const id = `${rowIndex}:${tableKey}`;
@@ -822,48 +726,39 @@ const VepResultsFlatTable = (props: {
     [expandedGroups]
   );
 
-  // Line the split columns back up once the browser has laid the page out.
-  // This runs in `useLayoutEffect`, so the heights are set before the first
-  // paint.
+  // Align the split columns and size the top scrollbar. A layout effect does
+  // this before paint, so the reader never sees them misaligned.
   const tableRef = useRef<HTMLTableElement | null>(null);
   useLayoutEffect(() => {
     const sync = () => {
       alignSplitColumns(tableRef.current);
-      // The mirror bar scrolls because its spacer is as wide as the table, less
-      // the frozen block it is inset by, so the two have the same range.
+      // The spacer matches the table's scroll width, less the frozen columns,
+      // so both bars have the same range.
       if (spacerRef.current && tableRef.current) {
         spacerRef.current.style.width = `${tableRef.current.scrollWidth - IDENTITY_WIDTH}px`;
       }
     };
     sync();
 
-    // Anything that changes the shape of a cell has to re-level the row, and
-    // not all of it is visible from here. A collapsed detail (ClinVar's
-    // chevrons) is owned by the list that draws it, so opening one changes no
-    // state this component can depend on.
-    //
-    // A mutation observer catches that whatever caused it. It watches
-    // `childList` only, because levelling writes `style` attributes and
-    // observing those would make this retrigger itself forever. The callback
-    // runs at the microtask checkpoint
-    // after React has committed, which is before the browser paints, so the
-    // reader never sees the misaligned version.
+    // A mutation observer re-aligns rows after changes this component cannot
+    // see, such as opening a collapsed ClinVar detail, whose state lives in its
+    // list. It watches `childList` only, because aligning writes `style`
+    // attributes and watching those would retrigger it forever. Its callback
+    // runs before paint, so no misalignment shows.
     const observers: { disconnect: () => void }[] = [];
     if (typeof MutationObserver !== 'undefined' && tableRef.current) {
       const observer = new MutationObserver(sync);
       observer.observe(tableRef.current, { childList: true, subtree: true });
       observers.push(observer);
     }
-    // A narrower column wraps in a different place, so a resize re-levels too.
+    // Resizing changes where text wraps, so a resize re-aligns too.
     if (typeof ResizeObserver !== 'undefined' && tableRef.current) {
       const observer = new ResizeObserver(sync);
       observer.observe(tableRef.current);
       observers.push(observer);
     }
     return () => observers.forEach((observer) => observer.disconnect());
-    // `expandedGroups` is a dependency too, because opening a table changes how
-    // tall its rows are and the columns beside it have to be levelled again
-    // against the new heights.
+    // `expandedGroups` is listed because opening a table changes row heights.
   }, [rows, columns, expandedGroups]);
 
   if (!columns.length) {
@@ -904,7 +799,6 @@ const VepResultsFlatTable = (props: {
           Next ›
         </button>
       </div>
-      {/* The mirror bar is kept in step with the real scroller below. */}
       <div
         ref={topBarRef}
         className={styles.topScrollBar}
@@ -951,12 +845,10 @@ const VepResultsFlatTable = (props: {
               ))}
               {columns.map(({ panel, column, key }) => (
                 <th key={key} className={styles.optionHead}>
-                  {/* The header narrows over three lines, the panel, then the
-                    option and the headings it was nested under, then the table
-                    column. Option
-                    labels are only unique within their panel ("All", "Score"),
-                    and a column label only within its option ("Phenotype",
-                    "Source"), so each line needs the one above it. */}
+                  {/* The header stacks the panel, the option with its headings,
+                    and the column, because an option label is unique only
+                    within its panel ("Score") and a column label only within
+                    its option ("Source"). */}
                   <span className={styles.panelName}>{panel.label}</span>
                   {headingLines(column).map((line, index, lines) => (
                     <span

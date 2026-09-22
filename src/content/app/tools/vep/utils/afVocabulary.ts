@@ -17,10 +17,7 @@
 import type { VocabularyEntry } from 'src/content/app/tools/vep/views/vep-submission-results/components/vep-results-annotation-detail/displaySpecRenderer';
 import type { AfSource } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
-/**
- * The vocabularies a job's `map_rows` blocks draw from. Every view builds them
- * the same way, so all of them offer the same populations.
- */
+/** Builds the vocabularies that a job's `map_rows` blocks draw from. */
 export const displayVocabularies = (
   afSources: AfSource[] | undefined
 ): Record<string, VocabularyEntry[]> => ({

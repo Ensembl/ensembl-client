@@ -114,10 +114,8 @@ const VepSubmissionResults = () => {
     ResultsFilterCondition[]
   >([]);
 
-  // PROTOTYPE — swaps the expandable table for a flat, one-row-per-
-  // consequence grid with a column per annotation option. The state stays
-  // local and out of the URL, because this view is here to be looked at rather
-  // than linked to.
+  // PROTOTYPE — this state toggles the flat table. It stays out of the URL,
+  // because nobody should link to a prototype view.
   const [isFlatView, setIsFlatView] = useState(false);
 
   const [detailExpansion, setDetailExpansion] = useState<DetailExpansion>({
@@ -274,8 +272,7 @@ const VepSubmissionResults = () => {
             appliedConditionIds={appliedConditionIds}
           />
         )}
-        {/* PROTOTYPE — this bar switches between the expandable table and the
-            flat grid. */}
+        {/* PROTOTYPE — switches between the expandable and flat tables. */}
         <div className={styles.prototypeBar}>
           <button
             type="button"
@@ -283,9 +280,8 @@ const VepSubmissionResults = () => {
             aria-pressed={isFlatView}
             aria-busy={isExpansionPending}
             onClick={() =>
-              // Wrapped in a transition for the same reason the bulk expand is,
-              // because switching view re-renders a whole page of rows and the
-              // click would otherwise be dead until that finishes.
+              // Switching view re-renders a whole page of rows, so a transition
+              // keeps the button responsive.
               startExpansionTransition(() => setIsFlatView((flat) => !flat))
             }
           >

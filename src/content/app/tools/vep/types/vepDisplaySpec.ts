@@ -39,8 +39,8 @@ export type DisplayCompose = {
 
 export type DisplayRowSpec = {
   key?: string | null;
-  /** Names this in a view that draws columns, such as the flat results
-   *  table. The detail panel ignores it. */
+  /** Names this for views that draw columns, such as the flat table. The
+   *  detail panel ignores it. */
   column_label?: string | null;
   /** Optional only for a row that stacks a list: ClinVar's somatic
    *  classifications sit directly above the table they describe, where their
@@ -101,8 +101,8 @@ export type DisplayLinkSpec = {
 export type DisplayValuePiece = {
   from?: string | null;
   label?: string | null;
-  /** Names this in a view that draws columns, such as the flat results
-   *  table. The detail panel ignores it. */
+  /** Names this for views that draw columns, such as the flat table. The
+   *  detail panel ignores it. */
   column_label?: string | null;
   format?: DisplayRowFormat | null;
   link?: DisplayLinkSpec | null;
@@ -181,8 +181,8 @@ export type DisplaySelectedGate = {
 export type DisplayRowsBlockSpec = {
   kind: 'rows';
   heading?: string | null;
-  /** Names this in a view that draws columns, such as the flat results
-   *  table. The detail panel ignores it. */
+  /** Names this for views that draw columns, such as the flat table. The
+   *  detail panel ignores it. */
   column_label?: string | null;
   requires?: string | null; // A plugin that must have produced an annotation for the block to render.
   requires_selected?: DisplaySelectedGate | null; // Render only when this sub-option was selected (ClinVar short/structural).
@@ -204,8 +204,8 @@ export type DisplayMapRowLabelSuffix = {
 export type DisplayMapRowsBlockSpec = {
   kind: 'map_rows';
   heading?: string | null;
-  /** Names this in a view that draws columns, such as the flat results
-   *  table. The detail panel ignores it. */
+  /** Names this for views that draw columns, such as the flat table. The
+   *  detail panel ignores it. */
   column_label?: string | null;
   requires?: string | null;
   requires_selected?: DisplaySelectedGate | null;
@@ -232,8 +232,8 @@ export type DisplayMapRowsBlockSpec = {
 export type DisplayListBlockSpec = {
   kind: 'list';
   heading?: string | null;
-  /** Names this in a view that draws columns, such as the flat results
-   *  table. The detail panel ignores it. */
+  /** Names this for views that draw columns, such as the flat table. The
+   *  detail panel ignores it. */
   column_label?: string | null;
   requires?: string | null;
   requires_selected?: DisplaySelectedGate | null;
@@ -321,8 +321,8 @@ export type DisplayTableMatrixRowSpec = {
 export type DisplayTableBlockSpec = {
   kind: 'table';
   heading?: string | null;
-  /** Names this in a view that draws columns, such as the flat results
-   *  table. The detail panel ignores it. */
+  /** Names this for views that draw columns, such as the flat table. The
+   *  detail panel ignores it. */
   column_label?: string | null;
   requires?: string | null;
   requires_selected?: DisplaySelectedGate | null;
@@ -349,8 +349,8 @@ export type DisplayTableBlockSpec = {
 export type DisplayGroupBlockSpec = {
   kind: 'group';
   heading?: string | null;
-  /** Names this in a view that draws columns, such as the flat results
-   *  table. The detail panel ignores it. */
+  /** Names this for views that draw columns, such as the flat table. The
+   *  detail panel ignores it. */
   column_label?: string | null;
   requires_selected?: DisplaySelectedGate | null;
   when?: DisplayWhenSpec | null;
@@ -368,8 +368,8 @@ export type DisplayBlockSpec =
 export type DisplayOptionSpec = {
   option_id: string;
   heading?: string | null;
-  /** Names this in a view that draws columns, such as the flat results
-   *  table. The detail panel ignores it. */
+  /** Names this for views that draw columns, such as the flat table. The
+   *  detail panel ignores it. */
   column_label?: string | null;
   blocks: DisplayBlockSpec[];
 };
