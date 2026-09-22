@@ -3,25 +3,12 @@
 .resultsSummaryRow {
   display: grid;
   grid-template-columns:
-    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
-    [species] minmax(20%, 1fr);
-
-  grid-template-areas:
-    'sequence-label hits-diagram species'
-    'table table table';
+    [column-left] 11ch
+    [column-middle] minmax(48%, 1050px)
+    [column-right] minmax(20%, 1fr);
 
   column-gap: 20px;
   padding-bottom: 46px;
-}
-
-/* Change the grid for cases when there are two pieces of information about BLAST hit counts
- * (i.e. number of BLAST hits against chromosomes vs against other top-level regions)
- */
-.resultsSummaryRow:has(.hitLabel ~ .hitLabel) {
-  grid-template-areas:
-    'sequence-label hits-diagram species'
-    'sequence-label-2 hits-diagram-2 .'
-    'table table table';
 }
 
 .resultsSummaryRow:first-of-type {
@@ -29,7 +16,7 @@
 }
 
 .tableWrapper {
-  grid-area: table;
+  grid-column: 1/-1; /* take the full space of the row */
   margin-left: -20px;
   margin-right: -20px;
 }
@@ -44,34 +31,28 @@
 }
 
 .hitLabel {
-  grid-area: sequence-label;
+  grid-column: 1/2;
   text-align: right;
   font-size: 12px;
   font-weight: var(--font-weight-bold);
   padding-right: 20px;
 }
 
-/* There will only be at most two elements with .hitLabel class;
- * but they will be separated by an element with the .summaryPlot class
- */
-.hitLabel ~ .hitLabel {
-  grid-area: sequence-label-2;
-}
-
 .summaryPlot {
-  grid-area: hits-diagram;
+  grid-column: column-middle;
   font-size: 12px;
 }
 
-/* There will only be at most two elements with .summaryPlot class;
- * but they will be separated by an element with the .hitLabel class
- */
-.summaryPlot ~ .summaryPlot {
-  grid-area: hits-diagram-2;
+.speciesAndTableToggleWrapper {
+  grid-row: 1;
+  grid-column: column-right;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  row-gap: 0.6rem;
 }
 
 .blastSpecies {
-  grid-area: species;
   display: inline-flex;
   align-items: baseline;
   flex-wrap: wrap;

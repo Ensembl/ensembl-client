@@ -232,9 +232,11 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
         )}
       >
         <div className={styles.failedJobStatus}>Job failed</div>
-        <BlastSpecies
-          species={speciesInfo}
-        />
+        <div className={styles.speciesAndTableToggleWrapper}>
+          <BlastSpecies
+            species={speciesInfo}
+          />
+        </div>
       </div>
     );
   } else {
@@ -252,14 +254,16 @@ const SingleBlastJobResult = (props: SingleBlastJobResultProps) => {
             diagramWidth={diagramWidth}
           />
         )}
-        <BlastSpecies
-          species={speciesInfo}
-        />
-        <ResultsTableToggle
-          isExpanded={isExpanded}
-          jobResult={jobResult}
-          toggleExpanded={setExpanded}
-        />
+        <div className={styles.speciesAndTableToggleWrapper}>
+          <BlastSpecies
+            species={speciesInfo}
+          />
+          <ResultsTableToggle
+            isExpanded={isExpanded}
+            jobResult={jobResult}
+            toggleExpanded={setExpanded}
+          />
+        </div>
         {isExpanded && (
           <HitsTable
             species={speciesInfo}
