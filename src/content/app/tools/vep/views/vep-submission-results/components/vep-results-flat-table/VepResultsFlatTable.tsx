@@ -626,10 +626,16 @@ const VepResultsFlatTable = (props: {
   // compares against the last rows rendered instead of resetting in an effect,
   // which `react-hooks/set-state-in-effect` forbids.
   const [renderedRows, setRenderedRows] = useState(allRows);
+  const [rowsVersion, setRowsVersion] = useState(0);
   if (renderedRows !== allRows) {
     setRenderedRows(allRows);
+    setRowsVersion((version) => version + 1);
     setRowPage(0);
   }
+
+  // Names the rows on screen. Rows and open tables are keyed by it, so a new
+  // row page or new results start with everything collapsed.
+  const slice = `${rowsVersion}:${rowPageStart}`;
 
   // The grid's own scrollbar is at the bottom and often off screen, so a second
   // one runs above the grid. The top bar scrolls a spacer as wide as the table,
@@ -698,11 +704,17 @@ const VepResultsFlatTable = (props: {
     setIsDragging(false);
   };
 
-  // Each entry is an open split table, as "<grid row>:<table key>". The state
-  // lives here because one table's columns show slices of the same rows and
-  // must open together (see TruncationGroupContext).
-  const [expandedGroups, setExpandedGroups] = useState<ReadonlySet<string>>(
-    () => new Set()
+  // Holds the open split tables, as "<grid row>:<table key>", for the slice
+  // they were opened on. The state lives here because one table's columns
+  // show parts of the same rows and must open together (see
+  // TruncationGroupContext).
+  const [openTables, setOpenTables] = useState<{
+    slice: string;
+    ids: ReadonlySet<string>;
+  }>(() => ({ slice, ids: new Set() }));
+  const expandedGroups = useMemo(
+    () => (openTables.slice === slice ? openTables.ids : new Set<string>()),
+    [openTables, slice]
   );
   const truncationGroup = useCallback(
     (rowIndex: number, tableKey: string | undefined) => {
@@ -714,16 +726,16 @@ const VepResultsFlatTable = (props: {
       return {
         isExpanded: expandedGroups.has(id),
         toggle: () =>
-          setExpandedGroups((open) => {
-            const next = new Set(open);
-            if (!next.delete(id)) {
-              next.add(id);
+          setOpenTables((open) => {
+            const ids = new Set(open.slice === slice ? open.ids : []);
+            if (!ids.delete(id)) {
+              ids.add(id);
             }
-            return next;
+            return { slice, ids };
           })
       };
     },
-    [expandedGroups]
+    [expandedGroups, slice]
   );
 
   // Align the split columns and size the top scrollbar. A layout effect does
@@ -868,7 +880,7 @@ const VepResultsFlatTable = (props: {
           </thead>
           <tbody>
             {rows.map((row, rowIndex) => (
-              <tr key={rowIndex}>
+              <tr key={`${slice}:${rowIndex}`}>
                 {IDENTITY_COLUMNS.map((column, index) => (
                   <td
                     key={column.key}
