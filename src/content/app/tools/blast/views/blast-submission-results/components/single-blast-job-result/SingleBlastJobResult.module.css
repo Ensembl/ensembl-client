@@ -16,9 +16,10 @@
 }
 
 .tableWrapper {
+  --negative-side-margin: calc(-1 * var(--wrapper-padding-side)); /* to extend the table up the the border of BLAST results box */
   grid-column: 1/-1; /* take the full space of the row */
-  margin-left: -20px;
-  margin-right: -20px;
+  margin-left: var(--negative-side-margin);
+  margin-right: var(--negative-side-margin);
 }
 
 .failedJobSummaryRow {
@@ -77,7 +78,7 @@
 
 .hitsTable {
   margin-top: 20px;
-  padding: 20px;
+  padding: 20px var(--wrapper-padding-side);
   border-top: 1px solid var(--color-grey);
   border-bottom: 1px solid var(--color-grey);
   width: 100%;
