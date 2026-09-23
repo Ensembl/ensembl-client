@@ -1030,7 +1030,6 @@ const SequenceSidebar = (props: {
   feature: Feature | undefined;
   entity: { type: EntityType; objectId: string } | null;
   genomeIdForUrl: string;
-  genomeIdForApi: string;
   parentGene?: { symbol: string | null; stableId: string };
   canHighlightExons: boolean;
   areExonsHighlighted: boolean;
@@ -1760,6 +1759,7 @@ const Sequence = (props: {
   transcripts: TranscriptBoundary[];
   areTranscriptBoundariesShown: boolean;
   genomeIdForUrl: string;
+  genomeIdForApi: string;
 }) => {
   const [selectedMarkerPosition, setSelectedMarkerPosition] = useState<
     number | null
