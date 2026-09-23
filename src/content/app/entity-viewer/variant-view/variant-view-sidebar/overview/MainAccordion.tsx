@@ -63,13 +63,6 @@ const MainAccordion = (props: Props) => {
     })
   });
 
-  const disabledAccordionButtonClass = classNames(
-    styles.entityViewerAccordionButton,
-    {
-      [styles.entityViewerAccordionButtonDisabled]: true
-    }
-  );
-
   const { caddScores, gerpScore } = preparedSummaryData;
 
   return (
@@ -140,25 +133,6 @@ const MainAccordion = (props: Props) => {
                 <ViewInApp links={{ genomeBrowser: { url: gbVariantUrl } }} />
               </div>
             </section>
-          </AccordionItemPanel>
-        </AccordionItem>
-
-        <AccordionItem
-          className={styles.entityViewerAccordionItem}
-          uuid={'synonyms'}
-        >
-          <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
-            <AccordionItemButton
-              className={disabledAccordionButtonClass}
-              disabled={true}
-            >
-              Synonyms
-            </AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel
-            className={styles.entityViewerAccordionItemContent}
-          >
-            <div>No data available</div>
           </AccordionItemPanel>
         </AccordionItem>
       </Accordion>
