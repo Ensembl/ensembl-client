@@ -94,7 +94,7 @@ describe('<BrowserSidebarToolstrip />', () => {
   describe('rendering', () => {
     it('displays correct number of buttons', () => {
       const { container } = renderComponent();
-      expect(container.querySelectorAll('button').length).toBe(4);
+      expect(container.querySelectorAll('button').length).toBe(2);
     });
 
     it('toggles sidebar modal', async () => {
