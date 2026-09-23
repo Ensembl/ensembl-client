@@ -7,12 +7,13 @@
 }
 
 .content {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1100px);
   min-height: 0;
-  align-items: flex-start;
   justify-content: center;
+  align-content: start;
+  gap: 28px;
   padding: 48px var(--standard-gutter) 180px;
-  overflow: auto;
 }
 
 .featureSummary {
@@ -33,34 +34,215 @@
   text-transform: capitalize;
 }
 
+.transcriptSequenceModes {
+  display: flex;
+  justify-self: center;
+  width: auto;
+  gap: 3px;
+}
+
+.transcriptSequenceMode,
+.transcriptSequenceModeActive {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  min-height: 26px;
+  padding: 2px 14px;
+  color: var(--color-white);
+  border: 1px solid var(--color-blue);
+  border-radius: 3px;
+  background: #1c2b41;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+}
+
+.transcriptSequenceMode small,
+.transcriptSequenceModeActive small {
+  font-size: 11px;
+}
+
+.transcriptSequenceModeActive {
+  margin: 0;
+  border-radius: 3px;
+  background: var(--color-blue);
+  color: var(--color-white);
+}
+
 .sequence {
-  width: min(100%, 1100px);
+  position: absolute;
+  width: 100%;
   margin: 0;
   color: var(--color-white);
   font-family: var(--font-family-monospace);
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1.35;
+}
+
+.sequenceViewport {
+  position: relative;
+  width: 100%;
+}
+
+.cdsSequence {
+  width: 100%;
+  color: var(--color-white);
+  font-family: var(--font-family-monospace);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.cdsProteinRow {
+  display: contents;
+}
+
+.cdsProteinLabel {
+  grid-column: 1;
+  color: var(--color-medium-dark-grey);
+  font-family: var(--font-family-body);
+  font-size: 11px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cdsProteinSequence {
+  grid-column: 2;
+  color: var(--color-white);
+  font-weight: var(--font-weight-bold);
+  white-space: pre;
+}
+
+.cdsCodonEven {
+  background-color: color-mix(in srgb, var(--color-blue) 70%, transparent);
+}
+
+.cdsCodonOdd {
+  background-color: color-mix(in srgb, #3e98a8 70%, transparent);
+}
+
+.featureStructure {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  padding-bottom: 12px;
+  background: var(--color-black);
+}
+
+.featureStructureLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  color: var(--color-medium-light-grey);
+  font-size: 12px;
+}
+
+.featureStructureDiagram {
+  display: block;
+  width: 100%;
+  height: 32px;
+  overflow: visible;
+  cursor: pointer;
+}
+
+.featureStructureTranscript rect {
+  fill: var(--color-blue);
+  stroke: var(--color-blue);
+  opacity: 0.7;
+}
+
+.featureStructureIntron {
+  fill: var(--color-medium-light-grey);
+  opacity: 0.8;
+}
+
+.locationStructureBlock {
+  fill: var(--color-blue);
+}
+
+.featureStructurePosition {
+  stroke: var(--color-white);
+  stroke-width: 2;
 }
 
 .sequenceLine {
   display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  column-gap: 24px;
+  grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
+  column-gap: 16px;
 }
 
 .sequenceCoordinates {
   color: var(--color-medium-dark-grey);
-  text-align: right;
   white-space: nowrap;
   user-select: none;
 }
 
+.sequenceStartCoordinate {
+  text-align: right;
+}
+
+.sequenceEndCoordinate {
+  text-align: left;
+}
+
 .sequenceBases {
+  width: 60ch;
+  white-space: pre;
+}
+
+.sequenceTranscriptRow {
+  display: contents;
+}
+
+.sequenceTranscriptLabel {
+  grid-column: 1;
+  color: var(--color-medium-dark-grey);
+  font-family: var(--font-family-body);
+  font-size: 11px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sequenceTranscriptBases {
+  grid-column: 2;
+  color: #3e98a8;
+  white-space: pre;
+}
+
+.sequenceProteinRow {
+  display: contents;
+}
+
+.sequenceProteinLabel {
+  grid-column: 1;
+  color: var(--color-medium-dark-grey);
+  font-family: var(--font-family-body);
+  font-size: 11px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sequenceProteinBases {
+  grid-column: 2;
+  color: var(--color-white);
+  font-weight: var(--font-weight-bold);
   white-space: pre;
 }
 
 .sequenceBases > span {
   position: relative;
+}
+
+.sequenceBase {
+  cursor: pointer;
+}
+
+.sequenceBase:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 1px;
 }
 
 .transcriptBoundaryBase {
@@ -112,6 +294,8 @@
 .transcriptBoundaryToolbox {
   width: 420px;
   max-width: min(420px, calc(100vw - 40px));
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   font-family: var(--font-family-body);
 }
 
@@ -139,6 +323,26 @@
   font-weight: var(--font-weight-bold);
 }
 
+.baseZmenuLocation {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  color: var(--color-white);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-grey) 30%, transparent);
+  font-size: 13px;
+}
+
+.baseZmenuLocation > span {
+  color: var(--color-grey);
+}
+
+.baseZmenuEmpty {
+  margin: 0;
+  color: var(--color-white);
+  font-size: 13px;
+}
+
 .transcriptBoundaryMenuLinks {
   margin-top: 12px;
   padding-top: 10px;
@@ -148,7 +352,9 @@
 .selectedSequenceToolbox {
   --pointer-box-padding: 12px 20px;
   width: 280px;
+  max-height: calc(100vh - 40px);
   min-height: 40px;
+  overflow-y: auto;
   font-family: var(--font-family-body);
   font-size: 13px;
   filter: drop-shadow(2px 2px 3px var(--shadow-color));
@@ -166,6 +372,19 @@
 
 .selectedSequenceMenu > span:first-child {
   color: var(--color-grey);
+}
+
+.selectedSequenceMenuFeatures {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--color-white) 30%, transparent);
+}
+
+.selectedSequenceMenuEmpty {
+  margin: 8px 0 0;
+  padding-top: 10px;
+  color: var(--color-white);
+  border-top: 1px solid color-mix(in srgb, var(--color-white) 30%, transparent);
 }
 
 .selectedSequenceMenuActions {
@@ -223,12 +442,63 @@
   margin-top: 34px;
 }
 
+.sequenceViewMode {
+  margin-top: 34px;
+}
+
 .transcriptBoundaries {
   margin-top: 34px;
 }
 
 .overlappingFeatures {
   margin-top: 4px;
+}
+
+.overlappingGenes {
+  margin-top: 24px;
+}
+
+.overlappingGeneList {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.overlappingGeneItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.overlappingGene {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.overlappingGeneLink {
+  --app-icon-size: 20px;
+  --app-icon-color: var(--color-blue);
+
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.overlappingGene > span {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.overlappingGene strong {
+  color: var(--color-black);
+}
+
+.overlappingGene span {
+  color: var(--color-black);
+  font-size: 13px;
 }
 
 .boundaryKey {
@@ -308,6 +578,11 @@
 .exonHighlight {
   color: var(--color-white);
   background-color: var(--color-blue);
+}
+
+.geneHighlight {
+  color: var(--color-white);
+  background-color: #3e98a8;
 }
 
 .intronHighlight {

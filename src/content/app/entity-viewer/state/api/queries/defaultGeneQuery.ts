@@ -71,6 +71,9 @@ export const transcriptFieldsFragment = gql`
       }
       cdna {
         length
+        sequence {
+          checksum
+        }
       }
       phased_exons {
         start_phase
@@ -83,6 +86,9 @@ export const transcriptFieldsFragment = gql`
         stable_id
         unversioned_stable_id
         length
+        sequence {
+          checksum
+        }
         external_references {
           accession_id
           name
@@ -218,6 +224,9 @@ type ProductOnDefaultTranscript = Pick<
   Product,
   'stable_id' | 'unversioned_stable_id' | 'length'
 > & {
+  sequence: {
+    checksum: string;
+  };
   external_references: ExternalReferenceInProduct[];
 };
 
@@ -250,6 +259,9 @@ type ProductGeneratingContextOnDefaultTranscript = Pick<
   } | null;
   cdna: {
     length: NonNullable<FullProductGeneratingContext['cdna']>['length'];
+    sequence: {
+      checksum: string;
+    };
   } | null;
   phased_exons: PhasedExonOfDefaultTranscript[];
   product: ProductOnDefaultTranscript | null;

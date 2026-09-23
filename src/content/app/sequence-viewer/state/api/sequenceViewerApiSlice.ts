@@ -41,8 +41,22 @@ type TranscriptBoundary = {
   };
 };
 
+type TranscriptStructure = TranscriptBoundary & {
+  spliced_exons: Array<{
+    relative_location: { start: number; end: number };
+    exon: {
+      slice: {
+        location: { start: number; end: number };
+      };
+    };
+  }>;
+  product_generating_contexts: Array<{
+    cds: { relative_start: number; relative_end: number } | null;
+  }>;
+};
+
 type GeneFeature = Feature & {
-  transcripts: TranscriptBoundary[];
+  transcripts: TranscriptStructure[];
 };
 
 type FeatureQueryParams = {
@@ -125,6 +139,26 @@ const geneSequenceQuery = gql`
           }
           strand {
             code
+          }
+        }
+        spliced_exons {
+          relative_location {
+            start
+            end
+          }
+          exon {
+            slice {
+              location {
+                start
+                end
+              }
+            }
+          }
+        }
+        product_generating_contexts {
+          cds {
+            relative_start
+            relative_end
           }
         }
       }
