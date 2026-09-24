@@ -60,7 +60,7 @@ const useVepVariantTabularData = (params: Params) => {
 
   const tabularData = useMemo(() => {
     return getTabularData(params);
-    // `params` is a new object every render, so its fields are the dependencies.
+    // `params` is new on every render, so its fields are the dependencies.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [variant, expandedTranscriptPaths]);
 
@@ -267,8 +267,9 @@ export type VepResultsTableRowData = {
 };
 
 /**
- * Each consequence gets its own row. Within an alt allele, rows run from most
- * to least interesting: transcripts, then regulatory features, then intergenic.
+ * Each consequence gets its own row, except transcripts a collapsed gene hides.
+ * Within an alt allele, rows run from most to least interesting: transcripts,
+ * then regulatory features, then intergenic.
  */
 export const getTabularData = ({
   variant,
@@ -335,8 +336,8 @@ export const getTabularData = ({
     result.push(...alleleRows);
   }
 
-  // A variant cell on any later row collides with this rowspan and pushes
-  // cells into phantom columns.
+  // Only the first row gets the variant cell, which spans every row. A later
+  // copy would collide with that rowspan and push cells into phantom columns.
   if (result.length) {
     result[0].variant = {
       name: variant.name,
@@ -352,8 +353,8 @@ export const getTabularData = ({
 
 /**
  * Gives each row a key that holds steady as a gene's transcripts expand or
- * collapse around it. The key joins allele, gene and feature id, and a counter
- * separates repeats of one feature within a group.
+ * collapse around it. The key joins the allele, the gene for a transcript, and
+ * the feature id. A counter tells repeats of the same key apart.
  */
 export const getRowKeys = (rows: VepResultsTableRowData[]): string[] => {
   const seen = new Map<string, number>();

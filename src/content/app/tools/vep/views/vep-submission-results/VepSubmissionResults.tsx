@@ -799,7 +799,7 @@ const GeneTableCell = (props: {
       </td>
     );
   } else if (row.consequence.feature_type !== 'transcript') {
-    // intergenic and regulatory rows have no gene
+    // Intergenic and regulatory rows have no gene.
     return <td />;
   } else {
     return null;
