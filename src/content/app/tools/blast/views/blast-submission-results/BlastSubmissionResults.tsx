@@ -52,7 +52,7 @@ const BlastSubmissionResults = () => {
 
   useEffect(() => {
     dispatch(setBlastView('submission-results'));
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className={styles.resultsContainer}>
@@ -91,7 +91,7 @@ const Main = () => {
     if (blastSubmission && isSuccessfulSubmission && !blastSubmission.seen) {
       dispatch(markBlastSubmissionAsSeen(blastSubmission.id));
     }
-  }, [blastSubmission?.id]);
+  }, [blastSubmission, dispatch, isSuccessfulSubmission]);
 
   if (!blastSubmission || isFailedBlastSubmission(blastSubmission)) {
     return <MissingBlastSubmissionError hasSubmissionParameters={false} />;

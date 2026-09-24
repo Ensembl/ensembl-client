@@ -3,25 +3,12 @@
 .resultsSummaryRow {
   display: grid;
   grid-template-columns:
-    [sequence-label] 11ch [hits-diagram] minmax(48%, 1050px)
-    [species] minmax(20%, 1fr);
-
-  grid-template-areas:
-    'sequence-label hits-diagram species'
-    'table table table';
+    [column-left] 11ch
+    [column-middle] minmax(48%, 1050px)
+    [column-right] minmax(20%, 1fr);
 
   column-gap: 20px;
   padding-bottom: 46px;
-}
-
-/* Change the grid for cases when there are two pieces of information about BLAST hit counts
- * (i.e. number of BLAST hits against chromosomes vs against other top-level regions)
- */
-.resultsSummaryRow:has(.hitLabel ~ .hitLabel) {
-  grid-template-areas:
-    'sequence-label hits-diagram species'
-    'sequence-label-2 hits-diagram-2 .'
-    'table table table';
 }
 
 .resultsSummaryRow:first-of-type {
@@ -29,9 +16,10 @@
 }
 
 .tableWrapper {
-  grid-area: table;
-  margin-left: -20px;
-  margin-right: -20px;
+  --negative-side-margin: calc(-1 * var(--wrapper-padding-side)); /* to extend the table up the the border of BLAST results box */
+  grid-column: 1/-1; /* take the full space of the row */
+  margin-left: var(--negative-side-margin);
+  margin-right: var(--negative-side-margin);
 }
 
 .failedJobSummaryRow {
@@ -44,50 +32,39 @@
 }
 
 .hitLabel {
-  grid-area: sequence-label;
+  grid-column: 1/2;
   text-align: right;
   font-size: 12px;
   font-weight: var(--font-weight-bold);
   padding-right: 20px;
 }
 
-/* There will only be at most two elements with .hitLabel class;
- * but they will be separated by an element with the .summaryPlot class
- */
-.hitLabel ~ .hitLabel {
-  grid-area: sequence-label-2;
-}
-
 .summaryPlot {
-  grid-area: hits-diagram;
+  grid-column: column-middle;
   font-size: 12px;
 }
 
-/* There will only be at most two elements with .summaryPlot class;
- * but they will be separated by an element with the .hitLabel class
- */
-.summaryPlot ~ .summaryPlot {
-  grid-area: hits-diagram-2;
+.speciesAndTableToggleWrapper {
+  grid-row: 1;
+  grid-column: column-right;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  row-gap: 0.6rem;
 }
 
 .blastSpecies {
-  grid-area: species;
   display: inline-flex;
   align-items: baseline;
   flex-wrap: wrap;
   justify-self: start;
   align-self: start;
   column-gap: 20px;
-  color: var(--color-dark-grey);
+  font-weight: var(--font-weight-light);
 }
 
 .failedJobSummaryRow .blastSpecies {
   color: var(--color-dark-grey);
-}
-
-.blastSpeciesActive {
-  color: var(--color-blue);
-  cursor: pointer;
 }
 
 .speciesScientificName {
@@ -99,14 +76,9 @@
   white-space: nowrap; /* this span contains a chevron which shouldn't get detached from the text and end up on a new line */
 }
 
-.blastSpeciesChevron {
-  --chevron-height: 6px; /* same as in ShowHide component */
-  margin-left: 10px; /* same as in ShowHide component */
-}
-
 .hitsTable {
   margin-top: 20px;
-  padding: 20px;
+  padding: 20px var(--wrapper-padding-side);
   border-top: 1px solid var(--color-grey);
   border-bottom: 1px solid var(--color-grey);
   width: 100%;
