@@ -25,7 +25,6 @@ import { getEntityViewerActiveGenomeId } from '../general/entityViewerGeneralSel
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { Status } from 'src/shared/types/status';
-import type { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
 import type { RootState } from 'src/store';
 
 export type ToggleStatus = Status.OPEN | Status.CLOSED;
@@ -50,12 +49,6 @@ export type EntityViewerSidebarGenomeState = Readonly<{
   selectedTabName: SidebarTabName;
   sidebarModalView: SidebarModalView | null;
 }>;
-
-export type EntityViewerSidebarUIState = {
-  mainAccordion?: {
-    expandedPanels?: OverviewMainAccordionSectionID[];
-  };
-};
 
 export const setSidebarTabName =
   (

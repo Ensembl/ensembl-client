@@ -22,7 +22,6 @@ import { useGeneOverviewQuery } from 'src/content/app/entity-viewer/state/api/en
 import { useAppDispatch } from 'src/store';
 
 import GenePublications from '../publications/GenePublications';
-import MainAccordion from './MainAccordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import SearchButton from 'src/shared/components/search-button/SearchButton';
 
@@ -137,8 +136,6 @@ const GeneOverview = () => {
           />
         </div>
       </section>
-
-      <MainAccordion />
 
       <GenePublications gene={gene} />
     </div>

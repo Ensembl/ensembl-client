@@ -36,8 +36,6 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import SearchIcon from 'static/icons/icon_search.svg';
 import BookmarkIcon from 'static/icons/icon_bookmark.svg';
-import ShareIcon from 'static/icons/icon_share.svg';
-import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
 
@@ -100,20 +98,6 @@ const BrowserSidebarToolstrip = () => {
         description="Previously viewed"
         onClick={() => toggleModalView(BrowserSidebarModalView.BOOKMARKS)}
         image={BookmarkIcon}
-      />
-      <ImageButton
-        className={layoutStyles.sidebarIcon}
-        status={Status.DISABLED}
-        description="Share"
-        onClick={() => toggleModalView(BrowserSidebarModalView.SHARE)}
-        image={ShareIcon}
-      />
-      <ImageButton
-        className={layoutStyles.sidebarIcon}
-        status={Status.DISABLED}
-        description="Download"
-        onClick={() => toggleModalView(BrowserSidebarModalView.DOWNLOAD)}
-        image={DownloadIcon}
       />
     </>
   );

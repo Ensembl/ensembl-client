@@ -94,10 +94,6 @@
   margin-top: -3px;
 }
 
-.entityViewerAccordion .entityViewerAccordionButtonDisabled {
-  color: var(--color-grey);
-}
-
 .entityViewerAccordion .entityViewerAccordionItem:not(:first-child) {
   border-color: transparent;
 }

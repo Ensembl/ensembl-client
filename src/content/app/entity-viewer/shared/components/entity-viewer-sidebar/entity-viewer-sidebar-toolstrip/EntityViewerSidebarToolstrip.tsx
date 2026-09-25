@@ -32,7 +32,6 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import SearchIcon from 'static/icons/icon_search.svg';
 import BookmarkIcon from 'static/icons/icon_bookmark.svg';
-import ShareIcon from 'static/icons/icon_share.svg';
 import DownloadIcon from 'static/icons/icon_download.svg';
 
 import { Status } from 'src/shared/types/status';
@@ -81,13 +80,6 @@ export const EntityViewerSidebarToolstrip = () => {
         key={SidebarModalView.BOOKMARKS}
         onClick={() => toggleModalView(SidebarModalView.BOOKMARKS)}
         image={BookmarkIcon}
-      />
-      <ImageButton
-        status={Status.DISABLED}
-        description="Share"
-        className={styles.sidebarIcon}
-        key="share"
-        image={ShareIcon}
       />
       <ImageButton
         status={getViewIconStatus(SidebarModalView.DOWNLOAD)}
