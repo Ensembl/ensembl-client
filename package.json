@@ -152,5 +152,9 @@
     "not dead",
     "not ie 11",
     "not op_mini all"
-  ]
+  ],
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "fsevents@2.3.3": true
+  }
 }
