@@ -75,7 +75,7 @@ export type RegionDetailsData = {
   bins: Record<
     string, // <-- using string of a format `${start}-${end}` as key
     {
-      genes: OverviewRegion['genes'];
+      genes: OverviewRegion['genes']['data'];
       regulatory_features: OverviewRegion['regulatory_features']['data'];
     }
   >;
@@ -211,7 +211,7 @@ export const distributeAcrossBins = ({
     binsMap[key] = { genes: [], regulatory_features: [] };
   };
 
-  for (const gene of genes) {
+  for (const gene of genes.data) {
     const binsForGene = createBins({
       start: gene.start,
       end: gene.end
@@ -379,7 +379,7 @@ const fetchLocation = (params: RegionDetailsQueryAction['payload']) => {
   const { assemblyId, regionName, start, end } = params;
   const locationForUrl = `${regionName}:${start}-${end}`;
   const releaseName = '2025-02'; // TODO: pass genome release with payload
-  const endpointUrl = `${config.regulationApiBaseUrl}/annotation/v0.11/release/${releaseName}/assembly/${assemblyId}?location=${locationForUrl}`;
+  const endpointUrl = `${config.regulationApiBaseUrl}/annotation/v0.15/release/${releaseName}/assembly/${assemblyId}?location=${locationForUrl}`;
 
   return observableFetch<OverviewRegion>(endpointUrl);
 };

@@ -77,7 +77,9 @@ const server = setupServer(
           coordinate_system: 'chromosome',
           length: 1_000_000
         },
-        genes
+        genes: {
+          data: genes
+        }
       });
 
       return HttpResponse.json(regionOverviewPayload);
@@ -312,7 +314,7 @@ describe('distributeAcrossBins', () => {
     });
 
     const regionOverviewPayload = createOverviewRegionPayload({
-      genes: [gene1, gene2, gene3],
+      genes: { data: [gene1, gene2, gene3] },
       regulatory_features: {
         feature_types: {},
         data: [regFeature1, regFeature2, regFeature3]

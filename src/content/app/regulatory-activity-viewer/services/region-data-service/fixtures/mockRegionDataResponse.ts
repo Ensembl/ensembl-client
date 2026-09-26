@@ -91,12 +91,14 @@ export const createOverviewRegionPayload = (
       length: 240_000_000
     },
     locations: [{ start, end }],
-    genes: [
-      createGenePayload({
-        start: start + 1000,
-        end: start + 2000
-      })
-    ],
+    genes: {
+      data: [
+        createGenePayload({
+          start: start + 1000,
+          end: start + 2000
+        })
+      ]
+    },
     regulatory_features: {
       feature_types: {},
       data: []

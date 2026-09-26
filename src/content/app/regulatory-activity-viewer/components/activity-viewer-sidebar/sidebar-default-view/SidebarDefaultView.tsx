@@ -111,7 +111,7 @@ const SidebarDefaultView = () => {
             <SliceTooLargeNotice />
           ) : (
             <Genes
-              genes={data.genes}
+              genes={data.genes.data}
               onGeneFocus={onGeneFocus}
               focusGeneId={focusGeneId}
             />

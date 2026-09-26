@@ -74,7 +74,7 @@ const prepareGeneTracks = (params: {
 }) => {
   const { genes } = params;
 
-  const filteredGenes = genes.filter((gene) =>
+  const filteredGenes = genes.data.filter((gene) =>
     isFeatureInsideSelection({
       feature: gene,
       start: params.start,

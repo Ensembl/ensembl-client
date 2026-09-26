@@ -118,7 +118,9 @@ export type OverviewRegion = {
     start: number;
     end: number;
   }[]; // <-- identifies parts of the region that will be included in the diagram
-  genes: GeneInRegionOverview[];
+  genes: {
+    data: GeneInRegionOverview[];
+  };
   regulatory_features: {
     feature_types: Record<string, RegulatoryFeatureMetadata>;
     data: RegulatoryFeature[];

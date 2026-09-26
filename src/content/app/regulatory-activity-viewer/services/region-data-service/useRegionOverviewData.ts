@@ -114,7 +114,9 @@ const createDataObservable = (query: QueryParams) => {
       return {
         assemblyId: stateData.assemblyId,
         region: stateData.region,
-        genes,
+        genes: {
+          data: genes
+        },
         regulatory_features: {
           feature_types: stateData.regulatory_feature_types,
           data: regulatoryFeatures
