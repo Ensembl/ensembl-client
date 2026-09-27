@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-import { type DetailedHTMLProps, type HTMLAttributes } from 'react';
+import {
+  type DetailedHTMLProps,
+  type HTMLAttributes,
+  type CSSProperties
+} from 'react';
+
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import useGeneSequence from './useGeneSequence';
 
 import './gene-sequence';
 
 import type { GeneSequence as GeneSequenceElement } from './gene-sequence';
-import type { SequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/queries/geneQuery';
+
+import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
 
 // Example url:
 // http://localhost:8080/sequence-viewer/GCA_000001405.29?focus=gene:ENSG00000139618
@@ -42,12 +49,22 @@ const GeneSequence = (props: Props) => {
     return 'Loading...';
   }
 
-  const { gene, sequence } = data;
+  const { annotatedSequence, gene } = data;
+  const geneEnd = gene.slice.location.end;
+  const formattedGeneEndString = formatNumber(geneEnd);
+  const formattedGeneEndStringEnd = formattedGeneEndString.length;
+
+  const styles: CSSProperties & { '--gutter-width': string } = {
+    '--gutter-width': `${formattedGeneEndStringEnd}ch`
+  };
+
+  const geneSymbol = gene.symbol;
+  const geneNameAndId = geneSymbol ? `${geneSymbol}  ${geneId}` : geneId;
 
   return (
-    <div>
-      Gene sequence
-      <ens-sequence-viewer-gene-sequence gene={gene} sequence={sequence} />
+    <div className={commonStyles.main} style={styles}>
+      Gene: {geneNameAndId}
+      <ens-sequence-viewer-gene-sequence sequence={annotatedSequence} />
     </div>
   );
 };
@@ -56,7 +73,6 @@ type GeneSequenceElementProps = DetailedHTMLProps<
   HTMLAttributes<GeneSequenceElement>,
   GeneSequenceElement
 > & {
-  gene: SequenceViewerGene;
   sequence: string;
 };
 

@@ -14,16 +14,64 @@
  * limitations under the License.
  */
 
-import { html, css, LitElement } from 'lit';
+const styles = `
+  :host {
+    font-family: var(--font-family-monospace);
+  }
 
-import {
-  generateFeatureLookup,
-  type GeneFeaturesLookup
-} from './getSequenceIntervals';
+  .line {
+    --_column-gap: 1rem;
+    display: grid;
+    grid-template-columns: var(--gutter-width) 60ch var(--gutter-width);
+    column-gap: var(--_column-gap);
+    align-items: baseline;
+    width: calc(2 * var(--gutter-width) + 60ch + 2 * var(--_column-gap));
+    content-visibility: auto;
+    contain-intrinsic-size: 60ch 1lh;
+  }
 
-import type { SequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/queries/geneQuery';
+  .line-left, .line-right {
+    font-size: 12px;
+    font-weight: var(--font-weight-light);
+    user-select: none;
+  }
 
-const LINE_LENGTH = 60;
+  .line-left {
+    text-align: right;
+  }
+
+`;
+
+export class GeneSequence extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: 'open' });
+
+    const styleSheet = new CSSStyleSheet();
+    styleSheet.replaceSync(styles);
+
+    shadow.adoptedStyleSheets = [styleSheet];
+  }
+
+  set sequence(htmlTemplate: string) {
+    const parsedTemplate = new DOMParser().parseFromString(
+      htmlTemplate,
+      'text/html'
+    );
+    const templateElement = parsedTemplate.querySelector('template');
+
+    if (!templateElement) {
+      throw new Error('No template found in response!');
+    }
+
+    const resultContainer = this.shadowRoot;
+    resultContainer!.replaceChildren(templateElement.content);
+  }
+}
+
+window.customElements.define('ens-sequence-viewer-gene-sequence', GeneSequence);
+
+/**
 
 export class GeneSequence extends LitElement {
   static styles = css`
@@ -193,28 +241,6 @@ export class GeneSequence extends LitElement {
     `;
   }
 }
-
-window.customElements.define('ens-sequence-viewer-gene-sequence', GeneSequence);
-
-/**
-
-      <div class="container-left">
-        ${lines.map((_, index) => {
-          const number = LINE_LENGTH * index + 1;
-          return html`<span class="side-line">${number}</span> `;
-        })}
-      </div>
-
-      <div class="container-center">
-
-      </div>
-
-      <div class="container-right">
-        ${lines.map((_, index) => {
-          const number = LINE_LENGTH * index + LINE_LENGTH;
-          return html`<span class="side-line">${number}</span> `;
-        })}
-      </div>
 
 
  */
