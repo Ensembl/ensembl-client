@@ -1,0 +1,4 @@
+.main {
+  padding-top: var(--vertical-space-sm);
+  padding-left: var(--double-standard-gutter);
+}

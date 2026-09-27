@@ -15,18 +15,21 @@
  */
 
 import { useState, useEffect } from 'react';
-import { from } from 'rxjs';
+import { from, switchMap, retry, firstValueFrom } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
+
+import config from 'config';
 
 import { useAppDispatch, type AppDispatch } from 'src/store';
 
 import { fetchSequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
-import { fetchRefgetSequence } from 'src/shared/state/api-slices/refgetSlice';
 
+import type { AnnotatedSequenceRequestPayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 import type { SequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/queries/geneQuery';
 
 type Data = {
   gene: SequenceViewerGene;
-  sequence: string;
+  annotatedSequence: string;
 };
 
 type State = {
@@ -105,21 +108,15 @@ async function* fetchData({
   }
 
   const { gene } = geneResponse;
-  const regionChecksum = gene.slice.region.sequence.checksum;
-  const start = gene.slice.location.start;
-  const end = gene.slice.location.end;
-  const strand = gene.slice.strand.code;
 
-  const { data: sequence } = await reduxDispatch(
-    fetchRefgetSequence.initiate({
-      checksum: regionChecksum,
-      start,
-      end,
-      strand
-    })
-  );
+  let annotatedSequence: string;
 
-  if (!sequence) {
+  try {
+    annotatedSequence = await fetchAnnotatedSequence({
+      genome_uuid: genomeId,
+      focus_gene: { stable_id: geneId }
+    });
+  } catch {
     yield {
       data: null,
       isLoading: false,
@@ -131,11 +128,38 @@ async function* fetchData({
   yield {
     data: {
       gene,
-      sequence
+      annotatedSequence
     },
     isLoading: false,
     isError: false
   };
 }
+
+// Using rxjs here solely for its retry ability
+const fetchAnnotatedSequence = (payload: AnnotatedSequenceRequestPayload) => {
+  const url = `${config.annotatedSequenceApi}/sequence`;
+
+  const request = new Request(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data$ = fromFetch(request).pipe(
+    switchMap((response) => {
+      if (response.ok) {
+        // OK return data
+        return response.text();
+      } else {
+        throw new Error(`Server error: ${response.status}`);
+      }
+    }),
+    retry({ count: 5 })
+  );
+
+  return firstValueFrom(data$);
+};
 
 export default useGeneSequence;

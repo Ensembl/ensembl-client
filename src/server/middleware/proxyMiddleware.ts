@@ -55,15 +55,23 @@ const serverConfig = getConfigForServer();
 
 const createApiProxyMiddleware = () => {
   const apiProxyMiddleware = createHttpProxyMiddleware({
-    pathFilter: '/api',
+    pathFilter: ['/api/**', '!/api/annotated-sequence/**'],
     target: 'https://staging-2020.ensembl.org',
     changeOrigin: true,
     secure: false
   });
 
-  // returning an array so that the specific proxies can be easily modified in local development
-  // (see example in the comment block above)
-  return [apiProxyMiddleware];
+  const annotatedSequenceProxyMiddleware = createHttpProxyMiddleware({
+    pathFilter: '/api/annotated-sequence/**',
+    target: 'http://localhost:8000',
+    pathRewrite: {
+      '^/api/annotated-sequence/': '/' // rewrite path
+    },
+    changeOrigin: true,
+    secure: false
+  });
+
+  return [apiProxyMiddleware, annotatedSequenceProxyMiddleware];
 };
 
 const createStaticAssetsMiddleware = () => {

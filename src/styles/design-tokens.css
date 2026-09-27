@@ -50,11 +50,18 @@
   --font-family-monospace: 'IBM Plex Mono', 'Liberation Mono', Courier, monospace;
 
   /* WHITE SPACE */
+  /* 1. Horizontal space */ 
   --standard-gutter: 30px;
   --half-gutter: calc(var(--standard-gutter) / 2);
   --double-standard-gutter: calc(var(--standard-gutter) * 2); /* 60px */
   --global-padding-left: calc(var(--standard-gutter) * 4); /* 120px */
-  --global-padding-bottom: 90px;
+  /* 2. Vertical space */
+  --vertical-space-xs: 10px;
+  --vertical-space-sm: 20px;
+  --vertical-space-md: 30px;
+  --vertical-space-lg: 60px;
+  --vertical-space-xl: 90px;
+  --global-padding-bottom: 90px; /* same as --vertical-space-xl */
 
   /* FONT SIZES */
   --body-font-size: 13px;
