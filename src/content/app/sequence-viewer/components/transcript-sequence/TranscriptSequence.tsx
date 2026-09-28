@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { type DetailedHTMLProps, type HTMLAttributes } from 'react';
+import {
+  type DetailedHTMLProps,
+  type HTMLAttributes,
+  type CSSProperties
+} from 'react';
 
 import { useAppSelector } from 'src/store';
+
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { getTranscriptSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
 
@@ -24,9 +30,9 @@ import useTranscriptSequence from './useTranscriptSequence';
 
 import './transcript-sequence';
 
-import type { TranscriptSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/transcriptSummaryQuery';
-import type { TranscriptView } from 'src/content/app/sequence-viewer/types/transcriptView';
 import type { TranscriptSequence as TranscriptSequenceElement } from './transcript-sequence';
+
+import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
 
 type Props = {
   genomeId: string;
@@ -38,13 +44,14 @@ type Props = {
 
 const TranscriptSequence = (props: Props) => {
   const { genomeId, transcriptId } = props;
-  const { data, isLoading, isError } = useTranscriptSequence({
-    genomeId,
-    transcriptId
-  });
   const transcriptSequenceSettings = useAppSelector(
     getTranscriptSequenceSettings
   );
+  const { data, isLoading, isError } = useTranscriptSequence({
+    genomeId,
+    transcriptId,
+    settings: transcriptSequenceSettings
+  });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -61,13 +68,18 @@ const TranscriptSequence = (props: Props) => {
     return null;
   }
 
+  const transcriptEnd = data.transcript.slice.location.end;
+  const formattedTranscriptEndString = formatNumber(transcriptEnd);
+  const formattedGeneEndStringEnd = formattedTranscriptEndString.length;
+
+  const styles: CSSProperties & { '--gutter-width': string } = {
+    '--gutter-width': `${formattedGeneEndStringEnd}ch`
+  };
+
   return (
-    <div>
+    <div className={commonStyles.main} style={styles}>
       <ens-sequence-viewer-transcript-sequence
-        sequence={data.sequence}
-        transcript={data.transcript}
-        proteinSequence={data.proteinSequence}
-        view={transcriptSequenceSettings.view}
+        sequence={data.annotatedSequence}
       />
     </div>
   );
@@ -78,9 +90,6 @@ type TranscriptSequenceElementProps = DetailedHTMLProps<
   TranscriptSequenceElement
 > & {
   sequence: string;
-  transcript: TranscriptSummaryQueryResult['transcript'] | null;
-  proteinSequence: string | null;
-  view: TranscriptView;
 };
 
 declare module 'react/jsx-runtime' {

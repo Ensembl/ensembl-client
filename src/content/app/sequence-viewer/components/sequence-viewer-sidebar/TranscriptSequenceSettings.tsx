@@ -23,14 +23,18 @@ import {
   // type TranscriptSequenceLineNumbering
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 
+import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
 import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
+import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 
 import type { TranscriptView } from 'src/content/app/sequence-viewer/types/transcriptView';
 
 // view -> label
 const transcriptViewsMap = new Map<TranscriptView, string>([
   ['genomic', 'Genomic sequence'],
-  ['cdna', 'cDNA']
+  ['cdna', 'cDNA'],
+  ['cds', 'CDS'],
+  ['protein', 'Protein']
 ]);
 
 // const lineNumberingMap: Record<TranscriptSequenceLineNumbering, string> = {
@@ -49,6 +53,63 @@ const TranscriptSequenceSetttings = () => {
     dispatch(changeTranscriptSequenceSettings({ view }));
   };
 
+  const onHighlightExonsChange = () => {
+    dispatch(
+      changeTranscriptSequenceSettings({
+        shouldHighlightExons: !transcriptSettings.shouldHighlightExons
+      })
+    );
+  };
+
+  const onHighlightIntronsChange = () => {
+    dispatch(
+      changeTranscriptSequenceSettings({
+        shouldHighlightIntrons: !transcriptSettings.shouldHighlightIntrons
+      })
+    );
+  };
+
+  const onHighlightCDSChange = () => {
+    dispatch(
+      changeTranscriptSequenceSettings({
+        shouldHighlightCDS: !transcriptSettings.shouldHighlightCDS
+      })
+    );
+  };
+
+  const onHighlightUTRsChange = () => {
+    dispatch(
+      changeTranscriptSequenceSettings({
+        shouldHighlightUTRs: !transcriptSettings.shouldHighlightUTRs
+      })
+    );
+  };
+
+  const onHighlightCodonsChange = () => {
+    dispatch(
+      changeTranscriptSequenceSettings({
+        shouldHighlightCodons: !transcriptSettings.shouldHighlightCodons
+      })
+    );
+  };
+
+  const onShowProteinAlignmentChange = () => {
+    dispatch(
+      changeTranscriptSequenceSettings({
+        shouldShowProteinAlignment:
+          !transcriptSettings.shouldShowProteinAlignment
+      })
+    );
+  };
+
+  const onReverseComplementChange = () => {
+    dispatch(
+      changeTranscriptSequenceSettings({
+        isReverseComplement: !transcriptSettings.isReverseComplement
+      })
+    );
+  };
+
   const sequenceViewOptions = [...transcriptViewsMap.entries()].map(
     ([key, value]) => ({
       label: value,
@@ -58,12 +119,55 @@ const TranscriptSequenceSetttings = () => {
 
   return (
     <div>
-      <div>Sequence view</div>
+      <SidebarSectionHeading>Sequence type</SidebarSectionHeading>
       <RadioGroup
         options={sequenceViewOptions}
         selectedOption={transcriptSettings.view}
         onChange={(val) => onTranscriptViewChange(val as TranscriptView)}
       />
+      <SidebarSectionHeading>Highlight options</SidebarSectionHeading>
+      <div
+        style={{ display: 'flex', flexDirection: 'column', rowGap: '0.6rem' }}
+      >
+        <CheckboxWithLabel
+          label="Show exons"
+          checked={transcriptSettings.shouldHighlightExons}
+          onChange={onHighlightExonsChange}
+        />
+        <CheckboxWithLabel
+          label="Show introns"
+          checked={transcriptSettings.shouldHighlightIntrons}
+          onChange={onHighlightIntronsChange}
+        />
+        <CheckboxWithLabel
+          label="Show CDS"
+          checked={transcriptSettings.shouldHighlightCDS}
+          onChange={onHighlightCDSChange}
+        />
+        <CheckboxWithLabel
+          label="Show UTRs"
+          checked={transcriptSettings.shouldHighlightUTRs}
+          onChange={onHighlightUTRsChange}
+        />
+        <CheckboxWithLabel
+          label="Show codons"
+          checked={transcriptSettings.shouldHighlightCodons}
+          onChange={onHighlightCodonsChange}
+        />
+        <CheckboxWithLabel
+          label="Show protein alignment"
+          checked={transcriptSettings.shouldShowProteinAlignment}
+          onChange={onShowProteinAlignmentChange}
+        />
+      </div>
+      <SidebarSectionHeading>Other options</SidebarSectionHeading>
+      <div>
+        <CheckboxWithLabel
+          label="Reverse complement"
+          checked={transcriptSettings.isReverseComplement}
+          onChange={onReverseComplementChange}
+        />
+      </div>
     </div>
   );
 };

@@ -50,11 +50,13 @@
   --font-family-monospace: 'IBM Plex Mono', 'Liberation Mono', Courier, monospace;
 
   /* WHITE SPACE */
+  
   /* 1. Horizontal space */ 
   --standard-gutter: 30px;
   --half-gutter: calc(var(--standard-gutter) / 2);
   --double-standard-gutter: calc(var(--standard-gutter) * 2); /* 60px */
   --global-padding-left: calc(var(--standard-gutter) * 4); /* 120px */
+
   /* 2. Vertical space */
   --vertical-space-xs: 10px;
   --vertical-space-sm: 20px;

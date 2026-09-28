@@ -18,7 +18,10 @@ import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 
 import config from 'config';
 
-import { geneQuery, SequenceViewerGeneQueryResult } from './queries/geneQuery';
+import {
+  geneQuery,
+  type SequenceViewerGeneQueryResult
+} from './queries/geneQuery';
 
 type GeneQueryParams = { genomeId: string; geneId: string };
 // type TranscriptQueryParams = { genomeId: string; transcriptId: string };
