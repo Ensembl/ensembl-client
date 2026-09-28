@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+const SequenceViewerDownload = () => {
+  return <div>Download</div>;
+};
 
-import settingsSliceReducer from './settings/settingsSlice';
-import sidebarSliceReducer from './sidebar/sequenceViewerSidebarSlice';
-
-export default combineReducers({
-  settings: settingsSliceReducer,
-  sidebar: sidebarSliceReducer
-});
+export default SequenceViewerDownload;
