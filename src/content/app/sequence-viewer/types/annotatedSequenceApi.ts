@@ -22,16 +22,16 @@ export type AnnotatedSequenceRequestPayload = {
   focus_transcript?: { stable_id: string };
 
   options?: {
-    flanking_upstream: number;
-    flanking_downstream: number;
-    reverse_complement: boolean;
-    sequence_type: 'genomic' | 'cdna' | 'cds';
+    flanking_upstream?: number;
+    flanking_downstream?: number;
+    reverse_complement?: boolean;
+    sequence_type: 'genomic' | 'cdna' | 'cds' | 'protein';
 
-    show_exons: boolean;
-    show_introns: boolean;
-    show_cds: boolean;
-    show_utr: boolean;
-    show_codons: boolean;
-    show_protein: boolean;
+    show_exons?: boolean;
+    show_introns?: boolean;
+    show_cds?: boolean;
+    show_utr?: boolean;
+    show_codons?: boolean;
+    show_protein?: boolean;
   };
 };

@@ -20,14 +20,15 @@ import { from } from 'rxjs';
 import { useAppDispatch, type AppDispatch } from 'src/store';
 
 import { getGBTranscriptSummary } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
-import { fetchRefgetSequence } from 'src/shared/state/api-slices/refgetSlice';
+import { fetchAnnotatedSequence } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
 
 import type { TranscriptSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/transcriptSummaryQuery';
+import type { TranscriptSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
+import type { AnnotatedSequenceRequestPayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
 type Data = {
   transcript: TranscriptSummaryQueryResult['transcript'];
-  sequence: string;
-  proteinSequence: string | null;
+  annotatedSequence: string;
 };
 
 type State = {
@@ -42,12 +43,43 @@ const initialState: State = {
   isError: false
 };
 
+const transcriptSettingsToPayloadOptions = (
+  settings: TranscriptSequenceSettings
+) => {
+  const options: AnnotatedSequenceRequestPayload['options'] = {
+    sequence_type: settings.view
+  };
+
+  if (settings.view === 'genomic') {
+    options.show_introns = settings.shouldHighlightIntrons;
+  }
+
+  if (['genomic', 'cdna'].includes(settings.view)) {
+    options.show_utr = settings.shouldHighlightUTRs;
+  }
+
+  if (['genomic', 'cdna', 'cds'].includes(settings.view)) {
+    options.show_exons = settings.shouldHighlightExons;
+    options.show_cds = settings.shouldHighlightCDS;
+    options.show_codons = settings.shouldHighlightCodons;
+    options.reverse_complement = settings.isReverseComplement;
+  }
+
+  if (settings.view !== 'protein') {
+    options.show_protein = settings.shouldShowProteinAlignment;
+  }
+
+  return options;
+};
+
 const useTranscriptSequence = ({
   genomeId,
-  transcriptId
+  transcriptId,
+  settings
 }: {
   genomeId: string;
   transcriptId: string;
+  settings: TranscriptSequenceSettings;
 }) => {
   const [state, setState] = useState(initialState);
   const reduxDispatch = useAppDispatch();
@@ -57,7 +89,8 @@ const useTranscriptSequence = ({
       fetchData({
         reduxDispatch,
         transcriptId,
-        genomeId
+        genomeId,
+        settings
       })
     ).subscribe((data) => {
       setState(data);
@@ -66,7 +99,7 @@ const useTranscriptSequence = ({
     return () => {
       subscription.unsubscribe();
     };
-  }, [reduxDispatch, genomeId, transcriptId]);
+  }, [reduxDispatch, genomeId, transcriptId, settings]);
 
   return state;
 };
@@ -74,10 +107,12 @@ const useTranscriptSequence = ({
 async function* fetchData({
   genomeId,
   transcriptId,
+  settings,
   reduxDispatch
 }: {
   transcriptId: string;
   genomeId: string;
+  settings: TranscriptSequenceSettings;
   reduxDispatch: AppDispatch;
 }) {
   yield {
@@ -106,39 +141,16 @@ async function* fetchData({
   }
 
   const { transcript } = transcriptResponse;
-  const regionChecksum = transcript.slice.region.sequence.checksum;
-  const start = transcript.slice.location.start;
-  const end = transcript.slice.location.end;
-  const strand = transcript.slice.strand.code;
 
-  const proteinContext = transcript.product_generating_contexts
-    .find(context => context.product_type === 'Protein');
+  let annotatedSequence: string;
 
-
-  const { data: sequence } = await reduxDispatch(
-    fetchRefgetSequence.initiate({
-      checksum: regionChecksum,
-      start,
-      end,
-      strand
-    })
-  );
-
-  let proteinSequence: string | null = null;
-
-  if (proteinContext) {
-    const {data: sequence } = await reduxDispatch(
-      fetchRefgetSequence.initiate({
-        checksum: proteinContext.product!.sequence.checksum
-      })
-    );
-    if (sequence) {
-      proteinSequence = sequence;
-    }
-  }
-
-
-  if (!sequence) {
+  try {
+    annotatedSequence = await fetchAnnotatedSequence({
+      genome_uuid: genomeId,
+      focus_transcript: { stable_id: transcriptId },
+      options: transcriptSettingsToPayloadOptions(settings)
+    });
+  } catch {
     yield {
       data: null,
       isLoading: false,
@@ -150,8 +162,7 @@ async function* fetchData({
   yield {
     data: {
       transcript,
-      sequence,
-      proteinSequence
+      annotatedSequence
     },
     isLoading: false,
     isError: false

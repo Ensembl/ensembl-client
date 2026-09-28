@@ -23,9 +23,16 @@ type GeneSequenceLineNumbering = 'region' | 'gene';
 export type TranscriptSequenceLineNumbering =
   'region' | 'gene' | 'transcript' | 'cdna' | 'cds';
 
-type TranscriptSequenceSettings = {
+export type TranscriptSequenceSettings = {
   type: 'transcript';
   view: TranscriptView;
+  shouldHighlightExons: boolean;
+  shouldHighlightIntrons: boolean;
+  shouldHighlightCDS: boolean;
+  shouldHighlightUTRs: boolean;
+  shouldHighlightCodons: boolean;
+  shouldShowProteinAlignment: boolean;
+  isReverseComplement: boolean;
   lineNumbering: TranscriptSequenceLineNumbering | null;
   upstreamFlankingSequenceLength: number;
   downstreamFlankingSequenceLength: number;
@@ -41,6 +48,13 @@ type GeneSequenceSettings = {
 const initialTranscriptSequenceSettings: TranscriptSequenceSettings = {
   type: 'transcript',
   view: 'genomic',
+  shouldHighlightExons: false,
+  shouldHighlightIntrons: false,
+  shouldHighlightCDS: false,
+  shouldHighlightUTRs: false,
+  shouldHighlightCodons: false,
+  shouldShowProteinAlignment: false,
+  isReverseComplement: false,
   lineNumbering: null,
   upstreamFlankingSequenceLength: 0,
   downstreamFlankingSequenceLength: 0
