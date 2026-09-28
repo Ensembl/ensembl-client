@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import type { RootState } from 'src/store';
 
-import settingsSliceReducer from './settings/settingsSlice';
-import sidebarSliceReducer from './sidebar/sequenceViewerSidebarSlice';
+export const getIsSidebarOpen = (state: RootState) =>
+  state.sequenceViewer.sidebar.isSidebarOpen ?? true;
 
-export default combineReducers({
-  settings: settingsSliceReducer,
-  sidebar: sidebarSliceReducer
-});
+export const getSidebarModalView = (state: RootState, genomeId: string) =>
+  state.sequenceViewer.sidebar.sidebarModalView[genomeId] ?? null;

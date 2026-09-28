@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
+import { useAppSelector } from 'src/store';
+
+import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
+
+import { getSidebarModalView } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSelectors';
+
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import GeneSequenceSetttings from './GeneSequenceSettings';
 import TranscriptSequenceSetttings from './TranscriptSequenceSettings';
+import SequenceViewerSidebarModal from './sidebar-modal/SequenceViewerSidebarModal';
 
 export type View = 'location' | 'gene' | 'transcript';
 
@@ -25,6 +32,15 @@ type Props = {
 };
 
 const SequenceViewerSidebar = (props: Props) => {
+  const { genomeId } = useSequenceViewerIds();
+  const sidebarModalView = useAppSelector((state) =>
+    getSidebarModalView(state, genomeId ?? '')
+  );
+
+  if (sidebarModalView) {
+    return <SequenceViewerSidebarModal />;
+  }
+
   return (
     <Sidebar>
       <div>

@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import noop from 'lodash/noop';
+import { useCallback } from 'react';
+
+import { useAppSelector, useAppDispatch } from 'src/store';
 
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
+
+import { getIsSidebarOpen } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSelectors';
+import { toggleSidebar } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSlice';
 
 import SequenceViewerAppBar from './components/sequence-viewer-app-bar/SequenceViewerAppBar';
 import SequenceViewerSidebar, {
@@ -27,10 +32,18 @@ import { StandardAppLayout } from 'src/shared/components/layout';
 import GeneSequence from './components/gene-sequence/GeneSequence';
 import TranscriptSequence from './components/transcript-sequence/TranscriptSequence';
 import LocationSequence from './components/location-sequence/LocationSequence';
+import SidebarToolstrip from './components/sequence-viewer-sidebar/sidebar-toolstrip/SequenceViewerSidebarToolstrip';
 
 import styles from './SequenceViewer.module.css';
 
 const SequenceViewer = () => {
+  const isSidebarOpen = useAppSelector(getIsSidebarOpen);
+  const dispatch = useAppDispatch();
+
+  const onSidebarToggle = useCallback(() => {
+    dispatch(toggleSidebar());
+  }, [dispatch]);
+
   return (
     <SequenceViewerIdsContextProvider>
       <div className={styles.container}>
@@ -38,11 +51,11 @@ const SequenceViewer = () => {
         <StandardAppLayout
           mainContent={<MainContent />}
           sidebarContent={<SidebarContent />}
-          isSidebarOpen={true}
+          isSidebarOpen={isSidebarOpen}
           topbarContent={null}
           sidebarNavigation={null}
-          sidebarToolstripContent={null}
-          onSidebarToggle={noop}
+          sidebarToolstripContent={<SidebarToolstrip />}
+          onSidebarToggle={onSidebarToggle}
           viewportWidth={1800}
         />
       </div>
