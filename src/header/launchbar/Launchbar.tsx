@@ -20,15 +20,12 @@ import classNames from 'classnames';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import useHeaderAnalytics from '../hooks/useHeaderAnalytics';
 
-import {
-  GlobalSearchIcon,
-  SequenceViewerIcon,
-  HelpIcon
-} from 'src/shared/components/app-icon';
+import { GlobalSearchIcon, HelpIcon } from 'src/shared/components/app-icon';
 import LaunchbarButton from './LaunchbarButton';
 import SpeciesSelectorLaunchbarButton from './SpeciesSelectorLaunchbarButton';
 import GenomeBrowserLaunchbarButton from './GenomeBrowserLaunchbarButton';
 import EntityViewerLaunchbarButton from './EntityViewerLaunchbarButton';
+import SequenceViewerLaunchbarButton from './SequenceViewerLaunchbarButton';
 import AlignmentsViewerLaunchbarButton from './AlignmentsViewerLaunchbarButton';
 import RegulatoryActivityViewerLaunchbarButton from './RegulationViewerLaunchbarButton';
 import BlastLaunchbarButton from './BlastLaunchbarButton';
@@ -67,11 +64,7 @@ const Launchbar = () => {
           </div>
           <div className={styles.category}>
             <EntityViewerLaunchbarButton />
-            <LaunchbarButton
-              path="/sequence-viewer"
-              description="Sequence viewer"
-              icon={SequenceViewerIcon}
-            />
+            <SequenceViewerLaunchbarButton />
             <RegulatoryActivityViewerLaunchbarButton />
           </div>
           <div className={styles.category}>
