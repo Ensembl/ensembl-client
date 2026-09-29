@@ -186,6 +186,14 @@ const MatchDetails = (
     })
   });
 
+  const urlForSequenceViewer = urlFor.sequenceViewer({
+    genomeId: genomeIdForUrl ?? genome_id,
+    focusObject: buildFocusIdForUrl({
+      type: 'gene',
+      objectId: unversioned_stable_id
+    })
+  });
+
   const links = {
     genomeBrowser: {
       url: urlForGenomeBrowser,
@@ -194,6 +202,9 @@ const MatchDetails = (
     entityViewer: {
       url: urlForEntityViewer,
       replaceState: false
+    },
+    sequenceViewer: {
+      url: urlForSequenceViewer
     }
   };
 

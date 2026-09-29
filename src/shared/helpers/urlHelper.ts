@@ -198,6 +198,30 @@ export const entityViewerVariant = (params?: {
   return query ? `${path}?${query}` : path;
 };
 
+export const sequenceViewer = ({
+  genomeId,
+  focusObject
+}: {
+  genomeId?: string;
+  focusObject?: string;
+}) => {
+  let pathname = '/sequence-viewer';
+
+  if (!genomeId) {
+    return pathname;
+  }
+  pathname += `/${genomeId}`;
+
+  const urlSearchParams = new URLSearchParams('');
+  if (focusObject) {
+    urlSearchParams.set('focus', focusObject);
+  }
+
+  const query = decodeURIComponent(urlSearchParams.toString());
+
+  return query ? `${pathname}?${query}` : pathname;
+};
+
 export const regulatoryActivityViewer = (
   params?: RegulatoryActivityViewerUrlParams
 ) => {

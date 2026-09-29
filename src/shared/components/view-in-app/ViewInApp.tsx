@@ -17,11 +17,14 @@
 import { useNavigate } from 'react-router';
 import classNames from 'classnames';
 
+import { isProductionEnvironment } from 'src/shared/helpers/environment';
+
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
 
 import {
   GenomeBrowserIcon,
-  EntityViewerIcon
+  EntityViewerIcon,
+  SequenceViewerIcon
 } from 'src/shared/components/app-icon';
 
 import { Status } from 'src/shared/types/status';
@@ -30,12 +33,16 @@ import styles from './ViewInApp.module.css';
 
 export const Apps = {
   genomeBrowser: {
-    tooltip: 'Genome Browser',
+    tooltip: 'Genome browser',
     icon: GenomeBrowserIcon
   },
   entityViewer: {
     tooltip: 'Feature explorer',
     icon: EntityViewerIcon
+  },
+  sequenceViewer: {
+    tooltip: 'Sequence viewer',
+    icon: SequenceViewerIcon
   },
   activityViewer: {
     tooltip: 'Regulatory Activity Viewer',
@@ -133,11 +140,16 @@ export const ViewInApp = (props: ViewInAppProps) => {
     [styles.viewInAppDark]: theme === 'dark'
   });
 
-  const enabledApps = Object.entries({
+  let enabledApps = Object.entries({
     ...props.links
   })
     .filter(([, value]) => Boolean(value))
     .map(([key]) => key) as AppName[];
+
+  // TODO: remove when we enable sequence viewer
+  if (isProductionEnvironment()) {
+    enabledApps = enabledApps.filter((app) => app !== 'sequenceViewer');
+  }
 
   return (
     <div className={componentClasses}>
