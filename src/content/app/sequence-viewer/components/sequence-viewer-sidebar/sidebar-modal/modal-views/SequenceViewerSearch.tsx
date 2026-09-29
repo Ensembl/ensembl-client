@@ -14,8 +14,41 @@
  * limitations under the License.
  */
 
+import { useAppDispatch } from 'src/store';
+
+import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
+
+import { closeSidebarModal } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSlice';
+
+import SidebarSearch from 'src/shared/components/sidebar-search/SidebarSearch';
+
 const SequenceViewerSearch = () => {
-  return <div>Search</div>;
+  const { genomeId, genomeIdForUrl } = useSequenceViewerIds();
+  const dispatch = useAppDispatch();
+
+  const onSearchMatchNavigation = () => {
+    if (!genomeId) {
+      // this should not happen
+      return;
+    }
+    dispatch(closeSidebarModal({ genomeId }));
+  };
+
+  return genomeId ? (
+    <SidebarSearch
+      key={genomeId}
+      app="sequenceViewer"
+      genomeId={genomeId}
+      genomeIdForUrl={genomeIdForUrl as string}
+      onMatchNavigation={onSearchMatchNavigation}
+    />
+  ) : null;
 };
+
+// export default EntityViewerSidebarSearch;
+
+// const SequenceViewerSearch = () => {
+//   return <div>Search</div>;
+// };
 
 export default SequenceViewerSearch;
