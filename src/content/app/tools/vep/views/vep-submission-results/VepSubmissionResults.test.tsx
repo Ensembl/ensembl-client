@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import { render, cleanup } from '@testing-library/react';
+
 import {
   planLeadingCells,
   detailBearingRowIndices,
   hasAnySelectedOption,
-  formatAfSourceLabel
+  formatAfSourceLabel,
+  ProteinCodingTableCell
 } from './VepSubmissionResults';
 import type { VepResultsTableRowData } from './useVepVariantTabularData';
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
@@ -302,5 +305,53 @@ describe('formatAfSourceLabel', () => {
     expect(formatAfSourceLabel({ ...source, source_label: null })).toBe(
       'gnomad_exomes — African/African American'
     );
+  });
+});
+
+describe('ProteinCodingTableCell', () => {
+  afterEach(cleanup);
+
+  const renderCell = (row: VepResultsTableRowData) =>
+    render(
+      <table>
+        <tbody>
+          <tr>
+            <ProteinCodingTableCell row={row} />
+          </tr>
+        </tbody>
+      </table>
+    ).container.querySelector('td');
+
+  it('shows the protein coding features of a transcript row', () => {
+    const row = transcriptRow('G');
+    const cell = renderCell({
+      ...row,
+      consequence: {
+        ...row.consequence,
+        protein_coding: {
+          exon: '2/3',
+          intron: null,
+          cdna_position: '46',
+          cds_position: '37',
+          protein_position: '13',
+          amino_acids: 'W/G',
+          codons: 'Tgg/Ggg'
+        }
+      } as VepResultsTableRowData['consequence']
+    });
+
+    expect(cell?.textContent).toContain('Protein position13');
+    expect(cell?.textContent).toContain('Amino acidsW/G');
+  });
+
+  it('leaves the cell empty for rows without them', () => {
+    for (const row of [
+      transcriptRow('G'),
+      regulatoryRow('G'),
+      intergenicRow('G')
+    ]) {
+      expect(renderCell(row)?.textContent).toBe('');
+      cleanup();
+    }
   });
 });

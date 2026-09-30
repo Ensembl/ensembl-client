@@ -103,6 +103,21 @@ export type PredictedMolecularConsequence =
   | PredictedRegulatoryConsequence
   | PredictedIntergenicConsequence;
 
+// Where the variant falls in the transcript and its protein, as VEP writes it.
+// Exon and intron read "4/13", the number and the total, or "2-3/13" when the
+// variant spans several, and a variant across a boundary has both. A position
+// can be a range such as "340-341". Amino acids read "K/Q", or one letter when the change
+// is synonymous. Codons read "AAa/CAa", with the changed bases in capitals.
+export type ProteinCodingFeatures = {
+  exon: string | null;
+  intron: string | null;
+  cdna_position: string | null;
+  cds_position: string | null;
+  protein_position: string | null;
+  amino_acids: string | null;
+  codons: string | null;
+};
+
 export type PredictedTranscriptConsequence = {
   feature_type: 'transcript';
   stable_id: string; // transcript stable id, versioned
@@ -118,6 +133,7 @@ export type PredictedTranscriptConsequence = {
   mane_select_refseq_id?: string | null;
   // GENCODE primary (human GRCh38 only)
   is_gencode_primary?: boolean;
+  protein_coding?: ProteinCodingFeatures | null;
   // Transcript-scoped plugin output (protein & functional annotations, HGVS,
   // pathogenicity predictions, gene constraint, ...).
   annotations?: Annotation[];
