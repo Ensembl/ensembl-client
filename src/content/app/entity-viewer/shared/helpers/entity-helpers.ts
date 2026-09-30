@@ -17,9 +17,10 @@
 import type { Pick2, Pick3 } from 'ts-multipick';
 
 import type { Slice } from 'src/shared/types/core-api/slice';
-import type { PhasedExon, Exon } from 'src/shared/types/core-api/exon';
+import type { Exon } from 'src/shared/types/core-api/exon';
 import { ProductType, type Product } from 'src/shared/types/core-api/product';
 import type { ExternalReference } from 'src/shared/types/core-api/externalReference';
+import type { DefaultEntityViewerTranscript } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import {
   SWISSPROT_SOURCE,
@@ -82,45 +83,40 @@ export const isProteinCodingTranscript = (
 
 export type GetNumberOfCodingExonsParam = {
   product_generating_contexts: Array<{
-    product_type: ProductType;
-    phased_exons: Array<
-      Pick<PhasedExon, 'start_phase' | 'end_phase'> & {
-        exon: {
-          stable_id: string;
-        };
-      }
-    >;
+    cds: DefaultEntityViewerTranscript['product_generating_contexts'][number]['cds'];
   }>;
   spliced_exons: Array<{
-    exon: {
-      stable_id: string;
-    };
+    relative_location: DefaultEntityViewerTranscript['spliced_exons'][number]['relative_location'];
   }>;
 };
 
 export const getNumberOfCodingExons = (
   transcript: GetNumberOfCodingExonsParam
 ) => {
-  if (!isProteinCodingTranscript(transcript)) {
+  const firstProductGeneratingContext =
+    transcript.product_generating_contexts[0];
+  const cds = firstProductGeneratingContext.cds;
+
+  if (!cds) {
     return 0;
   }
-  const { product_generating_contexts, spliced_exons } = transcript;
-  const firstProductGeneratingContext = product_generating_contexts[0];
 
-  const { phased_exons } = firstProductGeneratingContext;
-  // coding exons will have a phase that is different from -1
-  return phased_exons
-    .filter(
-      ({ start_phase, end_phase }) => start_phase !== -1 || end_phase !== -1
-    )
-    .filter((phasedExon) => {
-      // to exclude the unlikely chance of trans-splicing,
-      // check that all phased exons actually belong to this transcript
-      return spliced_exons.find(
-        (splicedExon) =>
-          splicedExon.exon.stable_id === phasedExon.exon.stable_id
-      );
-    }).length;
+  const cdsRelativeStart = cds.relative_start;
+  const cdsRelativeEnd = cds.relative_end;
+  let codingExonsCount = 0;
+
+  for (const exon of transcript.spliced_exons) {
+    const exonRelativeStart = exon.relative_location.start;
+    const exonRelativeEnd = exon.relative_location.end;
+    if (
+      exonRelativeStart < cdsRelativeEnd &&
+      exonRelativeEnd > cdsRelativeStart
+    ) {
+      codingExonsCount++;
+    }
+  }
+
+  return codingExonsCount;
 };
 
 export type GetProductAminoAcidLengthParam = {
