@@ -23,7 +23,8 @@ import {
   hasAnySelectedOption,
   hasSelectedRegulatoryOption,
   formatAfSourceLabel,
-  VepResultsTable
+  VepResultsTable,
+  ProteinCodingTableCell
 } from './VepSubmissionResults';
 import { displaySpecFixture } from './components/vep-results-annotation-detail/displaySpec.fixture';
 import type { VepResultsTableRowData } from './useVepVariantTabularData';
@@ -389,16 +390,16 @@ describe('VepResultsTable', () => {
     const { container } = renderTable(true);
 
     expect(headings(container)).toContain('Regulatory');
-    expect(headings(container)).toHaveLength(9);
-    expect(occupiedColumnCounts(container)).toEqual([9, 9]);
+    expect(headings(container)).toHaveLength(10);
+    expect(occupiedColumnCounts(container)).toEqual([10, 10]);
   });
 
   it('hides the Regulatory column when the job ran no regulatory option', () => {
     const { container } = renderTable(false);
 
     expect(headings(container)).not.toContain('Regulatory');
-    expect(headings(container)).toHaveLength(8);
-    expect(occupiedColumnCounts(container)).toEqual([8, 8]);
+    expect(headings(container)).toHaveLength(9);
+    expect(occupiedColumnCounts(container)).toEqual([9, 9]);
   });
 
   it.each([true, false])(
@@ -454,5 +455,53 @@ describe('formatAfSourceLabel', () => {
     expect(formatAfSourceLabel({ ...source, source_label: null })).toBe(
       'gnomad_exomes — African/African American'
     );
+  });
+});
+
+describe('ProteinCodingTableCell', () => {
+  afterEach(cleanup);
+
+  const renderCell = (row: VepResultsTableRowData) =>
+    render(
+      <table>
+        <tbody>
+          <tr>
+            <ProteinCodingTableCell row={row} />
+          </tr>
+        </tbody>
+      </table>
+    ).container.querySelector('td');
+
+  it('shows the protein coding features of a transcript row', () => {
+    const row = transcriptRow('G');
+    const cell = renderCell({
+      ...row,
+      consequence: {
+        ...row.consequence,
+        protein_coding: {
+          exon: '2/3',
+          intron: null,
+          cdna_position: '46',
+          cds_position: '37',
+          protein_position: '13',
+          amino_acids: 'W/G',
+          codons: 'Tgg/Ggg'
+        }
+      } as VepResultsTableRowData['consequence']
+    });
+
+    expect(cell?.textContent).toContain('Protein position13');
+    expect(cell?.textContent).toContain('Amino acidsW/G');
+  });
+
+  it('leaves the cell empty for rows without them', () => {
+    for (const row of [
+      transcriptRow('G'),
+      regulatoryRow('G'),
+      intergenicRow('G')
+    ]) {
+      expect(renderCell(row)?.textContent).toBe('');
+      cleanup();
+    }
   });
 });
