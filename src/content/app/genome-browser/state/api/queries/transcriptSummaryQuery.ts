@@ -19,7 +19,7 @@ import type { Pick2, Pick3, Pick4 } from 'ts-multipick';
 
 import type { FullGene } from 'src/shared/types/core-api/gene';
 import type { FullTranscript } from 'src/shared/types/core-api/transcript';
-import type { SplicedExon, PhasedExon } from 'src/shared/types/core-api/exon';
+import type { SplicedExon } from 'src/shared/types/core-api/exon';
 import type { FullProductGeneratingContext } from 'src/shared/types/core-api/productGeneratingContext';
 import type { TranscriptMetadata } from 'src/shared/types/core-api/metadata';
 
@@ -54,6 +54,8 @@ export const transcriptSummaryQuery = gql`
         default
         cds {
           protein_length
+          relative_start
+          relative_end
           sequence {
             checksum
           }
@@ -61,13 +63,6 @@ export const transcriptSummaryQuery = gql`
         cdna {
           sequence {
             checksum
-          }
-        }
-        phased_exons {
-          start_phase
-          end_phase
-          exon {
-            stable_id
           }
         }
         product {
@@ -167,12 +162,6 @@ type SplicedExonOnSummaryTranscript = Pick2<
   Pick2<SplicedExon, 'exon', 'stable_id'> &
   Pick4<SplicedExon, 'exon', 'slice', 'location', 'length'>;
 
-type PhasedExonOfDefaultTranscript = Pick<
-  PhasedExon,
-  'start_phase' | 'end_phase'
-> &
-  Pick2<PhasedExon, 'exon', 'stable_id'>;
-
 type ProductGeneratingContextOnSummaryTranscript = Pick<
   FullProductGeneratingContext,
   'product_type' | 'default'
@@ -180,7 +169,7 @@ type ProductGeneratingContextOnSummaryTranscript = Pick<
   cds:
     | (Pick<
         NonNullable<FullProductGeneratingContext['cds']>,
-        'protein_length'
+        'protein_length' | 'relative_start' | 'relative_end'
       > &
         Pick2<
           NonNullable<FullProductGeneratingContext['cds']>,
@@ -193,7 +182,6 @@ type ProductGeneratingContextOnSummaryTranscript = Pick<
     'sequence',
     'checksum'
   > | null;
-  phased_exons: PhasedExonOfDefaultTranscript[];
   product:
     | ({
         stable_id: string;
