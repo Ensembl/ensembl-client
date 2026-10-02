@@ -1,0 +1,6 @@
+interface:
+  display_name: "Ensembl Client Standards Curator"
+  short_description: "Push verified conventions into coding standards"
+  default_prompt: "Use $ensembl-client-standards-curator to update CODING_STANDARDS.md from current repository evidence."
+policy:
+  allow_implicit_invocation: false
