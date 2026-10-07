@@ -17,6 +17,8 @@
 import { useState, type ComponentProps } from 'react';
 
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
+import CheckboxGroup from 'src/shared/components/checkbox-group/CheckboxGroup';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import styles from './CheckboxWithLabel.stories.module.css';
 
@@ -33,16 +35,19 @@ const StatefulCheckbox = (
   };
 
   return (
-    <div>
-      <CheckboxWithLabel {...props} checked={checked} onChange={handleChange} />
-    </div>
+    <CheckboxWithLabel {...props} checked={checked} onChange={handleChange} />
   );
 };
 
 const DefaultCheckboxes = () => (
   <div className={styles.wrapper}>
-    <StatefulCheckbox label="I am label, you can click me" />
-    <StatefulCheckbox label="I am label of disabled checkbox" disabled={true} />
+    <CheckboxGroup>
+      <StatefulCheckbox label="I am label, you can click me" />
+      <StatefulCheckbox
+        label="I am label of disabled checkbox"
+        disabled={true}
+      />
+    </CheckboxGroup>
   </div>
 );
 
@@ -62,25 +67,51 @@ const ThemedCheckboxes = () => (
 
 const CheckboxesWithLongLabels = () => (
   <div className={styles.gridWrapper}>
-    <div>
+    <CheckboxGroup>
       <StatefulCheckbox label="I am label" />
       <StatefulCheckbox
         label="I am label of disabled checkbox"
         disabled={true}
       />
       <StatefulCheckbox label="I am a very long long label that wraps to another line" />
-    </div>
+    </CheckboxGroup>
 
-    <div>
+    <CheckboxGroup>
       <StatefulCheckbox label="I am label" />
       <StatefulCheckbox label="I am a very long long label that wraps to another line" />
       <StatefulCheckbox label="I am label" />
-    </div>
+    </CheckboxGroup>
 
-    <div>
+    <CheckboxGroup>
       <StatefulCheckbox label="I am label" />
       <StatefulCheckbox label="I am label" />
-    </div>
+    </CheckboxGroup>
+  </div>
+);
+
+const CheckboxesWithQuestionButton = () => (
+  <div className={styles.gridWrapper}>
+    <CheckboxGroup>
+      <div className={styles.checkboxWithQuestionButtonGrid}>
+        <StatefulCheckbox label="I am label" />
+        <QuestionButton helpText="Lorem ipsum" />
+      </div>
+      <div className={styles.checkboxWithQuestionButtonGrid}>
+        <StatefulCheckbox label="I am a very long label that wraps to another line" />
+        <QuestionButton helpText="Lorem ipsum" />
+      </div>
+    </CheckboxGroup>
+
+    <CheckboxGroup>
+      <div className={styles.checkboxWithQuestionButtonGrid}>
+        <StatefulCheckbox label="I am label" />
+        <QuestionButton helpText="Lorem ipsum" />
+      </div>
+      <div className={styles.checkboxWithQuestionButtonGrid}>
+        <StatefulCheckbox label="I am a very long label that wraps to another line" />
+        <QuestionButton helpText="Lorem ipsum" />
+      </div>
+    </CheckboxGroup>
   </div>
 );
 
@@ -97,6 +128,11 @@ export const ThemedCheckboxesStory = {
 export const CheckboxesWithLongLabelsStory = {
   name: 'grid with long labels',
   render: () => <CheckboxesWithLongLabels />
+};
+
+export const CheckboxesWithQuestionButtonStory = {
+  name: 'with question buttons',
+  render: () => <CheckboxesWithQuestionButton />
 };
 
 export default {
