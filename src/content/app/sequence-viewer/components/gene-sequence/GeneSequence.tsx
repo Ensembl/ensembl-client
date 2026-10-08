@@ -20,7 +20,11 @@ import {
   type CSSProperties
 } from 'react';
 
+import { useAppSelector } from 'src/store';
+
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+
+import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
 
 import useGeneSequence from './useGeneSequence';
 
@@ -40,9 +44,14 @@ type Props = {
 
 const GeneSequence = (props: Props) => {
   const { genomeId, geneId } = props;
+  const sequenceSettings = useAppSelector((state) =>
+    getSequenceSettings(state, genomeId ?? '')
+  );
+
   const { data } = useGeneSequence({
     genomeId,
-    geneId
+    geneId,
+    settings: sequenceSettings
   });
 
   if (!data) {

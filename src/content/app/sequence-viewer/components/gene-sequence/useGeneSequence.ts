@@ -22,7 +22,12 @@ import { useAppDispatch, type AppDispatch } from 'src/store';
 import { fetchSequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 import { fetchAnnotatedSequence } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
 
+import type {
+  SequenceSettings,
+  GeneSequenceSettings
+} from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 import type { SequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/queries/geneQuery';
+import type { AnnotatedSequenceRequestPayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
 type Data = {
   gene: SequenceViewerGene;
@@ -43,20 +48,27 @@ const initialState: State = {
 
 const useGeneSequence = ({
   genomeId,
-  geneId
+  geneId,
+  settings
 }: {
   genomeId: string;
   geneId: string;
+  settings: SequenceSettings | null;
 }) => {
   const [state, setState] = useState(initialState);
   const reduxDispatch = useAppDispatch();
 
   useEffect(() => {
+    if (!settings || settings.type !== 'gene') {
+      return;
+    }
+
     const subscription = from(
       fetchData({
         reduxDispatch,
         geneId,
-        genomeId
+        genomeId,
+        settings
       })
     ).subscribe((data) => {
       setState(data);
@@ -65,7 +77,7 @@ const useGeneSequence = ({
     return () => {
       subscription.unsubscribe();
     };
-  }, [reduxDispatch, genomeId, geneId]);
+  }, [reduxDispatch, genomeId, geneId, settings]);
 
   return state;
 };
@@ -73,11 +85,13 @@ const useGeneSequence = ({
 async function* fetchData({
   genomeId,
   geneId,
+  settings,
   reduxDispatch
 }: {
   geneId: string;
   genomeId: string;
   reduxDispatch: AppDispatch;
+  settings: GeneSequenceSettings;
 }) {
   yield {
     data: null,
@@ -109,9 +123,12 @@ async function* fetchData({
   let annotatedSequence: string;
 
   try {
+    const options = prepareOptionsForPayload(settings);
+
     annotatedSequence = await fetchAnnotatedSequence({
       genome_uuid: genomeId,
-      focus_gene: { stable_id: geneId }
+      focus_gene: { stable_id: geneId },
+      options
     });
   } catch {
     yield {
@@ -131,5 +148,18 @@ async function* fetchData({
     isError: false
   };
 }
+
+const prepareOptionsForPayload = (settings: GeneSequenceSettings) => {
+  const options: AnnotatedSequenceRequestPayload['options'] = {};
+  if (Object.keys(settings.options)) {
+    for (const [key, value] of Object.entries(settings.options)) {
+      if (Array.isArray(value) && value.length === 0) {
+        continue;
+      }
+      options[key] = value as (typeof options)[typeof key];
+    }
+  }
+  return options;
+};
 
 export default useGeneSequence;

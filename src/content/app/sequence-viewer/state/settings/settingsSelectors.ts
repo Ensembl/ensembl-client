@@ -16,8 +16,6 @@
 
 import type { RootState } from 'src/store';
 
-export const getGeneSequenceSettings = (state: RootState) =>
-  state.sequenceViewer.settings.geneSequenceSettings;
-
-export const getTranscriptSequenceSettings = (state: RootState) =>
-  state.sequenceViewer.settings.transcriptSequenceSettings;
+export const getSequenceSettings = (state: RootState, genomeId: string) => {
+  return state.sequenceViewer.settings[genomeId] ?? null;
+};

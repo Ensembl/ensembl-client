@@ -23,7 +23,10 @@ import { getGBTranscriptSummary } from 'src/content/app/genome-browser/state/api
 import { fetchAnnotatedSequence } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
 
 import type { TranscriptSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/transcriptSummaryQuery';
-import type { TranscriptSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
+import type {
+  SequenceSettings,
+  TranscriptSequenceSettings
+} from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 import type { AnnotatedSequenceRequestPayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
 type Data = {
@@ -45,31 +48,11 @@ const initialState: State = {
 
 const transcriptSettingsToPayloadOptions = (
   settings: TranscriptSequenceSettings
-) => {
-  const options: AnnotatedSequenceRequestPayload['options'] = {
-    sequence_type: settings.view
+): AnnotatedSequenceRequestPayload['options'] => {
+  return {
+    ...settings.options,
+    sequence_type: settings.sequenceView
   };
-
-  if (settings.view === 'genomic') {
-    options.show_introns = settings.shouldHighlightIntrons;
-  }
-
-  if (['genomic', 'cdna'].includes(settings.view)) {
-    options.show_utr = settings.shouldHighlightUTRs;
-  }
-
-  if (['genomic', 'cdna', 'cds'].includes(settings.view)) {
-    options.show_exons = settings.shouldHighlightExons;
-    options.show_cds = settings.shouldHighlightCDS;
-    options.show_codons = settings.shouldHighlightCodons;
-    options.reverse_complement = settings.isReverseComplement;
-  }
-
-  if (settings.view !== 'protein') {
-    options.show_protein = settings.shouldShowProteinAlignment;
-  }
-
-  return options;
 };
 
 const useTranscriptSequence = ({
@@ -79,12 +62,16 @@ const useTranscriptSequence = ({
 }: {
   genomeId: string;
   transcriptId: string;
-  settings: TranscriptSequenceSettings;
+  settings: SequenceSettings | null;
 }) => {
   const [state, setState] = useState(initialState);
   const reduxDispatch = useAppDispatch();
 
   useEffect(() => {
+    if (!settings || settings.type !== 'transcript') {
+      return;
+    }
+
     const subscription = from(
       fetchData({
         reduxDispatch,

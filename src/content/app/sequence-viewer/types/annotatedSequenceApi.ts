@@ -21,17 +21,48 @@ export type AnnotatedSequenceRequestPayload = {
   focus_gene?: { stable_id: string };
   focus_transcript?: { stable_id: string };
 
-  options?: {
-    flanking_upstream?: number;
-    flanking_downstream?: number;
-    reverse_complement?: boolean;
-    sequence_type: 'genomic' | 'cdna' | 'cds' | 'protein';
+  options?: Record<string, string | number | boolean | string[] | number[]>;
+};
 
-    show_exons?: boolean;
-    show_introns?: boolean;
-    show_cds?: boolean;
-    show_utr?: boolean;
-    show_codons?: boolean;
-    show_protein?: boolean;
-  };
+// Type corresponding to a single checkbox
+export type SequenceBooleanOption = {
+  type: 'checkbox';
+  id: string; // key in key/value dictionary of options sent in request to the server
+  label: string; // human-readable label
+  value: string | number | boolean; // value in key/value dictionary of options sent in request to the server
+  checked: boolean; // whether is selected by default
+};
+
+// Type corresponding to a group of checkboxes
+export type SequenceMultiselectOption = {
+  id: string; // key in key / array of values dictionary
+  type: 'checkbox-group';
+  values: {
+    label: string;
+    value: string | number | boolean; // value in the array of values
+    checked: boolean; // whether this is selected by default
+    metadata?: TranscriptMetadata;
+  }[];
+};
+
+export type TranscriptMetadata = {
+  type: 'transcript';
+  id: string;
+  start: number;
+  end: number;
+};
+
+export type SequenceOptionsSection = {
+  label: string;
+  children: Array<SequenceBooleanOption | SequenceMultiselectOption>;
+};
+
+export type FlankingInfo = {
+  default: number; // how many flanking bases upstream and downstream to show by default
+  max: number; // maximum limit of the length of the flanking sequence
+};
+
+export type AnnotatedSequenceOptionsResponsePayload = {
+  sections: SequenceOptionsSection[];
+  flanking?: FlankingInfo;
 };

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type TranscriptView = 'genomic' | 'cdna' | 'cds' | 'protein';
+export type TranscriptSequenceView = 'genomic' | 'cdna' | 'cds' | 'protein';

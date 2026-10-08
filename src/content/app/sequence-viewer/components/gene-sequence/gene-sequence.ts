@@ -40,6 +40,26 @@ const styles = `
     text-align: right;
   }
 
+  .exon {
+      background-color: cadetblue;
+  }
+
+  .intron {
+      background-color: rgba(0, 100, 0, 0.5);
+  }
+
+  .cds {
+      background-color: rebeccapurple;
+  }
+
+  .utr {
+      background-color: teal;
+  }
+
+  .mixed {
+      background-color: hotpink;
+  }
+
 `;
 
 export class GeneSequence extends HTMLElement {

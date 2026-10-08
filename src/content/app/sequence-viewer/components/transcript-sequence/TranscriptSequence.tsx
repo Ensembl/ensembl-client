@@ -22,12 +22,13 @@ import {
 
 import { useAppSelector } from 'src/store';
 
-import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
 
-import { getTranscriptSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import useTranscriptSequence from './useTranscriptSequence';
 
+import TranscriptSequenceTypes from './TranscriptSequenceTypes';
 import './transcript-sequence';
 
 import type { TranscriptSequence as TranscriptSequenceElement } from './transcript-sequence';
@@ -44,31 +45,22 @@ type Props = {
 
 const TranscriptSequence = (props: Props) => {
   const { genomeId, transcriptId } = props;
-  const transcriptSequenceSettings = useAppSelector(
-    getTranscriptSequenceSettings
+  const sequenceSettings = useAppSelector((state) =>
+    getSequenceSettings(state, genomeId ?? '')
   );
+
+  const sequenceView =
+    sequenceSettings?.type === 'transcript'
+      ? sequenceSettings.sequenceView
+      : '';
+
   const { data, isLoading, isError } = useTranscriptSequence({
     genomeId,
     transcriptId,
-    settings: transcriptSequenceSettings
+    settings: sequenceSettings
   });
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return (
-      <div>There has been an error loading the sequence of {transcriptId}</div>
-    );
-  }
-
-  if (!data) {
-    // shouldn't happen
-    return null;
-  }
-
-  const transcriptEnd = data.transcript.slice.location.end;
+  const transcriptEnd = data?.transcript.slice.location.end ?? 1;
   const formattedTranscriptEndString = formatNumber(transcriptEnd);
   const formattedGeneEndStringEnd = formattedTranscriptEndString.length;
 
@@ -78,9 +70,20 @@ const TranscriptSequence = (props: Props) => {
 
   return (
     <div className={commonStyles.main} style={styles}>
-      <ens-sequence-viewer-transcript-sequence
-        sequence={data.annotatedSequence}
-      />
+      <TranscriptSequenceTypes />
+
+      {isLoading && <div>Loading...</div>}
+      {isError && (
+        <div>
+          There has been an error loading the {sequenceView} sequence of{' '}
+          {transcriptId}
+        </div>
+      )}
+      {data && (
+        <ens-sequence-viewer-transcript-sequence
+          sequence={data.annotatedSequence}
+        />
+      )}
     </div>
   );
 };

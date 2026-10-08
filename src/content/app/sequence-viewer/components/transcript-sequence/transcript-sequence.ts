@@ -44,7 +44,6 @@ const styles = `
     font-weight: var(--font-weight-light);
   }
 
-
   .exon {
     background-color: cadetblue;
   }

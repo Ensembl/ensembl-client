@@ -16,84 +16,186 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import type { TranscriptView } from 'src/content/app/sequence-viewer/types/transcriptView';
-
-type GeneSequenceLineNumbering = 'region' | 'gene';
+import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
+import type { AnnotatedSequenceOptionsResponsePayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
 export type TranscriptSequenceLineNumbering =
   'region' | 'gene' | 'transcript' | 'cdna' | 'cds';
 
+export type SequenceOptionValue = string | number | boolean;
+
+export type LocationSequenceSettings = {
+  type: 'location';
+  locationId: string;
+  options: Record<string, SequenceOptionValue | SequenceOptionValue[]>;
+};
+
+export type GeneSequenceSettings = {
+  type: 'gene';
+  geneId: string;
+  options: Record<string, SequenceOptionValue | SequenceOptionValue[]>;
+};
+
 export type TranscriptSequenceSettings = {
   type: 'transcript';
-  view: TranscriptView;
-  shouldHighlightExons: boolean;
-  shouldHighlightIntrons: boolean;
-  shouldHighlightCDS: boolean;
-  shouldHighlightUTRs: boolean;
-  shouldHighlightCodons: boolean;
-  shouldShowProteinAlignment: boolean;
-  isReverseComplement: boolean;
-  lineNumbering: TranscriptSequenceLineNumbering | null;
-  upstreamFlankingSequenceLength: number;
-  downstreamFlankingSequenceLength: number;
+  transcriptId: string;
+  sequenceView: TranscriptSequenceView;
+  options: Record<string, SequenceOptionValue | SequenceOptionValue[]>;
 };
 
-type GeneSequenceSettings = {
+export type SequenceSettings =
+  LocationSequenceSettings | GeneSequenceSettings | TranscriptSequenceSettings;
+
+// A map of genome id to sequence settings
+type SequenceSettingsState = Record<string, SequenceSettings>;
+
+export const createInitialGeneSettings = ({
+  geneId,
+  payload
+}: {
+  geneId: string;
+  payload: AnnotatedSequenceOptionsResponsePayload;
+}): GeneSequenceSettings => {
+  const options: Record<string, SequenceOptionValue | SequenceOptionValue[]> =
+    {};
+
+  for (const section of payload.sections) {
+    for (const child of section.children) {
+      if (child.type === 'checkbox') {
+        if (child.checked) {
+          options[child.id] = child.value;
+        }
+      } else if (child.type === 'checkbox-group') {
+        const values = [];
+        for (const option of child.values) {
+          if (option.checked) {
+            values.push(option.value);
+          }
+        }
+        if (values.length) {
+          options[child.id] = values;
+        }
+      }
+    }
+  }
+
+  return {
+    type: 'gene',
+    geneId,
+    options
+  };
+};
+
+// FIXME: move options-generating logic into its own function
+
+export const createInitialTranscriptSettings = ({
+  transcriptId,
+  sequenceView = 'genomic',
+  payload
+}: {
+  transcriptId: string;
+  sequenceView: TranscriptSequenceView;
+  payload: AnnotatedSequenceOptionsResponsePayload;
+}): TranscriptSequenceSettings => {
+  const options: Record<string, SequenceOptionValue | SequenceOptionValue[]> =
+    {};
+
+  for (const section of payload.sections) {
+    for (const child of section.children) {
+      if (child.type === 'checkbox') {
+        if (child.checked) {
+          options[child.id] = child.value;
+        }
+      } else if (child.type === 'checkbox-group') {
+        const values = [];
+        for (const option of child.values) {
+          if (option.checked) {
+            values.push(option.value);
+          }
+        }
+        if (values.length) {
+          options[child.id] = values;
+        }
+      }
+    }
+  }
+
+  return {
+    type: 'transcript',
+    transcriptId,
+    sequenceView,
+    options
+  };
+};
+
+export const createInitialLocationSettings = ({
+  locationId,
+  options
+}: {
+  locationId: string;
+  options: LocationSequenceSettings['options'];
+}): LocationSequenceSettings => {
+  return {
+    type: 'location',
+    locationId,
+    options
+  };
+};
+
+const initialState: SequenceSettingsState = {};
+
+type LocationSequenceOptionsUpdatePayload = {
+  type: 'location';
+  genomeId: string;
+  locationId: string;
+  options: LocationSequenceSettings['options'];
+};
+
+type GeneSequenceOptionsUpdatePayload = {
   type: 'gene';
-  lineNumbering: GeneSequenceLineNumbering | null;
-  upstreamFlandingSequenceLength: number;
-  downstreamFlandingSequenceLength: number;
+  genomeId: string;
+  geneId: string;
+  options: GeneSequenceSettings['options'];
 };
 
-const initialTranscriptSequenceSettings: TranscriptSequenceSettings = {
-  type: 'transcript',
-  view: 'genomic',
-  shouldHighlightExons: false,
-  shouldHighlightIntrons: false,
-  shouldHighlightCDS: false,
-  shouldHighlightUTRs: false,
-  shouldHighlightCodons: false,
-  shouldShowProteinAlignment: false,
-  isReverseComplement: false,
-  lineNumbering: null,
-  upstreamFlankingSequenceLength: 0,
-  downstreamFlankingSequenceLength: 0
+type TranscriptSequenceOptionsUpdatePayload = {
+  type: 'transcript';
+  genomeId: string;
+  transcriptId: string;
+  sequenceView: TranscriptSequenceView;
+  options: TranscriptSequenceSettings['options'];
 };
 
-const initialGeneSequenceSettings: GeneSequenceSettings = {
-  type: 'gene',
-  lineNumbering: null,
-  upstreamFlandingSequenceLength: 0,
-  downstreamFlandingSequenceLength: 0
-};
-
-const initialState = {
-  geneSequenceSettings: initialGeneSequenceSettings,
-  transcriptSequenceSettings: initialTranscriptSequenceSettings
-};
+type SequenceOptionsUpdatePayload =
+  | LocationSequenceOptionsUpdatePayload
+  | GeneSequenceOptionsUpdatePayload
+  | TranscriptSequenceOptionsUpdatePayload;
 
 const settingsSlice = createSlice({
   name: 'sequence-viewer-settings',
   initialState,
   reducers: {
-    changeTranscriptSequenceSettings(
+    setInitialSequenceSettings(
       state,
-      action: PayloadAction<Partial<TranscriptSequenceSettings>>
+      action: PayloadAction<{
+        genomeId: string;
+        settings: SequenceSettings;
+      }>
     ) {
-      const fragment = action.payload;
-      Object.assign(state.transcriptSequenceSettings, fragment);
+      const { genomeId, settings } = action.payload;
+      state[genomeId] = settings;
     },
-    changeGeneSequenceSettings(
+    updateSequenceSettings(
       state,
-      action: PayloadAction<Partial<GeneSequenceSettings>>
+      action: PayloadAction<SequenceOptionsUpdatePayload>
     ) {
-      const fragment = action.payload;
-      Object.assign(state.transcriptSequenceSettings, fragment);
+      const { genomeId, ...rest } = action.payload;
+      state[genomeId] = rest;
     }
   }
 });
 
-export const { changeGeneSequenceSettings, changeTranscriptSequenceSettings } =
+export const { setInitialSequenceSettings, updateSequenceSettings } =
   settingsSlice.actions;
 
 export default settingsSlice.reducer;

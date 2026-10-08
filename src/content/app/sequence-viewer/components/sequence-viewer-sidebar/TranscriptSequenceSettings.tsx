@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
+import { useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router';
+
 import { useAppSelector, useAppDispatch } from 'src/store';
 
-import { getTranscriptSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
+import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
 import {
-  changeTranscriptSequenceSettings
-  // type TranscriptSequenceLineNumbering
+  setInitialSequenceSettings,
+  updateSequenceSettings,
+  createInitialTranscriptSettings,
+  type SequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
+import { useTranscriptSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
-import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
-import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
-import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
+import { SequenceOptionsSections } from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
 
-import type { TranscriptView } from 'src/content/app/sequence-viewer/types/transcriptView';
-
-// view -> label
-const transcriptViewsMap = new Map<TranscriptView, string>([
-  ['genomic', 'Genomic sequence'],
-  ['cdna', 'cDNA'],
-  ['cds', 'CDS'],
-  ['protein', 'Protein']
-]);
+import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
 
 // const lineNumberingMap: Record<TranscriptSequenceLineNumbering, string> = {
 //   region: 'Relative to full top-level region',
@@ -46,127 +43,82 @@ const transcriptViewsMap = new Map<TranscriptView, string>([
 // };
 
 const TranscriptSequenceSetttings = () => {
-  const transcriptSettings = useAppSelector(getTranscriptSequenceSettings);
+  const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
+  const transcriptId = parsedFocusObjectId?.objectId;
+  const sequenceSettings = useAppSelector((state) =>
+    getSequenceSettings(state, genomeId ?? '')
+  );
+  const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
-  const onTranscriptViewChange = (view: TranscriptView) => {
-    dispatch(changeTranscriptSequenceSettings({ view }));
-  };
+  const transcriptView = searchParams.get('view') ?? 'genomic';
 
-  const onHighlightExonsChange = () => {
-    dispatch(
-      changeTranscriptSequenceSettings({
-        shouldHighlightExons: !transcriptSettings.shouldHighlightExons
-      })
-    );
-  };
+  const { data } = useTranscriptSequenceOptionsQuery({
+    genomeId: genomeId ?? '',
+    transcriptId: transcriptId ?? '',
+    sequenceType: transcriptView
+  });
 
-  const onHighlightIntronsChange = () => {
-    dispatch(
-      changeTranscriptSequenceSettings({
-        shouldHighlightIntrons: !transcriptSettings.shouldHighlightIntrons
-      })
-    );
-  };
+  const onSettingsChange = useCallback(
+    (options: SequenceSettings['options']) => {
+      if (!genomeId || !transcriptId) {
+        // this shouldn't be possible
+        return;
+      }
 
-  const onHighlightCDSChange = () => {
-    dispatch(
-      changeTranscriptSequenceSettings({
-        shouldHighlightCDS: !transcriptSettings.shouldHighlightCDS
-      })
-    );
-  };
-
-  const onHighlightUTRsChange = () => {
-    dispatch(
-      changeTranscriptSequenceSettings({
-        shouldHighlightUTRs: !transcriptSettings.shouldHighlightUTRs
-      })
-    );
-  };
-
-  const onHighlightCodonsChange = () => {
-    dispatch(
-      changeTranscriptSequenceSettings({
-        shouldHighlightCodons: !transcriptSettings.shouldHighlightCodons
-      })
-    );
-  };
-
-  const onShowProteinAlignmentChange = () => {
-    dispatch(
-      changeTranscriptSequenceSettings({
-        shouldShowProteinAlignment:
-          !transcriptSettings.shouldShowProteinAlignment
-      })
-    );
-  };
-
-  const onReverseComplementChange = () => {
-    dispatch(
-      changeTranscriptSequenceSettings({
-        isReverseComplement: !transcriptSettings.isReverseComplement
-      })
-    );
-  };
-
-  const sequenceViewOptions = [...transcriptViewsMap.entries()].map(
-    ([key, value]) => ({
-      label: value,
-      value: key
-    })
+      dispatch(
+        updateSequenceSettings({
+          type: 'transcript',
+          genomeId,
+          transcriptId,
+          sequenceView: transcriptView as TranscriptSequenceView,
+          options
+        })
+      );
+    },
+    [dispatch, genomeId, transcriptId, transcriptView]
   );
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    const initialSettings = createInitialTranscriptSettings({
+      transcriptId: transcriptId as string,
+      sequenceView: transcriptView as TranscriptSequenceView,
+      payload: data
+    });
+
+    dispatch(
+      setInitialSequenceSettings({
+        genomeId: genomeId as string,
+        settings: initialSettings
+      })
+    );
+  }, [dispatch, genomeId, data, transcriptId, transcriptView]);
+
+  // const sequenceViewOptions = [...transcriptViewsMap.entries()].map(
+  //   ([key, value]) => ({
+  //     label: value,
+  //     value: key
+  //   })
+  // );
 
   return (
     <div>
-      <SidebarSectionHeading>Sequence type</SidebarSectionHeading>
-      <RadioGroup
-        options={sequenceViewOptions}
-        selectedOption={transcriptSettings.view}
-        onChange={(val) => onTranscriptViewChange(val as TranscriptView)}
-      />
-      <SidebarSectionHeading>Highlight options</SidebarSectionHeading>
+      {data && sequenceSettings?.options && (
+        <SequenceOptionsSections
+          appliedSettings={sequenceSettings.options}
+          onSettingsChange={onSettingsChange}
+          sections={data.sections}
+        />
+      )}
+
       <div
         style={{ display: 'flex', flexDirection: 'column', rowGap: '0.6rem' }}
       >
-        <CheckboxWithLabel
-          label="Show exons"
-          checked={transcriptSettings.shouldHighlightExons}
-          onChange={onHighlightExonsChange}
-        />
-        <CheckboxWithLabel
-          label="Show introns"
-          checked={transcriptSettings.shouldHighlightIntrons}
-          onChange={onHighlightIntronsChange}
-        />
-        <CheckboxWithLabel
-          label="Show CDS"
-          checked={transcriptSettings.shouldHighlightCDS}
-          onChange={onHighlightCDSChange}
-        />
-        <CheckboxWithLabel
-          label="Show UTRs"
-          checked={transcriptSettings.shouldHighlightUTRs}
-          onChange={onHighlightUTRsChange}
-        />
-        <CheckboxWithLabel
-          label="Show codons"
-          checked={transcriptSettings.shouldHighlightCodons}
-          onChange={onHighlightCodonsChange}
-        />
-        <CheckboxWithLabel
-          label="Show protein alignment"
-          checked={transcriptSettings.shouldShowProteinAlignment}
-          onChange={onShowProteinAlignmentChange}
-        />
-      </div>
-      <SidebarSectionHeading>Other options</SidebarSectionHeading>
-      <div>
-        <CheckboxWithLabel
-          label="Reverse complement"
-          checked={transcriptSettings.isReverseComplement}
-          onChange={onReverseComplementChange}
-        />
+        {/* this is where options will go */}
       </div>
     </div>
   );
