@@ -210,6 +210,10 @@ const VepSubmissionResults = () => {
     resultsPanels,
     submission?.parameters ?? {}
   );
+  const hasRegulatoryColumn = hasSelectedRegulatoryOption(
+    vepResults.metadata.regulatory_options,
+    submission.parameters
+  );
   const { per_page, total } = paginationMetadata;
   const maxPage = Math.ceil(total / per_page);
   const genomeIdForUrl =
@@ -281,6 +285,7 @@ const VepSubmissionResults = () => {
               variants={vepResults.variants}
               parameters={submission.parameters}
               hasSelectedOptions={hasSelectedOptions}
+              hasRegulatoryColumn={hasRegulatoryColumn}
               panels={resultsPanels}
               display={vepResults.metadata.display}
               availableAfSources={
@@ -413,7 +418,7 @@ const ExpandAllAnnotationsToggle = ({
   );
 };
 
-const VepResultsTable = (props: {
+export const VepResultsTable = (props: {
   variants: VepResultsResponse['variants'];
   genomeId: string;
   parameters: Record<string, unknown>;
@@ -422,6 +427,7 @@ const VepResultsTable = (props: {
   availableAfSources: AfSource[];
   detailExpansion: DetailExpansion;
   hasSelectedOptions: boolean;
+  hasRegulatoryColumn: boolean;
 }) => {
   const {
     variants,
@@ -431,7 +437,8 @@ const VepResultsTable = (props: {
     display,
     availableAfSources,
     detailExpansion,
-    hasSelectedOptions
+    hasSelectedOptions,
+    hasRegulatoryColumn
   } = props;
 
   return (
@@ -444,7 +451,7 @@ const VepResultsTable = (props: {
           <ColumnHead>Alt allele</ColumnHead>
           <ColumnHead>Genes</ColumnHead>
           <ColumnHead>Transcripts</ColumnHead>
-          <ColumnHead>Regulatory</ColumnHead>
+          {hasRegulatoryColumn && <ColumnHead>Regulatory</ColumnHead>}
           <ColumnHead>Predicted molecular consequence</ColumnHead>
           <ColumnHead>Annotations</ColumnHead>
         </tr>
@@ -457,6 +464,7 @@ const VepResultsTable = (props: {
             genomeId={genomeId}
             parameters={parameters}
             hasSelectedOptions={hasSelectedOptions}
+            hasRegulatoryColumn={hasRegulatoryColumn}
             panels={panels}
             display={display}
             availableAfSources={availableAfSources}
@@ -471,7 +479,8 @@ const VepResultsTable = (props: {
 
 const TABLE_COLUMN_COUNT = 9;
 
-const DETAIL_PANEL_COLSPAN = TABLE_COLUMN_COUNT;
+const getTableColumnCount = (hasRegulatoryColumn: boolean) =>
+  hasRegulatoryColumn ? TABLE_COLUMN_COUNT : TABLE_COLUMN_COUNT - 1;
 
 // The variant/allele/gene "leading" cell to emit on a given row, together with
 // the rowSpan it should carry.
@@ -500,6 +509,11 @@ export const hasAnySelectedOption = (
   panels.some((panel) =>
     panel.options.some((option) => Boolean(parameters[option.id]))
   );
+
+export const hasSelectedRegulatoryOption = (
+  regulatoryOptions: string[] | undefined,
+  parameters: Record<string, unknown>
+): boolean => (regulatoryOptions ?? []).some((id) => Boolean(parameters[id]));
 
 // Finds indices of rows that have content that can go into the expandable
 // detailed annotations panel
@@ -588,6 +602,7 @@ const VariantRow = (props: {
   availableAfSources: AfSource[];
   detailExpansion: DetailExpansion;
   hasSelectedOptions: boolean;
+  hasRegulatoryColumn: boolean;
 }) => {
   const {
     genomeId,
@@ -597,7 +612,8 @@ const VariantRow = (props: {
     display,
     availableAfSources,
     detailExpansion,
-    hasSelectedOptions
+    hasSelectedOptions,
+    hasRegulatoryColumn
   } = props;
   const [expandedTranscriptPaths, setExpandedTranscriptPaths] = useState<
     ExpandedTranscriptsPath[]
@@ -741,7 +757,7 @@ const VariantRow = (props: {
             expandedTranscriptPaths={expandedTranscriptPaths}
             toggleExpanded={toggleExpandedTranscripts}
           />
-          <RegulatoryTableCell row={row} />
+          {hasRegulatoryColumn && <RegulatoryTableCell row={row} />}
           <td>
             <VariantConsequences consequences={row.consequence.consequences} />
           </td>
@@ -761,7 +777,10 @@ const VariantRow = (props: {
         </tr>
         {hasDetail && isDetailOpen && (
           <tr>
-            <td colSpan={DETAIL_PANEL_COLSPAN} className={styles.detailCell}>
+            <td
+              colSpan={getTableColumnCount(hasRegulatoryColumn)}
+              className={styles.detailCell}
+            >
               <VepResultsAnnotationDetail
                 genomeId={genomeId}
                 consequence={row.consequence}

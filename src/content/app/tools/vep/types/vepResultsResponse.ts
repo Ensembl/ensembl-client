@@ -37,6 +37,8 @@ export type VepResultsResponseMetadata = {
   available_scores?: string[];
   // The fields the query builder offers and how each is presented
   filter_fields?: FilterField[] | null;
+  // Ids of the options that report regulatory consequences
+  regulatory_options?: string[];
   display_panels: FormPanel[];
   display: DisplaySpec;
 };
