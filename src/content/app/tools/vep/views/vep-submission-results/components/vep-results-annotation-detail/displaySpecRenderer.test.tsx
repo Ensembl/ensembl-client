@@ -24,6 +24,7 @@ import { displaySpecFixture } from './displaySpec.fixture';
 
 import type {
   PredictedTranscriptConsequence,
+  PredictedRegulatoryConsequence,
   Annotation
 } from 'src/content/app/tools/vep/types/vepResultsResponse';
 import type { AnnotatedEntity } from 'src/content/app/tools/vep/utils/annotations';
@@ -40,7 +41,7 @@ const optionSpec = (optionId: string): DisplayOptionSpec =>
 
 const annotation = (
   plugin: string,
-  scope: 'allele' | 'transcript',
+  scope: Annotation['scope'],
   data: Record<string, unknown>
 ): Annotation => ({ plugin, scope, data });
 
@@ -100,6 +101,35 @@ describe('renderDisplayOption', () => {
     });
     expect(screen.getByText('0.123')).toBeDefined();
     expect(screen.queryByText('9')).toBeNull();
+  });
+
+  it('reads a regulatory-scoped plugin from the regulatory row', () => {
+    const motifRow: PredictedRegulatoryConsequence = {
+      feature_type: 'regulatory',
+      stable_id: 'ENSM00000018397',
+      biotype: null,
+      consequences: ['TF_binding_site_variant'],
+      annotations: [
+        annotation('motif', 'regulatory', {
+          name: 'ENSPFM0015',
+          transcription_factors: ['FOS', 'ATF7', 'JUN'],
+          position: 11,
+          high_information_position: null,
+          score_change: null
+        })
+      ]
+    };
+    renderOption('regulatory', {
+      consequence: motifRow,
+      allele: [annotation('motif', 'allele', { name: 'ALLELE_DECOY' })]
+    });
+    expect(screen.getByText('Binding motif')).toBeDefined();
+    expect(screen.getByText('ENSPFM0015')).toBeDefined();
+    expect(screen.getByText('FOS, ATF7, JUN')).toBeDefined();
+    expect(screen.getByText('11')).toBeDefined();
+    expect(screen.queryByText('ALLELE_DECOY')).toBeNull();
+    expect(screen.queryByText('High information position')).toBeNull();
+    expect(screen.queryByText('Score change')).toBeNull();
   });
 
   it('renders the pLI score from the consequence', () => {
@@ -2288,6 +2318,7 @@ describe('renderDisplayOption', () => {
                 entries: [{ n: '1', id: 'ENSP00000269305' }]
               })
             ],
+            feature_type: 'transcript',
             stable_id: 'ENST00000357654'
           } as unknown as PredictedTranscriptConsequence,
           allele: { annotations: [] },
@@ -2311,6 +2342,7 @@ describe('renderDisplayOption', () => {
             ensembl_protein_id: 'ENSP00000269305'
           })
         ],
+        feature_type: 'transcript',
         stable_id: 'ENST00000357654'
       } as unknown as PredictedTranscriptConsequence,
       genomeId: 'homo_sapiens_GCA_000001405_29'
@@ -2319,6 +2351,22 @@ describe('renderDisplayOption', () => {
     // the app_popup builder wraps the id in the popup trigger button
     const trigger = screen.getByText('ENSP00000269305').closest('button');
     expect(trigger).not.toBeNull();
+  });
+
+  test('protein: plain id (no popup) on a regulatory row', () => {
+    renderOption('protein', {
+      consequence: {
+        annotations: [
+          annotation('protein', 'transcript', {
+            ensembl_protein_id: 'ENSP00000269305'
+          })
+        ],
+        feature_type: 'regulatory',
+        stable_id: 'ENSR1_D37Q'
+      } as unknown as PredictedRegulatoryConsequence,
+      genomeId: 'homo_sapiens_GCA_000001405_29'
+    });
+    expect(screen.getByText('ENSP00000269305').closest('button')).toBeNull();
   });
 
   test('protein: plain id (no popup) when the consequence has no gene', () => {

@@ -39,6 +39,7 @@ import { useVepResultsQuery } from 'src/content/app/tools/vep/state/vep-api/vepA
 import { updateSubmission } from 'src/content/app/tools/vep/state/vep-submissions/vepSubmissionsSlice';
 
 import useVepVariantTabularData, {
+  getRowKeys,
   type VepResultsTableRowData,
   type ExpandedTranscriptsPath
 } from './useVepVariantTabularData';
@@ -53,6 +54,7 @@ import VepInputSummary from 'src/content/app/tools/vep/components/vep-input-summ
 import VariantConsequence from 'src/shared/components/variant-consequence/VariantConsequence';
 import VepResultsGene from './components/vep-results-gene/VepResultsGene';
 import VepResultsTranscript from './components/vep-results-transcript/VepResultsTranscript';
+import VepResultsRegulatoryFeature from './components/vep-results-regulatory-feature/VepResultsRegulatoryFeature';
 import VepResultsLocation from './components/vep-results-location/VepResultsLocation';
 import VepResultsAllele from './components/vep-results-allele/VepResultsAllele';
 import VepResultsAnnotationDetail from './components/vep-results-annotation-detail/VepResultsAnnotationDetail';
@@ -208,6 +210,10 @@ const VepSubmissionResults = () => {
     resultsPanels,
     submission?.parameters ?? {}
   );
+  const hasRegulatoryColumn = hasSelectedRegulatoryOption(
+    vepResults.metadata.regulatory_options,
+    submission.parameters
+  );
   const { per_page, total } = paginationMetadata;
   const maxPage = Math.ceil(total / per_page);
   const genomeIdForUrl =
@@ -279,6 +285,7 @@ const VepSubmissionResults = () => {
               variants={vepResults.variants}
               parameters={submission.parameters}
               hasSelectedOptions={hasSelectedOptions}
+              hasRegulatoryColumn={hasRegulatoryColumn}
               panels={resultsPanels}
               display={vepResults.metadata.display}
               availableAfSources={
@@ -411,7 +418,7 @@ const ExpandAllAnnotationsToggle = ({
   );
 };
 
-const VepResultsTable = (props: {
+export const VepResultsTable = (props: {
   variants: VepResultsResponse['variants'];
   genomeId: string;
   parameters: Record<string, unknown>;
@@ -420,6 +427,7 @@ const VepResultsTable = (props: {
   availableAfSources: AfSource[];
   detailExpansion: DetailExpansion;
   hasSelectedOptions: boolean;
+  hasRegulatoryColumn: boolean;
 }) => {
   const {
     variants,
@@ -429,7 +437,8 @@ const VepResultsTable = (props: {
     display,
     availableAfSources,
     detailExpansion,
-    hasSelectedOptions
+    hasSelectedOptions,
+    hasRegulatoryColumn
   } = props;
 
   return (
@@ -442,6 +451,7 @@ const VepResultsTable = (props: {
           <ColumnHead>Alt allele</ColumnHead>
           <ColumnHead>Genes</ColumnHead>
           <ColumnHead>Transcripts</ColumnHead>
+          {hasRegulatoryColumn && <ColumnHead>Regulatory</ColumnHead>}
           <ColumnHead>Predicted molecular consequence</ColumnHead>
           <ColumnHead>Annotations</ColumnHead>
         </tr>
@@ -454,6 +464,7 @@ const VepResultsTable = (props: {
             genomeId={genomeId}
             parameters={parameters}
             hasSelectedOptions={hasSelectedOptions}
+            hasRegulatoryColumn={hasRegulatoryColumn}
             panels={panels}
             display={display}
             availableAfSources={availableAfSources}
@@ -466,9 +477,10 @@ const VepResultsTable = (props: {
   );
 };
 
-const TABLE_COLUMN_COUNT = 8;
+const TABLE_COLUMN_COUNT = 9;
 
-const DETAIL_PANEL_COLSPAN = TABLE_COLUMN_COUNT;
+const getTableColumnCount = (hasRegulatoryColumn: boolean) =>
+  hasRegulatoryColumn ? TABLE_COLUMN_COUNT : TABLE_COLUMN_COUNT - 1;
 
 // The variant/allele/gene "leading" cell to emit on a given row, together with
 // the rowSpan it should carry.
@@ -498,6 +510,11 @@ export const hasAnySelectedOption = (
     panel.options.some((option) => Boolean(parameters[option.id]))
   );
 
+export const hasSelectedRegulatoryOption = (
+  regulatoryOptions: string[] | undefined,
+  parameters: Record<string, unknown>
+): boolean => (regulatoryOptions ?? []).some((id) => Boolean(parameters[id]));
+
 // Finds indices of rows that have content that can go into the expandable
 // detailed annotations panel
 export const detailBearingRowIndices = (
@@ -506,11 +523,7 @@ export const detailBearingRowIndices = (
 ): number[] => {
   const indices: number[] = [];
   rows.forEach((row, index) => {
-    const alleleSequence =
-      row.consequence.feature_type === 'transcript'
-        ? row.consequence.altAlleleSequence
-        : row.alternativeAllele?.allele_sequence;
-    if (alleleSequence && hasAllele(alleleSequence)) {
+    if (hasAllele(row.consequence.altAlleleSequence)) {
       indices.push(index);
     }
   });
@@ -589,6 +602,7 @@ const VariantRow = (props: {
   availableAfSources: AfSource[];
   detailExpansion: DetailExpansion;
   hasSelectedOptions: boolean;
+  hasRegulatoryColumn: boolean;
 }) => {
   const {
     genomeId,
@@ -598,14 +612,13 @@ const VariantRow = (props: {
     display,
     availableAfSources,
     detailExpansion,
-    hasSelectedOptions
+    hasSelectedOptions,
+    hasRegulatoryColumn
   } = props;
   const [expandedTranscriptPaths, setExpandedTranscriptPaths] = useState<
     ExpandedTranscriptsPath[]
   >([]);
-  const [expandedDetailRows, setExpandedDetailRows] = useState<Set<number>>(
-    new Set()
-  );
+  const [openDetailKeys, setOpenDetailKeys] = useState<Set<string>>(new Set());
 
   const allelesBySequence = useMemo(
     () =>
@@ -622,6 +635,17 @@ const VariantRow = (props: {
     variant,
     expandedTranscriptPaths
   });
+
+  const rowKeys = useMemo(() => getRowKeys(tabularData), [tabularData]);
+  const expandedDetailRows = useMemo(
+    () =>
+      new Set(
+        rowKeys.flatMap((key, index) =>
+          openDetailKeys.has(key) ? [index] : []
+        )
+      ),
+    [rowKeys, openDetailKeys]
+  );
 
   const detailRowIndices = useMemo(
     () =>
@@ -640,20 +664,21 @@ const VariantRow = (props: {
     appliedExpansion.variant !== variant
   ) {
     setAppliedExpansion({ expansion: detailExpansion, variant });
-    setExpandedDetailRows(
+    setOpenDetailKeys(
       detailExpansion.action === 'expand'
-        ? new Set(detailRowIndices)
+        ? new Set(detailRowIndices.map((index) => rowKeys[index]))
         : new Set()
     );
   }
 
   const toggleDetail = (rowIndex: number) => {
-    setExpandedDetailRows((current) => {
+    const key = rowKeys[rowIndex];
+    setOpenDetailKeys((current) => {
       const next = new Set(current);
-      if (next.has(rowIndex)) {
-        next.delete(rowIndex);
+      if (next.has(key)) {
+        next.delete(key);
       } else {
-        next.add(rowIndex);
+        next.add(key);
       }
       return next;
     });
@@ -684,17 +709,8 @@ const VariantRow = (props: {
   };
 
   return tabularData.map((row, index) => {
-    const transcriptConsequence =
-      row.consequence.feature_type === 'transcript' ? row.consequence : null;
     const isDetailOpen = expandedDetailRows.has(index);
-    // The allele this row belongs to: from the transcript consequence, or (for
-    // an intergenic row) from the row's alt-allele cell.
-    const alleleSequence =
-      transcriptConsequence?.altAlleleSequence ??
-      row.alternativeAllele?.allele_sequence;
-    const allele = alleleSequence
-      ? allelesBySequence.get(alleleSequence)
-      : undefined;
+    const allele = allelesBySequence.get(row.consequence.altAlleleSequence);
 
     const hasDetail = Boolean(allele) && hasSelectedOptions;
 
@@ -705,7 +721,8 @@ const VariantRow = (props: {
     } = leadingCells[index];
 
     return (
-      <Fragment key={index}>
+      // A row key keeps a panel's own state, such as Show all, with its row.
+      <Fragment key={rowKeys[index]}>
         <tr>
           {variantCell && (
             <>
@@ -740,6 +757,7 @@ const VariantRow = (props: {
             expandedTranscriptPaths={expandedTranscriptPaths}
             toggleExpanded={toggleExpandedTranscripts}
           />
+          {hasRegulatoryColumn && <RegulatoryTableCell row={row} />}
           <td>
             <VariantConsequences consequences={row.consequence.consequences} />
           </td>
@@ -759,7 +777,10 @@ const VariantRow = (props: {
         </tr>
         {hasDetail && isDetailOpen && (
           <tr>
-            <td colSpan={DETAIL_PANEL_COLSPAN} className={styles.detailCell}>
+            <td
+              colSpan={getTableColumnCount(hasRegulatoryColumn)}
+              className={styles.detailCell}
+            >
               <VepResultsAnnotationDetail
                 genomeId={genomeId}
                 consequence={row.consequence}
@@ -796,12 +817,26 @@ const GeneTableCell = (props: {
         <VepResultsGene {...geneCell.data} genomeId={genomeId} />
       </td>
     );
-  } else if (row.consequence.feature_type === null) {
-    // for an intergenic consequence, render an empty cell
+  } else if (row.consequence.feature_type !== 'transcript') {
+    // Intergenic and regulatory rows have no gene.
     return <td />;
   } else {
     return null;
   }
+};
+
+const RegulatoryTableCell = (props: { row: VepResultsTableRowData }) => {
+  const { consequence } = props.row;
+
+  if (consequence.feature_type !== 'regulatory') {
+    return <td />;
+  }
+
+  return (
+    <td>
+      <VepResultsRegulatoryFeature feature={consequence} />
+    </td>
+  );
 };
 
 const TranscriptTableCell = (props: {

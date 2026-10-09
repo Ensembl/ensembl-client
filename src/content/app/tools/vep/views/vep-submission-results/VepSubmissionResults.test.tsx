@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
+import { render, cleanup } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
 import {
   planLeadingCells,
   detailBearingRowIndices,
   hasAnySelectedOption,
-  formatAfSourceLabel
+  hasSelectedRegulatoryOption,
+  formatAfSourceLabel,
+  VepResultsTable
 } from './VepSubmissionResults';
+import { displaySpecFixture } from './components/vep-results-annotation-detail/displaySpec.fixture';
 import type { VepResultsTableRowData } from './useVepVariantTabularData';
 import type { FormPanel } from 'src/content/app/tools/vep/types/vepFormConfig';
+import type { Variant } from 'src/content/app/tools/vep/types/vepResultsResponse';
 
 const makeRow = (
   markers: Partial<
@@ -180,16 +187,19 @@ const transcriptRow = (altAlleleSequence: string): VepResultsTableRowData => ({
   } as VepResultsTableRowData['consequence']
 });
 
-// An intergenic row: its alt allele lives on the row's alternativeAllele field
-// (unlike transcript rows, this row does not carry altAlleleSequence inside consequence)
-const intergenicRow = (altAlleleSequence?: string): VepResultsTableRowData => ({
-  ...makeRow(
-    altAlleleSequence
-      ? { alternativeAllele: alleleMarker(altAlleleSequence, 1) }
-      : {}
-  ),
+const regulatoryRow = (altAlleleSequence: string): VepResultsTableRowData => ({
+  ...makeRow({}),
   consequence: {
-    feature_type: null
+    feature_type: 'regulatory',
+    altAlleleSequence
+  } as VepResultsTableRowData['consequence']
+});
+
+const intergenicRow = (altAlleleSequence: string): VepResultsTableRowData => ({
+  ...makeRow({}),
+  consequence: {
+    feature_type: null,
+    altAlleleSequence
   } as VepResultsTableRowData['consequence']
 });
 
@@ -202,9 +212,19 @@ describe('detailBearingRowIndices', () => {
     expect(indices).toEqual([0, 1]);
   });
 
-  it('includes an intergenic row by checking its alternativeAllele field', () => {
-    const rows = [intergenicRow('T')];
-    expect(detailBearingRowIndices(rows, () => true)).toEqual([0]);
+  it('includes rows below the first that have no allele cell of their own', () => {
+    expect(
+      detailBearingRowIndices(
+        [regulatoryRow('T'), intergenicRow('T')],
+        (seq) => seq === 'T'
+      )
+    ).toEqual([0, 1]);
+    expect(
+      detailBearingRowIndices(
+        [transcriptRow('G'), regulatoryRow('G')],
+        (seq) => seq === 'G'
+      )
+    ).toEqual([0, 1]);
   });
 
   it('skips transcript rows whose alt allele has no annotations', () => {
@@ -213,9 +233,9 @@ describe('detailBearingRowIndices', () => {
     expect(indices).toEqual([0]);
   });
 
-  it('skips an intergenic row with no data in alternativeAllele field', () => {
-    const rows = [intergenicRow('T'), intergenicRow()];
-    expect(detailBearingRowIndices(rows, () => true)).toEqual([0]);
+  it('skips regulatory and intergenic rows whose alt allele has no annotations', () => {
+    const rows = [regulatoryRow('T'), regulatoryRow('X'), intergenicRow('X')];
+    expect(detailBearingRowIndices(rows, (seq) => seq === 'T')).toEqual([0]);
   });
 });
 
@@ -257,6 +277,151 @@ describe('hasAnySelectedOption', () => {
       })
     ).toBe(false);
   });
+});
+
+describe('hasSelectedRegulatoryOption', () => {
+  it('is true when the job ran a regulatory option', () => {
+    expect(hasSelectedRegulatoryOption(['motifs'], { motifs: true })).toBe(
+      true
+    );
+    expect(
+      hasSelectedRegulatoryOption(['motifs', 'enhancers'], { enhancers: true })
+    ).toBe(true);
+  });
+
+  it('is false when the job ran no regulatory option', () => {
+    expect(hasSelectedRegulatoryOption(['motifs'], {})).toBe(false);
+    expect(hasSelectedRegulatoryOption(['motifs'], { motifs: false })).toBe(
+      false
+    );
+    expect(hasSelectedRegulatoryOption(['motifs'], { cadd: true })).toBe(false);
+  });
+
+  it('is false when no option reports regulatory consequences', () => {
+    expect(hasSelectedRegulatoryOption(undefined, { motifs: true })).toBe(
+      false
+    );
+    expect(hasSelectedRegulatoryOption([], { motifs: true })).toBe(false);
+  });
+});
+
+describe('VepResultsTable', () => {
+  afterEach(cleanup);
+
+  const tablePanels: FormPanel[] = [
+    {
+      id: 'representation',
+      label: 'Variant representation',
+      options: [{ id: 'spdi', label: 'SPDI', type: 'boolean', default: false }]
+    }
+  ];
+
+  const variant: Variant = {
+    name: 'rs1',
+    allele_type: 'SNV',
+    location: { region_name: '1', start: 100, end: 100 },
+    reference_allele: { allele_sequence: 'G' },
+    alternative_alleles: [
+      {
+        allele_sequence: 'T',
+        allele_type: 'SNV',
+        predicted_molecular_consequences: [
+          {
+            feature_type: 'transcript',
+            stable_id: 'ENST00000000001.1',
+            gene_stable_id: 'ENSG00000000001.1',
+            gene_symbol: 'GENE1',
+            is_canonical: true,
+            biotype: 'protein_coding',
+            strand: 'forward',
+            consequences: ['missense_variant']
+          },
+          {
+            feature_type: 'regulatory',
+            stable_id: 'ENSR00000000001',
+            biotype: 'enhancer',
+            consequences: ['regulatory_region_variant']
+          }
+        ],
+        annotations: [
+          { plugin: 'spdi', scope: 'allele', data: { spdi: '1:99:G:T' } }
+        ]
+      }
+    ]
+  };
+
+  const renderTable = (hasRegulatoryColumn: boolean) =>
+    render(
+      <VepResultsTable
+        variants={[variant]}
+        genomeId="grch38"
+        parameters={{ spdi: true }}
+        panels={tablePanels}
+        display={displaySpecFixture}
+        availableAfSources={[]}
+        detailExpansion={{ action: 'collapse', nonce: 0 }}
+        hasSelectedOptions={true}
+        hasRegulatoryColumn={hasRegulatoryColumn}
+      />
+    );
+
+  const headings = (container: HTMLElement) =>
+    [...container.querySelectorAll('thead th')].map((th) => th.textContent);
+
+  // Counts the columns each row fills, including cells spanned from rows above.
+  const occupiedColumnCounts = (container: HTMLElement) => {
+    const rows = [...container.querySelectorAll('tbody tr')];
+    const carried = rows.map(() => 0);
+    return rows.map((row, rowIndex) => {
+      let count = carried[rowIndex];
+      for (const cell of row.querySelectorAll('td')) {
+        const span = cell.colSpan;
+        count += span;
+        for (let i = 1; i < cell.rowSpan; i++) {
+          carried[rowIndex + i] += span;
+        }
+      }
+      return count;
+    });
+  };
+
+  it('shows the Regulatory column when the job ran a regulatory option', () => {
+    const { container } = renderTable(true);
+
+    expect(headings(container)).toContain('Regulatory');
+    expect(headings(container)).toHaveLength(9);
+    expect(occupiedColumnCounts(container)).toEqual([9, 9]);
+  });
+
+  it('hides the Regulatory column when the job ran no regulatory option', () => {
+    const { container } = renderTable(false);
+
+    expect(headings(container)).not.toContain('Regulatory');
+    expect(headings(container)).toHaveLength(8);
+    expect(occupiedColumnCounts(container)).toEqual([8, 8]);
+  });
+
+  it.each([true, false])(
+    'spans the detail panel across every column (Regulatory column: %s)',
+    async (hasRegulatoryColumn) => {
+      const { container, getAllByRole } = renderTable(hasRegulatoryColumn);
+      const columnCount = headings(container).length;
+
+      await userEvent.click(
+        getAllByRole('button', { name: 'Show annotations' })[0]
+      );
+
+      const detailCell = container.querySelector(
+        'tbody tr td[colspan]'
+      ) as HTMLTableCellElement;
+      expect(detailCell.colSpan).toBe(columnCount);
+      expect(occupiedColumnCounts(container)).toEqual([
+        columnCount,
+        columnCount,
+        columnCount
+      ]);
+    }
+  );
 });
 
 describe('formatAfSourceLabel', () => {

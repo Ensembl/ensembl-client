@@ -23,7 +23,6 @@ import { Row, CategoryBlock, withOptionHelp } from './annotationRows';
 import { renderDisplayOption } from './displaySpecRenderer';
 
 import type {
-  PredictedTranscriptConsequence,
   PredictedMolecularConsequence,
   AlternativeVariantAllele,
   AfSource
@@ -94,8 +93,8 @@ const VepResultsAnnotationDetail = (props: {
     return renderDisplayOption({
       option: specOption,
       spec: display,
-      consequence:
-        consequence as PredictedTranscriptConsequence /* Question: why is the consequence asserted to be a transcript consequence? */,
+      // An intergenic consequence carries no annotations of its own.
+      consequence: consequence.feature_type === null ? null : consequence,
       allele,
       showAll,
       subOptionRan,
