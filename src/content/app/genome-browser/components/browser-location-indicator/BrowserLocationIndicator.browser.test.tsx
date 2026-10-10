@@ -22,6 +22,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter, useLocation } from 'react-router';
 import { setupWorker } from 'msw/browser';
 import { http, HttpResponse, passthrough } from 'msw';
+import { HttpNetworkFrame } from 'msw/experimental';
 import merge from 'lodash/fp/merge';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
@@ -118,8 +119,13 @@ const renderBrowserLocationIndicator = async ({
 
 beforeAll(() =>
   worker.start({
-    onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
+    onUnhandledFrame({ frame }) {
+      if (!(frame instanceof HttpNetworkFrame)) {
+        return;
+      }
+      const method = frame.data.request.method;
+      const url = frame.data.request.url;
+      const errorMessage = `Found an unhandled ${method} request to ${url}`;
       throw new Error(errorMessage);
     },
     quiet: true // Don't print diagnostic messages to the console

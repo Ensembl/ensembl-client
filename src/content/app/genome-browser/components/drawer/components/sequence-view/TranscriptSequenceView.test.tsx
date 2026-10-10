@@ -19,6 +19,7 @@ import { Provider } from 'react-redux';
 import { render, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { HttpNetworkFrame } from 'msw/experimental';
 import userEvent from '@testing-library/user-event';
 
 import { getReverseComplement } from 'src/shared/helpers/sequenceHelpers';
@@ -138,8 +139,13 @@ const server = setupServer(
 
 beforeAll(() =>
   server.listen({
-    onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
+    onUnhandledFrame({ frame }) {
+      if (!(frame instanceof HttpNetworkFrame)) {
+        return;
+      }
+      const method = frame.data.request.method;
+      const url = frame.data.request.url;
+      const errorMessage = `Found an unhandled ${method} request to ${url}`;
       throw new Error(errorMessage);
     }
   })

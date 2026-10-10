@@ -111,7 +111,7 @@
     "licence-manager": "git+https://github.com/Ensembl/ensembl-licence-manager.git#36b534d28ff26d345b4ba4da0cbc18e1e0f7a6b7",
     "lint-staged": "17.6.0",
     "mini-css-extract-plugin": "2.10.2",
-    "msw": "2.15.0",
+    "msw": "3.0.2",
     "nodemon": "3.1.14",
     "postcss": "8.5.29",
     "postcss-loader": "8.2.1",
@@ -156,5 +156,10 @@
   "allowScripts": {
     "esbuild@0.28.2": true,
     "fsevents@2.3.3": true
+  },
+  "msw": {
+    "workerDirectory": [
+      "tests/public"
+    ]
   }
 }
