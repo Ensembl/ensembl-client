@@ -19,6 +19,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { http, HttpResponse } from 'msw';
+import { HttpNetworkFrame } from 'msw/experimental';
 import { setupServer } from 'msw/node';
 
 import * as trackPanelActions from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
@@ -119,8 +120,13 @@ const renderComponent = (state = initialReduxState) => {
 
 beforeAll(() =>
   server.listen({
-    onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
+    onUnhandledFrame({ frame }) {
+      if (!(frame instanceof HttpNetworkFrame)) {
+        return;
+      }
+      const method = frame.data.request.method;
+      const url = frame.data.request.url;
+      const errorMessage = `Found an unhandled ${method} request to ${url}`;
       throw new Error(errorMessage);
     }
   })

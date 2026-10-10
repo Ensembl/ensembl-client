@@ -19,6 +19,7 @@ import { IDBFactory } from 'fake-indexeddb';
 import { openDB } from 'idb';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { HttpNetworkFrame } from 'msw/experimental';
 import { waitFor } from '@testing-library/react';
 import times from 'lodash/times';
 
@@ -54,8 +55,13 @@ const server = setupServer(
 
 beforeAll(() =>
   server.listen({
-    onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
+    onUnhandledFrame({ frame }) {
+      if (!(frame instanceof HttpNetworkFrame)) {
+        return;
+      }
+      const method = frame.data.request.method;
+      const url = frame.data.request.url;
+      const errorMessage = `Found an unhandled ${method} request to ${url}`;
       throw new Error(errorMessage);
     }
   })

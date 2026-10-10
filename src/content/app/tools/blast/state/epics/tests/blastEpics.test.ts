@@ -19,6 +19,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { HttpNetworkFrame } from 'msw/experimental';
 import { createEpicMiddleware } from 'redux-observable';
 
 import createRootReducer from 'src/root/rootReducer';
@@ -112,8 +113,13 @@ const successfulSubmission = createBlastSubmissionResponse({
 
 beforeAll(() =>
   server.listen({
-    onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
+    onUnhandledFrame({ frame }) {
+      if (!(frame instanceof HttpNetworkFrame)) {
+        return;
+      }
+      const method = frame.data.request.method;
+      const url = frame.data.request.url;
+      const errorMessage = `Found an unhandled ${method} request to ${url}`;
       throw new Error(errorMessage);
     }
   })
@@ -247,29 +253,46 @@ describe('blast epics', () => {
 
     it('stops polling if a submission gets deleted', async () => {
       let pollCount = 0;
+      let releaseStatusResponse!: () => void;
+      const statusResponseGate = new Promise<void>((resolve) => {
+        releaseStatusResponse = resolve;
+      });
 
-      // always respond with a running job status
       server.use(
-        http.get('http://tools-api-url/blast/jobs/status/:jobId', () => {
+        http.post('http://tools-api-url/blast/job', () =>
+          HttpResponse.json({
+            ...successfulSubmission,
+            jobs: [firstJobInResponse]
+          })
+        ),
+        http.get('http://tools-api-url/blast/jobs/status/:jobId', async () => {
           pollCount += 1;
+          await statusResponseGate;
           return HttpResponse.json(createRunningJobStatusResponse());
         })
       );
 
-      store.dispatch(submitBlast.initiate(createBlastSubmissionPayload()));
+      try {
+        store.dispatch(submitBlast.initiate(createBlastSubmissionPayload()));
 
-      await waitFor(() => {
-        expect(pollCount).toBeGreaterThan(3);
-      });
+        // Wait until the first status request has started and is paused.
+        await waitFor(() => expect(pollCount).toBe(1));
 
-      await store.dispatch(
-        deleteBlastSubmission(successfulSubmission.submission_id)
-      );
-      const currentPollCount = pollCount; // we don't expect any more requests to be made
+        await store.dispatch(
+          deleteBlastSubmission(successfulSubmission.submission_id)
+        );
+        const pollCountAtDeletion = pollCount;
 
-      await setTimeout(5); // even this tiny period is plentyof time for a couple of more requests to be made if polling hasn't stopped
+        // Finish the request that began before deletion. A further polling
+        // cycle should observe the deletion and avoid starting another request.
+        releaseStatusResponse();
+        await setTimeout(5);
 
-      expect(currentPollCount).toBe(pollCount);
+        expect(pollCount).toBe(pollCountAtDeletion);
+      } finally {
+        // Ensure a failed assertion cannot leave the request handler blocked.
+        releaseStatusResponse();
+      }
     });
   });
 
