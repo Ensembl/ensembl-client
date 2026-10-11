@@ -2,3 +2,11 @@
   padding-top: var(--vertical-space-sm);
   padding-left: var(--double-standard-gutter);
 }
+
+.loadingSpinnerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80ch;
+  padding: 2rem;
+}

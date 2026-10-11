@@ -30,6 +30,8 @@ import useGeneSequence from './useGeneSequence';
 
 import './gene-sequence';
 
+import { CircleLoader } from 'src/shared/components/loader';
+
 import type { GeneSequence as GeneSequenceElement } from './gene-sequence';
 
 import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
@@ -48,14 +50,21 @@ const GeneSequence = (props: Props) => {
     getSequenceSettings(state, genomeId ?? '')
   );
 
-  const { data } = useGeneSequence({
+  const { data, isLoading } = useGeneSequence({
     genomeId,
     geneId,
     settings: sequenceSettings
   });
 
-  if (!data) {
-    return 'Loading...';
+  if (isLoading) {
+    return (
+      <div className={commonStyles.main}>
+        <CircleLoader />
+      </div>
+    );
+  } else if (!data) {
+    // TODO: handle errors
+    return null;
   }
 
   const { annotatedSequence, gene } = data;

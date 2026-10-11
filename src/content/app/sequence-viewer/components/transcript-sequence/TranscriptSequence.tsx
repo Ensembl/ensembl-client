@@ -29,11 +29,13 @@ import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import useTranscriptSequence from './useTranscriptSequence';
 
 import TranscriptSequenceTypes from './TranscriptSequenceTypes';
+import { CircleLoader } from 'src/shared/components/loader';
 import './transcript-sequence';
 
 import type { TranscriptSequence as TranscriptSequenceElement } from './transcript-sequence';
 
 import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
+import styles from './TranscriptSequence.module.css';
 
 type Props = {
   genomeId: string;
@@ -64,15 +66,22 @@ const TranscriptSequence = (props: Props) => {
   const formattedTranscriptEndString = formatNumber(transcriptEnd);
   const formattedGeneEndStringEnd = formattedTranscriptEndString.length;
 
-  const styles: CSSProperties & { '--gutter-width': string } = {
+  const inlineStyles: CSSProperties & { '--gutter-width': string } = {
     '--gutter-width': `${formattedGeneEndStringEnd}ch`
   };
 
   return (
-    <div className={commonStyles.main} style={styles}>
-      <TranscriptSequenceTypes />
+    <div className={commonStyles.main} style={inlineStyles}>
+      <div className={styles.sequenceTypesContainer}>
+        <TranscriptSequenceTypes />
+      </div>
 
-      {isLoading && <div>Loading...</div>}
+      {isLoading && (
+        <div className={commonStyles.loadingSpinnerContainer}>
+          <CircleLoader />
+        </div>
+      )}
+
       {isError && (
         <div>
           There has been an error loading the {sequenceView} sequence of{' '}

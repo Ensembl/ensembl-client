@@ -40,6 +40,10 @@ const styles = `
     text-align: right;
   }
 
+  .flank {
+    font-weight: var(--font-weight-light);
+  }
+
   .exon {
       background-color: cadetblue;
   }

@@ -1,4 +1,7 @@
-.container {
+.sequenceTypesContainer {
+  width: 80ch;
   display: flex;
   justify-content: center;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
 }
