@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-import { memo, useState, useCallback, useMemo } from 'react';
+import { memo, useState, useCallback, useMemo, type ReactNode } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
+import { ImageButton } from 'src/shared/components/image-button/ImageButton';
 
+import { SequenceViewerIcon } from 'src/shared/components/app-icon';
+
+import { Status } from 'src/shared/types/status';
 import type {
   SequenceBooleanOption as SequenceBooleanOptionType,
   SequenceOptionsSection as SequenceOptionsSectionType,
-  SequenceMultiselectOption as SequenceMultiselectOptionType
+  SequenceMultiselectOption as SequenceMultiselectOptionType,
+  TranscriptMetadata
 } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 import type {
   SequenceSettings,
@@ -162,15 +168,60 @@ export const CheckboxOptionInMultiselect = memo(
       [changeHandlerFromProps, id, option.value]
     );
 
-    return (
-      <CheckboxWithLabel
-        checked={isChecked}
-        label={option.label}
-        onChange={onChange}
-      />
-    );
+    const checkboxWithLabel = useMemo(() => {
+      return (
+        <CheckboxWithLabel
+          checked={isChecked}
+          label={option.label}
+          onChange={onChange}
+        />
+      );
+    }, [isChecked, option, onChange]);
+
+    if (option.metadata?.type === 'transcript') {
+      return (
+        <TranscriptOptionWrapper transcript={option.metadata}>
+          {checkboxWithLabel}
+        </TranscriptOptionWrapper>
+      );
+    }
+
+    return checkboxWithLabel;
   }
 );
+
+export const TranscriptOptionWrapper = ({
+  transcript,
+  children
+}: {
+  transcript: TranscriptMetadata;
+  children: ReactNode;
+}) => {
+  const urlLocation = useLocation();
+  const navigate = useNavigate();
+
+  const onTranscriptSequenceViewClick = () => {
+    const pathname = urlLocation.pathname;
+    const focusParam = `transcript:${transcript.id}`;
+    const url = `${pathname}?focus=${focusParam}`;
+    navigate(url);
+  };
+
+  return (
+    <div className={styles.featureWrapper}>
+      {children}
+      <div className={styles.featureButtons}>
+        <ImageButton
+          status={Status.DEFAULT}
+          className={styles.featureButton}
+          description={`Show sequence of transcript ${transcript.id}`}
+          image={SequenceViewerIcon}
+          onClick={onTranscriptSequenceViewClick}
+        />
+      </div>
+    </div>
+  );
+};
 
 export const SingleCheckboxOption = ({
   option,

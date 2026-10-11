@@ -59,7 +59,9 @@ const GeneSequence = (props: Props) => {
   if (isLoading) {
     return (
       <div className={commonStyles.main}>
-        <CircleLoader />
+        <div className={commonStyles.loadingSpinnerContainer}>
+          <CircleLoader />
+        </div>
       </div>
     );
   } else if (!data) {

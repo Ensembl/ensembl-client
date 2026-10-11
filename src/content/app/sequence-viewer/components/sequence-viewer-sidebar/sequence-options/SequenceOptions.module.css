@@ -4,3 +4,21 @@
   row-gap: 0.4rem;
 }
 
+.featureWrapper {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  column-gap: 0.6rem;
+}
+
+.featureButtons {
+  display: flex;
+  justify-content: end;
+  column-gap: 0.6rem;
+}
+
+.featureButton {
+  --app-icon-size: 25px;
+  --app-icon-color: var(--color-white);
+  --app-icon-bg-color: var(--color-blue);
+  --image-button-default-svg-color: var(--color-white);
+}
