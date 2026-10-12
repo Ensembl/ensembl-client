@@ -34,14 +34,6 @@ import { SequenceOptionsSections } from 'src/content/app/sequence-viewer/compone
 
 import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
 
-// const lineNumberingMap: Record<TranscriptSequenceLineNumbering, string> = {
-//   region: 'Relative to full top-level region',
-//   gene: 'Relative to gene',
-//   transcript: 'Relative to this transcript',
-//   cdna: 'Relative to the cDNA',
-//   cds: 'Relative to the coding sequence'
-// };
-
 const TranscriptSequenceSetttings = () => {
   const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
   const transcriptId = parsedFocusObjectId?.objectId;
@@ -98,13 +90,6 @@ const TranscriptSequenceSetttings = () => {
     );
   }, [dispatch, genomeId, data, transcriptId, transcriptView]);
 
-  // const sequenceViewOptions = [...transcriptViewsMap.entries()].map(
-  //   ([key, value]) => ({
-  //     label: value,
-  //     value: key
-  //   })
-  // );
-
   return (
     <div>
       {data && sequenceSettings?.options && (
@@ -114,12 +99,6 @@ const TranscriptSequenceSetttings = () => {
           sections={data.sections}
         />
       )}
-
-      <div
-        style={{ display: 'flex', flexDirection: 'column', rowGap: '0.6rem' }}
-      >
-        {/* this is where options will go */}
-      </div>
     </div>
   );
 };

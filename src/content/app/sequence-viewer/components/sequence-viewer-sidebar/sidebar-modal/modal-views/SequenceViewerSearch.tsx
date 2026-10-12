@@ -45,10 +45,4 @@ const SequenceViewerSearch = () => {
   ) : null;
 };
 
-// export default EntityViewerSidebarSearch;
-
-// const SequenceViewerSearch = () => {
-//   return <div>Search</div>;
-// };
-
 export default SequenceViewerSearch;

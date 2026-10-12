@@ -19,18 +19,18 @@ import { from } from 'rxjs';
 
 import { useAppDispatch, type AppDispatch } from 'src/store';
 
-import { fetchSequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
+import { fetchDefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import { fetchAnnotatedSequence } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
 
 import type {
   SequenceSettings,
   GeneSequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
-import type { SequenceViewerGene } from 'src/content/app/sequence-viewer/state/api/queries/geneQuery';
+import type { DefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 import type { AnnotatedSequenceRequestPayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
 type Data = {
-  gene: SequenceViewerGene;
+  gene: DefaultEntityViewerGene;
   annotatedSequence: string;
 };
 
@@ -100,7 +100,7 @@ async function* fetchData({
   };
 
   const { data: geneResponse } = await reduxDispatch(
-    fetchSequenceViewerGene.initiate(
+    fetchDefaultEntityViewerGene.initiate(
       {
         geneId,
         genomeId

@@ -14,35 +14,11 @@
  * limitations under the License.
  */
 
-import graphqlApiSlice from 'src/shared/state/api-slices/graphqlApiSlice';
 import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import config from 'config';
 
-import {
-  geneQuery,
-  type SequenceViewerGeneQueryResult
-} from './queries/geneQuery';
-
 import type { AnnotatedSequenceOptionsResponsePayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
-
-type GeneQueryParams = { genomeId: string; geneId: string };
-// type TranscriptQueryParams = { genomeId: string; transcriptId: string };
-
-const sequenceViewerThoasSlice = graphqlApiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    sequenceViewerGene: builder.query<
-      SequenceViewerGeneQueryResult,
-      GeneQueryParams
-    >({
-      query: (params) => ({
-        url: config.coreApiUrl,
-        body: geneQuery,
-        variables: params
-      })
-    })
-  })
-});
 
 type GeneSequenceOptionsRequestParams = {
   genomeId: string;
@@ -144,11 +120,6 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
     })
   })
 });
-
-export const { useSequenceViewerGeneQuery } = sequenceViewerThoasSlice;
-
-export const { sequenceViewerGene: fetchSequenceViewerGene } =
-  sequenceViewerThoasSlice.endpoints;
 
 export const {
   useGeneSequenceOptionsQuery,
