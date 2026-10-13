@@ -22,3 +22,18 @@
   --app-icon-bg-color: var(--color-blue);
   --image-button-default-svg-color: var(--color-white);
 }
+
+.textField {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.textFieldLabel {
+  font-weight: var(--font-weight-light);
+}
+
+.error {
+  color: var(--color-red);
+}

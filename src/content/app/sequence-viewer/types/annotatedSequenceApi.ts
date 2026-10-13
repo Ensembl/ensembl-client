@@ -60,6 +60,8 @@ export type SequenceOptionsSection = {
 export type FlankingInfo = {
   default: number; // how many flanking bases upstream and downstream to show by default
   max: number; // maximum limit of the length of the flanking sequence
+  upstream_id: string;
+  downstream_id: string;
 };
 
 export type AnnotatedSequenceOptionsResponsePayload = {

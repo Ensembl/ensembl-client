@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-import { memo, useState, useCallback, useMemo, type ReactNode } from 'react';
+import {
+  memo,
+  useState,
+  useCallback,
+  useMemo,
+  type ReactNode,
+  type SubmitEventHandler,
+  type FocusEventHandler
+} from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
+import ShadedInput from 'src/shared/components/input/ShadedInput';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import { SequenceViewerIcon } from 'src/shared/components/app-icon';
 
@@ -28,6 +38,7 @@ import type {
   SequenceBooleanOption as SequenceBooleanOptionType,
   SequenceOptionsSection as SequenceOptionsSectionType,
   SequenceMultiselectOption as SequenceMultiselectOptionType,
+  FlankingInfo,
   TranscriptMetadata
 } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 import type {
@@ -256,4 +267,195 @@ export const SingleCheckboxOption = ({
       onChange={onChange}
     />
   );
+};
+
+/*
+  Set the defaults
+  Check the input (make sure it's numbers)
+  Clear the input of punctuation (commas, dots)
+*/
+
+export const FlankingSequences = ({
+  appliedSettings,
+  onSettingsChange,
+  flanking
+}: {
+  flanking: FlankingInfo;
+  appliedSettings: AppliedSettings;
+  onSettingsChange: (settings: AppliedSettings) => void;
+}) => {
+  const [upstreamError, setUpstreamError] = useState<string | null>(null);
+  const [downstreamError, setDownstreamError] = useState<string | null>(null);
+
+  const getParsedValues = ({
+    upstream,
+    downstream
+  }: {
+    upstream: string;
+    downstream: string;
+  }) => {
+    const parsedResult = parseFlankingSequenceInput({
+      inputUpstream: upstream,
+      inputDownstream: downstream,
+      max: flanking.max
+    });
+
+    let isError = false;
+    if ('error' in parsedResult.upstream) {
+      setUpstreamError(parsedResult.upstream.error);
+      isError = true;
+    }
+    if ('error' in parsedResult.downstream) {
+      setDownstreamError(parsedResult.downstream.error);
+      isError = true;
+    }
+
+    if (isError) {
+      return;
+    } else {
+      if (upstreamError) {
+        setUpstreamError(null);
+      }
+      if (downstreamError) {
+        setDownstreamError(null);
+      }
+    }
+
+    return {
+      upstream: (parsedResult.upstream as { value: number }).value,
+      downstream: (parsedResult.downstream as { value: number }).value
+    };
+  };
+
+  const handleSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const upstreamInputValue = formData.get('flanking-upstream') as string;
+    const donwstreamInputValue = formData.get('flanking-downstream') as string;
+
+    const parsedValues = getParsedValues({
+      upstream: upstreamInputValue,
+      downstream: donwstreamInputValue
+    });
+
+    if (!parsedValues) {
+      return;
+    }
+
+    const upstreamId = flanking.upstream_id;
+    const downstreamId = flanking.downstream_id;
+
+    const updatedSettings = {
+      ...appliedSettings,
+      [upstreamId]: parsedValues.upstream,
+      [downstreamId]: parsedValues.downstream
+    };
+
+    onSettingsChange(updatedSettings);
+  };
+
+  const onBlur: FocusEventHandler<HTMLInputElement> = (event) => {
+    const input = event.target;
+    const form = input.closest('form') as HTMLFormElement;
+    const formData = new FormData(form);
+    const upstreamInputValue = formData.get('flanking-upstream') as string;
+    const donwstreamInputValue = formData.get('flanking-downstream') as string;
+
+    // validate input fields as a side effect
+    getParsedValues({
+      upstream: upstreamInputValue,
+      downstream: donwstreamInputValue
+    });
+  };
+
+  return (
+    <>
+      <SidebarSectionHeading>Flanking sequences</SidebarSectionHeading>
+      <form onSubmit={handleSubmit}>
+        <div className={styles.textField}>
+          <label className={styles.textFieldLabel}>
+            5' flanking sequence (upstream)
+          </label>
+          <ShadedInput
+            defaultValue={flanking.default}
+            name="flanking-upstream"
+            onBlur={onBlur}
+            autoComplete="off"
+          />
+          {upstreamError && <div className={styles.error}>{upstreamError}</div>}
+        </div>
+
+        <div className={styles.textField}>
+          <label className={styles.textFieldLabel}>
+            3' flanking sequence (downstream)
+          </label>
+          <ShadedInput
+            defaultValue={flanking.default}
+            name="flanking-downstream"
+            onBlur={onBlur}
+            autoComplete="off"
+          />
+          {downstreamError && (
+            <div className={styles.error}>{downstreamError}</div>
+          )}
+        </div>
+
+        <PrimaryButton>Apply</PrimaryButton>
+      </form>
+    </>
+  );
+};
+
+type InputParseResult =
+  | {
+      value: number;
+    }
+  | {
+      error: string;
+    };
+
+const parseFlankingSequenceInput = ({
+  inputUpstream,
+  inputDownstream,
+  max
+}: {
+  inputUpstream: string;
+  inputDownstream: string;
+  max: number;
+}) => {
+  // remove possible commas or dots in the input
+  const cleanedUpstream = inputUpstream.trim().replace(/[,.]/g, '') || '0';
+  const cleanedDownstream = inputDownstream.trim().replace(/[,.]/g, '') || '0';
+
+  const numUpstream = parseInt(cleanedUpstream, 10);
+  const numDownstream = parseInt(cleanedDownstream, 10);
+
+  let errorUpstream: string | null = null;
+  let errorDownstream: string | null = null;
+
+  if (Number.isNaN(numUpstream)) {
+    errorUpstream = 'Invalid input';
+  }
+  if (Number.isNaN(numDownstream)) {
+    errorDownstream = 'Invalid input';
+  }
+  if (numUpstream > max) {
+    errorUpstream = `Flank too long (over ${max}`;
+  }
+  if (numDownstream > max) {
+    errorDownstream = `Flank too long (over ${max}`;
+  }
+
+  const upstreamParsedResult: InputParseResult = errorUpstream
+    ? { error: errorUpstream }
+    : { value: numUpstream };
+  const downstreamParsedResult: InputParseResult = errorDownstream
+    ? { error: errorDownstream }
+    : { value: numDownstream };
+
+  return {
+    upstream: upstreamParsedResult,
+    downstream: downstreamParsedResult
+  };
 };

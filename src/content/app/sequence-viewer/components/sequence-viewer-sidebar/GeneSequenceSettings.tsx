@@ -30,7 +30,10 @@ import {
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 import { useGeneSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
-import { SequenceOptionsSections } from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
+import {
+  SequenceOptionsSections,
+  FlankingSequences
+} from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
 
 const brca2Url = '/sequence-viewer/GCA_000001405.29?focus=gene:ENSG00000139618';
 const mapk10Url =
@@ -103,6 +106,14 @@ const GeneSequenceSetttings = () => {
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
           sections={data.sections}
+        />
+      )}
+
+      {data?.flanking && sequenceSettings?.options && (
+        <FlankingSequences
+          flanking={data.flanking}
+          appliedSettings={sequenceSettings.options}
+          onSettingsChange={onSettingsChange}
         />
       )}
     </div>

@@ -30,7 +30,10 @@ import {
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 import { useTranscriptSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
-import { SequenceOptionsSections } from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
+import {
+  SequenceOptionsSections,
+  FlankingSequences
+} from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
 
 import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
 
@@ -97,6 +100,14 @@ const TranscriptSequenceSetttings = () => {
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
           sections={data.sections}
+        />
+      )}
+
+      {data?.flanking && sequenceSettings?.options && (
+        <FlankingSequences
+          flanking={data.flanking}
+          appliedSettings={sequenceSettings.options}
+          onSettingsChange={onSettingsChange}
         />
       )}
     </div>
