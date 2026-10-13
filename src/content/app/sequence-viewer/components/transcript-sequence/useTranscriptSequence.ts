@@ -46,13 +46,17 @@ const initialState: State = {
   isError: false
 };
 
-const transcriptSettingsToPayloadOptions = (
+const prepareOptionsForPayload = (
   settings: TranscriptSequenceSettings
 ): AnnotatedSequenceRequestPayload['options'] => {
-  return {
-    ...settings.options,
-    sequence_type: settings.sequenceView
-  };
+  const options: AnnotatedSequenceRequestPayload['options'] = {};
+  for (const [key, value] of Object.entries(settings.options)) {
+    if (Array.isArray(value) && value.length === 0) {
+      continue;
+    }
+    options[key] = value as (typeof options)[typeof key];
+  }
+  return options;
 };
 
 const useTranscriptSequence = ({
@@ -135,7 +139,8 @@ async function* fetchData({
     annotatedSequence = await fetchAnnotatedSequence({
       genome_uuid: genomeId,
       focus_transcript: { stable_id: transcriptId },
-      options: transcriptSettingsToPayloadOptions(settings)
+      options: prepareOptionsForPayload(settings),
+      sequence_type: settings.sequenceView
     });
   } catch {
     yield {

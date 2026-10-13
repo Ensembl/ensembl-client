@@ -21,6 +21,8 @@ export type AnnotatedSequenceRequestPayload = {
   focus_gene?: { stable_id: string };
   focus_transcript?: { stable_id: string };
 
+  sequence_type?: string; // only relevant for transcript sequence requests
+
   options?: Record<string, string | number | boolean | string[] | number[]>;
 };
 
