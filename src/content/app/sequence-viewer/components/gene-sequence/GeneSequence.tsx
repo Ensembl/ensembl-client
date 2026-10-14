@@ -50,7 +50,7 @@ const GeneSequence = (props: Props) => {
     getSequenceSettings(state, genomeId ?? '')
   );
 
-  const { data, isLoading } = useGeneSequence({
+  const { data, isLoading, isError } = useGeneSequence({
     genomeId,
     geneId,
     settings: sequenceSettings
@@ -64,8 +64,9 @@ const GeneSequence = (props: Props) => {
         </div>
       </div>
     );
+  } else if (isError) {
+    return <div>There has been an error fetching the sequence</div>;
   } else if (!data) {
-    // TODO: handle errors
     return null;
   }
 

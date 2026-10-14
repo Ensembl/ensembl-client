@@ -21,7 +21,7 @@ import SVGIcon from 'static/icons/icon_launchbar_sequence_viewer.svg';
 
 import styles from './AppIcon.module.css';
 
-const BlastIcon = () => {
+const SequenceViewerIcon = () => {
   const elementClasses = classNames(styles.appIcon, styles.sequenceViewer);
 
   return (
@@ -31,4 +31,4 @@ const BlastIcon = () => {
   );
 };
 
-export default memo(BlastIcon);
+export default memo(SequenceViewerIcon);

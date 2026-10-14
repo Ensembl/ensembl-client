@@ -27,7 +27,7 @@ const SequenceViewerLaunchbarButton = () => {
   return (
     <LaunchbarButton
       path="/sequence-viewer"
-      description="Regulatory activity viewer"
+      description="Sequence viewer"
       icon={SequenceViewerIcon}
       enabled={true}
     />

@@ -141,7 +141,10 @@ export const SequenceMultiselectOptions = ({
         newSettings.push(value);
       }
 
-      onSettingsChange({ [id]: newSettings });
+      onSettingsChange({
+        ...appliedSettings,
+        [id]: newSettings
+      });
     },
     [onSettingsChange, appliedSettings]
   );

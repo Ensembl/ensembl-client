@@ -48,7 +48,7 @@ const GeneSequenceSetttings = () => {
   );
   const dispatch = useAppDispatch();
 
-  const { data } = useGeneSequenceOptionsQuery(
+  const { currentData } = useGeneSequenceOptionsQuery(
     {
       geneId: geneId ?? '',
       genomeId: genomeId ?? ''
@@ -78,13 +78,13 @@ const GeneSequenceSetttings = () => {
   );
 
   useEffect(() => {
-    if (!data) {
+    if (!currentData) {
       return;
     }
 
     const initialSettings = createInitialGeneSettings({
       geneId: geneId as string,
-      payload: data
+      payload: currentData
     });
 
     dispatch(
@@ -93,7 +93,7 @@ const GeneSequenceSetttings = () => {
         settings: initialSettings
       })
     );
-  }, [dispatch, genomeId, data, geneId]);
+  }, [dispatch, genomeId, currentData, geneId]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', rowGap: '0.6rem' }}>
@@ -101,17 +101,17 @@ const GeneSequenceSetttings = () => {
       <Link to={mapk10Url}>MAPK10 (604,619 bp)</Link>
       <Link to={dmdUrl}>DMD (2,241,933 bp)</Link>
 
-      {data && sequenceSettings?.options && (
+      {currentData && sequenceSettings?.options && (
         <SequenceOptionsSections
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
-          sections={data.sections}
+          sections={currentData.sections}
         />
       )}
 
-      {data?.flanking && sequenceSettings?.options && (
+      {currentData?.flanking && sequenceSettings?.options && (
         <FlankingSequences
-          flanking={data.flanking}
+          flanking={currentData.flanking}
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
         />

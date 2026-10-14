@@ -59,7 +59,7 @@ const useGeneSequence = ({
   const reduxDispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!settings || settings.type !== 'gene') {
+    if (!settings || settings.type !== 'gene' || settings.geneId !== geneId) {
       return;
     }
 

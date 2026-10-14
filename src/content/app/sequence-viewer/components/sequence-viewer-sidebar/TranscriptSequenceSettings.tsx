@@ -37,6 +37,19 @@ import {
 
 import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
 
+const getTranscriptSequenceViewFromSearchParams = (
+  searchParams: URLSearchParams
+) => {
+  const transcriptView = searchParams.get('view');
+  const validViews = ['genomic', 'cdna', 'cds', 'protein'];
+
+  if (!transcriptView || !validViews.includes(transcriptView)) {
+    return 'genomic';
+  } else {
+    return transcriptView;
+  }
+};
+
 const TranscriptSequenceSetttings = () => {
   const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
   const transcriptId = parsedFocusObjectId?.objectId;
@@ -46,7 +59,8 @@ const TranscriptSequenceSetttings = () => {
   const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
-  const transcriptView = searchParams.get('view') ?? 'genomic';
+  const transcriptView =
+    getTranscriptSequenceViewFromSearchParams(searchParams);
 
   const { data } = useTranscriptSequenceOptionsQuery({
     genomeId: genomeId ?? '',
