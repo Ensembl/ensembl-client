@@ -26,15 +26,20 @@
  * is 60 characters; and the width of the left and right columns are
  * passed from the parent as a `--gutter-width` property.
  *
- * The reason for this is so that the browser does not need to make
- * any layout calculations about the lines (we already have this information).
- * Hopefully, the `contain-intrinsic-size` field, together with content-visibility: auto,
- * will help reduce the work for the browser.
+ * Lines are grouped into chunks that have `content-visibility: auto`
+ * and a calculated containIntrinsicSize CSS property. This is done
+ * so the browser can skip rendering whole sections of the sequence
+ * when they are offscreen, which should improve the performance
+ * during the initial rendering and subsequent scrolling.
  */
 
 const styles = `
   :host {
     font-family: var(--font-family-monospace);
+  }
+
+  .content-visibility-block {
+    content-visibility: auto;
   }
 
   .line {
@@ -44,8 +49,6 @@ const styles = `
     column-gap: var(--_column-gap);
     align-items: baseline;
     width: calc(2 * var(--gutter-width) + 60ch + 2 * var(--_column-gap));
-    content-visibility: auto;
-    contain-intrinsic-size: 60ch 1lh;
   }
 
   .line-left, .line-right {
@@ -83,6 +86,8 @@ const styles = `
   }
 `;
 
+const LINES_PER_CHUNK = 100;
+
 export class GeneSequence extends HTMLElement {
   constructor() {
     super();
@@ -105,8 +110,42 @@ export class GeneSequence extends HTMLElement {
       throw new Error('No template found in response!');
     }
 
+    const groupedContent = document.createDocumentFragment();
+    let linesInChunk: HTMLElement[] = [];
+
+    const appendChunk = () => {
+      if (!linesInChunk.length) {
+        return;
+      }
+
+      const chunk = document.createElement('div');
+      chunk.className = 'content-visibility-block';
+      chunk.style.containIntrinsicSize = `auto ${linesInChunk.length}lh`;
+      chunk.append(...linesInChunk);
+      groupedContent.append(chunk);
+      linesInChunk = [];
+    };
+
+    for (const node of Array.from(templateElement.content.childNodes)) {
+      if (node instanceof HTMLElement && node.classList.contains('line')) {
+        linesInChunk.push(node);
+        if (linesInChunk.length === LINES_PER_CHUNK) {
+          appendChunk();
+        }
+      } else if (
+        node.nodeType === Node.TEXT_NODE &&
+        !node.textContent?.trim()
+      ) {
+        // Ignore whitespace between the formatted template's line divs.
+      } else {
+        appendChunk();
+        groupedContent.append(node);
+      }
+    }
+    appendChunk();
+
     const resultContainer = this.shadowRoot;
-    resultContainer!.replaceChildren(templateElement.content);
+    resultContainer!.replaceChildren(groupedContent);
   }
 }
 
