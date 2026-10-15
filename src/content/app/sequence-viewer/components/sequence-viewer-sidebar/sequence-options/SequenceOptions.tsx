@@ -19,6 +19,7 @@ import {
   useState,
   useCallback,
   useMemo,
+  useId,
   type ReactNode,
   type SubmitEventHandler,
   type FocusEventHandler
@@ -289,6 +290,8 @@ export const FlankingSequences = ({
 }) => {
   const [upstreamError, setUpstreamError] = useState<string | null>(null);
   const [downstreamError, setDownstreamError] = useState<string | null>(null);
+  const upstreamInputId = useId();
+  const downstreamInputId = useId();
 
   const getParsedValues = ({
     upstream,
@@ -377,10 +380,11 @@ export const FlankingSequences = ({
       <SidebarSectionHeading>Flanking sequences</SidebarSectionHeading>
       <form onSubmit={handleSubmit}>
         <div className={styles.textField}>
-          <label className={styles.textFieldLabel}>
+          <label htmlFor={upstreamInputId} className={styles.textFieldLabel}>
             5' flanking sequence (upstream)
           </label>
           <ShadedInput
+            id={upstreamInputId}
             defaultValue={flanking.default}
             name="flanking-upstream"
             onBlur={onBlur}
@@ -390,10 +394,11 @@ export const FlankingSequences = ({
         </div>
 
         <div className={styles.textField}>
-          <label className={styles.textFieldLabel}>
+          <label htmlFor={downstreamInputId} className={styles.textFieldLabel}>
             3' flanking sequence (downstream)
           </label>
           <ShadedInput
+            id={downstreamInputId}
             defaultValue={flanking.default}
             name="flanking-downstream"
             onBlur={onBlur}
