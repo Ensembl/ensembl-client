@@ -155,6 +155,7 @@ export const SequenceMultiselectOptions = ({
       key={option.label}
       id={optionGroup.id}
       option={option}
+      appliedSettings={appliedSettings}
       onChange={onChange}
     />
   ));
@@ -164,24 +165,25 @@ export const CheckboxOptionInMultiselect = memo(
   ({
     id,
     option,
+    appliedSettings,
     onChange: changeHandlerFromProps
   }: {
     id: string;
     option: SequenceMultiselectOptionType['values'][number];
+    appliedSettings: AppliedSettings;
     onChange: (params: {
       id: string;
       value: string | number | boolean;
     }) => void;
   }) => {
-    const [isChecked, setIsChecked] = useState(false);
+    const storedSettings = appliedSettings[id];
+    const isChecked = Array.isArray(storedSettings)
+      ? storedSettings.includes(option.value)
+      : option.checked;
 
-    const onChange = useCallback(
-      (isChecked: boolean) => {
-        setIsChecked(isChecked);
-        changeHandlerFromProps({ id, value: option.value });
-      },
-      [changeHandlerFromProps, id, option.value]
-    );
+    const onChange = useCallback(() => {
+      changeHandlerFromProps({ id, value: option.value });
+    }, [changeHandlerFromProps, id, option.value]);
 
     const checkboxWithLabel = useMemo(() => {
       return (
