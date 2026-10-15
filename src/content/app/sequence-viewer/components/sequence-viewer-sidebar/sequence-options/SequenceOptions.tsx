@@ -444,10 +444,13 @@ const parseFlankingSequenceInput = ({
   let errorUpstream: string | null = null;
   let errorDownstream: string | null = null;
 
-  if (Number.isNaN(numUpstream)) {
+  if (!/^\d+$/.test(cleanedUpstream) || !Number.isSafeInteger(numUpstream)) {
     errorUpstream = 'Invalid input';
   }
-  if (Number.isNaN(numDownstream)) {
+  if (
+    !/^\d+$/.test(cleanedDownstream) ||
+    !Number.isSafeInteger(numDownstream)
+  ) {
     errorDownstream = 'Invalid input';
   }
   if (numUpstream > max) {
