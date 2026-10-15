@@ -1,0 +1,74 @@
+.panel {
+  padding: 16px 20px;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 12px;
+  background: var(--color-white);
+}
+
+.header h2 {
+  font-size: 16px;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  overflow-wrap: anywhere;
+}
+
+.columns h3 {
+  font-size: 14px;
+}
+
+.sample {
+  margin-block: 16px;
+}
+
+.sampleLabel {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.runs {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+  padding-left: 20px;
+}
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter {
+  border: 0;
+  padding: 0;
+  margin-block: 16px;
+  min-width: 0;
+}
+
+.filter legend {
+  margin-bottom: 8px;
+  text-transform: capitalize;
+}
+
+.filterValues {
+  display: grid;
+  gap: 8px;
+  max-height: 240px;
+  overflow: auto;
+  margin-top: 12px;
+}

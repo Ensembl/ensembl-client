@@ -18,7 +18,9 @@ import { memo, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
-import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import useResolvedGenomeTracks from 'src/content/app/genome-browser/hooks/useResolvedGenomeTracks';
+import { changeDrawerViewAndOpen } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
+import TextButton from 'src/shared/components/text-button/TextButton';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import {
@@ -67,7 +69,8 @@ export const TrackPanelList = () => {
 
   const dispatch = useAppDispatch();
 
-  const { data: genomeTrackCategories } = useGenomeTracksQuery(activeGenomeId);
+  const { currentData, categories } = useResolvedGenomeTracks(activeGenomeId);
+  const genomeTrackCategories = currentData ?? categories;
 
   const openSearch = () => {
     dispatch(openBrowserSidebarModal(BrowserSidebarModalView.SEARCH));
@@ -79,7 +82,11 @@ export const TrackPanelList = () => {
 
   const trackCategoryIds =
     currentTrackCategories
-      ?.filter((category: GenomeTrackCategory) => category.track_list.length)
+      ?.filter(
+        (category: GenomeTrackCategory) =>
+          category.track_list.length ||
+          category.track_category_id === 'transcriptomic'
+      )
       .map((category: GenomeTrackCategory) => category.track_category_id) ?? [];
 
   return (
@@ -121,7 +128,8 @@ export const TrackPanelList = () => {
               styles.trackPanelAccordionButton,
               {
                 [styles.trackPanelAccordionButtonDisabled]:
-                  !category.track_list.length
+                  !category.track_list.length &&
+                  category.track_category_id !== 'transcriptomic'
               }
             );
 
@@ -131,19 +139,46 @@ export const TrackPanelList = () => {
                 uuid={category.track_category_id}
                 key={category.track_category_id}
               >
-                <AccordionItemHeading
-                  className={styles.trackPanelAccordionHeader}
+                <div
+                  className={
+                    category.track_category_id === 'transcriptomic'
+                      ? styles.categoryHeader
+                      : undefined
+                  }
                 >
-                  <AccordionItemButton
-                    className={accordionButtonClassNames}
-                    disabled={!category.track_list.length}
-                    onToggle={(isExpanded: boolean) =>
-                      reportTrackPanelSectionToggled(category.label, isExpanded)
-                    }
+                  <AccordionItemHeading
+                    className={styles.trackPanelAccordionHeader}
                   >
-                    {category.label}
-                  </AccordionItemButton>
-                </AccordionItemHeading>
+                    <AccordionItemButton
+                      className={accordionButtonClassNames}
+                      disabled={
+                        !category.track_list.length &&
+                        category.track_category_id !== 'transcriptomic'
+                      }
+                      onToggle={(isExpanded: boolean) =>
+                        reportTrackPanelSectionToggled(
+                          category.label,
+                          isExpanded
+                        )
+                      }
+                    >
+                      {category.label}
+                    </AccordionItemButton>
+                  </AccordionItemHeading>
+                  {category.track_category_id === 'transcriptomic' && (
+                    <TextButton
+                      onClick={() =>
+                        dispatch(
+                          changeDrawerViewAndOpen({
+                            name: 'transcriptomic_configuration'
+                          })
+                        )
+                      }
+                    >
+                      Configure
+                    </TextButton>
+                  )}
+                </div>
                 <AccordionItemPanel
                   className={styles.trackPanelAccordionItemContent}
                 >

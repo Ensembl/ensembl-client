@@ -61,3 +61,17 @@
   display: flex;
   column-gap: 30px;
 }
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-right: 10px;
+  background-color: var(--color-light-grey);
+  border-radius: 5px;
+}
+
+.categoryHeader > :first-child {
+  flex: 1;
+  min-width: 0;
+}

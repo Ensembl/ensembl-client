@@ -21,7 +21,7 @@ import { useAppSelector } from 'src/store';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserIds from './useGenomeBrowserIds';
-import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import useResolvedGenomeTracks from './useResolvedGenomeTracks';
 
 import { getAllNonFocusTrackSettingsForGenome } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
@@ -47,16 +47,13 @@ const useGenomicTracks = () => {
   const trackSettingsForGenome = useAppSelector((state) =>
     getAllNonFocusTrackSettingsForGenome(state, activeGenomeId ?? '')
   );
-  const { genomeBrowser, ...genomeBrowserMethods } = useGenomeBrowser();
-  const genomeIdInitialisedRef = useRef('');
+  const { genomeBrowser, toggleTrack, toggleTrackSetting } = useGenomeBrowser();
+  const previousBrowserRef = useRef(genomeBrowser);
 
   const previousTrackIdsRef = useRef<TrackIdsList>([]);
 
-  const { data: genomeTrackCategories } = useGenomeTracksQuery(
-    activeGenomeId as string,
-    {
-      skip: !activeGenomeId
-    }
+  const { currentData: genomeTrackCategories } = useResolvedGenomeTracks(
+    activeGenomeId ?? ''
   );
 
   useEffect(() => {
@@ -64,39 +61,48 @@ const useGenomicTracks = () => {
       !genomeBrowser ||
       !trackSettingsForGenome ||
       !genomeTrackCategories ||
-      genomeIdInitialisedRef.current === activeGenomeId
+      !genomeTrackCategories.every((category) =>
+        category.track_list.every(
+          (track) => !!trackSettingsForGenome[track.track_id]
+        )
+      )
     ) {
       return;
     }
 
+    if (previousBrowserRef.current !== genomeBrowser) {
+      previousTrackIdsRef.current = [];
+      previousBrowserRef.current = genomeBrowser;
+    }
     const trackIdsList = prepareTrackIdsList({
       trackGroups: genomeTrackCategories ?? [],
       trackSettings: trackSettingsForGenome ?? [],
       previousTrackIdsList: previousTrackIdsRef.current
     });
 
-    trackIdsList.forEach(genomeBrowserMethods.toggleTrack);
-    genomeIdInitialisedRef.current = activeGenomeId as string;
-
+    trackIdsList.forEach((track) => {
+      const previous = previousTrackIdsRef.current.find(
+        ({ trackId }) => trackId === track.trackId
+      );
+      if (!previous || previous.isEnabled !== track.isEnabled) {
+        toggleTrack(track);
+      }
+    });
     previousTrackIdsRef.current = trackIdsList;
-
-    return () => {
-      genomeIdInitialisedRef.current = '';
-    };
   }, [
     activeGenomeId,
     genomeTrackCategories,
     trackSettingsForGenome,
     genomeBrowser,
-    genomeBrowserMethods.toggleTrack
+    toggleTrack
   ]);
 
   useEffect(() => {
     if (!genomeBrowser || !trackSettingsForGenome) {
       return;
     }
-    sendTrackSettings(trackSettingsForGenome, genomeBrowserMethods);
-  }, [trackSettingsForGenome, genomeBrowser, genomeBrowserMethods]);
+    sendTrackSettings(trackSettingsForGenome, toggleTrackSetting);
+  }, [trackSettingsForGenome, genomeBrowser, toggleTrackSetting]);
 };
 
 // Create a list of tracks to enable in the genome browser.
@@ -141,11 +147,8 @@ const prepareTrackIdsList = ({
 
 const sendTrackSettings = (
   trackSettings: TrackSettingsPerTrack,
-  genomeBrowserMethods: NonNullable<
-    Omit<ReturnType<typeof useGenomeBrowser>, 'genomeBrowser'>
-  >
+  toggleTrackSetting: ReturnType<typeof useGenomeBrowser>['toggleTrackSetting']
 ) => {
-  const { toggleTrackSetting } = genomeBrowserMethods;
   const genomicTrackSettings = pickBy(
     trackSettings,
     (_, key) => !key.startsWith('focus')
@@ -153,6 +156,7 @@ const sendTrackSettings = (
   Object.entries(genomicTrackSettings).forEach(([trackId, { settings }]) => {
     Object.entries(settings).forEach((keyValuePair) => {
       const [settingName, settingValue] = keyValuePair as [string, boolean];
+      if (settingName === 'isVisible') return;
       toggleTrackSetting({
         trackId,
         setting: settingName,
