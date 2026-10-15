@@ -26,8 +26,6 @@ const styles = `
     column-gap: var(--_column-gap);
     align-items: baseline;
     width: calc(2 * var(--gutter-width) + 60ch + 2 * var(--_column-gap));
-    content-visibility: auto;
-    contain-intrinsic-size: 60ch 1lh;
   }
 
   .line-left, .line-right {
@@ -75,12 +73,13 @@ const styles = `
   .protein {
     white-space: pre;
   }
-
 `;
 
 // SOMETHING TO CONSIDER:
-// Should sequence outlet components for gene, transcript, and location
-// be united into just one component?
+// 1. Should sequence outlet components for gene, transcript, and location
+//    be united into just one component?
+// 2. Should transcript sequence have the same CSS performance-improving
+//    approach with content-visibility: auto as gene sequence?
 
 export class TranscriptSequence extends HTMLElement {
   constructor() {
