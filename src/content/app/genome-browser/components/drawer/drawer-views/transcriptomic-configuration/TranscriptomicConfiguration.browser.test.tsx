@@ -86,6 +86,7 @@ vi.mock('src/shared/components/search-button/SearchButton', () => ({
 vi.mock('src/shared/components/chevron/Chevron', () => ({
   default: () => <span />
 }));
+vi.mock('static/icons/icon_settings.svg', () => ({ default: () => <svg /> }));
 vi.mock('static/icons/icon_close.svg', () => ({ default: () => <svg /> }));
 vi.mock('static/icons/icon_eye.svg', () => ({ default: () => <svg /> }));
 vi.mock('static/icons/icon_eye_slashed.svg', () => ({
@@ -193,7 +194,21 @@ afterEach(() => worker.resetHandlers());
 
 it('configures real run UUIDs from one cached payload, toggles independently, and applies removal', async () => {
   const { store } = await setup();
-  await page.getByRole('button', { name: 'Configure', exact: true }).click();
+  await expect
+    .element(page.getByText(/Use\s+to add transcriptomic tracks\./))
+    .toBeVisible();
+  await page
+    .getByRole('button', {
+      name: 'Configure transcriptomic tracks',
+      exact: true
+    })
+    .last()
+    .click();
+  await expect
+    .element(
+      page.getByRole('button', { name: 'Transcriptomic data', exact: true })
+    )
+    .toHaveAttribute('aria-expanded', 'true');
   const run1 = page.getByRole('checkbox', { name: 'DRR169425', exact: true });
   const run2 = page.getByRole('checkbox', { name: 'DRR169426', exact: true });
   await run1.click();
@@ -241,13 +256,22 @@ it('configures real run UUIDs from one cached payload, toggles independently, an
   await expect
     .element(page.getByRole('complementary').getByText('DRR169426'))
     .not.toBeInTheDocument();
+  await expect
+    .element(page.getByText(/Use\s+to add transcriptomic tracks\./))
+    .not.toBeInTheDocument();
   expect(configurationRequests).toBe(1);
   expect(trackRequests).toBe(0);
 });
 
 it('preserves hidden selections, supports mixed sample checkboxes, and discards unapplied edits', async () => {
   const { store } = await setup();
-  await page.getByRole('button', { name: 'Configure', exact: true }).click();
+  await page
+    .getByRole('button', {
+      name: 'Configure transcriptomic tracks',
+      exact: true
+    })
+    .first()
+    .click();
   await page.getByRole('checkbox', { name: 'DRR169425', exact: true }).click();
   await expect
     .element(
@@ -263,7 +287,7 @@ it('preserves hidden selections, supports mixed sample checkboxes, and discards 
   await page.getByRole('checkbox', { name: 'liver (15)', exact: true }).click();
   await expect
     .element(page.getByRole('status'))
-    .toHaveTextContent('1 selections hidden by filters');
+    .toMatchTextContent(/\b1 selections hidden by filters\b/);
   await page
     .getByRole('checkbox', {
       name: fixture.selections[0].parent_sample_id,
@@ -277,7 +301,13 @@ it('preserves hidden selections, supports mixed sample checkboxes, and discards 
   await page.getByRole('button', { name: 'Clear filters' }).click();
   await page.getByRole('checkbox', { name: 'DRR169426', exact: true }).click();
   await page.getByRole('button', { name: 'Close configuration' }).click();
-  await page.getByRole('button', { name: 'Configure', exact: true }).click();
+  await page
+    .getByRole('button', {
+      name: 'Configure transcriptomic tracks',
+      exact: true
+    })
+    .first()
+    .click();
   await expect
     .element(page.getByRole('checkbox', { name: 'DRR169426', exact: true }))
     .not.toBeChecked();
@@ -295,10 +325,16 @@ it('shows retry and disables Apply when configuration fails', async () => {
     )
   );
   await setup();
-  await page.getByRole('button', { name: 'Configure', exact: true }).click();
+  await page
+    .getByRole('button', {
+      name: 'Configure transcriptomic tracks',
+      exact: true
+    })
+    .first()
+    .click();
   await expect
     .element(page.getByRole('alert'))
-    .toHaveTextContent('Could not load');
+    .toMatchTextContent(/Could not load transcriptomic configuration/);
   await expect
     .element(page.getByRole('button', { name: 'Apply', exact: true }))
     .toBeDisabled();
@@ -311,7 +347,13 @@ it('shows retry and disables Apply when configuration fails', async () => {
 
 it('restores disabled rows on reload, switches genomes safely, and applies an empty set', async () => {
   const first = await setup();
-  await page.getByRole('button', { name: 'Configure', exact: true }).click();
+  await page
+    .getByRole('button', {
+      name: 'Configure transcriptomic tracks',
+      exact: true
+    })
+    .first()
+    .click();
   await page.getByRole('checkbox', { name: 'DRR169425', exact: true }).click();
   await page.getByRole('checkbox', { name: 'DRR169426', exact: true }).click();
   await page.getByRole('button', { name: 'Apply', exact: true }).click();
@@ -355,7 +397,13 @@ it('restores disabled rows on reload, switches genomes safely, and applies an em
   await expect
     .element(page.getByRole('complementary').getByText('DRR169425'))
     .toBeVisible();
-  await page.getByRole('button', { name: 'Configure', exact: true }).click();
+  await page
+    .getByRole('button', {
+      name: 'Configure transcriptomic tracks',
+      exact: true
+    })
+    .first()
+    .click();
   await page.getByRole('checkbox', { name: 'DRR169425', exact: true }).click();
   await page.getByRole('checkbox', { name: 'DRR169426', exact: true }).click();
   await page.getByRole('button', { name: 'Apply', exact: true }).click();

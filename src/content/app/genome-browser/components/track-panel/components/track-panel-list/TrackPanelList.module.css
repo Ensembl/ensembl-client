@@ -62,16 +62,33 @@
   column-gap: 30px;
 }
 .categoryHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding-right: 10px;
-  background-color: var(--color-light-grey);
-  border-radius: 5px;
+  position: relative;
 }
 
-.categoryHeader > :first-child {
-  flex: 1;
-  min-width: 0;
+.categoryHeader .trackPanelAccordionButton {
+  column-gap: 48px;
+}
+
+.configureButton {
+  --image-button-svg-width: 16px;
+  --image-button-svg-height: 16px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.headerConfigureButton {
+  position: absolute;
+  top: 50%;
+  right: 40px;
+  transform: translateY(-50%);
+}
+
+.emptyTranscriptomicList {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  color: var(--color-grey);
+  font-size: 12px;
 }
