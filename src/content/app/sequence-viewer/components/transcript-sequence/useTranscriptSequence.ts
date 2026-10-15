@@ -72,7 +72,11 @@ const useTranscriptSequence = ({
   const reduxDispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!settings || settings.type !== 'transcript') {
+    if (
+      !settings ||
+      settings.type !== 'transcript' ||
+      settings.transcriptId !== transcriptId
+    ) {
       return;
     }
 
