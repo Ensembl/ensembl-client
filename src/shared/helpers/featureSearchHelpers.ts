@@ -74,9 +74,7 @@ export const getFeatureSearchModeByLocation = (
 };
 
 export type FeatureSearchAppName =
-  | 'speciesHome'
-  | 'genomeBrowser'
-  | 'entityViewer';
+  'speciesHome' | 'genomeBrowser' | 'entityViewer' | 'sequenceViewer';
 
 export const featureSearchMatchPositions = ['sidebar', 'interstitial'] as const;
 

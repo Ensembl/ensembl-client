@@ -37,6 +37,9 @@ import StructuralVariantsPage, {
 import EntityViewerPage, {
   serverFetch as entityViewerServerFetch
 } from 'src/content/app/entity-viewer/EntityViewerPage';
+import SequenceViewerPage, {
+  serverFetch as sequenceViewerServerFetch
+} from 'src/content/app/sequence-viewer/SequenceViewerPage';
 import ActivityViewerPage from 'src/content/app/regulatory-activity-viewer/RegulatoryActivityViewerPage';
 import BlastPage, {
   serverFetch as blastServerFetch
@@ -97,6 +100,11 @@ const routes: RouteConfig[] = [
     path: '/feature-explorer/*',
     element: <EntityViewerPage />,
     serverFetch: entityViewerServerFetch
+  },
+  {
+    path: '/sequence-viewer/*',
+    element: <SequenceViewerPage />,
+    serverFetch: sequenceViewerServerFetch
   },
   {
     path: '/structural-variants/*',

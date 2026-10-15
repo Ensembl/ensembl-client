@@ -1,0 +1,9 @@
+.tabs {
+  display: flex;
+  column-gap: 0.4rem;
+}
+
+.tabButtonPressed {
+  --tab-button-color: var(--color-black);
+  --tab-button-border-color: var(--color-black);
+}

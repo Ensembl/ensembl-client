@@ -22,4 +22,5 @@ export { default as GenomeBrowserIcon } from './GenomeBrowserIcon';
 export { default as GlobalSearchIcon } from './GlobalSearchIcon';
 export { default as EntityViewerIcon } from './EntityViewerIcon';
 export { default as SpeciesSelectorIcon } from './SpeciesSelectorIcon';
+export { default as SequenceViewerIcon } from './SequenceViewerIcon';
 export { default as VepIcon } from './VepIcon';

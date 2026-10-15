@@ -28,6 +28,7 @@ const getBaseApiUrls = (): BaseApiUrls => {
     docsBaseUrl:
       process.env.BROWSER_DOCS_BASE_URL ?? defaultApiUrls.docsBaseUrl,
     refgetBaseUrl: process.env.REFGET_BASE_URL ?? defaultApiUrls.refgetBaseUrl,
+    annotatedSequenceApi: defaultApiUrls.annotatedSequenceApi,
     tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl,
     genomeBrowserBackendBaseUrl:
       process.env.GENOME_BROWSER_BACKEND_BASE_URL ??

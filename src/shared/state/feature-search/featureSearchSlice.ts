@@ -33,7 +33,8 @@ type State = Record<FeatureSearchAppName, StateForApp>;
 const initialState: State = {
   speciesHome: {},
   genomeBrowser: {},
-  entityViewer: {}
+  entityViewer: {},
+  sequenceViewer: {}
 };
 
 const getDefaultStateForGenome = () => ({

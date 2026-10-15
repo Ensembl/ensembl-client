@@ -121,10 +121,18 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   });
 
   const { genomeId, selectedTabs } = useGeneViewRouting();
-  const gbUrl = urlFor.browser({
+  const genomeBrowserUrl = urlFor.browser({
     genomeId: genomeIdForUrl,
     focus: entityIdInUrl
   });
+  const sequenceViewerUrl = urlFor.sequenceViewer({
+    genomeId: genomeIdForUrl,
+    focusObject: entityIdInUrl
+  });
+  const viewInAppLinks = {
+    genomeBrowser: { url: genomeBrowserUrl },
+    sequenceViewer: { url: sequenceViewerUrl }
+  };
 
   const shouldShowFilterIndicator =
     sortingRule !== SortingRule.DEFAULT ||
@@ -177,7 +185,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         />
       </div>
       <div className={styles.viewInLinks}>
-        <ViewInApp links={{ genomeBrowser: { url: gbUrl } }} theme="dark" />
+        <ViewInApp links={viewInAppLinks} theme="dark" />
       </div>
       <div className={styles.geneViewTabs}>
         <div

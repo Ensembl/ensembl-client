@@ -25,6 +25,7 @@ import LaunchbarButton from './LaunchbarButton';
 import SpeciesSelectorLaunchbarButton from './SpeciesSelectorLaunchbarButton';
 import GenomeBrowserLaunchbarButton from './GenomeBrowserLaunchbarButton';
 import EntityViewerLaunchbarButton from './EntityViewerLaunchbarButton';
+import SequenceViewerLaunchbarButton from './SequenceViewerLaunchbarButton';
 import AlignmentsViewerLaunchbarButton from './AlignmentsViewerLaunchbarButton';
 import RegulatoryActivityViewerLaunchbarButton from './RegulationViewerLaunchbarButton';
 import BlastLaunchbarButton from './BlastLaunchbarButton';
@@ -63,6 +64,7 @@ const Launchbar = () => {
           </div>
           <div className={styles.category}>
             <EntityViewerLaunchbarButton />
+            <SequenceViewerLaunchbarButton />
             <RegulatoryActivityViewerLaunchbarButton />
           </div>
           <div className={styles.category}>

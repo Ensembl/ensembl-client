@@ -25,6 +25,7 @@ export type BaseApiUrls = {
   docsBaseUrl: string;
   genomeBrowserBackendBaseUrl: string;
   refgetBaseUrl: string;
+  annotatedSequenceApi: string;
   tracksApiBaseUrl: string;
   toolsApiBaseUrl: string;
   searchApiBaseUrl: string;
@@ -44,6 +45,7 @@ export const defaultApiUrls: BaseApiUrls = {
   docsBaseUrl: '/api/docs',
   genomeBrowserBackendBaseUrl: '/api/browser/data',
   refgetBaseUrl: '/api/refget',
+  annotatedSequenceApi: '/api/annotated-sequence',
   tracksApiBaseUrl: '/api/tracks',
   toolsApiBaseUrl: '/api/tools',
   searchApiBaseUrl: '/api/search',
@@ -79,6 +81,7 @@ const getBaseApiUrls = (): BaseApiUrls => {
     comparaApiBaseUrl: defaultApiUrls.comparaApiBaseUrl, // irrelevant for server-side rendering
     genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
+    annotatedSequenceApi: defaultApiUrls.annotatedSequenceApi, // irrelevant for server-side rendering
     tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl, // irrelevant for server-side rendering
     toolsApiBaseUrl: defaultApiUrls.toolsApiBaseUrl, // irrelevant for server-side rendering
     searchApiBaseUrl: defaultApiUrls.searchApiBaseUrl, // irrelevant for server-side rendering
