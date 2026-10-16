@@ -19,8 +19,11 @@ import {
   type HTMLAttributes,
   type CSSProperties
 } from 'react';
+import { useSearchParams } from 'react-router';
 
 import { useAppSelector } from 'src/store';
+
+import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
 
 import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
 
@@ -47,14 +50,19 @@ type Props = {
 
 const TranscriptSequence = (props: Props) => {
   const { genomeId, transcriptId } = props;
-  const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, genomeId ?? '')
-  );
+  const [searchParams] = useSearchParams();
 
-  const sequenceView =
-    sequenceSettings?.type === 'transcript'
-      ? sequenceSettings.sequenceView
-      : '';
+  const transcriptView =
+    getTranscriptSequenceViewFromSearchParams(searchParams);
+
+  const sequenceSettings = useAppSelector((state) =>
+    getSequenceSettings(state, {
+      type: 'transcript',
+      genomeId: genomeId ?? '',
+      transcriptId: transcriptId ?? '',
+      sequenceView: transcriptView
+    })
+  );
 
   const { data, isLoading, isError } = useTranscriptSequence({
     genomeId,
@@ -84,7 +92,7 @@ const TranscriptSequence = (props: Props) => {
 
       {isError && (
         <div>
-          There has been an error loading the {sequenceView} sequence of{' '}
+          There has been an error loading the {transcriptView} sequence of{' '}
           {transcriptId}
         </div>
       )}

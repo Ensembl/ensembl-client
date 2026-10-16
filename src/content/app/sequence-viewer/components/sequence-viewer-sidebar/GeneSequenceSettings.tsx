@@ -44,7 +44,11 @@ const GeneSequenceSetttings = () => {
   const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
   const geneId = parsedFocusObjectId?.objectId;
   const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, genomeId ?? '')
+    getSequenceSettings(state, {
+      type: 'gene',
+      genomeId: genomeId ?? '',
+      geneId: geneId ?? ''
+    })
   );
   const dispatch = useAppDispatch();
 
@@ -78,7 +82,7 @@ const GeneSequenceSetttings = () => {
   );
 
   useEffect(() => {
-    if (!currentData) {
+    if (!currentData || sequenceSettings) {
       return;
     }
 
@@ -90,10 +94,10 @@ const GeneSequenceSetttings = () => {
     dispatch(
       setInitialSequenceSettings({
         genomeId: genomeId as string,
-        settings: initialSettings
+        ...initialSettings
       })
     );
-  }, [dispatch, genomeId, currentData, geneId]);
+  }, [dispatch, genomeId, currentData, geneId, sequenceSettings]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', rowGap: '0.6rem' }}>

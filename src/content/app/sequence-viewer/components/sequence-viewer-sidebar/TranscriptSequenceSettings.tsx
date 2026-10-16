@@ -19,6 +19,8 @@ import { useSearchParams } from 'react-router';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
 
+import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
+
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
 import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
@@ -35,32 +37,23 @@ import {
   FlankingSequences
 } from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
 
-import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
-
-const getTranscriptSequenceViewFromSearchParams = (
-  searchParams: URLSearchParams
-) => {
-  const transcriptView = searchParams.get('view');
-  const validViews = ['genomic', 'cdna', 'cds', 'protein'];
-
-  if (!transcriptView || !validViews.includes(transcriptView)) {
-    return 'genomic';
-  } else {
-    return transcriptView;
-  }
-};
-
 const TranscriptSequenceSetttings = () => {
   const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
   const transcriptId = parsedFocusObjectId?.objectId;
-  const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, genomeId ?? '')
-  );
   const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
   const transcriptView =
     getTranscriptSequenceViewFromSearchParams(searchParams);
+
+  const sequenceSettings = useAppSelector((state) =>
+    getSequenceSettings(state, {
+      type: 'transcript',
+      genomeId: genomeId ?? '',
+      transcriptId: transcriptId ?? '',
+      sequenceView: transcriptView
+    })
+  );
 
   const { data } = useTranscriptSequenceOptionsQuery({
     genomeId: genomeId ?? '',
@@ -80,7 +73,7 @@ const TranscriptSequenceSetttings = () => {
           type: 'transcript',
           genomeId,
           transcriptId,
-          sequenceView: transcriptView as TranscriptSequenceView,
+          sequenceView: transcriptView,
           options
         })
       );
@@ -89,23 +82,30 @@ const TranscriptSequenceSetttings = () => {
   );
 
   useEffect(() => {
-    if (!data) {
+    if (!data || sequenceSettings) {
       return;
     }
 
     const initialSettings = createInitialTranscriptSettings({
       transcriptId: transcriptId as string,
-      sequenceView: transcriptView as TranscriptSequenceView,
+      sequenceView: transcriptView,
       payload: data
     });
 
     dispatch(
       setInitialSequenceSettings({
         genomeId: genomeId as string,
-        settings: initialSettings
+        ...initialSettings
       })
     );
-  }, [dispatch, genomeId, data, transcriptId, transcriptView]);
+  }, [
+    dispatch,
+    genomeId,
+    data,
+    transcriptId,
+    transcriptView,
+    sequenceSettings
+  ]);
 
   return (
     <div>

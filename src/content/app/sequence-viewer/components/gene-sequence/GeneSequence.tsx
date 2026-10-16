@@ -47,7 +47,11 @@ type Props = {
 const GeneSequence = (props: Props) => {
   const { genomeId, geneId } = props;
   const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, genomeId ?? '')
+    getSequenceSettings(state, {
+      type: 'gene',
+      genomeId: genomeId ?? '',
+      geneId: geneId ?? ''
+    })
   );
 
   const { data, isLoading, isError } = useGeneSequence({
