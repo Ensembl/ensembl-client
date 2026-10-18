@@ -28,6 +28,7 @@ type SequenceViewerIdsContextType = {
   genomeIdForUrl?: string;
   parsedLocation?: GenomicLocation; // not quite sure if location belongs here; but provisionally placing it here
   locationForUrl?: string | null;
+  focusObjectIdInUrl?: string | null;
   focusObjectId?: string | null;
   parsedFocusObjectId?: FocusObjectIdConstituents;
   isFetchingGenomeId: boolean;
@@ -55,6 +56,7 @@ export const SequenceViewerIdsContextProvider = ({
   const {
     genomeId,
     genomeIdInUrl,
+    focusObjectIdInUrl,
     focusObjectId,
     isFetchingGenomeId,
     isMalformedFocusObjectId,
@@ -70,6 +72,7 @@ export const SequenceViewerIdsContextProvider = ({
     genomeIdInUrl,
     isFetchingGenomeId, // QUESTION: not sure if consumer needs to know about fetching/validation individual parts of url
     isMissingGenomeId,
+    focusObjectIdInUrl,
     focusObjectId,
     parsedFocusObjectId,
     isMissingFocusObject: isMalformedFocusObjectId,
