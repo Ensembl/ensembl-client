@@ -15,16 +15,18 @@
  */
 
 import { useEffect, useState, type SubmitEventHandler } from 'react';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { locationRegex } from 'src/shared/helpers/genomicLocationHelpers';
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import { validateGenomicLocation } from 'src/content/app/genome-browser/helpers/browserHelper';
 
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
+import { useExampleObjectsForGenomeQuery } from 'src/shared/state/genome/genomeApiSlice';
 import {
   useLazySearchGenesQuery,
   useLazySearchTranscriptsQuery
@@ -37,7 +39,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 import styles from './NoFocusInterstitial.module.css';
 
 const NoFocusInterstitial = () => {
-  const { genomeId, genomeIdForUrl } = useSequenceViewerIds();
+  const { genomeIdInUrl, genomeId, genomeIdForUrl } = useSequenceViewerIds();
   const [searchQuery, setSearchQuery] = useState('');
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
@@ -109,6 +111,12 @@ const NoFocusInterstitial = () => {
           <SecondaryButton className={styles.submit}>Find</SecondaryButton>
         </form>
       </div>
+      {!searchQuery && (
+        <ExampleLinks
+          genomeIdForUrl={genomeIdInUrl as string}
+          genomeId={genomeId}
+        />
+      )}
       {searchQuery && (
         <div className={styles.results} aria-live="polite">
           {geneSearchResults.isFetching ||
@@ -158,6 +166,56 @@ const NoFocusInterstitial = () => {
       )}
     </div>
   );
+};
+
+const allowedExampleObjectTypes = ['gene', 'location'];
+
+const ExampleLinks = ({
+  genomeId,
+  genomeIdForUrl
+}: {
+  genomeId?: string;
+  genomeIdForUrl: string;
+}) => {
+  const { currentData, isLoading } = useExampleObjectsForGenomeQuery(
+    genomeId ?? '',
+    {
+      skip: !genomeId
+    }
+  );
+
+  if (isLoading) {
+    return (
+      <div className={styles.exampleLinks}>
+        <CircleLoader />
+      </div>
+    );
+  }
+
+  const exampleFocusObjects = (currentData || []).filter((obj) =>
+    allowedExampleObjectTypes.includes(obj.type)
+  );
+
+  const exampleLinks = exampleFocusObjects.map((exampleObject) => {
+    const focusId = buildFocusIdForUrl({
+      type: exampleObject.type,
+      objectId: exampleObject.id
+    });
+    const path = urlFor.sequenceViewer({
+      genomeId: genomeIdForUrl,
+      focusObject: focusId
+    });
+
+    return (
+      <div key={exampleObject.id}>
+        <Link to={path} replace>
+          Example {exampleObject.type}
+        </Link>
+      </div>
+    );
+  });
+
+  return <div className={styles.exampleLinks}>{exampleLinks}</div>;
 };
 
 const isLocationLike = (input: string) => {
