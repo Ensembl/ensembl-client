@@ -9,7 +9,6 @@ topPanel class copy-pasted from BrowserInterstitial component
   box-shadow: 0 3px 5px var(--global-box-shadow-color);
 }
 
-
 /*
 search form classes copy-pasted from FeatureSearchForm component
 */
@@ -28,8 +27,17 @@ search form classes copy-pasted from FeatureSearchForm component
   flex: 0 0 auto;
 }
 
+.results {
+  padding: 40px var(--global-padding-left);
+}
 
+.results section + section {
+  margin-top: 2rem;
+}
 
+.results h2 {
+  margin-bottom: 0.75rem;
+}
 
 .exampleLinks {
   display: flex;
