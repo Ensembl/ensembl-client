@@ -14,8 +14,26 @@
  * limitations under the License.
  */
 
+import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
+
+import GeneSequenceDownload from './sequence-viewer-download/GeneSequenceDownload';
+import TranscriptSequenceDownload from './sequence-viewer-download/TranscriptSequenceDownload';
+import LocationSequenceDownload from './sequence-viewer-download/LocationSequenceDownload';
+
 const SequenceViewerDownload = () => {
-  return <div>Download</div>;
+  const { parsedFocusObjectId } = useSequenceViewerIds();
+
+  if (parsedFocusObjectId?.type === 'gene') {
+    return <GeneSequenceDownload />;
+  }
+
+  if (parsedFocusObjectId?.type === 'transcript') {
+    return <TranscriptSequenceDownload />;
+  }
+
+  if (parsedFocusObjectId?.type === 'location') {
+    return <LocationSequenceDownload />;
+  }
 };
 
 export default SequenceViewerDownload;

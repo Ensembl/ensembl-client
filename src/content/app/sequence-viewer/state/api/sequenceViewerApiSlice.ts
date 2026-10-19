@@ -18,7 +18,10 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 
 import config from 'config';
 
-import type { AnnotatedSequenceOptionsResponsePayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
+import type {
+  AnnotatedSequenceOptionsResponsePayload,
+  SequenceDownloadOptionsResponsePayload
+} from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
 type GeneSequenceOptionsRequestParams = {
   genomeId: string;
@@ -40,6 +43,8 @@ type LocationSequenceOptionsRequestParams = {
 
 const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    /* Sequence options  */
+
     geneSequenceOptions: builder.query<
       AnnotatedSequenceOptionsResponsePayload,
       GeneSequenceOptionsRequestParams
@@ -117,6 +122,93 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
           data: result.data as AnnotatedSequenceOptionsResponsePayload
         };
       }
+    }),
+
+    /**
+     * Sequence download options.
+     * While currently there is barely any difference between
+     * requests for fetching sequence options (above)
+     * and requests for fetching sequence download options (below),
+     * the response payload in both cases is different
+     */
+
+    geneSequenceDownloadOptions: builder.query<
+      SequenceDownloadOptionsResponsePayload,
+      GeneSequenceOptionsRequestParams
+    >({
+      queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
+        const payload = {
+          focus_type: 'gene',
+          genome_uuid: params.genomeId,
+          stable_id: params.geneId
+        };
+
+        const result = await baseQuery({
+          url: `${config.annotatedSequenceApi}/download-options`,
+          method: 'POST',
+          body: payload
+        });
+
+        if (result.error) {
+          return { error: result.error };
+        }
+        return {
+          data: result.data as SequenceDownloadOptionsResponsePayload
+        };
+      }
+    }),
+    transcriptSequenceDownloadOptions: builder.query<
+      SequenceDownloadOptionsResponsePayload,
+      TranscriptSequenceOptionsRequestParams
+    >({
+      queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
+        const payload = {
+          focus_type: 'transcript',
+          stable_id: params.transcriptId,
+          genome_uuid: params.genomeId,
+          sequence_type: params.sequenceType
+        };
+
+        const result = await baseQuery({
+          url: `${config.annotatedSequenceApi}/download-options`,
+          method: 'POST',
+          body: payload
+        });
+
+        if (result.error) {
+          return { error: result.error };
+        }
+        return {
+          data: result.data as SequenceDownloadOptionsResponsePayload
+        };
+      }
+    }),
+    locationSequenceDownloadOptions: builder.query<
+      SequenceDownloadOptionsResponsePayload,
+      LocationSequenceOptionsRequestParams
+    >({
+      queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
+        const payload = {
+          focus_type: 'location',
+          genome_uuid: params.genomeId,
+          region_name: params.regionName,
+          start: params.start,
+          end: params.end
+        };
+
+        const result = await baseQuery({
+          url: `${config.annotatedSequenceApi}/download-options`,
+          method: 'POST',
+          body: payload
+        });
+
+        if (result.error) {
+          return { error: result.error };
+        }
+        return {
+          data: result.data as SequenceDownloadOptionsResponsePayload
+        };
+      }
     })
   })
 });
@@ -124,5 +216,8 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
 export const {
   useGeneSequenceOptionsQuery,
   useTranscriptSequenceOptionsQuery,
-  useLocationSequenceOptionsQuery
+  useLocationSequenceOptionsQuery,
+  useGeneSequenceDownloadOptionsQuery,
+  useTranscriptSequenceDownloadOptionsQuery,
+  useLocationSequenceDownloadOptionsQuery
 } = sequenceViewerRestApiSlice;

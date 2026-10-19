@@ -70,3 +70,23 @@ export type AnnotatedSequenceOptionsResponsePayload = {
   sections: SequenceOptionsSection[];
   flanking?: FlankingInfo;
 };
+
+export type DownloadOption = Omit<SequenceBooleanOption, 'value'> & {
+  value: boolean;
+};
+
+export type DownloadOptionsSection = {
+  label: string;
+  children: Array<DownloadOption>;
+};
+
+export type DownloadFileFormatWithOptions = {
+  id: string;
+  label: string;
+  sections: DownloadOptionsSection[];
+  use_sequence_options: boolean;
+};
+
+export type SequenceDownloadOptionsResponsePayload = {
+  formats: DownloadFileFormatWithOptions[];
+};
