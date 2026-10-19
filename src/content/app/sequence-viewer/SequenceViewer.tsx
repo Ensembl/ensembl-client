@@ -89,7 +89,7 @@ const SequenceViewer = () => {
 };
 
 const MainContent = () => {
-  const { genomeId, isFetchingGenomeId, parsedFocusObjectId, parsedLocation } =
+  const { genomeId, isFetchingGenomeId, parsedFocusObjectId } =
     useSequenceViewerIds();
 
   if (!genomeId) {
@@ -118,13 +118,18 @@ const MainContent = () => {
   }
 
   // is there a location
-  if (parsedLocation) {
-    return <LocationSequence />;
+  if (parsedFocusObjectId?.type === 'location') {
+    return (
+      <LocationSequence
+        genomeId={genomeId}
+        location={parsedFocusObjectId.objectId}
+      />
+    );
   }
 };
 
 const SidebarContent = () => {
-  const { parsedFocusObjectId, parsedLocation } = useSequenceViewerIds();
+  const { parsedFocusObjectId } = useSequenceViewerIds();
 
   let view: SidebarView | null = null;
 
@@ -132,7 +137,7 @@ const SidebarContent = () => {
     view = 'gene';
   } else if (parsedFocusObjectId?.type === 'transcript') {
     view = 'transcript';
-  } else if (parsedLocation) {
+  } else if (parsedFocusObjectId?.type === 'location') {
     view = 'location';
   }
 

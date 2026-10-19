@@ -23,6 +23,7 @@ import { getSidebarModalView } from 'src/content/app/sequence-viewer/state/sideb
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import GeneSequenceSetttings from './GeneSequenceSettings';
 import TranscriptSequenceSetttings from './TranscriptSequenceSettings';
+import LocationSequenceSetttings from './LocationSequenceSettings';
 import SequenceViewerSidebarModal from './sidebar-modal/SequenceViewerSidebarModal';
 
 export type View = 'location' | 'gene' | 'transcript';
@@ -46,6 +47,7 @@ const SequenceViewerSidebar = (props: Props) => {
       <div>
         {props.view === 'gene' && <GeneSequenceSetttings />}
         {props.view === 'transcript' && <TranscriptSequenceSetttings />}
+        {props.view === 'location' && <LocationSequenceSetttings />}
       </div>
     </Sidebar>
   );

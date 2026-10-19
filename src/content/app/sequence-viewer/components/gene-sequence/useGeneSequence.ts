@@ -20,14 +20,16 @@ import { from } from 'rxjs';
 import { useAppDispatch, type AppDispatch } from 'src/store';
 
 import { fetchDefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
-import { fetchAnnotatedSequence } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
+import {
+  fetchAnnotatedSequence,
+  prepareOptionsForPayload
+} from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
 
 import type {
   SequenceSettings,
   GeneSequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 import type { DefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
-import type { AnnotatedSequenceRequestPayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
 type Data = {
   gene: DefaultEntityViewerGene;
@@ -148,18 +150,5 @@ async function* fetchData({
     isError: false
   };
 }
-
-const prepareOptionsForPayload = (settings: GeneSequenceSettings) => {
-  const options: AnnotatedSequenceRequestPayload['options'] = {};
-  if (Object.keys(settings.options)) {
-    for (const [key, value] of Object.entries(settings.options)) {
-      if (Array.isArray(value) && value.length === 0) {
-        continue;
-      }
-      options[key] = value as (typeof options)[typeof key];
-    }
-  }
-  return options;
-};
 
 export default useGeneSequence;

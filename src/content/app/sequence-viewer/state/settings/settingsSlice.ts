@@ -28,7 +28,7 @@ export type SequenceOptionValue = string | number | boolean;
 
 export type LocationSequenceSettings = {
   type: 'location';
-  locationId: string;
+  location: string;
   options: Record<string, SequenceOptionValue | SequenceOptionValue[]>;
 };
 
@@ -50,15 +50,6 @@ export type SequenceSettings =
 
 // A map of genome id to sequence settings
 type SequenceSettingsState = Record<string, SequenceSettings>;
-
-// export const getLocationSettingsKey = ({
-//   genomeId
-// }: {
-//   genomeId: string;
-
-// }) => {
-
-// }
 
 const buildInitialOptions = (
   payload: AnnotatedSequenceOptionsResponsePayload
@@ -121,47 +112,20 @@ export const createInitialTranscriptSettings = ({
 };
 
 export const createInitialLocationSettings = ({
-  locationId,
-  options
+  location,
+  payload
 }: {
-  locationId: string;
-  options: LocationSequenceSettings['options'];
+  location: string;
+  payload: AnnotatedSequenceOptionsResponsePayload;
 }): LocationSequenceSettings => {
   return {
     type: 'location',
-    locationId,
-    options
+    location,
+    options: buildInitialOptions(payload)
   };
 };
 
 const initialState: SequenceSettingsState = {};
-
-// type LocationSequenceOptionsUpdatePayload = {
-//   type: 'location';
-//   genomeId: string;
-//   locationId: string;
-//   options: LocationSequenceSettings['options'];
-// };
-
-// type GeneSequenceOptionsUpdatePayload = {
-//   type: 'gene';
-//   genomeId: string;
-//   geneId: string;
-//   options: GeneSequenceSettings['options'];
-// };
-
-// type TranscriptSequenceOptionsUpdatePayload = {
-//   type: 'transcript';
-//   genomeId: string;
-//   transcriptId: string;
-//   sequenceView: TranscriptSequenceView;
-//   options: TranscriptSequenceSettings['options'];
-// };
-
-// type SequenceOptionsUpdatePayload =
-//   | LocationSequenceOptionsUpdatePayload
-//   | GeneSequenceOptionsUpdatePayload
-//   | TranscriptSequenceOptionsUpdatePayload;
 
 const settingsSlice = createSlice({
   name: 'sequence-viewer-settings',
