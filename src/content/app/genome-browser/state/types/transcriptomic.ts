@@ -27,7 +27,15 @@ export type TranscriptomicSelection = {
 export type TranscriptomicConfiguration = {
   track_count: number;
   selections: TranscriptomicSelection[];
+  selection_hierarchy?: TranscriptomicTissueGroup[];
   filters: Record<string, { value: string; count: number }[]>;
+};
+
+export type TranscriptomicTissueGroup = {
+  // Group identities describe the UI; selectable tracks use track_products UUIDs.
+  tissue: string;
+  display_label: string;
+  samples: { sample_id: string; selection_ids: string[] }[];
 };
 
 export type TranscriptomicFilters = Record<string, string[]>;

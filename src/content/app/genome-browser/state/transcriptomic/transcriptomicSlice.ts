@@ -60,10 +60,10 @@ export const applyTranscriptomicSelections = createAsyncThunk(
       track.settings.isVisible = enabledIds.has(track_id);
       settings[track_id] = track;
     }
+    await updateTrackSettingsForGenome(genomeId, Object.values(settings));
     browserStorageService.updateTranscriptomicSelections({
       [genomeId]: validIds
     });
-    await updateTrackSettingsForGenome(genomeId, Object.values(settings));
     return { genomeId, selectionIds: validIds, settings };
   }
 );

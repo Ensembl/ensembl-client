@@ -16,7 +16,8 @@
 
 import type {
   TranscriptomicSelection,
-  TranscriptomicFilters
+  TranscriptomicFilters,
+  TranscriptomicTissueGroup
 } from 'src/content/app/genome-browser/state/types/transcriptomic';
 import type { GenomicTrack } from 'src/content/app/genome-browser/state/types/tracks';
 
@@ -89,4 +90,44 @@ export const toggleSelectionIds = (
     checked ? selected.add(id) : selected.delete(id)
   );
   return [...selected];
+};
+
+export const groupTranscriptomicSelectionHierarchy = (
+  selections: TranscriptomicSelection[],
+  hierarchy?: TranscriptomicTissueGroup[]
+) => {
+  if (!hierarchy) {
+    return [
+      {
+        key: 'samples',
+        label: undefined,
+        samples: groupTranscriptomicSelections(selections)
+      }
+    ];
+  }
+  const byId = new Map(
+    selections.map((selection) => [selection.selection_id, selection])
+  );
+  return hierarchy
+    .map((tissue) => ({
+      key: tissue.tissue,
+      label: tissue.display_label,
+      samples: tissue.samples
+        .map(
+          (
+            sample
+          ): ReturnType<typeof groupTranscriptomicSelections>[number] => [
+            sample.sample_id,
+            {
+              sampleId: sample.sample_id,
+              selections: sample.selection_ids.flatMap((id) => {
+                const selection = byId.get(id);
+                return selection ? [selection] : [];
+              })
+            }
+          ]
+        )
+        .filter(([, group]) => group.selections.length)
+    }))
+    .filter((tissue) => tissue.samples.length);
 };

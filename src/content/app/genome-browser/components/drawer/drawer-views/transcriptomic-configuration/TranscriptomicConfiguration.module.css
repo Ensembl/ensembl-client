@@ -1,5 +1,6 @@
 .panel {
   padding: 16px 20px;
+  container: transcriptomic-panel / inline-size;
 }
 
 .header {
@@ -20,8 +21,8 @@
 
 .columns {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 270px) minmax(0, 1fr);
+  gap: 48px;
   overflow-wrap: anywhere;
 }
 
@@ -29,46 +30,153 @@
   font-size: 14px;
 }
 
-.sample {
-  margin-block: 16px;
+.sectionHeader {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
-.sampleLabel {
+.count {
+  color: var(--color-grey);
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.group {
+  min-width: 0;
+  margin-bottom: 2px;
+}
+
+.groupHeader {
+  position: relative;
   display: flex;
   gap: 8px;
   align-items: center;
+  padding: 5px 15px 5px 17px;
+  background-color: var(--color-light-grey);
+  border-radius: 5px;
+  font-size: 12px;
+  color: var(--color-blue);
+}
+
+.groupHeader:has(.groupToggle) {
+  /* Reserve the final column for the chevron, after the count and checkbox. */
+  padding-right: calc(15px + 12px + 8px);
+}
+
+.group .group .groupHeader {
+  background-color: transparent;
+}
+
+.groupHeader input {
+  flex-shrink: 0;
+}
+
+.groupHeader input:indeterminate:not(:disabled) {
+  background-image: linear-gradient(var(--color-green), var(--color-green));
+  background-size: 7px 3px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.groupToggle,
+.groupTitle {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+  font-size: inherit;
+  font-weight: normal;
+  line-height: var(--body-line-height);
+}
+
+.groupToggle {
+  color: inherit;
+  text-align: left;
+}
+
+.groupTitle {
+  margin: 0;
+}
+
+.groupToggle svg {
+  position: absolute;
+  width: 12px;
+  right: 15px;
+  top: 50%;
+  translate: 0 -50%;
+}
+
+.groupLabel {
+  min-width: 0;
+}
+
+.samples {
+  padding: 10px 0 16px 12px;
 }
 
 .runs {
   display: grid;
   gap: 8px;
-  margin-top: 8px;
-  padding-left: 20px;
+  padding: 10px 15px 16px 17px;
 }
 
-.filterHeader {
-  display: flex;
-  justify-content: space-between;
+.option {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1ch;
   align-items: center;
-  gap: 8px;
+  cursor: pointer;
 }
 
-.filter {
-  border: 0;
-  padding: 0;
-  margin-block: 16px;
+.option input {
+  grid-column: 3;
+}
+
+.option:has(input:disabled) {
+  cursor: default;
+}
+
+.filtersPane {
   min-width: 0;
 }
 
-.filter legend {
-  margin-bottom: 8px;
+.filterGroups {
+  column-width: 180px;
+  column-gap: 12px;
+}
+
+.filterGroups .group {
+  break-inside: avoid;
+}
+
+.filterGroups .groupLabel {
   text-transform: capitalize;
 }
 
 .filterValues {
-  display: grid;
-  gap: 8px;
-  max-height: 240px;
-  overflow: auto;
-  margin-top: 12px;
+  padding: 10px 15px 20px 17px;
 }
+
+.filterOptions {
+  --filter-value-height: 20px;
+  --filter-value-gap: 6px;
+
+  display: grid;
+  grid-auto-rows: minmax(var(--filter-value-height), max-content);
+  gap: var(--filter-value-gap);
+  line-height: var(--filter-value-height);
+  max-height: calc(4 * var(--filter-value-height) + 3 * var(--filter-value-gap));
+  overflow-y: auto;
+}
+
+@container transcriptomic-panel (width < 600px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+

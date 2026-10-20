@@ -20,7 +20,7 @@ import useResolvedGenomeTracks from 'src/content/app/genome-browser/hooks/useRes
 import { applyTranscriptomicSelections } from 'src/content/app/genome-browser/state/transcriptomic/transcriptomicSlice';
 import {
   filterTranscriptomicSelections,
-  groupTranscriptomicSelections,
+  groupTranscriptomicSelectionHierarchy,
   resolveTranscriptomicTracks,
   toggleSelectionIds
 } from 'src/content/app/genome-browser/helpers/transcriptomic';
@@ -28,12 +28,11 @@ import type {
   TranscriptomicConfiguration as Configuration,
   TranscriptomicFilters
 } from 'src/content/app/genome-browser/state/types/transcriptomic';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
-import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
-import FlatInput from 'src/shared/components/input/FlatInput';
 import TextButton from 'src/shared/components/text-button/TextButton';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import SidebarLoader from 'src/shared/components/loader/SidebarLoader';
+import ConfigurationGroup from './ConfigurationGroup';
+import ConfigurationOption from './ConfigurationOption';
 import styles from './TranscriptomicConfiguration.module.css';
 
 export default function TranscriptomicConfiguration({
@@ -97,36 +96,47 @@ export function ConfigurationForm({
   const dispatch = useAppDispatch();
   const [draft, setDraft] = useState(selectionIds);
   const [filters, setFilters] = useState<TranscriptomicFilters>({});
-  const [searches, setSearches] = useState<Record<string, string>>({});
+  const hasFilters = Object.values(filters).some((values) => values.length > 0);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(false);
   const matching = filterTranscriptomicSelections(
     configuration.selections,
     filters
   );
+  const matchingIds = new Set(matching.map((s) => s.selection_id));
+  const effectiveIds = draft.filter((id) => matchingIds.has(id));
   const selected = new Set(draft);
-  const selectedSelections = configuration.selections.filter((s) =>
-    selected.has(s.selection_id)
-  );
-  const hiddenCount =
-    selectedSelections.length -
-    matching.filter((s) => selected.has(s.selection_id)).length;
   const trackCount = resolveTranscriptomicTracks(
     configuration.selections,
-    draft
+    effectiveIds
   ).length;
+  const hiddenCount =
+    resolveTranscriptomicTracks(configuration.selections, draft).length -
+    trackCount;
+  const tissues = groupTranscriptomicSelectionHierarchy(
+    matching,
+    configuration.selection_hierarchy
+  );
+
+  const toggle = (ids: string[], checked: boolean) =>
+    setDraft((current) => toggleSelectionIds(current, ids, checked));
+  const toggleExpanded = (key: string) =>
+    setExpanded((current) => ({ ...current, [key]: !current[key] }));
 
   const apply = async () => {
     setPending(true);
     setError(false);
     try {
-      await dispatch(
+      const applied = await dispatch(
         applyTranscriptomicSelections({
           genomeId,
-          selectionIds: draft,
+          selectionIds: effectiveIds,
+          // Keep the full catalogue so the state manager can disable removed runs.
           selections: configuration.selections
         })
       ).unwrap();
+      setDraft(applied.selectionIds);
     } catch {
       setError(true);
     } finally {
@@ -146,118 +156,134 @@ export function ConfigurationForm({
         <p role="alert">Could not apply selections. Please try again.</p>
       )}
       <p role="status">
-        {selectedSelections.length} selections · {trackCount} tracks selected ·{' '}
-        {hiddenCount} selections hidden by filters
+        {trackCount} {trackCount === 1 ? 'track' : 'tracks'} selected
+        {hiddenCount > 0 && (
+          <>
+            {' '}
+            · {hiddenCount} selected {hiddenCount === 1 ? 'track' : 'tracks'}{' '}
+            hidden by filters will be cleared on Apply
+          </>
+        )}
       </p>
       <div className={styles.columns}>
         <section aria-label="Track selections">
-          <h3>Selections</h3>
+          <div className={styles.sectionHeader}>
+            <h3>Tissues</h3>
+            <TextButton
+              disabled={pending || !draft.length}
+              onClick={() => setDraft([])}
+            >
+              Clear selections
+            </TextButton>
+          </div>
           {!configuration.selections.length ? (
             <p>No transcriptomic selections are available.</p>
           ) : (
             !matching.length && <p>No selections match these filters.</p>
           )}
-          {groupTranscriptomicSelections(matching).map(([key, group]) => {
-            const ids = group.selections.map((s) => s.selection_id);
-            const checkedCount = ids.filter((id) => selected.has(id)).length;
-            return (
-              <div key={key} className={styles.sample}>
-                {group.sampleId && (
-                  <label className={styles.sampleLabel}>
-                    <Checkbox
-                      checked={checkedCount === ids.length}
-                      disabled={pending}
-                      ref={(element) => {
-                        if (element)
-                          element.indeterminate =
-                            checkedCount > 0 && checkedCount < ids.length;
-                      }}
-                      onChange={(event) =>
-                        setDraft((current) =>
-                          toggleSelectionIds(current, ids, event.target.checked)
-                        )
-                      }
-                    />
-                    <span>{group.sampleId}</span>
-                  </label>
-                )}
-                <div className={group.sampleId ? styles.runs : undefined}>
-                  {group.selections.map((selection) => (
-                    <CheckboxWithLabel
-                      key={selection.selection_id}
-                      label={selection.display_label}
-                      checked={selected.has(selection.selection_id)}
-                      disabled={pending}
-                      onChange={(checked) =>
-                        setDraft((current) =>
-                          toggleSelectionIds(
-                            current,
-                            [selection.selection_id],
-                            checked
-                          )
-                        )
-                      }
-                    />
-                  ))}
+          {tissues.map((tissue) => {
+            const tissueRunIds = tissue.samples.flatMap(([, group]) =>
+              group.selections.map((selection) => selection.selection_id)
+            );
+            const samples = tissue.samples.map(([key, group]) => {
+              const runs = group.selections.map((selection) => (
+                <ConfigurationOption
+                  key={selection.selection_id}
+                  label={selection.display_label}
+                  checked={selected.has(selection.selection_id)}
+                  disabled={pending}
+                  onChange={(checked) =>
+                    toggle([selection.selection_id], checked)
+                  }
+                />
+              ));
+              const expansionKey = JSON.stringify(['sample', tissue.key, key]);
+              return group.sampleId ? (
+                <ConfigurationGroup
+                  key={key}
+                  label={group.sampleId}
+                  count={group.selections.length}
+                  expanded={expanded[expansionKey] ?? false}
+                  onToggle={() => toggleExpanded(expansionKey)}
+                  selection={{
+                    ids: group.selections.map((s) => s.selection_id),
+                    selected,
+                    disabled: pending,
+                    onChange: toggle
+                  }}
+                >
+                  <div className={styles.runs}>{runs}</div>
+                </ConfigurationGroup>
+              ) : (
+                <div key={key} className={styles.runs}>
+                  {runs}
                 </div>
-              </div>
+              );
+            });
+            const expansionKey = JSON.stringify(['tissue', tissue.key]);
+            return tissue.label ? (
+              <ConfigurationGroup
+                key={tissue.key}
+                label={tissue.label}
+                count={tissueRunIds.length}
+                expanded={expanded[expansionKey] ?? false}
+                onToggle={() => toggleExpanded(expansionKey)}
+                selection={{
+                  ids: tissueRunIds,
+                  selected,
+                  disabled: pending,
+                  onChange: toggle
+                }}
+              >
+                <div className={styles.samples}>{samples}</div>
+              </ConfigurationGroup>
+            ) : (
+              <div key={tissue.key}>{samples}</div>
             );
           })}
         </section>
-        <section aria-label="Selection filters">
-          <div className={styles.filterHeader}>
+        <section aria-label="Selection filters" className={styles.filtersPane}>
+          <div className={styles.sectionHeader}>
             <h3>Filters</h3>
             <TextButton
-              onClick={() => {
-                setFilters({});
-                setSearches({});
-              }}
+              disabled={pending || !hasFilters}
+              onClick={() => setFilters({})}
             >
               Clear filters
             </TextButton>
           </div>
-          {Object.entries(configuration.filters).map(([name, values]) => (
-            <fieldset key={name} className={styles.filter}>
-              <legend>{name.replaceAll('_', ' ')}</legend>
-              <FlatInput
-                type="search"
-                aria-label={`Search ${name.replaceAll('_', ' ')} values`}
-                placeholder="Search values"
-                value={searches[name] ?? ''}
-                onChange={(event) =>
-                  setSearches((current) => ({
-                    ...current,
-                    [name]: event.target.value
-                  }))
-                }
-              />
-              <div className={styles.filterValues}>
-                {values
-                  .filter(({ value }) =>
-                    value
-                      .toLowerCase()
-                      .includes((searches[name] ?? '').toLowerCase())
-                  )
-                  .map(({ value, count }) => (
-                    <CheckboxWithLabel
-                      key={value}
-                      label={`${value} (${count})`}
-                      checked={filters[name]?.includes(value) ?? false}
-                      onChange={(checked) =>
-                        setFilters((current) => ({
-                          ...current,
-                          [name]: toggleSelectionIds(
-                            current[name] ?? [],
-                            [value],
-                            checked
-                          )
-                        }))
-                      }
-                    />
-                  ))}
-              </div>
-            </fieldset>
-          ))}
+          <div className={styles.filterGroups}>
+            {Object.entries(configuration.filters).map(([name, values]) => {
+              const label = name.replaceAll('_', ' ');
+              return (
+                <ConfigurationGroup key={name} label={label} expanded={true}>
+                  <div className={styles.filterValues}>
+                    <div className={styles.filterOptions}>
+                      {values.map(({ value, count }) => (
+                        <ConfigurationOption
+                          key={value}
+                          label={value}
+                          count={count}
+                          checked={filters[name]?.includes(value) ?? false}
+                          disabled={pending}
+                          onChange={(checked) =>
+                            setFilters((current) => ({
+                              ...current,
+                              [name]: toggleSelectionIds(
+                                current[name] ?? [],
+                                [value],
+                                checked
+                              )
+                            }))
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </ConfigurationGroup>
+              );
+            })}
+          </div>
         </section>
       </div>
     </>
