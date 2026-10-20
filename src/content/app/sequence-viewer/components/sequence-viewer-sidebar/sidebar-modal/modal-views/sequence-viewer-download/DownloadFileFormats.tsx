@@ -18,11 +18,15 @@ import { useReducer, type ChangeEvent } from 'react';
 
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
+import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import type {
   DownloadFileFormatWithOptions,
   DownloadOptionsSection as DownloadOptionsSectionType
 } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
+
+import styles from './DownloadFileFormats.module.css';
 
 type Props = {
   formats: DownloadFileFormatWithOptions[];
@@ -144,6 +148,9 @@ const DownloadFileFormats = ({ formats }: Props) => {
         options={fileFormatsForSelect}
       />
       {optionSections}
+      <div>
+        <PrimaryButton>Download</PrimaryButton>
+      </div>
     </>
   );
 };
@@ -168,8 +175,8 @@ const FileOptionsSection = ({
 
   return (
     <>
-      <div>{section.label}</div>
-      <div>{optionElements}</div>
+      <SidebarSectionHeading>{section.label}</SidebarSectionHeading>
+      <div className={styles.options}>{optionElements}</div>
     </>
   );
 };
