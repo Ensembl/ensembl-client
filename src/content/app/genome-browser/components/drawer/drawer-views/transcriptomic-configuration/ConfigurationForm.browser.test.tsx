@@ -79,6 +79,9 @@ beforeEach(() => localStorage.clear());
 describe('<ConfigurationForm />', () => {
   it('selects collapsed descendants and shows mixed group states independently of expansion', async () => {
     await renderForm();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('0 of 4 tracks selected');
     const liver = page.getByRole('checkbox', { name: 'Liver', exact: true });
     const expandLiver = page.getByRole('button', {
       name: 'Liver',
@@ -91,7 +94,7 @@ describe('<ConfigurationForm />', () => {
     await expect.element(expandLiver).toHaveAttribute('aria-expanded', 'false');
     await expect
       .element(page.getByRole('status'))
-      .toHaveTextContent('3 tracks selected');
+      .toHaveTextContent('3 of 4 tracks selected');
 
     await expandLiver.click();
     const sample = page.getByRole('checkbox', {
@@ -110,7 +113,7 @@ describe('<ConfigurationForm />', () => {
     await expect.element(liver).toBePartiallyChecked();
   });
 
-  it('updates filtered groups but keeps hidden draft runs until Apply', async () => {
+  it('clears hidden draft runs immediately and does not restore them when filters clear', async () => {
     const { store } = await renderForm({
       selectionIds: [liverRunA.selection_id, liverRunB.selection_id]
     });
@@ -129,9 +132,12 @@ describe('<ConfigurationForm />', () => {
       .toHaveAccessibleDescription('1');
     await expect
       .element(page.getByRole('status'))
-      .toHaveTextContent(
-        '1 track selected · 1 selected track hidden by filters will be cleared on Apply'
-      );
+      .toHaveTextContent('1 of 1 track selected · 3 tracks hidden by filters');
+    // Filtering edits the draft; persisted membership changes only on Apply.
+    expect(store.getState().browser.transcriptomic[genomeId]).toEqual([
+      liverRunA.selection_id,
+      liverRunB.selection_id
+    ]);
     await page.getByRole('button', { name: 'Clear filters' }).click();
     await expect.element(clearFilters).toBeDisabled();
     await expect
@@ -139,20 +145,38 @@ describe('<ConfigurationForm />', () => {
       .toHaveAccessibleDescription('3');
     await expect
       .element(page.getByRole('status'))
-      .toHaveTextContent('2 tracks selected');
+      .toHaveTextContent('1 of 4 tracks selected');
 
-    await maleFilter().click();
+    await page.getByRole('button', { name: 'Liver', exact: true }).click();
+    await page
+      .getByRole('button', { name: liverRunA.parent_sample_id, exact: true })
+      .click();
+    await expect
+      .element(
+        page.getByRole('checkbox', {
+          name: liverRunA.display_label,
+          exact: true
+        })
+      )
+      .not.toBeChecked();
+    await expect
+      .element(
+        page.getByRole('checkbox', {
+          name: liverRunB.display_label,
+          exact: true
+        })
+      )
+      .toBeChecked();
     await apply();
     await expect
       .poll(() => store.getState().browser.transcriptomic[genomeId])
       .toEqual([liverRunB.selection_id]);
-    await page.getByRole('button', { name: 'Clear filters' }).click();
     await expect
       .element(page.getByRole('status'))
-      .toHaveTextContent('1 track selected');
+      .toHaveTextContent('1 of 4 tracks selected');
   });
 
-  it('clears visible and hidden draft selections without changing filters or applied state', async () => {
+  it('clears draft selections without changing filters or applied state', async () => {
     const selectionIds = [liverRunA.selection_id, liverRunB.selection_id];
     const { store } = await renderForm({ selectionIds });
     await maleFilter().click();
@@ -160,7 +184,7 @@ describe('<ConfigurationForm />', () => {
     await expect.element(maleFilter()).toBeChecked();
     await expect
       .element(page.getByRole('status'))
-      .toHaveTextContent('0 tracks selected');
+      .toHaveTextContent('0 of 1 track selected · 3 tracks hidden by filters');
     expect(store.getState().browser.transcriptomic[genomeId]).toEqual(
       selectionIds
     );
@@ -203,6 +227,9 @@ describe('<ConfigurationForm />', () => {
       selectionIds: [liverRunA.selection_id]
     });
     await maleFilter().click();
+    await expect
+      .element(page.getByRole('button', { name: 'Clear selections' }))
+      .toBeDisabled();
     await page
       .getByRole('region', { name: 'tissue filter', exact: true })
       .getByRole('checkbox', { name: /^brain\b/ })
@@ -210,6 +237,9 @@ describe('<ConfigurationForm />', () => {
     await expect
       .element(page.getByText('No selections match these filters.'))
       .toBeVisible();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('0 of 0 tracks selected · 4 tracks hidden by filters');
     await expect
       .element(page.getByRole('heading', { level: 3, name: /^Tissues/ }))
       .toHaveTextContent('Tissues');

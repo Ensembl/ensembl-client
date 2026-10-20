@@ -75,8 +75,8 @@ const useGenomicTracks = () => {
       previousBrowserRef.current = genomeBrowser;
     }
     const trackIdsList = prepareTrackIdsList({
-      trackGroups: genomeTrackCategories ?? [],
-      trackSettings: trackSettingsForGenome ?? [],
+      trackGroups: genomeTrackCategories,
+      trackSettings: trackSettingsForGenome,
       previousTrackIdsList: previousTrackIdsRef.current
     });
 

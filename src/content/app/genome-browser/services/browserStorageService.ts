@@ -90,13 +90,7 @@ export class BrowserStorageService {
   }
 
   public getTranscriptomicSelections(): Record<string, string[]> {
-    try {
-      return (
-        this.storageService.get(StorageKeys.TRANSCRIPTOMIC_SELECTIONS) || {}
-      );
-    } catch {
-      return {};
-    }
+    return this.storageService.get(StorageKeys.TRANSCRIPTOMIC_SELECTIONS) || {};
   }
 
   public updateTranscriptomicSelections(

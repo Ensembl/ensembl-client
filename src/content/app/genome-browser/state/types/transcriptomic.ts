@@ -16,7 +16,7 @@
 
 export type TranscriptomicSelection = {
   selection_id: string;
-  parent_sample_id?: string | null;
+  parent_sample_id: string;
   display_label: string;
   selection_level: string;
   data_type: string;
@@ -27,7 +27,7 @@ export type TranscriptomicSelection = {
 export type TranscriptomicConfiguration = {
   track_count: number;
   selections: TranscriptomicSelection[];
-  selection_hierarchy?: TranscriptomicTissueGroup[];
+  selection_hierarchy: TranscriptomicTissueGroup[];
   filters: Record<string, { value: string; count: number }[]>;
 };
 

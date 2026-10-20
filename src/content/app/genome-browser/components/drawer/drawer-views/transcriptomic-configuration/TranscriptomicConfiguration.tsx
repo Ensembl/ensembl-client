@@ -104,16 +104,18 @@ export function ConfigurationForm({
     configuration.selections,
     filters
   );
-  const matchingIds = new Set(matching.map((s) => s.selection_id));
-  const effectiveIds = draft.filter((id) => matchingIds.has(id));
   const selected = new Set(draft);
   const trackCount = resolveTranscriptomicTracks(
     configuration.selections,
-    effectiveIds
+    draft
   ).length;
-  const hiddenCount =
-    resolveTranscriptomicTracks(configuration.selections, draft).length -
-    trackCount;
+  const selectableTrackCount = hasFilters
+    ? resolveTranscriptomicTracks(
+        matching,
+        matching.map((selection) => selection.selection_id)
+      ).length
+    : configuration.track_count;
+  const hiddenCount = configuration.track_count - selectableTrackCount;
   const tissues = groupTranscriptomicSelectionHierarchy(
     matching,
     configuration.selection_hierarchy
@@ -124,6 +126,16 @@ export function ConfigurationForm({
   const toggleExpanded = (key: string) =>
     setExpanded((current) => ({ ...current, [key]: !current[key] }));
 
+  const changeFilters = (nextFilters: TranscriptomicFilters) => {
+    const matchingIds = new Set(
+      filterTranscriptomicSelections(configuration.selections, nextFilters).map(
+        (selection) => selection.selection_id
+      )
+    );
+    setFilters(nextFilters);
+    setDraft((current) => current.filter((id) => matchingIds.has(id)));
+  };
+
   const apply = async () => {
     setPending(true);
     setError(false);
@@ -131,7 +143,7 @@ export function ConfigurationForm({
       const applied = await dispatch(
         applyTranscriptomicSelections({
           genomeId,
-          selectionIds: effectiveIds,
+          selectionIds: draft,
           // Keep the full catalogue so the state manager can disable removed runs.
           selections: configuration.selections
         })
@@ -156,12 +168,13 @@ export function ConfigurationForm({
         <p role="alert">Could not apply selections. Please try again.</p>
       )}
       <p role="status">
-        {trackCount} {trackCount === 1 ? 'track' : 'tracks'} selected
-        {hiddenCount > 0 && (
+        {trackCount} of {selectableTrackCount}{' '}
+        {selectableTrackCount === 1 ? 'track' : 'tracks'} selected
+        {hasFilters && (
           <>
             {' '}
-            · {hiddenCount} selected {hiddenCount === 1 ? 'track' : 'tracks'}{' '}
-            hidden by filters will be cleared on Apply
+            · {hiddenCount} {hiddenCount === 1 ? 'track' : 'tracks'} hidden by
+            filters
           </>
         )}
       </p>
@@ -182,10 +195,10 @@ export function ConfigurationForm({
             !matching.length && <p>No selections match these filters.</p>
           )}
           {tissues.map((tissue) => {
-            const tissueRunIds = tissue.samples.flatMap(([, group]) =>
+            const tissueRunIds = tissue.samples.flatMap((group) =>
               group.selections.map((selection) => selection.selection_id)
             );
-            const samples = tissue.samples.map(([key, group]) => {
+            const samples = tissue.samples.map((group) => {
               const runs = group.selections.map((selection) => (
                 <ConfigurationOption
                   key={selection.selection_id}
@@ -197,10 +210,14 @@ export function ConfigurationForm({
                   }
                 />
               ));
-              const expansionKey = JSON.stringify(['sample', tissue.key, key]);
-              return group.sampleId ? (
+              const expansionKey = JSON.stringify([
+                'sample',
+                tissue.key,
+                group.sampleId
+              ]);
+              return (
                 <ConfigurationGroup
-                  key={key}
+                  key={group.sampleId}
                   label={group.sampleId}
                   count={group.selections.length}
                   expanded={expanded[expansionKey] ?? false}
@@ -214,14 +231,10 @@ export function ConfigurationForm({
                 >
                   <div className={styles.runs}>{runs}</div>
                 </ConfigurationGroup>
-              ) : (
-                <div key={key} className={styles.runs}>
-                  {runs}
-                </div>
               );
             });
             const expansionKey = JSON.stringify(['tissue', tissue.key]);
-            return tissue.label ? (
+            return (
               <ConfigurationGroup
                 key={tissue.key}
                 label={tissue.label}
@@ -237,8 +250,6 @@ export function ConfigurationForm({
               >
                 <div className={styles.samples}>{samples}</div>
               </ConfigurationGroup>
-            ) : (
-              <div key={tissue.key}>{samples}</div>
             );
           })}
         </section>
@@ -247,7 +258,7 @@ export function ConfigurationForm({
             <h3>Filters</h3>
             <TextButton
               disabled={pending || !hasFilters}
-              onClick={() => setFilters({})}
+              onClick={() => changeFilters({})}
             >
               Clear filters
             </TextButton>
@@ -267,14 +278,14 @@ export function ConfigurationForm({
                           checked={filters[name]?.includes(value) ?? false}
                           disabled={pending}
                           onChange={(checked) =>
-                            setFilters((current) => ({
-                              ...current,
+                            changeFilters({
+                              ...filters,
                               [name]: toggleSelectionIds(
-                                current[name] ?? [],
+                                filters[name] ?? [],
                                 [value],
                                 checked
                               )
-                            }))
+                            })
                           }
                         />
                       ))}

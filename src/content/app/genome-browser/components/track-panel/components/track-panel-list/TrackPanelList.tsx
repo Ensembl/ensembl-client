@@ -20,7 +20,7 @@ import classNames from 'classnames';
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useResolvedGenomeTracks from 'src/content/app/genome-browser/hooks/useResolvedGenomeTracks';
 import { changeDrawerViewAndOpen } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
+import TextButton from 'src/shared/components/text-button/TextButton';
 import CogIcon from 'static/icons/icon_settings.svg';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
@@ -38,6 +38,7 @@ import TrackPanelGene from './track-panel-items/TrackPanelGene';
 import TrackPanelTranscript from './track-panel-items/track-panel-transcript/TrackPanelTranscript';
 import TrackPanelVariant from './track-panel-items/track-panel-variant/TrackPanelVariant';
 import TrackPanelRegularItem from './track-panel-items/TrackPanelRegularItem';
+import TrackPanelTranscriptomicTracks from './track-panel-items/TrackPanelTranscriptomicTracks';
 import {
   Accordion,
   AccordionItem,
@@ -70,7 +71,8 @@ export const TrackPanelList = () => {
 
   const dispatch = useAppDispatch();
 
-  const { currentData, categories } = useResolvedGenomeTracks(activeGenomeId);
+  const { currentData, categories, configurationQuery } =
+    useResolvedGenomeTracks(activeGenomeId);
   const genomeTrackCategories = currentData ?? categories;
 
   const openSearch = () => {
@@ -144,61 +146,54 @@ export const TrackPanelList = () => {
                 uuid={category.track_category_id}
                 key={category.track_category_id}
               >
-                <div
-                  className={
-                    category.track_category_id === 'transcriptomic'
-                      ? styles.categoryHeader
-                      : undefined
-                  }
+                <AccordionItemHeading
+                  className={styles.trackPanelAccordionHeader}
                 >
-                  <AccordionItemHeading
-                    className={styles.trackPanelAccordionHeader}
+                  <AccordionItemButton
+                    className={accordionButtonClassNames}
+                    disabled={
+                      !category.track_list.length &&
+                      category.track_category_id !== 'transcriptomic'
+                    }
+                    onToggle={(isExpanded: boolean) =>
+                      reportTrackPanelSectionToggled(category.label, isExpanded)
+                    }
                   >
-                    <AccordionItemButton
-                      className={accordionButtonClassNames}
-                      disabled={
-                        !category.track_list.length &&
-                        category.track_category_id !== 'transcriptomic'
-                      }
-                      onToggle={(isExpanded: boolean) =>
-                        reportTrackPanelSectionToggled(
-                          category.label,
-                          isExpanded
-                        )
-                      }
-                    >
-                      {category.label}
-                    </AccordionItemButton>
-                  </AccordionItemHeading>
-                  {category.track_category_id === 'transcriptomic' && (
-                    <TranscriptomicConfigureButton
-                      className={styles.headerConfigureButton}
-                      onClick={openTranscriptomicConfiguration}
-                    />
-                  )}
-                </div>
+                    {category.label}
+                  </AccordionItemButton>
+                </AccordionItemHeading>
                 <AccordionItemPanel
                   className={styles.trackPanelAccordionItemContent}
                 >
-                  {category.track_category_id === 'transcriptomic' &&
-                    !category.track_list.length && (
-                      <div className={styles.emptyTranscriptomicList}>
-                        Use{' '}
-                        <TranscriptomicConfigureButton
-                          onClick={openTranscriptomicConfiguration}
-                        />{' '}
-                        to add transcriptomic tracks.
-                      </div>
-                    )}
-                  <dl>
-                    {category.track_list.map((track) => (
-                      <TrackPanelRegularItem
-                        {...track}
-                        genomeId={activeGenomeId}
-                        key={track.track_id}
-                      />
-                    ))}
-                  </dl>
+                  {category.track_category_id === 'transcriptomic' ? (
+                    <>
+                      {configurationQuery.currentData && (
+                        <TrackPanelTranscriptomicTracks
+                          key={activeGenomeId}
+                          genomeId={activeGenomeId}
+                          tracks={category.track_list}
+                          configuration={configurationQuery.currentData}
+                        />
+                      )}
+                      <TextButton
+                        className={styles.configureButton}
+                        aria-label="Configure transcriptomic tracks"
+                        onClick={openTranscriptomicConfiguration}
+                      >
+                        Configure <CogIcon aria-hidden={true} />
+                      </TextButton>
+                    </>
+                  ) : (
+                    <dl>
+                      {category.track_list.map((track) => (
+                        <TrackPanelRegularItem
+                          {...track}
+                          genomeId={activeGenomeId}
+                          key={track.track_id}
+                        />
+                      ))}
+                    </dl>
+                  )}
                 </AccordionItemPanel>
               </AccordionItem>
             );
@@ -208,22 +203,6 @@ export const TrackPanelList = () => {
     </div>
   );
 };
-
-const TranscriptomicConfigureButton = ({
-  className,
-  onClick
-}: {
-  className?: string;
-  onClick: () => void;
-}) => (
-  <ImageButton
-    image={CogIcon}
-    description="Configure transcriptomic tracks"
-    aria-label="Configure transcriptomic tracks"
-    className={classNames(styles.configureButton, className)}
-    onClick={onClick}
-  />
-);
 
 const FocusObject = (props: { focusObject: FocusObjectType | null }) => {
   const { focusObject } = props;

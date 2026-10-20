@@ -16,6 +16,7 @@
 
 import type {
   TranscriptomicSelection,
+  TranscriptomicConfiguration,
   TranscriptomicFilters,
   TranscriptomicTissueGroup
 } from 'src/content/app/genome-browser/state/types/transcriptomic';
@@ -47,6 +48,34 @@ export const resolveTranscriptomicTracks = (
   return [...tracks.values()];
 };
 
+export const groupTranscriptomicTracks = (
+  tracks: GenomicTrack[],
+  configuration: TranscriptomicConfiguration
+) => {
+  const remaining = new Map(tracks.map((track) => [track.track_id, track]));
+  const selections = new Map(
+    configuration.selections.map((selection) => [
+      selection.selection_id,
+      selection
+    ])
+  );
+  return configuration.selection_hierarchy
+    .map((tissue) => ({
+      key: tissue.tissue,
+      label: tissue.display_label,
+      tracks: tissue.samples.flatMap((sample) =>
+        sample.selection_ids.flatMap((id) =>
+          selections.get(id)!.track_products.flatMap(({ track_id }) => {
+            const track = remaining.get(track_id);
+            remaining.delete(track_id);
+            return track ? [track] : [];
+          })
+        )
+      )
+    }))
+    .filter((group) => group.tracks.length);
+};
+
 export const filterTranscriptomicSelections = (
   selections: TranscriptomicSelection[],
   filters: TranscriptomicFilters
@@ -60,25 +89,6 @@ export const filterTranscriptomicSelections = (
         )
     )
   );
-
-export const groupTranscriptomicSelections = (
-  selections: TranscriptomicSelection[]
-) => {
-  const groups = new Map<
-    string,
-    { sampleId?: string; selections: TranscriptomicSelection[] }
-  >();
-  for (const selection of selections) {
-    const sampleId = selection.parent_sample_id || undefined;
-    const key = sampleId
-      ? `sample:${sampleId}`
-      : `selection:${selection.selection_id}`;
-    const group = groups.get(key) ?? { sampleId, selections: [] };
-    group.selections.push(selection);
-    groups.set(key, group);
-  }
-  return [...groups.entries()];
-};
 
 export const toggleSelectionIds = (
   selectedIds: string[],
@@ -94,17 +104,8 @@ export const toggleSelectionIds = (
 
 export const groupTranscriptomicSelectionHierarchy = (
   selections: TranscriptomicSelection[],
-  hierarchy?: TranscriptomicTissueGroup[]
+  hierarchy: TranscriptomicTissueGroup[]
 ) => {
-  if (!hierarchy) {
-    return [
-      {
-        key: 'samples',
-        label: undefined,
-        samples: groupTranscriptomicSelections(selections)
-      }
-    ];
-  }
   const byId = new Map(
     selections.map((selection) => [selection.selection_id, selection])
   );
@@ -113,21 +114,14 @@ export const groupTranscriptomicSelectionHierarchy = (
       key: tissue.tissue,
       label: tissue.display_label,
       samples: tissue.samples
-        .map(
-          (
-            sample
-          ): ReturnType<typeof groupTranscriptomicSelections>[number] => [
-            sample.sample_id,
-            {
-              sampleId: sample.sample_id,
-              selections: sample.selection_ids.flatMap((id) => {
-                const selection = byId.get(id);
-                return selection ? [selection] : [];
-              })
-            }
-          ]
-        )
-        .filter(([, group]) => group.selections.length)
+        .map((sample) => ({
+          sampleId: sample.sample_id,
+          selections: sample.selection_ids.flatMap((id) => {
+            const selection = byId.get(id);
+            return selection ? [selection] : [];
+          })
+        }))
+        .filter((sample) => sample.selections.length)
     }))
     .filter((tissue) => tissue.samples.length);
 };

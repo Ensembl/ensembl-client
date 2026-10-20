@@ -41,6 +41,7 @@ import {
   createTranscriptomicConfiguration,
   genomeId,
   otherGenomeId,
+  brainRun,
   liverRunA,
   liverRunB
 } from 'tests/fixtures/transcriptomic';
@@ -132,14 +133,12 @@ async function renderBrowser() {
   );
   return { store, screen };
 }
-// Header and empty-state cogs are equivalent controls for the same drawer.
 const configure = () =>
   page
     .getByRole('button', {
       name: 'Configure transcriptomic tracks',
       exact: true
     })
-    .first()
     .click();
 const apply = () =>
   page.getByRole('button', { name: 'Apply', exact: true }).click();
@@ -149,6 +148,8 @@ const trackB = liverRunB.track_products[0].track_id;
 beforeAll(() => worker.start({ onUnhandledRequest: 'error', quiet: true }));
 afterAll(() => worker.stop());
 beforeEach(async () => {
+  // The integrated browser UI uses the site's desktop layout (980px minimum).
+  await page.viewport(1280, 900);
   localStorage.clear();
   await IndexedDB.clear(GB_TRACK_SETTINGS_STORE_NAME);
   vi.clearAllMocks();
@@ -160,16 +161,60 @@ afterEach(() => {
 describe('transcriptomic browser integration', () => {
   it('shares the cached catalogue between Configure and rows, and switches track UUIDs on/off', async () => {
     await renderBrowser();
+    const configureButton = page.getByRole('button', {
+      name: 'Configure transcriptomic tracks',
+      exact: true
+    });
+    await expect.element(configureButton).toHaveTextContent('Configure');
+    expect(configureButton.all()).toHaveLength(1);
     await expect
-      .element(page.getByText(/Use\s+to add transcriptomic tracks\./))
-      .toBeVisible();
+      .element(page.getByText(/to add transcriptomic tracks\./))
+      .not.toBeInTheDocument();
     await configure();
-    await page.getByRole('button', { name: 'Liver', exact: true }).click();
+    await page
+      .getByRole('main')
+      .getByRole('button', { name: 'Liver', exact: true })
+      .click();
     await page
       .getByRole('checkbox', { name: liverRunA.parent_sample_id, exact: true })
       .click();
+    await page.getByRole('checkbox', { name: 'Brain', exact: true }).click();
     await apply();
     const rows = page.getByRole('complementary');
+    const liverGroup = rows.getByRole('region', {
+      name: 'Liver tracks',
+      exact: true
+    });
+    const brainGroup = rows.getByRole('region', {
+      name: 'Brain tracks',
+      exact: true
+    });
+    await expect
+      .element(brainGroup.getByText(brainRun.display_label, { exact: true }))
+      .toBeVisible();
+    const collapseLiver = liverGroup.getByRole('button', {
+      name: 'Liver',
+      exact: true
+    });
+    await collapseLiver.click();
+    await expect
+      .element(collapseLiver)
+      .toHaveAttribute('aria-expanded', 'false');
+    await expect
+      .element(liverGroup.getByText(liverRunA.display_label, { exact: true }))
+      .not.toBeInTheDocument();
+    await expect
+      .element(brainGroup.getByText(brainRun.display_label, { exact: true }))
+      .toBeVisible();
+    await expect
+      .element(
+        rows.getByRole('button', {
+          name: 'Configure transcriptomic tracks',
+          exact: true
+        })
+      )
+      .toBeVisible();
+    await collapseLiver.click();
     await expect
       .element(rows.getByText(liverRunA.display_label, { exact: true }))
       .toBeVisible();
@@ -179,14 +224,21 @@ describe('transcriptomic browser integration', () => {
     await expect
       .element(rows.getByRole('button', { name: 'More information' }))
       .not.toBeInTheDocument();
-    for (const trackId of [trackA, trackB]) {
+    for (const trackId of [
+      trackA,
+      trackB,
+      brainRun.track_products[0].track_id
+    ]) {
       await expect
         .poll(() => toggleTrack.mock.calls)
         .toContainEqual([{ trackId, isEnabled: true }]);
     }
 
-    // Rows follow configuration order; hiding the first keeps its membership.
-    await rows.getByRole('button', { name: 'Hide this track' }).first().click();
+    // Rows within a tissue follow configuration order; hiding one keeps membership.
+    await liverGroup
+      .getByRole('button', { name: 'Hide this track' })
+      .first()
+      .click();
     await expect
       .poll(() => toggleTrack.mock.calls)
       .toContainEqual([{ trackId: trackA, isEnabled: false }]);
@@ -203,6 +255,14 @@ describe('transcriptomic browser integration', () => {
       .getByRole('region', { name: 'sex filter', exact: true })
       .getByRole('checkbox', { name: /^male\b/ })
       .click();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('1 of 1 track selected · 3 tracks hidden by filters');
+    // Clearing filters must not restore the discarded selection before Apply.
+    await page.getByRole('button', { name: 'Clear filters' }).click();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('1 of 4 tracks selected');
     await apply();
     await expect
       .poll(() => toggleTrack.mock.calls)
@@ -219,7 +279,11 @@ describe('transcriptomic browser integration', () => {
     await page.getByRole('button', { name: 'Close configuration' }).click();
     await configure();
     await expect
-      .element(page.getByRole('button', { name: 'Liver', exact: true }))
+      .element(
+        page
+          .getByRole('main')
+          .getByRole('button', { name: 'Liver', exact: true })
+      )
       .toHaveAttribute('aria-expanded', 'false');
     await expect
       .element(page.getByRole('checkbox', { name: 'Liver', exact: true }))
@@ -270,7 +334,12 @@ describe('transcriptomic browser integration', () => {
     await screen.unmount();
     await renderBrowser();
     await expect
-      .element(page.getByText(/Use\s+to add transcriptomic tracks\./))
+      .element(
+        page.getByRole('button', {
+          name: 'Configure transcriptomic tracks',
+          exact: true
+        })
+      )
       .toBeVisible();
     expect(
       browserStorageService.getTranscriptomicSelections()[genomeId]
