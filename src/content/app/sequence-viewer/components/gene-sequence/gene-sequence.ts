@@ -66,19 +66,19 @@ const styles = `
   }
 
   .exon {
-    background-color: cadetblue;
+    background-color: #84d0ff;
   }
 
   .intron {
-    background-color: rgba(0, 100, 0, 0.5);
+    background-color: #e5f5ff;
   }
 
   .cds {
-    background-color: rebeccapurple;
+    background-color: #eacdff;
   }
 
   .utr {
-    background-color: teal;
+    background-color: #ffb547;
   }
 
   .mixed {

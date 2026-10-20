@@ -42,28 +42,37 @@ const styles = `
     font-weight: var(--font-weight-light);
   }
 
+
   .exon {
-    background-color: cadetblue;
+    background-color: #84d0ff;
   }
 
   .intron {
-    background-color: rgba(0, 100, 0, 0.5);
+    background-color: #e5f5ff;
   }
 
   .cds {
-    background-color: rebeccapurple;
+    background-color: #eacdff;
   }
 
   .utr {
-    background-color: hotpink;
+    background-color: #ffb547;
   }
 
   .codon-odd {
-    background-color: #6fa2f9;
+    background-color: #eacdff;
   }
 
   .codon-even {
-    background-color: #c8d7fa;
+    background-color: #faf2ff;
+  }
+
+  .codon-start {
+    background-color: #ca81ff;
+  }
+
+  .codon-stop {
+    background-color: #ca81ff;
   }
 
   .protein-line {
