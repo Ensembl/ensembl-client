@@ -17,6 +17,7 @@
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
 import { getGenomicLocationFromString } from 'src/shared/helpers/genomicLocationHelpers';
+import { downloadSequence } from './downloadSequence';
 
 import DownloadFileFormats from './DownloadFileFormats';
 import { CircleLoader } from 'src/shared/components/loader';
@@ -51,6 +52,32 @@ const LocationSequenceDownload = () => {
       }
     );
 
+  const onDownload = (params: {
+    fileType: string;
+    options: Record<string, boolean>;
+  }) => {
+    if (!genomeId || !parsedLocation) {
+      // this should not happen
+      return;
+    }
+
+    const downloadParams: Parameters<typeof downloadSequence>[0] = {
+      genome_uuid: genomeId,
+      focus_location: {
+        region_name: parsedLocation.regionName,
+        start: parsedLocation.start,
+        end: parsedLocation.end
+      },
+      file_type: params.fileType
+    };
+
+    if (params.options) {
+      downloadParams.options = params.options;
+    }
+
+    downloadSequence(downloadParams);
+  };
+
   if (isFetching) {
     return <CircleLoader />;
   }
@@ -64,7 +91,12 @@ const LocationSequenceDownload = () => {
     return null;
   }
 
-  return <DownloadFileFormats formats={currentData.formats} />;
+  return (
+    <DownloadFileFormats
+      formats={currentData.formats}
+      onDownload={onDownload}
+    />
+  );
 };
 
 export default LocationSequenceDownload;

@@ -30,6 +30,10 @@ import styles from './DownloadFileFormats.module.css';
 
 type Props = {
   formats: DownloadFileFormatWithOptions[];
+  onDownload: (params: {
+    fileType: string;
+    options: Record<string, boolean>;
+  }) => void;
 };
 
 type State = {
@@ -102,7 +106,10 @@ const getInitialState = (formats: DownloadFileFormatWithOptions[]) => {
   };
 };
 
-const DownloadFileFormats = ({ formats }: Props) => {
+const DownloadFileFormats = ({
+  formats,
+  onDownload: downloadHandlerFromProps
+}: Props) => {
   const initialState = getInitialState(formats);
   const [state, dispatch] = useReducer(stateReducer, initialState);
 
@@ -141,6 +148,13 @@ const DownloadFileFormats = ({ formats }: Props) => {
       />
     ));
 
+  const onDownloadPress = () => {
+    downloadHandlerFromProps({
+      fileType: selectedFormat,
+      options: state.formatOptions[selectedFormat]
+    });
+  };
+
   return (
     <>
       <SimpleSelect
@@ -148,8 +162,8 @@ const DownloadFileFormats = ({ formats }: Props) => {
         options={fileFormatsForSelect}
       />
       {optionSections}
-      <div>
-        <PrimaryButton>Download</PrimaryButton>
+      <div className={styles.downloadButtonContainer}>
+        <PrimaryButton onClick={onDownloadPress}>Download</PrimaryButton>
       </div>
     </>
   );

@@ -60,6 +60,10 @@ const styles = `
   .line-left {
     text-align: right;
   }
+
+  .gene {
+    background-color: #84d0ff;
+  }
 `;
 
 const LINES_PER_CHUNK = 100;
