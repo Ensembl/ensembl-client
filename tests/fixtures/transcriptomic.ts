@@ -86,6 +86,8 @@ export const brainRun = {
 
 export const createTranscriptomicConfiguration =
   (): TranscriptomicConfiguration => ({
+    genome_id: genomeId,
+    dataset_id: 'test-dataset',
     track_count: 4,
     selections: structuredClone([liverRunA, liverRunB, liverRunC, brainRun]),
     // API order deliberately differs from flat selection order.

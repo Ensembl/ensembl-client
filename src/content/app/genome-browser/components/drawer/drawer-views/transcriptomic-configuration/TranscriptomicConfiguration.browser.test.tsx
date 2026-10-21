@@ -82,7 +82,7 @@ const worker = setupWorker(
     })
   ),
   http.get(
-    `${tracksApiUrl}/transcriptomic/:genomeId/configuration`,
+    `${tracksApiUrl}/configuration/:genomeId/transcriptomic`,
     configurationRequest
   ),
   http.get(`${tracksApiUrl}/track/:trackId`, trackRequest)
@@ -350,7 +350,7 @@ describe('transcriptomic browser integration', () => {
   it('disables Apply on configuration failure and offers retry', async () => {
     worker.use(
       http.get(
-        `${tracksApiUrl}/transcriptomic/:genomeId/configuration`,
+        `${tracksApiUrl}/configuration/:genomeId/transcriptomic`,
         () => new HttpResponse(null, { status: 404 })
       )
     );

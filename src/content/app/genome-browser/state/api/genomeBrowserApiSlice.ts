@@ -136,7 +136,7 @@ const genomeBrowserRestApiSlice = restApiSlice.injectEndpoints({
       string
     >({
       query: (genomeId) => ({
-        url: `${config.tracksApiBaseUrl}/transcriptomic/${genomeId}/configuration`
+        url: `${config.tracksApiBaseUrl}/configuration/${genomeId}/transcriptomic`
       })
     }),
     genomeTracks: builder.query<GenomeTrackCategory[], string>({

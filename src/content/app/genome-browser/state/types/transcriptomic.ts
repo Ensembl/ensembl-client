@@ -21,10 +21,17 @@ export type TranscriptomicSelection = {
   selection_level: string;
   data_type: string;
   metadata: Record<string, string | null>;
-  track_products: { track_type: string; track_id: string }[];
+  track_products: TranscriptomicTrackProduct[];
+};
+
+export type TranscriptomicTrackProduct = {
+  track_type: string;
+  track_id: string;
 };
 
 export type TranscriptomicConfiguration = {
+  genome_id: string;
+  dataset_id: string;
   track_count: number;
   selections: TranscriptomicSelection[];
   selection_hierarchy: TranscriptomicTissueGroup[];
