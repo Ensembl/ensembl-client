@@ -14,8 +14,92 @@
  * limitations under the License.
  */
 
+import { useAppSelector } from 'src/store';
+
+import { downloadSequence } from './downloadSequence';
+
+import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+
+import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
+import { prepareOptionsForPayload } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
+
+import DownloadFileFormats from './DownloadFileFormats';
+import { CircleLoader } from 'src/shared/components/loader';
+
+import { useGeneSequenceDownloadOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
+
+import type { TranscriptSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
+
 const GeneSequenceDownload = () => {
-  return <div>Gene sequence download</div>;
+  const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
+  const geneId = parsedFocusObjectId?.objectId ?? '';
+
+  const sequenceSettings = useAppSelector((state) =>
+    getSequenceSettings(state, {
+      type: 'gene',
+      genomeId: genomeId ?? '',
+      geneId
+    })
+  );
+
+  const { currentData, isFetching, isError } =
+    useGeneSequenceDownloadOptionsQuery(
+      {
+        genomeId: genomeId ?? '',
+        geneId
+      },
+      {
+        skip: !genomeId || !geneId
+      }
+    );
+
+  const onDownload = (params: {
+    fileType: string;
+    useSequenceOptions?: boolean;
+    options?: Record<string, boolean>;
+  }) => {
+    if (!genomeId || !geneId) {
+      // this should not happen
+      return;
+    }
+
+    const downloadParams: Parameters<typeof downloadSequence>[0] = {
+      genome_uuid: genomeId,
+      focus_gene: { stable_id: geneId },
+      file_type: params.fileType
+    };
+
+    if (params.useSequenceOptions) {
+      const options = prepareOptionsForPayload(
+        sequenceSettings as TranscriptSequenceSettings
+      );
+      downloadParams.options = options;
+    } else if (params.options) {
+      downloadParams.options = params.options;
+    }
+
+    downloadSequence(downloadParams);
+  };
+
+  if (isFetching) {
+    return <CircleLoader />;
+  }
+
+  if (isError) {
+    return <div>An error occurred while fetching download options.</div>;
+  }
+
+  if (!currentData) {
+    // this shouldn't happen
+    return null;
+  }
+
+  return (
+    <DownloadFileFormats
+      formats={currentData.formats}
+      onDownload={onDownload}
+    />
+  );
 };
 
 export default GeneSequenceDownload;

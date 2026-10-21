@@ -20,14 +20,16 @@ import { from } from 'rxjs';
 import { useAppDispatch, type AppDispatch } from 'src/store';
 
 import { getGBTranscriptSummary } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
-import { fetchAnnotatedSequence } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
+import {
+  fetchAnnotatedSequence,
+  prepareOptionsForPayload
+} from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
 
 import type { TranscriptSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/transcriptSummaryQuery';
 import type {
   SequenceSettings,
   TranscriptSequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
-import type { AnnotatedSequenceRequestPayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
 type Data = {
   transcript: TranscriptSummaryQueryResult['transcript'];
@@ -44,19 +46,6 @@ const initialState: State = {
   data: null,
   isLoading: false,
   isError: false
-};
-
-const prepareOptionsForPayload = (
-  settings: TranscriptSequenceSettings
-): AnnotatedSequenceRequestPayload['options'] => {
-  const options: AnnotatedSequenceRequestPayload['options'] = {};
-  for (const [key, value] of Object.entries(settings.options)) {
-    if (Array.isArray(value) && value.length === 0) {
-      continue;
-    }
-    options[key] = value as (typeof options)[typeof key];
-  }
-  return options;
 };
 
 const useTranscriptSequence = ({

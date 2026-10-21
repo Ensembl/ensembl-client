@@ -32,6 +32,7 @@ type Props = {
   formats: DownloadFileFormatWithOptions[];
   onDownload: (params: {
     fileType: string;
+    useSequenceOptions?: boolean;
     options: Record<string, boolean>;
   }) => void;
 };
@@ -90,9 +91,10 @@ const getInitialState = (formats: DownloadFileFormatWithOptions[]) => {
 
   for (const format of formats) {
     const formatId = format.id;
-    const optionTuples = format.sections.flatMap((section) =>
-      section.children.map((option) => [option.id, option.checked] as const)
-    );
+    const optionTuples =
+      format.sections?.flatMap((section) =>
+        section.children.map((option) => [option.id, option.checked] as const)
+      ) ?? [];
     const options: Record<string, boolean> = {};
     for (const [key, value] of optionTuples) {
       options[key] = value;
@@ -137,20 +139,26 @@ const DownloadFileFormats = ({
 
   const selectedOptions = state.formatOptions[selectedFormat];
 
-  const optionSections = formats
-    .find((format) => format.id === selectedFormat)!
-    .sections.map((section) => (
-      <FileOptionsSection
-        key={section.label}
-        optionsState={selectedOptions}
-        section={section}
-        onChange={handleOptionChange}
-      />
-    ));
+  const optionSections =
+    formats
+      .find((format) => format.id === selectedFormat)!
+      .sections?.map((section) => (
+        <FileOptionsSection
+          key={section.label}
+          optionsState={selectedOptions}
+          section={section}
+          onChange={handleOptionChange}
+        />
+      )) ?? null;
 
   const onDownloadPress = () => {
+    const shouldUseSequenceOptionsForDownload = formats.find(
+      (format) => format.id === selectedFormat
+    )!.use_sequence_options;
+
     downloadHandlerFromProps({
       fileType: selectedFormat,
+      useSequenceOptions: shouldUseSequenceOptionsForDownload,
       options: state.formatOptions[selectedFormat]
     });
   };

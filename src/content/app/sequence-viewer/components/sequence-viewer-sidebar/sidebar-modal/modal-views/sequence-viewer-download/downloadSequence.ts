@@ -20,7 +20,7 @@ import { downloadBlobAsFile } from 'src/shared/helpers/downloadAsFile';
 type CommonDownloadParams = {
   file_type: string;
   genome_uuid: string;
-  options?: Record<string, boolean | string | number>;
+  options?: Record<string, boolean | string | number | string[] | number[]>;
 };
 
 type LocationDownloadParams = {
@@ -37,6 +37,7 @@ type GeneDownloadParams = {
 
 type TranscriptDownloadParams = {
   focus_transcript: { stable_id: string };
+  sequence_type: string;
 };
 
 type DownloadParams = CommonDownloadParams &

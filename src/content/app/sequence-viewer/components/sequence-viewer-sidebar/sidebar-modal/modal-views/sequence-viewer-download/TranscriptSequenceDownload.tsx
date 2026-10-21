@@ -14,8 +14,102 @@
  * limitations under the License.
  */
 
+import { useSearchParams } from 'react-router';
+
+import { useAppSelector } from 'src/store';
+
+import { downloadSequence } from './downloadSequence';
+import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
+
+import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+
+import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
+import { prepareOptionsForPayload } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
+
+import DownloadFileFormats from './DownloadFileFormats';
+import { CircleLoader } from 'src/shared/components/loader';
+
+import { useTranscriptSequenceDownloadOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
+
+import type { TranscriptSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
+
 const TranscriptSequenceDownload = () => {
-  return <div>Transcript sequence download</div>;
+  const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
+  const transcriptId = parsedFocusObjectId?.objectId ?? '';
+  const [searchParams] = useSearchParams(); // FIXME: move the discovery of transcript view from url into some shared place
+
+  const transcriptView =
+    getTranscriptSequenceViewFromSearchParams(searchParams);
+
+  const sequenceSettings = useAppSelector((state) =>
+    getSequenceSettings(state, {
+      type: 'transcript',
+      genomeId: genomeId ?? '',
+      transcriptId: transcriptId ?? '',
+      sequenceView: transcriptView
+    })
+  );
+
+  const { currentData, isFetching, isError } =
+    useTranscriptSequenceDownloadOptionsQuery(
+      {
+        genomeId: genomeId ?? '',
+        sequenceType: 'genomic',
+        transcriptId
+      },
+      {
+        skip: !genomeId || !transcriptId
+      }
+    );
+
+  const onDownload = (params: {
+    fileType: string;
+    useSequenceOptions?: boolean;
+    options?: Record<string, boolean>;
+  }) => {
+    if (!genomeId || !transcriptId) {
+      // this should not happen
+      return;
+    }
+
+    const downloadParams: Parameters<typeof downloadSequence>[0] = {
+      genome_uuid: genomeId,
+      focus_transcript: { stable_id: transcriptId },
+      sequence_type: 'genomic',
+      file_type: params.fileType
+    };
+
+    if (params.useSequenceOptions) {
+      const options = prepareOptionsForPayload(
+        sequenceSettings as TranscriptSequenceSettings
+      );
+      downloadParams.options = options;
+    } else if (params.options) {
+      downloadParams.options = params.options;
+    }
+
+    downloadSequence(downloadParams);
+  };
+
+  if (isFetching) {
+    return <CircleLoader />;
+  }
+
+  if (isError) {
+    return <div>An error occurred while fetching download options.</div>;
+  }
+
+  if (!currentData) {
+    // this shouldn't happen
+    return null;
+  }
+
+  return (
+    <DownloadFileFormats
+      formats={currentData.formats}
+      onDownload={onDownload}
+    />
+  );
 };
 
 export default TranscriptSequenceDownload;
