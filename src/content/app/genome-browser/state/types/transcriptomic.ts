@@ -31,7 +31,6 @@ export type TranscriptomicTrackProduct = {
 
 export type TranscriptomicConfiguration = {
   genome_id: string;
-  dataset_id: string;
   track_count: number;
   selections: TranscriptomicSelection[];
   selection_hierarchy: TranscriptomicTissueGroup[];
