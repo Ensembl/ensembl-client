@@ -23,15 +23,18 @@ import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSeque
 import { getIsSidebarOpen } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSelectors';
 import { toggleSidebar } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSlice';
 
+import { SequenceViewerIdsContextProvider } from './contexts/SequenceViewerIdsContext';
+import { SequenceViewerLegendContextProvider } from './contexts/SequenceViewerLegendContext';
+
 import SequenceViewerAppBar from './components/sequence-viewer-app-bar/SequenceViewerAppBar';
 import SequenceViewerSidebar, {
   type View as SidebarView
 } from './components/sequence-viewer-sidebar/SequenceViewerSidebar';
-import { SequenceViewerIdsContextProvider } from './contexts/SequenceViewerIdsContext';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import GeneSequence from './components/gene-sequence/GeneSequence';
 import TranscriptSequence from './components/transcript-sequence/TranscriptSequence';
 import LocationSequence from './components/location-sequence/LocationSequence';
+import SequenceViewerSidebarTabs from './components/sequence-viewer-sidebar-tabs/SequenceViewerSidebarTabs';
 import SidebarToolstrip from './components/sequence-viewer-sidebar/sidebar-toolstrip/SequenceViewerSidebarToolstrip';
 import SequenceViewerInterstitial from './components/sequence-viewer-interstitial/SequenceViewerInterstitial';
 
@@ -41,7 +44,9 @@ import styles from './SequenceViewer.module.css';
 const WrappedSequenceViewer = () => {
   return (
     <SequenceViewerIdsContextProvider>
-      <SequenceViewer />
+      <SequenceViewerLegendContextProvider>
+        <SequenceViewer />
+      </SequenceViewerLegendContextProvider>
     </SequenceViewerIdsContextProvider>
   );
 };
@@ -78,8 +83,8 @@ const SequenceViewer = () => {
         mainContent={<MainContent />}
         sidebarContent={<SidebarContent />}
         isSidebarOpen={isSidebarOpen}
-        topbarContent={null}
-        sidebarNavigation={null}
+        topbarContent={<div />}
+        sidebarNavigation={<SequenceViewerSidebarTabs />}
         sidebarToolstripContent={<SidebarToolstrip />}
         onSidebarToggle={onSidebarToggle}
         viewportWidth={1800}

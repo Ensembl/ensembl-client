@@ -15,6 +15,8 @@
  */
 
 import {
+  use,
+  useCallback,
   type DetailedHTMLProps,
   type HTMLAttributes,
   type CSSProperties
@@ -27,6 +29,8 @@ import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
 
 import useGeneSequence from './useGeneSequence';
+
+import { SequenceViewerLegendContext } from 'src/content/app/sequence-viewer/contexts/SequenceViewerLegendContext';
 
 import './gene-sequence';
 
@@ -60,6 +64,16 @@ const GeneSequence = (props: Props) => {
     settings: sequenceSettings
   });
 
+  const { setTemplate: setLegendTemplate } = use(SequenceViewerLegendContext);
+
+  const onLegend = useCallback(
+    (event: CustomEvent<{ template: string }>) => {
+      const template = event.detail.template;
+      setLegendTemplate(template);
+    },
+    [setLegendTemplate]
+  );
+
   if (isLoading) {
     return (
       <div className={commonStyles.main}>
@@ -89,7 +103,10 @@ const GeneSequence = (props: Props) => {
   return (
     <div className={commonStyles.main} style={styles}>
       Gene: {geneNameAndId}
-      <ens-sequence-viewer-gene-sequence sequence={annotatedSequence} />
+      <ens-sequence-viewer-gene-sequence
+        onreport-legend={onLegend}
+        sequence={annotatedSequence}
+      />
     </div>
   );
 };
