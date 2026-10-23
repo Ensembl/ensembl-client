@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+import { isProductionEnvironment } from 'src/shared/helpers/environment';
+
 import LaunchbarButton from './LaunchbarButton';
 import { DataDistillerIcon } from 'src/shared/components/app-icon';
 
 const DATA_DISTILLER_APP_ROOT_PATH = '/tools/distiller';
 
 const DataDistillerLaunchbarButton = () => {
+  if (isProductionEnvironment()) {
+    return null;
+  }
+
   return (
     <LaunchbarButton
       path={DATA_DISTILLER_APP_ROOT_PATH}

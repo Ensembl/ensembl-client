@@ -18,8 +18,11 @@ import { lazy, useEffect } from 'react';
 
 import { useAppDispatch } from 'src/store';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
+import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+
+import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
@@ -40,6 +43,11 @@ const DataDistillerPage = () => {
       })
     );
   }, [dispatch]);
+
+  // Data distiller is not yet available in production
+  if (isProductionEnvironment()) {
+    return <NotFoundErrorScreen />;
+  }
 
   return hasMounted ? <LazilyLoadedDataDistiller /> : null;
 };
