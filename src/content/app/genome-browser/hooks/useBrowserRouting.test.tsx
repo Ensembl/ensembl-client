@@ -18,8 +18,10 @@ import { useEffect } from 'react';
 import { render, act, waitFor } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { http, graphql, HttpResponse } from 'msw';
+import { http, HttpResponse } from 'msw';
+import { graphql } from 'msw/graphql';
 import { setupServer } from 'msw/node';
+import { HttpNetworkFrame } from 'msw/experimental';
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router';
 import set from 'lodash/fp/set';
 
@@ -45,7 +47,7 @@ const mockGenomeBrowserObj = {};
 vi.mock('config', () => ({
   default: {
     metadataApiBaseUrl: 'http://metadata-api',
-    coreApiUrl: 'http://graphql-api'
+    coreApiUrl: 'http://graphql-api/'
   }
 }));
 
@@ -188,7 +190,7 @@ const server = setupServer(
     // send back the same location as was in the url; this should be enough to pass the validation
     return HttpResponse.json({ location });
   }),
-  graphql.query('TrackPanelGene', () => {
+  graphql.link('http://graphql-api/').query('TrackPanelGene', () => {
     return HttpResponse.json({
       data: {
         gene: {
@@ -199,13 +201,21 @@ const server = setupServer(
         }
       }
     });
+  }),
+  graphql.link('http://graphql-api/').query('TranscriptSummary', () => {
+    return HttpResponse.json({ data: { transcript: null } });
   })
 );
 
 beforeAll(() =>
   server.listen({
-    onUnhandledRequest(req) {
-      const errorMessage = `Found an unhandled ${req.method} request to ${req.url}`;
+    onUnhandledFrame({ frame }) {
+      if (!(frame instanceof HttpNetworkFrame)) {
+        return;
+      }
+      const method = frame.data.request.method;
+      const url = frame.data.request.url;
+      const errorMessage = `Found an unhandled ${method} request to ${url}`;
       throw new Error(errorMessage);
     }
   })
