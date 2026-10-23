@@ -41,7 +41,8 @@
 }
 
 .checkbox {
-  display: block;
+  display: grid;
+  width: max-content;
 }
 
 .radioGroup {
