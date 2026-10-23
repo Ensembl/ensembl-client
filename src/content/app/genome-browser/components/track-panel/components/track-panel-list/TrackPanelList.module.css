@@ -61,3 +61,16 @@
   display: flex;
   column-gap: 30px;
 }
+.configureButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 17px 0 auto;
+  font-size: 12px;
+}
+
+.configureButton svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--color-blue);
+}

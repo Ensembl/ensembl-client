@@ -24,6 +24,8 @@ import * as trackSettingsStorageService from 'src/content/app/genome-browser/ser
 
 import { getAllTrackSettingsForGenome } from './trackSettingsSelectors';
 
+import { applyTranscriptomicSelections } from '../transcriptomic/transcriptomicSlice';
+
 import { TrackType } from './trackSettingsConstants';
 import { TrackId } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 
@@ -258,6 +260,14 @@ const trackSettingsSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    builder.addCase(
+      applyTranscriptomicSelections.fulfilled,
+      (state, { payload }) => {
+        const { genomeId, settings } = payload;
+        state[genomeId] ??= { settingsForIndividualTracks: {} };
+        Object.assign(state[genomeId].settingsForIndividualTracks, settings);
+      }
+    );
     builder.addCase(updateTrackSettingsAndSave.fulfilled, (state, action) => {
       if (!action.payload) {
         return;
