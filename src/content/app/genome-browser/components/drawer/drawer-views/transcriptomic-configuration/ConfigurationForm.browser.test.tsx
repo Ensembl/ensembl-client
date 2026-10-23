@@ -207,7 +207,7 @@ describe('<ConfigurationForm />', () => {
     await expect
       .element(cohort.getByRole('heading', { name: 'cohort', exact: true }))
       .toHaveTextContent('cohort');
-    // Filter values keep API-provided run counts; category headers have none.
+    // Filter values show run counts; category headers have none.
     await expect.element(maleFilter()).toHaveAccessibleDescription('1');
     await expect
       .element(page.getByRole('heading', { name: 'sex', exact: true }))
@@ -222,7 +222,52 @@ describe('<ConfigurationForm />', () => {
       .toBeDisabled();
   });
 
-  it('shows an empty result and can apply an empty selection', async () => {
+  it('narrows filter choices and counts, supports alternatives, and restores choices on clearing', async () => {
+    await renderForm();
+    const sex = page.getByRole('region', { name: 'sex filter', exact: true });
+    const tissue = page.getByRole('region', {
+      name: 'tissue filter',
+      exact: true
+    });
+    const cohort = page.getByRole('region', {
+      name: 'cohort filter',
+      exact: true
+    });
+    const female = sex.getByRole('checkbox', { name: 'female', exact: true });
+    const unknown = sex.getByRole('checkbox', { name: 'unknown', exact: true });
+    expect(cohort.getByRole('checkbox').all()).toHaveLength(4);
+
+    await tissue.getByRole('checkbox', { name: 'liver', exact: true }).click();
+    await expect.element(unknown).not.toBeInTheDocument();
+    expect(cohort.getByRole('checkbox').all()).toHaveLength(3);
+    await maleFilter().click();
+    // Other groups narrow, but alternatives within sex remain selectable.
+    await expect.element(female).toBeVisible();
+    await expect.element(female).toHaveAccessibleDescription('2');
+    await expect
+      .element(tissue.getByRole('checkbox', { name: 'liver', exact: true }))
+      .toHaveAccessibleDescription('1');
+    expect(cohort.getByRole('checkbox').all()).toHaveLength(1);
+    await expect
+      .element(cohort.getByRole('checkbox', { name: 'cohort-b', exact: true }))
+      .toBeVisible();
+
+    await female.click();
+    expect(cohort.getByRole('checkbox').all()).toHaveLength(3);
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('0 of 3 tracks selected · 1 track hidden by filters');
+    await page.getByRole('button', { name: 'Clear filters' }).click();
+    expect(cohort.getByRole('checkbox').all()).toHaveLength(4);
+    await expect.element(unknown).toBeVisible();
+    await expect.element(unknown).toHaveAccessibleDescription('1');
+    await expect.element(female).not.toBeChecked();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('0 of 4 tracks selected');
+  });
+
+  it('keeps zero-result filters removable and can apply an empty selection', async () => {
     const { store } = await renderForm({
       selectionIds: [liverRunA.selection_id]
     });
@@ -230,10 +275,20 @@ describe('<ConfigurationForm />', () => {
     await expect
       .element(page.getByRole('button', { name: 'Clear selections' }))
       .toBeDisabled();
+    const unknown = page
+      .getByRole('region', { name: 'sex filter', exact: true })
+      .getByRole('checkbox', { name: 'unknown', exact: true });
+    await unknown.click();
     await page
       .getByRole('region', { name: 'tissue filter', exact: true })
       .getByRole('checkbox', { name: /^brain\b/ })
       .click();
+    await unknown.click();
+    await expect.element(maleFilter()).toBeChecked();
+    await expect.element(maleFilter()).toHaveAccessibleDescription('0');
+    await expect
+      .element(page.getByRole('region', { name: 'cohort filter', exact: true }))
+      .not.toBeInTheDocument();
     await expect
       .element(page.getByText('No selections match these filters.'))
       .toBeVisible();
@@ -247,6 +302,14 @@ describe('<ConfigurationForm />', () => {
     await expect
       .poll(() => store.getState().browser.transcriptomic[genomeId])
       .toEqual([]);
+    // A checked value with no matches can still be unchecked to recover results.
+    await maleFilter().click();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('0 of 1 track selected · 3 tracks hidden by filters');
+    await expect
+      .element(page.getByRole('region', { name: 'cohort filter', exact: true }))
+      .toBeVisible();
   });
 
   it('disables Apply until track settings are ready', async () => {

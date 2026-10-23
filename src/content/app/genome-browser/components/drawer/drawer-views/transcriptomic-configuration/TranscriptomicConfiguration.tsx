@@ -20,6 +20,7 @@ import useResolvedGenomeTracks from 'src/content/app/genome-browser/hooks/useRes
 import { applyTranscriptomicSelections } from 'src/content/app/genome-browser/state/transcriptomic/transcriptomicSlice';
 import {
   filterTranscriptomicSelections,
+  getTranscriptomicFilterOptions,
   groupTranscriptomicSelectionHierarchy,
   resolveTranscriptomicTracks,
   toggleSelectionIds
@@ -120,6 +121,7 @@ export function ConfigurationForm({
     matching,
     configuration.selection_hierarchy
   );
+  const filterOptions = getTranscriptomicFilterOptions(configuration, filters);
 
   const toggle = (ids: string[], checked: boolean) =>
     setDraft((current) => toggleSelectionIds(current, ids, checked));
@@ -264,7 +266,7 @@ export function ConfigurationForm({
             </TextButton>
           </div>
           <div className={styles.filterGroups}>
-            {Object.entries(configuration.filters).map(([name, values]) => {
+            {Object.entries(filterOptions).map(([name, values]) => {
               const label = name.replaceAll('_', ' ');
               return (
                 <ConfigurationGroup key={name} label={label} expanded={true}>

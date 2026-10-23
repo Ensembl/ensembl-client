@@ -16,6 +16,7 @@
 
 import {
   filterTranscriptomicSelections,
+  getTranscriptomicFilterOptions,
   groupTranscriptomicSelectionHierarchy,
   groupTranscriptomicTracks,
   resolveTranscriptomicTracks,
@@ -159,6 +160,71 @@ describe('filterTranscriptomicSelections', () => {
       filterTranscriptomicSelections([missing], { sex: ['unknown'] })
     ).toEqual([]);
     expect(filterTranscriptomicSelections([missing], {})).toEqual([missing]);
+  });
+});
+
+describe('getTranscriptomicFilterOptions', () => {
+  it('narrows other groups and counts while allowing alternatives in the active group', () => {
+    const configuration = createTranscriptomicConfiguration();
+    const options = getTranscriptomicFilterOptions(configuration, {
+      sex: ['male']
+    });
+    expect(options.sex).toEqual(configuration.filters.sex);
+    expect(options.tissue).toEqual([{ value: 'liver', count: 1 }]);
+    expect(options.cohort).toEqual([{ value: 'cohort-b', count: 1 }]);
+
+    const combined = getTranscriptomicFilterOptions(configuration, {
+      sex: ['male', 'female'],
+      tissue: ['liver']
+    });
+    expect(combined.sex).toEqual([
+      { value: 'female', count: 2 },
+      { value: 'male', count: 1 }
+    ]);
+    expect(combined.tissue).toEqual([{ value: 'liver', count: 3 }]);
+    expect(combined.cohort.map(({ value }) => value)).toEqual([
+      'cohort-a',
+      'cohort-b',
+      'cohort-c'
+    ]);
+  });
+
+  it('retains checked zero-count values for removal and omits empty groups', () => {
+    const options = getTranscriptomicFilterOptions(
+      createTranscriptomicConfiguration(),
+      { sex: ['male'], tissue: ['brain'] }
+    );
+    expect(options).toEqual({
+      sex: [
+        { value: 'male', count: 0 },
+        { value: 'unknown', count: 1 }
+      ],
+      tissue: [
+        { value: 'liver', count: 1 },
+        { value: 'brain', count: 0 }
+      ]
+    });
+  });
+
+  it('matches case-insensitively, skips missing metadata and preserves the catalogue', () => {
+    const configuration = createTranscriptomicConfiguration();
+    configuration.selections[0].metadata.sex = 'FEMALE';
+    configuration.selections[1].metadata.sex = null;
+    delete configuration.selections[2].metadata.sex;
+    configuration.filters.sex[0].value = 'Female';
+    const original = structuredClone(configuration);
+    const options = getTranscriptomicFilterOptions(configuration, {
+      tissue: ['LIVER']
+    });
+    expect(options.sex).toEqual([{ value: 'Female', count: 1 }]);
+    expect(Object.keys(options)).toEqual(['sex', 'cohort', 'tissue']);
+    expect(configuration).toEqual(original);
+    expect(getTranscriptomicFilterOptions(configuration, {})).toEqual(
+      getTranscriptomicFilterOptions(configuration, { tissue: [] })
+    );
+    expect(
+      getTranscriptomicFilterOptions({ ...configuration, selections: [] }, {})
+    ).toEqual({});
   });
 });
 

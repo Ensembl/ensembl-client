@@ -90,6 +90,39 @@ export const filterTranscriptomicSelections = (
     )
   );
 
+export const getTranscriptomicFilterOptions = (
+  configuration: TranscriptomicConfiguration,
+  filters: TranscriptomicFilters
+) => {
+  const options: TranscriptomicConfiguration['filters'] = {};
+  for (const [name, values] of Object.entries(configuration.filters)) {
+    // Ignore this group's choices so users can add alternatives within it.
+    const matching = filterTranscriptomicSelections(configuration.selections, {
+      ...filters,
+      [name]: []
+    });
+    const counts = new Map<string, number>();
+    for (const { metadata } of matching) {
+      const value = metadata[name]?.toLowerCase();
+      if (value !== undefined) counts.set(value, (counts.get(value) ?? 0) + 1);
+    }
+    const selected = new Set(
+      filters[name]?.map((value) => value.toLowerCase())
+    );
+    const available = values
+      .map(({ value }) => ({
+        value,
+        count: counts.get(value.toLowerCase()) ?? 0
+      }))
+      // Keep checked values available for removal, even if no runs match.
+      .filter(
+        ({ value, count }) => count > 0 || selected.has(value.toLowerCase())
+      );
+    if (available.length) options[name] = available;
+  }
+  return options;
+};
+
 export const toggleSelectionIds = (
   selectedIds: string[],
   affectedIds: string[],
