@@ -31,8 +31,8 @@ import { HelpPopupButton } from 'src/shared/components/help-popup';
 const DataDistillerAppBar = () => {
   const speciesList = useAppSelector(getEnabledCommittedSpecies);
 
-  const speciesTabs = speciesList.map((species, index) => (
-    <SelectedSpecies key={index} species={species} disabled={true} />
+  const speciesTabs = speciesList.map((species) => (
+    <SelectedSpecies key={species.genome_id} species={species} disabled />
   ));
 
   const speciesTabsSlider = (
@@ -40,13 +40,11 @@ const DataDistillerAppBar = () => {
   );
   const appName = <AppName>{AppNameText.TOOLS}</AppName>;
 
-  const mainContent = speciesTabs.length ? speciesTabsSlider : null;
-
   return (
     <AppBar
       topLeft={appName}
       topRight={<SpeciesManagerIndicator />}
-      mainContent={mainContent}
+      mainContent={speciesTabsSlider}
       aside={<HelpPopupButton slug="data-distiller" />}
     />
   );
