@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  type DetailedHTMLProps,
-  type HTMLAttributes,
-  type CSSProperties
-} from 'react';
+import type { CSSProperties } from 'react';
 
 import { useAppSelector } from 'src/store';
 
@@ -30,9 +26,7 @@ import useLocationSequence from './useLocationSequence';
 
 import { CircleLoader } from 'src/shared/components/loader';
 
-import './location-sequence';
-
-import type { LocationSequence as LocationSequenceElement } from './location-sequence';
+import Sequence from 'src/content/app/sequence-viewer/components/sequence/Sequence';
 
 import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
 
@@ -81,25 +75,9 @@ const LocationSequence = (props: Props) => {
 
   return (
     <div className={commonStyles.main} style={styles}>
-      <ens-sequence-viewer-location-sequence sequence={annotatedSequence} />
+      <Sequence sequence={annotatedSequence} />
     </div>
   );
 };
-
-type LocationSequenceElementProps = DetailedHTMLProps<
-  HTMLAttributes<LocationSequenceElement>,
-  LocationSequenceElement
-> & {
-  sequence: string;
-};
-
-declare module 'react/jsx-runtime' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'ens-sequence-viewer-location-sequence': LocationSequenceElementProps;
-    }
-  }
-}
 
 export default LocationSequence;

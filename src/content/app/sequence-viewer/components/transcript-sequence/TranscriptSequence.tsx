@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  type DetailedHTMLProps,
-  type HTMLAttributes,
-  type CSSProperties
-} from 'react';
+import type { CSSProperties } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { useAppSelector } from 'src/store';
@@ -33,9 +29,7 @@ import useTranscriptSequence from './useTranscriptSequence';
 
 import TranscriptSequenceTypes from './TranscriptSequenceTypes';
 import { CircleLoader } from 'src/shared/components/loader';
-import './transcript-sequence';
-
-import type { TranscriptSequence as TranscriptSequenceElement } from './transcript-sequence';
+import Sequence from 'src/content/app/sequence-viewer/components/sequence/Sequence';
 
 import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
 import styles from './TranscriptSequence.module.css';
@@ -96,29 +90,11 @@ const TranscriptSequence = (props: Props) => {
           {transcriptId}
         </div>
       )}
-      {data && (
-        <ens-sequence-viewer-transcript-sequence
-          sequence={data.annotatedSequence}
-        />
+      {data && !isLoading && !isError && (
+        <Sequence sequence={data.annotatedSequence} />
       )}
     </div>
   );
 };
-
-type TranscriptSequenceElementProps = DetailedHTMLProps<
-  HTMLAttributes<TranscriptSequenceElement>,
-  TranscriptSequenceElement
-> & {
-  sequence: string;
-};
-
-declare module 'react/jsx-runtime' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'ens-sequence-viewer-transcript-sequence': TranscriptSequenceElementProps;
-    }
-  }
-}
 
 export default TranscriptSequence;

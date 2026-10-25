@@ -25,7 +25,7 @@ import noop from 'lodash/noop';
 
 type SequenceViewerLegendContextType = {
   template: string | null;
-  setTemplate: (template: string) => void;
+  setTemplate: (template: string | null) => void;
 };
 
 const defaultContext: SequenceViewerLegendContextType = {

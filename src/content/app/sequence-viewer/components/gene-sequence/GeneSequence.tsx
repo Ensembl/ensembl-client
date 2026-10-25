@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  use,
-  useCallback,
-  type DetailedHTMLProps,
-  type HTMLAttributes,
-  type CSSProperties
-} from 'react';
+import type { CSSProperties } from 'react';
 
 import { useAppSelector } from 'src/store';
 
@@ -30,13 +24,9 @@ import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/setti
 
 import useGeneSequence from './useGeneSequence';
 
-import { SequenceViewerLegendContext } from 'src/content/app/sequence-viewer/contexts/SequenceViewerLegendContext';
-
-import './gene-sequence';
+import Sequence from 'src/content/app/sequence-viewer/components/sequence/Sequence';
 
 import { CircleLoader } from 'src/shared/components/loader';
-
-import type { GeneSequence as GeneSequenceElement } from './gene-sequence';
 
 import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
 
@@ -63,16 +53,6 @@ const GeneSequence = (props: Props) => {
     geneId,
     settings: sequenceSettings
   });
-
-  const { setTemplate: setLegendTemplate } = use(SequenceViewerLegendContext);
-
-  const onLegend = useCallback(
-    (event: CustomEvent<{ template: string }>) => {
-      const template = event.detail.template;
-      setLegendTemplate(template);
-    },
-    [setLegendTemplate]
-  );
 
   if (isLoading) {
     return (
@@ -103,28 +83,9 @@ const GeneSequence = (props: Props) => {
   return (
     <div className={commonStyles.main} style={styles}>
       Gene: {geneNameAndId}
-      <ens-sequence-viewer-gene-sequence
-        onreport-legend={onLegend}
-        sequence={annotatedSequence}
-      />
+      <Sequence sequence={annotatedSequence} />
     </div>
   );
 };
-
-type GeneSequenceElementProps = DetailedHTMLProps<
-  HTMLAttributes<GeneSequenceElement>,
-  GeneSequenceElement
-> & {
-  sequence: string;
-};
-
-declare module 'react/jsx-runtime' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'ens-sequence-viewer-gene-sequence': GeneSequenceElementProps;
-    }
-  }
-}
 
 export default GeneSequence;
