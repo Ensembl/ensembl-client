@@ -1,3 +1,10 @@
+.container {
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
 /*
 topPanel class copy-pasted from BrowserInterstitial component
 */
@@ -29,6 +36,8 @@ search form classes copy-pasted from FeatureSearchForm component
 
 .results {
   padding: 40px var(--global-padding-left);
+  height: 100%;
+  overflow-y: auto;
 }
 
 .results section + section {
@@ -46,4 +55,23 @@ search form classes copy-pasted from FeatureSearchForm component
   margin-top: 40px;
   padding-left: var(--global-padding-left);
   padding-bottom: var(--global-padding-bottom);
+}
+
+
+/* search results */
+
+.searchResultsSection {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32px;
+  row-gap: 12px;
+}
+
+.searchResultsSectionHeading {
+  font-size: 14px;
+}
+
+.noSearchResults {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
 }

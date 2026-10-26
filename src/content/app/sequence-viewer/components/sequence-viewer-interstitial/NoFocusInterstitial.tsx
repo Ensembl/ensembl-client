@@ -35,6 +35,12 @@ import {
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import { CircleLoader } from 'src/shared/components/loader';
+import GeneName from 'src/shared/components/gene-name/GeneName';
+
+import type {
+  GeneSearchMatch,
+  TranscriptSearchMatch
+} from 'src/shared/types/search-api/search-match';
 
 import styles from './NoFocusInterstitial.module.css';
 
@@ -97,7 +103,7 @@ const NoFocusInterstitial = () => {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <div className={styles.topPanel}>
         <form className={styles.searchForm} onSubmit={handleSubmit}>
           <ShadedInput
@@ -124,40 +130,37 @@ const NoFocusInterstitial = () => {
             <CircleLoader size="small" />
           ) : (
             <>
-              <section>
-                <h2>Gene matches</h2>
+              <section className={styles.searchResultsSection}>
+                <div className={styles.searchResultsSectionHeading}>
+                  Gene search results
+                </div>
                 {currentGeneSearchResults?.matches.length ? (
-                  <ul>
-                    {currentGeneSearchResults.matches.map((match, index) => (
-                      <li key={'stable_id' in match ? match.stable_id : index}>
-                        {'stable_id' in match
-                          ? `${match.stable_id}${match.symbol ? ` (${match.symbol})` : ''}`
-                          : null}
-                      </li>
+                  <>
+                    {currentGeneSearchResults.matches.map((match) => (
+                      <GeneLink key={match.stable_id} searchMatch={match} />
                     ))}
-                  </ul>
+                  </>
                 ) : (
-                  <p>No gene matches</p>
+                  <div className={styles.noSearchResults}>No gene matches</div>
                 )}
               </section>
-              <section>
-                <h2>Transcript matches</h2>
+              <section className={styles.searchResultsSection}>
+                <div className={styles.searchResultsSectionHeading}>
+                  Transcript search results
+                </div>
                 {currentTranscriptSearchResults?.matches.length ? (
-                  <ul>
-                    {currentTranscriptSearchResults.matches.map(
-                      (match, index) => (
-                        <li
-                          key={'stable_id' in match ? match.stable_id : index}
-                        >
-                          {'stable_id' in match
-                            ? `${match.stable_id}${match.symbol ? ` (${match.symbol})` : ''}`
-                            : null}
-                        </li>
-                      )
-                    )}
-                  </ul>
+                  <>
+                    {currentTranscriptSearchResults.matches.map((match) => (
+                      <TranscriptLink
+                        key={match.stable_id}
+                        searchMatch={match}
+                      />
+                    ))}
+                  </>
                 ) : (
-                  <p>No transcript matches</p>
+                  <div className={styles.noSearchResults}>
+                    No transcript matches
+                  </div>
                 )}
               </section>
             </>
@@ -216,6 +219,40 @@ const ExampleLinks = ({
   });
 
   return <div className={styles.exampleLinks}>{exampleLinks}</div>;
+};
+
+const GeneLink = ({ searchMatch }: { searchMatch: GeneSearchMatch }) => {
+  const focusIdForUrl = buildFocusIdForUrl({
+    type: 'gene',
+    objectId: searchMatch.unversioned_stable_id
+  });
+  const url = urlFor.sequenceViewer({
+    genomeId: searchMatch.genome_id,
+    focusObject: focusIdForUrl
+  });
+
+  return (
+    <Link to={url}>
+      <GeneName stable_id={searchMatch.stable_id} symbol={searchMatch.symbol} />
+    </Link>
+  );
+};
+
+const TranscriptLink = ({
+  searchMatch
+}: {
+  searchMatch: TranscriptSearchMatch;
+}) => {
+  const focusIdForUrl = buildFocusIdForUrl({
+    type: 'transcript',
+    objectId: searchMatch.unversioned_stable_id
+  });
+  const url = urlFor.sequenceViewer({
+    genomeId: searchMatch.genome_id,
+    focusObject: focusIdForUrl
+  });
+
+  return <Link to={url}>{searchMatch.stable_id}</Link>;
 };
 
 const isLocationLike = (input: string) => {
