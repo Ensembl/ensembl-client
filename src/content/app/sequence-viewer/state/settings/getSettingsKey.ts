@@ -46,7 +46,7 @@ export const getSequenceSettingsKey = (
   } else if (payload.type === 'transcript') {
     return getTranscriptSettingsKey(payload);
   } else {
-    return '';
+    return getLocationSettingsKey(payload);
   }
 };
 
@@ -70,4 +70,14 @@ const getTranscriptSettingsKey = ({
   sequenceView: TranscriptSequenceView;
 }) => {
   return `transcript-${genomeId}-${transcriptId}-${sequenceView}`;
+};
+
+const getLocationSettingsKey = ({
+  genomeId,
+  location
+}: {
+  genomeId: string;
+  location: string;
+}) => {
+  return `location-${genomeId}-${location}`;
 };
