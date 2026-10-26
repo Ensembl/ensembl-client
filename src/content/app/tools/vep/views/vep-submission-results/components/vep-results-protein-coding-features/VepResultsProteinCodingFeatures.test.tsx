@@ -72,17 +72,30 @@ describe('VepResultsProteinCodingFeatures', () => {
       />
     );
 
-    expect(lines()).toEqual(['Protein position 335', 'Amino acids P']);
+    expect(lines()).toEqual([
+      'cDNA position —',
+      'CDS position —',
+      'Codons —',
+      'Protein position 335',
+      'Amino acids P'
+    ]);
   });
 
-  it('shows only the features a transcript has', () => {
+  it('shows a dash for each value a non-coding transcript lacks', () => {
     render(
       <VepResultsProteinCodingFeatures
-        features={{ ...none, cdna_position: '412' }}
+        features={{ ...none, exon: '1/5', cdna_position: '47' }}
       />
     );
 
-    expect(lines()).toEqual(['cDNA position 412']);
+    expect(lines()).toEqual([
+      'Exon 1/5',
+      'cDNA position 47',
+      'CDS position —',
+      'Codons —',
+      'Protein position —',
+      'Amino acids —'
+    ]);
   });
 
   it('shows the intron of an intronic variant', () => {
@@ -90,7 +103,14 @@ describe('VepResultsProteinCodingFeatures', () => {
       <VepResultsProteinCodingFeatures features={{ ...none, intron: '7/14' }} />
     );
 
-    expect(lines()).toEqual(['Intron 7/14']);
+    expect(lines()).toEqual([
+      'Intron 7/14',
+      'cDNA position —',
+      'CDS position —',
+      'Codons —',
+      'Protein position —',
+      'Amino acids —'
+    ]);
   });
 
   it('shows both when the variant crosses an exon boundary', () => {
@@ -100,14 +120,26 @@ describe('VepResultsProteinCodingFeatures', () => {
       />
     );
 
-    expect(lines()).toEqual(['Exon 4-5/13', 'Intron 4/12']);
+    expect(lines()).toEqual([
+      'Exon 4-5/13',
+      'Intron 4/12',
+      'cDNA position —',
+      'CDS position —',
+      'Codons —',
+      'Protein position —',
+      'Amino acids —'
+    ]);
   });
 
-  it('renders nothing when a transcript has none of them', () => {
-    const { container } = render(
-      <VepResultsProteinCodingFeatures features={none} />
-    );
+  it('leaves out exon and intron when the variant is in neither', () => {
+    render(<VepResultsProteinCodingFeatures features={none} />);
 
-    expect(container.innerHTML).toBe('');
+    expect(lines()).toEqual([
+      'cDNA position —',
+      'CDS position —',
+      'Codons —',
+      'Protein position —',
+      'Amino acids —'
+    ]);
   });
 });

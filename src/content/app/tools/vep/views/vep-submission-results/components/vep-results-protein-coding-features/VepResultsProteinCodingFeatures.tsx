@@ -37,19 +37,20 @@ const VepResultsProteinCodingFeatures = (props: Props) => {
     codons
   } = props.features;
 
-  const rows = [
+  // Exon and intron show only where the variant falls. The other lines always
+  // show, with a dash where VEP has no value.
+  const location = [
     ['Exon', exon],
-    ['Intron', intron],
+    ['Intron', intron]
+  ].filter((row): row is [string, string] => Boolean(row[1]));
+  const positions = [
     ['cDNA position', cdna_position],
     ['CDS position', cds_position],
     ['Codons', codons],
     ['Protein position', protein_position],
     ['Amino acids', amino_acids]
-  ].filter((row): row is [string, string] => Boolean(row[1]));
-
-  if (!rows.length) {
-    return null;
-  }
+  ].map(([label, value]) => [label, value || '—']);
+  const rows = [...location, ...positions];
 
   return (
     <dl className={styles.features}>
