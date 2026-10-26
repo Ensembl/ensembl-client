@@ -28,6 +28,7 @@ import {
 
 import {
   changeSidebarView,
+  closeSidebarModal,
   type SidebarView
 } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSlice';
 
@@ -47,6 +48,11 @@ const SequenceViewerSidebarTabs = () => {
   const isSidebarModalOpen = sidebarModalView !== null;
 
   const onViewChange = (view: SidebarView) => {
+    if (!genomeId) {
+      // this should not happen
+      return;
+    }
+    dispatch(closeSidebarModal({ genomeId }));
     dispatch(
       changeSidebarView({
         view
