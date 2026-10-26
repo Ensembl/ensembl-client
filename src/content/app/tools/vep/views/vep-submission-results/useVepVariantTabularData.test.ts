@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { getTabularData, getRowKeys } from './useVepVariantTabularData';
+import {
+  getTabularData,
+  getRowKeys,
+  type ExpandedRegulatoryGroupPath
+} from './useVepVariantTabularData';
 
 import type {
   VepResultsResponse,
@@ -46,7 +50,8 @@ describe('getTabularData — multi-allele intergenic variants', () => {
   it('emits the variant cell once, spanning every allele row', () => {
     const rows = getTabularData({
       variant: intergenicVariant(['C', 'A', 'G']),
-      expandedTranscriptPaths: []
+      expandedTranscriptPaths: [],
+      expandedRegulatoryGroupPaths: []
     });
 
     expect(rows).toHaveLength(3);
@@ -70,7 +75,8 @@ describe('getTabularData — multi-allele intergenic variants', () => {
   it('still emits the variant cell for a single-allele intergenic variant', () => {
     const rows = getTabularData({
       variant: intergenicVariant(['C']),
-      expandedTranscriptPaths: []
+      expandedTranscriptPaths: [],
+      expandedRegulatoryGroupPaths: []
     });
 
     expect(rows).toHaveLength(1);
@@ -135,7 +141,8 @@ describe('getTabularData — regulatory consequences', () => {
       variant: variantWith({
         T: [intergenic, regulatory('ENSR1_D37Q', 'enhancer')]
       }),
-      expandedTranscriptPaths: []
+      expandedTranscriptPaths: [],
+      expandedRegulatoryGroupPaths: []
     });
 
     expect(rowKinds(rows)).toEqual(['regulatory', null]);
@@ -159,7 +166,8 @@ describe('getTabularData — regulatory consequences', () => {
           transcript('ENST2', 'ENSG2')
         ]
       }),
-      expandedTranscriptPaths: []
+      expandedTranscriptPaths: [],
+      expandedRegulatoryGroupPaths: []
     });
 
     expect(rowKinds(rows)).toEqual([
@@ -184,7 +192,8 @@ describe('getTabularData — regulatory consequences', () => {
         T: [intergenic, regulatory('ENSR1_D37Q', 'enhancer')],
         A: [intergenic]
       }),
-      expandedTranscriptPaths: []
+      expandedTranscriptPaths: [],
+      expandedRegulatoryGroupPaths: []
     });
 
     expect(rowKinds(rows)).toEqual(['regulatory', null, null]);
@@ -192,6 +201,158 @@ describe('getTabularData — regulatory consequences', () => {
       rows.map((row) => row.alternativeAllele?.allele_sequence ?? null)
     ).toEqual(['T', null, 'A']);
     expect(rows.filter((row) => row.variant !== null)).toHaveLength(1);
+    expect(rows[0].variant?.rowspan).toBe(3);
+  });
+});
+
+const ABLATION = ['regulatory_region_ablation', 'regulatory_region_variant'];
+const TFBS = ['TFBS_ablation', 'TF_binding_site_variant'];
+const ABLATION_KEY = ABLATION.join('&');
+
+const regulatoryWith = (
+  stable_id: string,
+  consequences: string[]
+): PredictedRegulatoryConsequence => ({
+  feature_type: 'regulatory',
+  stable_id,
+  biotype: null,
+  consequences
+});
+
+// The fixture interleaves five ablation features with two TFBS features.
+const structuralAllele = (): PredictedMolecularConsequence[] => [
+  transcript('ENST1', 'ENSG1'),
+  regulatoryWith('ENSR1', ABLATION),
+  regulatoryWith('ENSM1', TFBS),
+  regulatoryWith('ENSR2', ABLATION),
+  intergenic,
+  regulatoryWith('ENSM2', TFBS),
+  regulatoryWith('ENSR3', ABLATION),
+  regulatoryWith('ENSR4', ABLATION),
+  regulatoryWith('ENSR5', ABLATION)
+];
+
+const tabulate = (
+  variant: Variant,
+  expandedRegulatoryGroupPaths: ExpandedRegulatoryGroupPath[] = []
+) =>
+  getTabularData({
+    variant,
+    expandedTranscriptPaths: [],
+    expandedRegulatoryGroupPaths
+  });
+
+const featureIds = (rows: ReturnType<typeof getTabularData>) =>
+  rows.map((row) =>
+    row.consequence.feature_type === null
+      ? 'intergenic'
+      : row.consequence.stable_id
+  );
+
+const regulatoryFlags = (rows: ReturnType<typeof getTabularData>) =>
+  rows.flatMap(({ consequence }) =>
+    consequence.feature_type === 'regulatory'
+      ? [
+          [
+            consequence.stable_id,
+            consequence.groupSize,
+            consequence.isLastShownInGroup
+          ]
+        ]
+      : []
+  );
+
+describe('getTabularData — regulatory groups', () => {
+  it('shows the first three features of a collapsed group of more than three', () => {
+    const rows = tabulate(variantWith({ G: structuralAllele() }));
+
+    expect(featureIds(rows)).toEqual([
+      'ENST1',
+      'ENSR1',
+      'ENSR2',
+      'ENSR3',
+      'ENSM1',
+      'ENSM2',
+      'intergenic'
+    ]);
+    expect(regulatoryFlags(rows)).toEqual([
+      ['ENSR1', 5, false],
+      ['ENSR2', 5, false],
+      ['ENSR3', 5, true],
+      ['ENSM1', 2, false],
+      ['ENSM2', 2, true]
+    ]);
+    expect(rows[0].alternativeAllele?.rowspan).toBe(7);
+    expect(rows[0].variant?.rowspan).toBe(7);
+  });
+
+  it('shows every feature of an expanded group', () => {
+    const rows = tabulate(variantWith({ G: structuralAllele() }), [
+      { altAllele: 'G', groupKey: ABLATION_KEY }
+    ]);
+
+    expect(featureIds(rows)).toEqual([
+      'ENST1',
+      'ENSR1',
+      'ENSR2',
+      'ENSR3',
+      'ENSR4',
+      'ENSR5',
+      'ENSM1',
+      'ENSM2',
+      'intergenic'
+    ]);
+    expect(regulatoryFlags(rows).slice(0, 5)).toEqual([
+      ['ENSR1', 5, false],
+      ['ENSR2', 5, false],
+      ['ENSR3', 5, false],
+      ['ENSR4', 5, false],
+      ['ENSR5', 5, true]
+    ]);
+    expect(rows[0].alternativeAllele?.rowspan).toBe(9);
+    expect(rows[0].variant?.rowspan).toBe(9);
+  });
+
+  it("expands one allele's group without expanding the other allele's", () => {
+    const rows = tabulate(
+      variantWith({ G: structuralAllele(), T: structuralAllele() }),
+      [{ altAllele: 'T', groupKey: ABLATION_KEY }]
+    );
+    const alleleRowspans = rows.flatMap((row) =>
+      row.alternativeAllele
+        ? [
+            [
+              row.alternativeAllele.allele_sequence,
+              row.alternativeAllele.rowspan
+            ]
+          ]
+        : []
+    );
+
+    expect(rows).toHaveLength(16);
+    expect(alleleRowspans).toEqual([
+      ['G', 7],
+      ['T', 9]
+    ]);
+    expect(rows[0].variant?.rowspan).toBe(16);
+  });
+
+  it('shows every feature of a group of three', () => {
+    const rows = tabulate(
+      variantWith({
+        G: [
+          regulatoryWith('ENSR1', ABLATION),
+          regulatoryWith('ENSR2', ABLATION),
+          regulatoryWith('ENSR3', ABLATION)
+        ]
+      })
+    );
+
+    expect(regulatoryFlags(rows)).toEqual([
+      ['ENSR1', 3, false],
+      ['ENSR2', 3, false],
+      ['ENSR3', 3, true]
+    ]);
     expect(rows[0].variant?.rowspan).toBe(3);
   });
 });
@@ -206,10 +367,15 @@ describe('getRowKeys', () => {
         regulatory('ENSR1_94XXBC', 'enhancer')
       ]
     });
-    const collapsed = getTabularData({ variant, expandedTranscriptPaths: [] });
+    const collapsed = getTabularData({
+      variant,
+      expandedTranscriptPaths: [],
+      expandedRegulatoryGroupPaths: []
+    });
     const expanded = getTabularData({
       variant,
-      expandedTranscriptPaths: [{ altAllele: 'G', geneId: 'ENSG1' }]
+      expandedTranscriptPaths: [{ altAllele: 'G', geneId: 'ENSG1' }],
+      expandedRegulatoryGroupPaths: []
     });
     const enhancerKey = (rows: ReturnType<typeof getTabularData>) =>
       getRowKeys(rows)[
@@ -236,10 +402,15 @@ describe('getRowKeys', () => {
         transcript('ENST_SHARED', 'GENE_B')
       ]
     });
-    const collapsed = getTabularData({ variant, expandedTranscriptPaths: [] });
+    const collapsed = getTabularData({
+      variant,
+      expandedTranscriptPaths: [],
+      expandedRegulatoryGroupPaths: []
+    });
     const expanded = getTabularData({
       variant,
-      expandedTranscriptPaths: [{ altAllele: 'G', geneId: 'GENE_A' }]
+      expandedTranscriptPaths: [{ altAllele: 'G', geneId: 'GENE_A' }],
+      expandedRegulatoryGroupPaths: []
     });
     const geneBKey = (rows: ReturnType<typeof getTabularData>) =>
       getRowKeys(rows)[
@@ -255,6 +426,25 @@ describe('getRowKeys', () => {
     expect(geneBKey(expanded)).toBe(geneBKey(collapsed));
   });
 
+  it("keeps each shown row's key when a regulatory group expands or collapses", () => {
+    const variant = variantWith({ G: structuralAllele() });
+    const collapsed = tabulate(variant);
+    const expanded = tabulate(variant, [
+      { altAllele: 'G', groupKey: ABLATION_KEY }
+    ]);
+    const keysById = (rows: ReturnType<typeof getTabularData>) => {
+      const keys = getRowKeys(rows);
+      return new Map(featureIds(rows).map((id, index) => [id, keys[index]]));
+    };
+    const collapsedKeys = keysById(collapsed);
+    const expandedKeys = keysById(expanded);
+
+    for (const [id, key] of collapsedKeys) {
+      expect(expandedKeys.get(id)).toBe(key);
+    }
+    expect(new Set(getRowKeys(expanded)).size).toBe(expanded.length);
+  });
+
   it('gives every row its own key, even a feature listed twice', () => {
     const rows = getTabularData({
       variant: variantWith({
@@ -265,7 +455,8 @@ describe('getRowKeys', () => {
         ],
         A: [intergenic]
       }),
-      expandedTranscriptPaths: []
+      expandedTranscriptPaths: [],
+      expandedRegulatoryGroupPaths: []
     });
 
     expect(rows).toHaveLength(4);
