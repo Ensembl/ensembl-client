@@ -27,6 +27,7 @@ import {
 } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSelectors';
 
 import {
+  openSidebar,
   changeSidebarView,
   closeSidebarModal,
   type SidebarView
@@ -52,7 +53,13 @@ const SequenceViewerSidebarTabs = () => {
       // this should not happen
       return;
     }
-    dispatch(closeSidebarModal({ genomeId }));
+    if (!isSidebarOpen) {
+      dispatch(openSidebar());
+    }
+    if (isSidebarModalOpen) {
+      dispatch(closeSidebarModal({ genomeId }));
+    }
+
     dispatch(
       changeSidebarView({
         view
@@ -71,7 +78,7 @@ const SequenceViewerSidebarTabs = () => {
   const isLegendTabActive =
     isLegendTabSelected && isSidebarOpen && !isSidebarModalOpen;
   const legendTabClasses = classNames(styles.tab, {
-    [styles.activeTab]: isLegendTabSelected
+    [styles.activeTab]: isLegendTabActive
   });
 
   return (
