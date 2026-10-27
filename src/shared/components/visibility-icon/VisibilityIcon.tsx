@@ -55,6 +55,7 @@ export const VisibilityIcon = (props: VisibilityIconProps) => {
       status={imageButtonStatus}
       image={eyeIcon}
       description={props.description}
+      aria-label={props.description}
       className={elementClasses}
       onClick={props.onClick}
     />
