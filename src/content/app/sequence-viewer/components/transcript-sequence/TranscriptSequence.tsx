@@ -17,11 +17,9 @@
 import type { CSSProperties } from 'react';
 import { useSearchParams } from 'react-router';
 
-import { useAppSelector } from 'src/store';
-
 import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
 
-import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+import useTranscriptSequenceSettings from 'src/content/app/sequence-viewer/hooks/useTranscriptSequenceSettings';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
@@ -49,20 +47,28 @@ const TranscriptSequence = (props: Props) => {
   const transcriptView =
     getTranscriptSequenceViewFromSearchParams(searchParams);
 
-  const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, {
-      type: 'transcript',
-      genomeId: genomeId ?? '',
-      transcriptId: transcriptId ?? '',
-      sequenceView: transcriptView
-    })
-  );
+  const {
+    settings: sequenceSettings,
+    isLoading: isLoadingSettings,
+    isError: isSettingsError
+  } = useTranscriptSequenceSettings({
+    genomeId,
+    transcriptId,
+    sequenceView: transcriptView
+  });
 
-  const { data, isLoading, isError } = useTranscriptSequence({
+  const {
+    data,
+    isLoading: isLoadingSequence,
+    isError: isSequenceError
+  } = useTranscriptSequence({
     genomeId,
     transcriptId,
     settings: sequenceSettings
   });
+  const isLoading =
+    isLoadingSettings || (!isSettingsError && isLoadingSequence);
+  const isError = isSettingsError || (!isLoadingSettings && isSequenceError);
 
   const transcriptEnd = data?.transcript.slice.location.end ?? 1;
   const formattedTranscriptEndString = formatNumber(transcriptEnd);

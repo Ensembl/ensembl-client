@@ -16,11 +16,9 @@
 
 import type { CSSProperties } from 'react';
 
-import { useAppSelector } from 'src/store';
-
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+import useGeneSequenceSettings from 'src/content/app/sequence-viewer/hooks/useGeneSequenceSettings';
 
 import useGeneSequence from './useGeneSequence';
 
@@ -40,19 +38,24 @@ type Props = {
 
 const GeneSequence = (props: Props) => {
   const { genomeId, geneId } = props;
-  const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, {
-      type: 'gene',
-      genomeId: genomeId ?? '',
-      geneId: geneId ?? ''
-    })
-  );
+  const {
+    settings: sequenceSettings,
+    isLoading: isLoadingSettings,
+    isError: isSettingsError
+  } = useGeneSequenceSettings({ genomeId, geneId });
 
-  const { data, isLoading, isError } = useGeneSequence({
+  const {
+    data,
+    isLoading: isLoadingSequence,
+    isError: isSequenceError
+  } = useGeneSequence({
     genomeId,
     geneId,
     settings: sequenceSettings
   });
+  const isLoading =
+    isLoadingSettings || (!isSettingsError && isLoadingSequence);
+  const isError = isSettingsError || (!isLoadingSettings && isSequenceError);
 
   if (isLoading) {
     return (

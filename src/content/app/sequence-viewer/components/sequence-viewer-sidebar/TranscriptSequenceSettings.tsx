@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
@@ -25,9 +25,7 @@ import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSeque
 
 import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
 import {
-  setInitialSequenceSettings,
   updateSequenceSettings,
-  createInitialTranscriptSettings,
   type SequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 import { useTranscriptSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
@@ -55,7 +53,7 @@ const TranscriptSequenceSetttings = () => {
     })
   );
 
-  const { data } = useTranscriptSequenceOptionsQuery({
+  const { currentData } = useTranscriptSequenceOptionsQuery({
     genomeId: genomeId ?? '',
     transcriptId: transcriptId ?? '',
     sequenceType: transcriptView
@@ -81,45 +79,19 @@ const TranscriptSequenceSetttings = () => {
     [dispatch, genomeId, transcriptId, transcriptView]
   );
 
-  useEffect(() => {
-    if (!data || sequenceSettings) {
-      return;
-    }
-
-    const initialSettings = createInitialTranscriptSettings({
-      transcriptId: transcriptId as string,
-      sequenceView: transcriptView,
-      payload: data
-    });
-
-    dispatch(
-      setInitialSequenceSettings({
-        genomeId: genomeId as string,
-        ...initialSettings
-      })
-    );
-  }, [
-    dispatch,
-    genomeId,
-    data,
-    transcriptId,
-    transcriptView,
-    sequenceSettings
-  ]);
-
   return (
     <div>
-      {data && sequenceSettings?.options && (
+      {currentData && sequenceSettings?.options && (
         <SequenceOptionsSections
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
-          sections={data.sections}
+          sections={currentData.sections}
         />
       )}
 
-      {data?.flanking && sequenceSettings?.options && (
+      {currentData?.flanking && sequenceSettings?.options && (
         <FlankingSequences
-          flanking={data.flanking}
+          flanking={currentData.flanking}
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
         />

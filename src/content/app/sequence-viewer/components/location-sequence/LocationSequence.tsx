@@ -16,11 +16,9 @@
 
 import type { CSSProperties } from 'react';
 
-import { useAppSelector } from 'src/store';
-
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+import useLocationSequenceSettings from 'src/content/app/sequence-viewer/hooks/useLocationSequenceSettings';
 
 import useLocationSequence from './useLocationSequence';
 
@@ -37,19 +35,24 @@ type Props = {
 
 const LocationSequence = (props: Props) => {
   const { genomeId, location } = props;
-  const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, {
-      type: 'location',
-      genomeId: genomeId ?? '',
-      location
-    })
-  );
+  const {
+    settings: sequenceSettings,
+    isLoading: isLoadingSettings,
+    isError: isSettingsError
+  } = useLocationSequenceSettings({ genomeId, location });
 
-  const { data, isLoading, isError } = useLocationSequence({
+  const {
+    data,
+    isLoading: isLoadingSequence,
+    isError: isSequenceError
+  } = useLocationSequence({
     genomeId,
     location,
     settings: sequenceSettings
   });
+  const isLoading =
+    isLoadingSettings || (!isSettingsError && isLoadingSequence);
+  const isError = isSettingsError || (!isLoadingSettings && isSequenceError);
 
   if (isLoading) {
     return (
