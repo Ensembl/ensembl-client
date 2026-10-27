@@ -23,20 +23,36 @@ import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSeque
 import { getIsSidebarOpen } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSelectors';
 import { toggleSidebar } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSlice';
 
+import { SequenceViewerIdsContextProvider } from './contexts/SequenceViewerIdsContext';
+import { SequenceViewerLegendContextProvider } from './contexts/SequenceViewerLegendContext';
+
 import SequenceViewerAppBar from './components/sequence-viewer-app-bar/SequenceViewerAppBar';
 import SequenceViewerSidebar, {
   type View as SidebarView
 } from './components/sequence-viewer-sidebar/SequenceViewerSidebar';
-import { SequenceViewerIdsContextProvider } from './contexts/SequenceViewerIdsContext';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import GeneSequence from './components/gene-sequence/GeneSequence';
 import TranscriptSequence from './components/transcript-sequence/TranscriptSequence';
 import LocationSequence from './components/location-sequence/LocationSequence';
+import SequenceViewerSidebarTabs from './components/sequence-viewer-sidebar-tabs/SequenceViewerSidebarTabs';
 import SidebarToolstrip from './components/sequence-viewer-sidebar/sidebar-toolstrip/SequenceViewerSidebarToolstrip';
+import SequenceViewerInterstitial from './components/sequence-viewer-interstitial/SequenceViewerInterstitial';
 
 import styles from './SequenceViewer.module.css';
 
+// Wraps the sequence viewer in appropriate contexts
+const WrappedSequenceViewer = () => {
+  return (
+    <SequenceViewerIdsContextProvider>
+      <SequenceViewerLegendContextProvider>
+        <SequenceViewer />
+      </SequenceViewerLegendContextProvider>
+    </SequenceViewerIdsContextProvider>
+  );
+};
+
 const SequenceViewer = () => {
+  const { genomeIdInUrl, focusObjectIdInUrl } = useSequenceViewerIds();
   const isSidebarOpen = useAppSelector(getIsSidebarOpen);
   const dispatch = useAppDispatch();
 
@@ -44,27 +60,41 @@ const SequenceViewer = () => {
     dispatch(toggleSidebar());
   }, [dispatch]);
 
-  return (
-    <SequenceViewerIdsContextProvider>
+  // if no genome id in url, and no active genome id, return an interstitial
+  // with instructions for selecting a genome
+  // if no focus id in url, return an interstitial that allows user to pick a location
+  // or a gene / transcript
+  if (!genomeIdInUrl || !focusObjectIdInUrl) {
+    return (
       <div className={styles.container}>
         <SequenceViewerAppBar />
-        <StandardAppLayout
-          mainContent={<MainContent />}
-          sidebarContent={<SidebarContent />}
-          isSidebarOpen={isSidebarOpen}
-          topbarContent={null}
-          sidebarNavigation={null}
-          sidebarToolstripContent={<SidebarToolstrip />}
-          onSidebarToggle={onSidebarToggle}
-          viewportWidth={1800}
-        />
+        <SequenceViewerInterstitial genomeId={genomeIdInUrl} />
       </div>
-    </SequenceViewerIdsContextProvider>
+    );
+  }
+
+  // TODO:
+  // if genome id or transcript / gene id is invalid, display an error screen
+
+  return (
+    <div className={styles.container}>
+      <SequenceViewerAppBar />
+      <StandardAppLayout
+        mainContent={<MainContent />}
+        sidebarContent={<SidebarContent />}
+        isSidebarOpen={isSidebarOpen}
+        topbarContent={<div />}
+        sidebarNavigation={<SequenceViewerSidebarTabs />}
+        sidebarToolstripContent={<SidebarToolstrip />}
+        onSidebarToggle={onSidebarToggle}
+        viewportWidth={1800}
+      />
+    </div>
   );
 };
 
 const MainContent = () => {
-  const { genomeId, isFetchingGenomeId, parsedFocusObjectId, parsedLocation } =
+  const { genomeId, isFetchingGenomeId, parsedFocusObjectId } =
     useSequenceViewerIds();
 
   if (!genomeId) {
@@ -93,13 +123,18 @@ const MainContent = () => {
   }
 
   // is there a location
-  if (parsedLocation) {
-    return <LocationSequence />;
+  if (parsedFocusObjectId?.type === 'location') {
+    return (
+      <LocationSequence
+        genomeId={genomeId}
+        location={parsedFocusObjectId.objectId}
+      />
+    );
   }
 };
 
 const SidebarContent = () => {
-  const { parsedFocusObjectId, parsedLocation } = useSequenceViewerIds();
+  const { parsedFocusObjectId } = useSequenceViewerIds();
 
   let view: SidebarView | null = null;
 
@@ -107,7 +142,7 @@ const SidebarContent = () => {
     view = 'gene';
   } else if (parsedFocusObjectId?.type === 'transcript') {
     view = 'transcript';
-  } else if (parsedLocation) {
+  } else if (parsedFocusObjectId?.type === 'location') {
     view = 'location';
   }
 
@@ -118,4 +153,4 @@ const SidebarContent = () => {
   return <SequenceViewerSidebar view={view} />;
 };
 
-export default SequenceViewer;
+export default WrappedSequenceViewer;

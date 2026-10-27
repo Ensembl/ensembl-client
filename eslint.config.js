@@ -44,7 +44,7 @@ module.exports = defineConfig(
       '@typescript-eslint/explicit-module-boundary-types': 0,
       '@typescript-eslint/no-explicit-any': 0,
       '@typescript-eslint/no-use-before-define': 0,
-      '@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used' }],
+      '@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used', ignoreRestSiblings: true }],
       'react/display-name': 0,
       'react/prop-types': 0,
       'react/no-unescaped-entities': 0,

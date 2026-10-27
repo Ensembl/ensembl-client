@@ -15,9 +15,29 @@
  */
 
 import type { SearchMeta } from './search-meta';
-import type { SearchMatch } from './search-match';
+import type {
+  SearchMatch,
+  GeneSearchMatch,
+  TranscriptSearchMatch,
+  VariantSearchMatch
+} from './search-match';
 
 export type SearchResults = {
   meta: SearchMeta;
   matches: SearchMatch[];
+};
+
+export type GeneSearchResults = {
+  meta: SearchMeta;
+  matches: GeneSearchMatch[];
+};
+
+export type TranscriptSearchResults = {
+  meta: SearchMeta;
+  matches: TranscriptSearchMatch[];
+};
+
+export type VariantSearchResults = {
+  meta: SearchMeta;
+  matches: VariantSearchMatch[];
 };

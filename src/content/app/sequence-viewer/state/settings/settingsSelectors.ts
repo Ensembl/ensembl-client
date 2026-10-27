@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
+import { getSequenceSettingsKey } from './getSettingsKey';
+
 import type { RootState } from 'src/store';
 
-export const getSequenceSettings = (state: RootState, genomeId: string) => {
-  return state.sequenceViewer.settings[genomeId] ?? null;
+type SequenceKeyGetterParams = Parameters<typeof getSequenceSettingsKey>[0];
+
+export const getSequenceSettings = (
+  state: RootState,
+  params: SequenceKeyGetterParams
+) => {
+  const key = getSequenceSettingsKey(params);
+
+  return state.sequenceViewer.settings[key] ?? null;
 };

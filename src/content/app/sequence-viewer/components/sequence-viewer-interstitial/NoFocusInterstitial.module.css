@@ -1,0 +1,77 @@
+.container {
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+/*
+topPanel class copy-pasted from BrowserInterstitial component
+*/
+.topPanel {
+  background-color: var(--color-light-grey);
+  min-height: 235px;
+  padding: 40px;
+  padding-left: var(--global-padding-left);
+  box-shadow: 0 3px 5px var(--global-box-shadow-color);
+}
+
+/*
+search form classes copy-pasted from FeatureSearchForm component
+*/
+.searchForm {
+  display: flex;
+  gap: 46px;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.searchField {
+  flex: 0 0 485px;
+}
+
+.submit {
+  flex: 0 0 auto;
+}
+
+.results {
+  padding: 40px var(--global-padding-left);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.results section + section {
+  margin-top: 2rem;
+}
+
+.results h2 {
+  margin-bottom: 0.75rem;
+}
+
+.exampleLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 40px;
+  padding-left: var(--global-padding-left);
+  padding-bottom: var(--global-padding-bottom);
+}
+
+
+/* search results */
+
+.searchResultsSection {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32px;
+  row-gap: 12px;
+}
+
+.searchResultsSectionHeading {
+  font-size: 14px;
+}
+
+.noSearchResults {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}

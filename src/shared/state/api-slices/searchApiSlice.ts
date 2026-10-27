@@ -23,7 +23,11 @@ import {
   transcriptSearchQuery,
   type TranscriptSearchQueryResponse
 } from './queries/transcriptSearchQuery';
-import type { SearchResults } from 'src/shared/types/search-api/search-results';
+import type {
+  GeneSearchResults,
+  TranscriptSearchResults,
+  VariantSearchResults
+} from 'src/shared/types/search-api/search-results';
 
 type SearchParams = {
   genome_ids: string[];
@@ -34,7 +38,7 @@ type SearchParams = {
 
 const searchApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    searchGenes: builder.query<SearchResults, SearchParams>({
+    searchGenes: builder.query<GeneSearchResults, SearchParams>({
       query: (params) => {
         return {
           url: `${config.searchApiBaseUrl}/genes`,
@@ -43,7 +47,7 @@ const searchApiSlice = restApiSlice.injectEndpoints({
         };
       }
     }),
-    searchVariants: builder.query<SearchResults, SearchParams>({
+    searchVariants: builder.query<VariantSearchResults, SearchParams>({
       query: (params) => {
         return {
           url: `${config.searchApiBaseUrl}/variants`,
@@ -57,7 +61,7 @@ const searchApiSlice = restApiSlice.injectEndpoints({
 
 const graphqlSearchApiSlice = graphqlApiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    searchTranscripts: builder.query<SearchResults, SearchParams>({
+    searchTranscripts: builder.query<TranscriptSearchResults, SearchParams>({
       query: (params) => ({
         url: config.coreApiUrl,
         body: transcriptSearchQuery,

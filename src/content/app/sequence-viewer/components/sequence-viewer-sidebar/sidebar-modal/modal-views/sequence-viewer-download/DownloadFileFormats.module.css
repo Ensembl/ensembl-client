@@ -1,0 +1,11 @@
+.options {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.4rem;
+}
+
+.downloadButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}

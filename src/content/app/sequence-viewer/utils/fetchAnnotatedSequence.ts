@@ -20,6 +20,7 @@ import { fromFetch } from 'rxjs/fetch';
 import config from 'config';
 
 import type { AnnotatedSequenceRequestPayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
+import type { SequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 
 // Using rxjs here solely for its easy retry functionality
 // Not using RTK-query, because there probably isn't much value in caching the sequence in memory
@@ -49,4 +50,17 @@ export const fetchAnnotatedSequence = (
   );
 
   return firstValueFrom(data$);
+};
+
+export const prepareOptionsForPayload = (settings: SequenceSettings) => {
+  const options: AnnotatedSequenceRequestPayload['options'] = {};
+  if (Object.keys(settings.options)) {
+    for (const [key, value] of Object.entries(settings.options)) {
+      if (Array.isArray(value) && value.length === 0) {
+        continue;
+      }
+      options[key] = value as (typeof options)[typeof key];
+    }
+  }
+  return options;
 };

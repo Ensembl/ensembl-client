@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { Link } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
@@ -23,9 +23,7 @@ import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSeque
 import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
 
 import {
-  setInitialSequenceSettings,
   updateSequenceSettings,
-  createInitialGeneSettings,
   type SequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 import { useGeneSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
@@ -44,7 +42,11 @@ const GeneSequenceSetttings = () => {
   const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
   const geneId = parsedFocusObjectId?.objectId;
   const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, genomeId ?? '')
+    getSequenceSettings(state, {
+      type: 'gene',
+      genomeId: genomeId ?? '',
+      geneId: geneId ?? ''
+    })
   );
   const dispatch = useAppDispatch();
 
@@ -76,24 +78,6 @@ const GeneSequenceSetttings = () => {
     },
     [dispatch, genomeId, geneId]
   );
-
-  useEffect(() => {
-    if (!currentData) {
-      return;
-    }
-
-    const initialSettings = createInitialGeneSettings({
-      geneId: geneId as string,
-      payload: currentData
-    });
-
-    dispatch(
-      setInitialSequenceSettings({
-        genomeId: genomeId as string,
-        settings: initialSettings
-      })
-    );
-  }, [dispatch, genomeId, currentData, geneId]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', rowGap: '0.6rem' }}>

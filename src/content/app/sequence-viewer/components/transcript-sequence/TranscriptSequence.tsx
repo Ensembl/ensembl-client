@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  type DetailedHTMLProps,
-  type HTMLAttributes,
-  type CSSProperties
-} from 'react';
+import type { CSSProperties } from 'react';
+import { useSearchParams } from 'react-router';
 
-import { useAppSelector } from 'src/store';
+import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
 
-import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+import useTranscriptSequenceSettings from 'src/content/app/sequence-viewer/hooks/useTranscriptSequenceSettings';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
@@ -30,9 +27,7 @@ import useTranscriptSequence from './useTranscriptSequence';
 
 import TranscriptSequenceTypes from './TranscriptSequenceTypes';
 import { CircleLoader } from 'src/shared/components/loader';
-import './transcript-sequence';
-
-import type { TranscriptSequence as TranscriptSequenceElement } from './transcript-sequence';
+import Sequence from 'src/content/app/sequence-viewer/components/sequence/Sequence';
 
 import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
 import styles from './TranscriptSequence.module.css';
@@ -47,20 +42,33 @@ type Props = {
 
 const TranscriptSequence = (props: Props) => {
   const { genomeId, transcriptId } = props;
-  const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, genomeId ?? '')
-  );
+  const [searchParams] = useSearchParams();
 
-  const sequenceView =
-    sequenceSettings?.type === 'transcript'
-      ? sequenceSettings.sequenceView
-      : '';
+  const transcriptView =
+    getTranscriptSequenceViewFromSearchParams(searchParams);
 
-  const { data, isLoading, isError } = useTranscriptSequence({
+  const {
+    settings: sequenceSettings,
+    isLoading: isLoadingSettings,
+    isError: isSettingsError
+  } = useTranscriptSequenceSettings({
+    genomeId,
+    transcriptId,
+    sequenceView: transcriptView
+  });
+
+  const {
+    data,
+    isLoading: isLoadingSequence,
+    isError: isSequenceError
+  } = useTranscriptSequence({
     genomeId,
     transcriptId,
     settings: sequenceSettings
   });
+  const isLoading =
+    isLoadingSettings || (!isSettingsError && isLoadingSequence);
+  const isError = isSettingsError || (!isLoadingSettings && isSequenceError);
 
   const transcriptEnd = data?.transcript.slice.location.end ?? 1;
   const formattedTranscriptEndString = formatNumber(transcriptEnd);
@@ -84,33 +92,15 @@ const TranscriptSequence = (props: Props) => {
 
       {isError && (
         <div>
-          There has been an error loading the {sequenceView} sequence of{' '}
+          There has been an error loading the {transcriptView} sequence of{' '}
           {transcriptId}
         </div>
       )}
-      {data && (
-        <ens-sequence-viewer-transcript-sequence
-          sequence={data.annotatedSequence}
-        />
+      {data && !isLoading && !isError && (
+        <Sequence sequence={data.annotatedSequence} />
       )}
     </div>
   );
 };
-
-type TranscriptSequenceElementProps = DetailedHTMLProps<
-  HTMLAttributes<TranscriptSequenceElement>,
-  TranscriptSequenceElement
-> & {
-  sequence: string;
-};
-
-declare module 'react/jsx-runtime' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'ens-sequence-viewer-transcript-sequence': TranscriptSequenceElementProps;
-    }
-  }
-}
 
 export default TranscriptSequence;

@@ -19,5 +19,8 @@ import type { RootState } from 'src/store';
 export const getIsSidebarOpen = (state: RootState) =>
   state.sequenceViewer.sidebar.isSidebarOpen ?? true;
 
+export const getSidebarView = (state: RootState) =>
+  state.sequenceViewer.sidebar.sidebarView;
+
 export const getSidebarModalView = (state: RootState, genomeId: string) =>
   state.sequenceViewer.sidebar.sidebarModalView[genomeId] ?? null;

@@ -249,7 +249,7 @@ export const SingleCheckboxOption = ({
   appliedSettings: AppliedSettings;
   onChange: (settings: AppliedSettings) => void;
 }) => {
-  const [isChecked, setIsChecked] = useState(option.checked);
+  const isChecked = Object.hasOwn(appliedSettings, option.id);
 
   const onChange = useCallback(
     (isChecked: boolean) => {
@@ -261,7 +261,6 @@ export const SingleCheckboxOption = ({
       }
 
       changeHandlerFromProps(newSettings);
-      setIsChecked(isChecked);
     },
     [changeHandlerFromProps, appliedSettings, option]
   );

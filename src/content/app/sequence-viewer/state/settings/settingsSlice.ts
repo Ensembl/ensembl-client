@@ -16,6 +16,8 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+import { getSequenceSettingsKey } from './getSettingsKey';
+
 import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
 import type { AnnotatedSequenceOptionsResponsePayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
@@ -26,7 +28,7 @@ export type SequenceOptionValue = string | number | boolean;
 
 export type LocationSequenceSettings = {
   type: 'location';
-  locationId: string;
+  location: string;
   options: Record<string, SequenceOptionValue | SequenceOptionValue[]>;
 };
 
@@ -49,13 +51,9 @@ export type SequenceSettings =
 // A map of genome id to sequence settings
 type SequenceSettingsState = Record<string, SequenceSettings>;
 
-export const createInitialGeneSettings = ({
-  geneId,
-  payload
-}: {
-  geneId: string;
-  payload: AnnotatedSequenceOptionsResponsePayload;
-}): GeneSequenceSettings => {
+const buildInitialOptions = (
+  payload: AnnotatedSequenceOptionsResponsePayload
+) => {
   const options: Record<string, SequenceOptionValue | SequenceOptionValue[]> =
     {};
 
@@ -79,14 +77,22 @@ export const createInitialGeneSettings = ({
     }
   }
 
+  return options;
+};
+
+export const createInitialGeneSettings = ({
+  geneId,
+  payload
+}: {
+  geneId: string;
+  payload: AnnotatedSequenceOptionsResponsePayload;
+}): GeneSequenceSettings => {
   return {
     type: 'gene',
     geneId,
-    options
+    options: buildInitialOptions(payload)
   };
 };
-
-// FIXME: move options-generating logic into its own function
 
 export const createInitialTranscriptSettings = ({
   transcriptId,
@@ -97,79 +103,29 @@ export const createInitialTranscriptSettings = ({
   sequenceView: TranscriptSequenceView;
   payload: AnnotatedSequenceOptionsResponsePayload;
 }): TranscriptSequenceSettings => {
-  const options: Record<string, SequenceOptionValue | SequenceOptionValue[]> =
-    {};
-
-  for (const section of payload.sections) {
-    for (const child of section.children) {
-      if (child.type === 'checkbox') {
-        if (child.checked) {
-          options[child.id] = child.value;
-        }
-      } else if (child.type === 'checkbox-group') {
-        const values = [];
-        for (const option of child.values) {
-          if (option.checked) {
-            values.push(option.value);
-          }
-        }
-        if (values.length) {
-          options[child.id] = values;
-        }
-      }
-    }
-  }
-
   return {
     type: 'transcript',
     transcriptId,
     sequenceView,
-    options
+    options: buildInitialOptions(payload)
   };
 };
 
 export const createInitialLocationSettings = ({
-  locationId,
-  options
+  location,
+  payload
 }: {
-  locationId: string;
-  options: LocationSequenceSettings['options'];
+  location: string;
+  payload: AnnotatedSequenceOptionsResponsePayload;
 }): LocationSequenceSettings => {
   return {
     type: 'location',
-    locationId,
-    options
+    location,
+    options: buildInitialOptions(payload)
   };
 };
 
 const initialState: SequenceSettingsState = {};
-
-type LocationSequenceOptionsUpdatePayload = {
-  type: 'location';
-  genomeId: string;
-  locationId: string;
-  options: LocationSequenceSettings['options'];
-};
-
-type GeneSequenceOptionsUpdatePayload = {
-  type: 'gene';
-  genomeId: string;
-  geneId: string;
-  options: GeneSequenceSettings['options'];
-};
-
-type TranscriptSequenceOptionsUpdatePayload = {
-  type: 'transcript';
-  genomeId: string;
-  transcriptId: string;
-  sequenceView: TranscriptSequenceView;
-  options: TranscriptSequenceSettings['options'];
-};
-
-type SequenceOptionsUpdatePayload =
-  | LocationSequenceOptionsUpdatePayload
-  | GeneSequenceOptionsUpdatePayload
-  | TranscriptSequenceOptionsUpdatePayload;
 
 const settingsSlice = createSlice({
   name: 'sequence-viewer-settings',
@@ -177,20 +133,29 @@ const settingsSlice = createSlice({
   reducers: {
     setInitialSequenceSettings(
       state,
-      action: PayloadAction<{
-        genomeId: string;
-        settings: SequenceSettings;
-      }>
+      action: PayloadAction<
+        {
+          genomeId: string;
+        } & SequenceSettings
+      >
     ) {
-      const { genomeId, settings } = action.payload;
-      state[genomeId] = settings;
+      const { payload } = action;
+      const key = getSequenceSettingsKey(action.payload);
+      const { genomeId: _genomeId, ...restSettings } = payload;
+      state[key] = restSettings;
     },
     updateSequenceSettings(
       state,
-      action: PayloadAction<SequenceOptionsUpdatePayload>
+      action: PayloadAction<
+        {
+          genomeId: string;
+        } & SequenceSettings
+      >
     ) {
-      const { genomeId, ...rest } = action.payload;
-      state[genomeId] = rest;
+      const { payload } = action;
+      const key = getSequenceSettingsKey(action.payload);
+      const { genomeId: _genomeId, ...restSettings } = payload;
+      state[key] = restSettings;
     }
   }
 });

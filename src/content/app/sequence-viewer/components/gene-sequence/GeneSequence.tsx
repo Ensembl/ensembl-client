@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-import {
-  type DetailedHTMLProps,
-  type HTMLAttributes,
-  type CSSProperties
-} from 'react';
-
-import { useAppSelector } from 'src/store';
+import type { CSSProperties } from 'react';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+import useGeneSequenceSettings from 'src/content/app/sequence-viewer/hooks/useGeneSequenceSettings';
 
 import useGeneSequence from './useGeneSequence';
 
-import './gene-sequence';
+import Sequence from 'src/content/app/sequence-viewer/components/sequence/Sequence';
 
 import { CircleLoader } from 'src/shared/components/loader';
-
-import type { GeneSequence as GeneSequenceElement } from './gene-sequence';
 
 import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
 
@@ -46,15 +38,24 @@ type Props = {
 
 const GeneSequence = (props: Props) => {
   const { genomeId, geneId } = props;
-  const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, genomeId ?? '')
-  );
+  const {
+    settings: sequenceSettings,
+    isLoading: isLoadingSettings,
+    isError: isSettingsError
+  } = useGeneSequenceSettings({ genomeId, geneId });
 
-  const { data, isLoading, isError } = useGeneSequence({
+  const {
+    data,
+    isLoading: isLoadingSequence,
+    isError: isSequenceError
+  } = useGeneSequence({
     genomeId,
     geneId,
     settings: sequenceSettings
   });
+  const isLoading =
+    isLoadingSettings || (!isSettingsError && isLoadingSequence);
+  const isError = isSettingsError || (!isLoadingSettings && isSequenceError);
 
   if (isLoading) {
     return (
@@ -85,25 +86,9 @@ const GeneSequence = (props: Props) => {
   return (
     <div className={commonStyles.main} style={styles}>
       Gene: {geneNameAndId}
-      <ens-sequence-viewer-gene-sequence sequence={annotatedSequence} />
+      <Sequence sequence={annotatedSequence} />
     </div>
   );
 };
-
-type GeneSequenceElementProps = DetailedHTMLProps<
-  HTMLAttributes<GeneSequenceElement>,
-  GeneSequenceElement
-> & {
-  sequence: string;
-};
-
-declare module 'react/jsx-runtime' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'ens-sequence-viewer-gene-sequence': GeneSequenceElementProps;
-    }
-  }
-}
 
 export default GeneSequence;

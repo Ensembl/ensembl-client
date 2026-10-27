@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { useAppSelector, useAppDispatch } from 'src/store';
+
+import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
 
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
 import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
 import {
-  setInitialSequenceSettings,
   updateSequenceSettings,
-  createInitialTranscriptSettings,
   type SequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 import { useTranscriptSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
@@ -35,34 +35,25 @@ import {
   FlankingSequences
 } from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
 
-import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
-
-const getTranscriptSequenceViewFromSearchParams = (
-  searchParams: URLSearchParams
-) => {
-  const transcriptView = searchParams.get('view');
-  const validViews = ['genomic', 'cdna', 'cds', 'protein'];
-
-  if (!transcriptView || !validViews.includes(transcriptView)) {
-    return 'genomic';
-  } else {
-    return transcriptView;
-  }
-};
-
 const TranscriptSequenceSetttings = () => {
   const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
   const transcriptId = parsedFocusObjectId?.objectId;
-  const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, genomeId ?? '')
-  );
   const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
   const transcriptView =
     getTranscriptSequenceViewFromSearchParams(searchParams);
 
-  const { data } = useTranscriptSequenceOptionsQuery({
+  const sequenceSettings = useAppSelector((state) =>
+    getSequenceSettings(state, {
+      type: 'transcript',
+      genomeId: genomeId ?? '',
+      transcriptId: transcriptId ?? '',
+      sequenceView: transcriptView
+    })
+  );
+
+  const { currentData } = useTranscriptSequenceOptionsQuery({
     genomeId: genomeId ?? '',
     transcriptId: transcriptId ?? '',
     sequenceType: transcriptView
@@ -80,7 +71,7 @@ const TranscriptSequenceSetttings = () => {
           type: 'transcript',
           genomeId,
           transcriptId,
-          sequenceView: transcriptView as TranscriptSequenceView,
+          sequenceView: transcriptView,
           options
         })
       );
@@ -88,38 +79,19 @@ const TranscriptSequenceSetttings = () => {
     [dispatch, genomeId, transcriptId, transcriptView]
   );
 
-  useEffect(() => {
-    if (!data) {
-      return;
-    }
-
-    const initialSettings = createInitialTranscriptSettings({
-      transcriptId: transcriptId as string,
-      sequenceView: transcriptView as TranscriptSequenceView,
-      payload: data
-    });
-
-    dispatch(
-      setInitialSequenceSettings({
-        genomeId: genomeId as string,
-        settings: initialSettings
-      })
-    );
-  }, [dispatch, genomeId, data, transcriptId, transcriptView]);
-
   return (
     <div>
-      {data && sequenceSettings?.options && (
+      {currentData && sequenceSettings?.options && (
         <SequenceOptionsSections
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
-          sections={data.sections}
+          sections={currentData.sections}
         />
       )}
 
-      {data?.flanking && sequenceSettings?.options && (
+      {currentData?.flanking && sequenceSettings?.options && (
         <FlankingSequences
-          flanking={data.flanking}
+          flanking={currentData.flanking}
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
         />

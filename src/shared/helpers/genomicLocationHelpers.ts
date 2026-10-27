@@ -37,12 +37,12 @@ export type GenomicLocation = {
   end: number;
 };
 
+export const locationRegex = /^(?<regionName>.+):(?<start>\d+)-(?<end>\d+)$/;
+
 export const getGenomicLocationFromString = (
   input: string
 ): GenomicLocation => {
   try {
-    const locationRegex = /^(?<regionName>.+):(?<start>\d+)-(?<end>\d+)$/;
-
     const result = locationRegex.exec(input);
 
     if (!result?.groups) {

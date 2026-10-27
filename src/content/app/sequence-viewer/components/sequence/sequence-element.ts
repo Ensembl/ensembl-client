@@ -33,7 +33,7 @@
  * during the initial rendering and subsequent scrolling.
  */
 
-const styles = `
+const staticStyles = `
   :host {
     font-family: var(--font-family-monospace);
   }
@@ -61,42 +61,29 @@ const styles = `
     text-align: right;
   }
 
-  .flank {
-    font-weight: var(--font-weight-light);
+  .protein-line {
+    margin-bottom: 5px;
   }
 
-  .exon {
-    background-color: cadetblue;
-  }
-
-  .intron {
-    background-color: rgba(0, 100, 0, 0.5);
-  }
-
-  .cds {
-    background-color: rebeccapurple;
-  }
-
-  .utr {
-    background-color: teal;
-  }
-
-  .mixed {
-    background-color: hotpink;
+  .protein {
+    white-space: pre;
   }
 `;
 
 const LINES_PER_CHUNK = 100;
 
-export class GeneSequence extends HTMLElement {
+export type LegendEventDetail = {
+  template: string | null;
+};
+
+export class Sequence extends HTMLElement {
   constructor() {
     super();
-    const shadow = this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' }); // add a shadow DOM
+  }
 
-    const styleSheet = new CSSStyleSheet();
-    styleSheet.replaceSync(styles);
-
-    shadow.adoptedStyleSheets = [styleSheet];
+  disconnectedCallback() {
+    this.#reportLegend(null);
   }
 
   set sequence(htmlTemplate: string) {
@@ -104,12 +91,38 @@ export class GeneSequence extends HTMLElement {
       htmlTemplate,
       'text/html'
     );
-    const templateElement = parsedTemplate.querySelector('template');
+    const sequenceTemplate =
+      parsedTemplate.querySelector<HTMLTemplateElement>('template#sequence');
+    const stylesTemplate =
+      parsedTemplate.querySelector<HTMLTemplateElement>('template#styles');
+    const legendTemplate =
+      parsedTemplate.querySelector<HTMLTemplateElement>('template#legend');
 
-    if (!templateElement) {
+    if (!sequenceTemplate || !stylesTemplate) {
       throw new Error('No template found in response!');
     }
 
+    this.#updateStyles(stylesTemplate);
+
+    this.#renderChunks(sequenceTemplate);
+
+    const legendTemplateForEvent = legendTemplate
+      ? legendTemplate.outerHTML + stylesTemplate.outerHTML
+      : null;
+
+    this.#reportLegend(legendTemplateForEvent);
+  }
+
+  #reportLegend(template: string | null) {
+    this.dispatchEvent(
+      new CustomEvent<LegendEventDetail>('report-legend', {
+        detail: { template },
+        bubbles: true
+      })
+    );
+  }
+
+  #renderChunks(sequenceTemplate: HTMLTemplateElement) {
     const groupedContent = document.createDocumentFragment();
     let linesInChunk: HTMLElement[] = [];
 
@@ -126,7 +139,7 @@ export class GeneSequence extends HTMLElement {
       linesInChunk = [];
     };
 
-    for (const node of Array.from(templateElement.content.childNodes)) {
+    for (const node of Array.from(sequenceTemplate.content.childNodes)) {
       if (node instanceof HTMLElement && node.classList.contains('line')) {
         linesInChunk.push(node);
         if (linesInChunk.length === LINES_PER_CHUNK) {
@@ -147,6 +160,24 @@ export class GeneSequence extends HTMLElement {
     const resultContainer = this.shadowRoot;
     resultContainer!.replaceChildren(groupedContent);
   }
+
+  #updateStyles(stylesTemplate: HTMLTemplateElement) {
+    const dynamicStylesNode = stylesTemplate.content.querySelector('style');
+
+    const staticStyleSheet = new CSSStyleSheet();
+    staticStyleSheet.replaceSync(staticStyles);
+
+    const styleSheets: CSSStyleSheet[] = [staticStyleSheet];
+
+    if (dynamicStylesNode) {
+      const dynamicStyles = dynamicStylesNode.textContent;
+      const dynamicStyleSheet = new CSSStyleSheet();
+      dynamicStyleSheet.replaceSync(dynamicStyles);
+      styleSheets.push(dynamicStyleSheet);
+    }
+
+    this.shadowRoot!.adoptedStyleSheets = styleSheets;
+  }
 }
 
-window.customElements.define('ens-sequence-viewer-gene-sequence', GeneSequence);
+window.customElements.define('ens-sequence-viewer-sequence', Sequence);
