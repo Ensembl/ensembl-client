@@ -386,3 +386,5 @@ SetupReview:
           $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" &&
           $CI_COMMIT_BRANCH != "main"
       when: always
+    - if: $FORCE_REVIEW_SETUP == "true" && $CI_COMMIT_BRANCH != "main"
+      when: always
