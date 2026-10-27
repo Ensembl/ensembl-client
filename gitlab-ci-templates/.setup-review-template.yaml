@@ -15,7 +15,7 @@
     - cp review-setup/*.yaml ./
     - kustomize edit set namespace ${DEV_NAMESPACE}
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kubectl apply -k .
+    - kubectl apply -k . || true # Skip if already exists (e.g. if the review ingress was already setup from a backend repo)
 
     # Setup Ingress for default Genome Browser
     - echo "GENOME-BROWSER HI"
