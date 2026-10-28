@@ -9,24 +9,25 @@
     - kubectl config set-context --current --namespace=${DEV_NAMESPACE}
     
   script:
+    # || true is appended to ingress creation cmd to ignore errors due to ingress conflicts (e.g. if the review app ingress host has been used by the backend deployment)
     # Setup Ingress for default backend
     - cd ensembl-k8s-manifests
     - sed -i "s#<HOST>#${CI_COMMIT_REF_SLUG}.review.ensembl.org#g" review-setup/ingress-host.patch.yaml
     - cp review-setup/*.yaml ./
     - kustomize edit set namespace ${DEV_NAMESPACE}
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kubectl apply -k . || true # Ignores errors during ingress creation (e.g. if the review app ingress host has been created & used by the backend deployment)
+    - kubectl apply -k . || true 
 
     # Setup Ingress for default Genome Browser
     - echo "GENOME-BROWSER HI"
     - cp genome-browser/review/hi/*.yaml ./
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kubectl apply -k . || true # Ignores errors during ingress creation (e.g. if the review app ingress host has been created & used by the backend deployment)
+    - kubectl apply -k . || true
 
     - echo "GENOME-BROWSER LO"
     - cp genome-browser/review/lo/*.yaml ./
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kubectl apply -k . || true # Ignores errors during ingress creation (e.g. if the review app ingress host has been created & used by the backend deployment)
+    - kubectl apply -k . || true
     
     # Deploy nginx & node to review namespace
     - echo "NGINX & NODE"
