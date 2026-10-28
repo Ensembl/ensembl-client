@@ -17,6 +17,7 @@
 import {
   use,
   useCallback,
+  memo,
   type DetailedHTMLProps,
   type HTMLAttributes
 } from 'react';
@@ -25,16 +26,36 @@ import { SequenceViewerLegendContext } from 'src/content/app/sequence-viewer/con
 
 import './sequence-element';
 
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 import type {
   Sequence as SequenceElement,
   LegendEventDetail
 } from './sequence-element';
+import type { OverlapRequestParamsWithoutLocation } from './overlapRequest';
+
+type FocusLocationProps = {
+  location: GenomicLocation;
+};
+type FocusGeneProps = {
+  gene: {
+    stableId: string;
+  };
+};
+type FocusTranscriptProps = {
+  transcript: {
+    stableId: string;
+  };
+  sequenceView: string;
+};
+type FocusObjectProps =
+  FocusLocationProps | FocusGeneProps | FocusTranscriptProps;
 
 type Props = {
+  genomeId: string;
   sequence: string;
-};
+} & FocusObjectProps;
 
-const Sequence = ({ sequence }: Props) => {
+const Sequence = ({ sequence, genomeId, ...otherProps }: Props) => {
   const { setTemplate } = use(SequenceViewerLegendContext);
   const onLegend = useCallback(
     (event: CustomEvent<LegendEventDetail>) => {
@@ -42,10 +63,35 @@ const Sequence = ({ sequence }: Props) => {
     },
     [setTemplate]
   );
+  const getOverlapRequestParams = useCallback(():
+    OverlapRequestParamsWithoutLocation | undefined => {
+    if ('location' in otherProps) {
+      return {
+        genome_uuid: genomeId,
+        focus_location: {
+          region_name: otherProps.location.regionName,
+          start: otherProps.location.start,
+          end: otherProps.location.end
+        }
+      };
+    } else if ('gene' in otherProps) {
+      return {
+        genome_uuid: genomeId,
+        focus_gene: { stable_id: otherProps.gene.stableId }
+      };
+    } else if ('transcript' in otherProps) {
+      return {
+        genome_uuid: genomeId,
+        focus_transcript: { stable_id: otherProps.transcript.stableId },
+        sequence_type: otherProps.sequenceView
+      };
+    }
+  }, [genomeId, otherProps]);
 
   return (
     <ens-sequence-viewer-sequence
       onreport-legend={onLegend}
+      getOverlapRequestParams={getOverlapRequestParams}
       sequence={sequence}
     />
   );
@@ -56,6 +102,8 @@ type SequenceElementProps = DetailedHTMLProps<
   SequenceElement
 > & {
   sequence: string;
+  getOverlapRequestParams: () =>
+    OverlapRequestParamsWithoutLocation | undefined;
   'onreport-legend'?: (event: CustomEvent<LegendEventDetail>) => void;
 };
 
@@ -68,4 +116,4 @@ declare module 'react/jsx-runtime' {
   }
 }
 
-export default Sequence;
+export default memo(Sequence);

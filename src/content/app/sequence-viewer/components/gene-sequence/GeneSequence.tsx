@@ -86,7 +86,11 @@ const GeneSequence = (props: Props) => {
   return (
     <div className={commonStyles.main} style={styles}>
       Gene: {geneNameAndId}
-      <Sequence sequence={annotatedSequence} />
+      <Sequence
+        genomeId={genomeId}
+        gene={{ stableId: geneId }}
+        sequence={annotatedSequence}
+      />
     </div>
   );
 };
