@@ -231,7 +231,7 @@ export class Sequence extends HTMLElement {
       fetchOverlapTemplate({
         ...overlapRequestParams,
         location: letterInfo.location
-      }).then(console.log); // eslint-disable-line
+      }).then((template) => this.#injectOverlapInfoInPopover(template));
     }
 
     this.#showPopover({
@@ -299,6 +299,17 @@ export class Sequence extends HTMLElement {
     });
 
     popover.showPopover();
+  }
+
+  #injectOverlapInfoInPopover(template: string) {
+    const popover = this.shadowRoot!.querySelector('div[popover]');
+    const parsedTemplate = new DOMParser().parseFromString(
+      template,
+      'text/html'
+    );
+    const templateContent = parsedTemplate.firstChild;
+
+    popover?.appendChild(templateContent as HTMLElement);
   }
 }
 
