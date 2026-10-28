@@ -15,18 +15,18 @@
     - cp review-setup/*.yaml ./
     - kustomize edit set namespace ${DEV_NAMESPACE}
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kubectl apply -k . || true # Skip if already exists (e.g. if the review ingress was already setup from a backend repo)
+    - kubectl apply -k . || true # Ignores errors during ingress creation (e.g. if the review app ingress host has used by the backend deployment)
 
     # Setup Ingress for default Genome Browser
     - echo "GENOME-BROWSER HI"
     - cp genome-browser/review/hi/*.yaml ./
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kubectl apply -k .
+    - kubectl apply -k . || true # Ignores errors during ingress creation (e.g. if the review app ingress host has used by the backend deployment)
 
     - echo "GENOME-BROWSER LO"
     - cp genome-browser/review/lo/*.yaml ./
     - kustomize edit set namesuffix -- -${CI_COMMIT_REF_SLUG}
-    - kubectl apply -k .
+    - kubectl apply -k . || true # Ignores errors during ingress creation (e.g. if the review app ingress host has used by the backend deployment)
     
     # Deploy nginx & node to review namespace
     - echo "NGINX & NODE"
