@@ -74,6 +74,12 @@ const staticStyles = `
     white-space: pre;
   }
 
+  [popover]:popover-open {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    padding: 12px 20px;
+  }
+
   .sequence-popover {
     position: fixed;
     inset: auto;
@@ -307,9 +313,12 @@ export class Sequence extends HTMLElement {
       template,
       'text/html'
     );
-    const templateContent = parsedTemplate.firstChild;
+    // const templateContent = parsedTemplate.body.childNodes;
 
-    popover?.appendChild(templateContent as HTMLElement);
+    popover?.append(
+      ...parsedTemplate.head.childNodes,
+      ...parsedTemplate.body.childNodes
+    );
   }
 }
 
