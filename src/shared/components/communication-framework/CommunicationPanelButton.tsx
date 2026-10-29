@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
@@ -37,14 +38,32 @@ const CommunicationPanelButton = (props: Props) => {
   const { notifications, markNotificationAsSeen, dismissNotification } =
     useNotifications();
   const showCommunicationPanel = useAppSelector(isCommunicationPanelOpen);
+  const urlLocation = useLocation();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    const hasImportantNotifications = notifications.some((notification) => {
+      if (notification.important && notification.url_patterns) {
+        let isImportant = false;
+        for (const pattern of notification.url_patterns) {
+          // Only do prefix matching on url patterns for now; nothing fancy.
+          // May consider URL Pattern API later
+          if (urlLocation.pathname.indexOf(pattern) === 0) {
+            isImportant = true;
+            break;
+          }
+        }
+        return isImportant;
+      } else {
+        return notification.important;
+      }
+    });
+
     // automatically open communication panel if there is an important notification
-    if (notifications.some((notification) => notification.important)) {
+    if (hasImportantNotifications) {
       dispatch(openCommunicationPanel());
     }
-  }, [notifications, dispatch]);
+  }, [notifications, dispatch, urlLocation.pathname]);
 
   const onClick = () => {
     dispatch(openCommunicationPanel());

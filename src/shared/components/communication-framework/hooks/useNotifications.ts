@@ -175,25 +175,12 @@ const getFilteredIncomingNotifications = async ({
 // Filters out notifications that have url constraints or time constraints
 // if these constraints are not satisfied.
 const shouldIgnoreNotification = ({
-  notification,
-  pathname
+  notification
 }: {
   notification: IncomingNotification;
   pathname: string;
 }) => {
   let shouldIgnore = false;
-
-  if (notification.url_patterns) {
-    shouldIgnore = true;
-    for (const pattern of notification.url_patterns) {
-      // Only do prefix matching on url patterns for now; nothing fancy.
-      // May consider URL Pattern API later
-      if (pathname.indexOf(pattern) === 0) {
-        shouldIgnore = false;
-        break;
-      }
-    }
-  }
 
   if (notification.time_interval?.start) {
     const startDate = new Date(notification.time_interval.start);
