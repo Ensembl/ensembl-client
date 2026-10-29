@@ -17,6 +17,7 @@
 import { useEffect } from 'react';
 
 import FirstVisitNotification from './first-visit-notification/FirstVisitNotification';
+import ToolsDownNotification from './tools-down-notification/ToolsDownNotification';
 
 import type { IncomingNotification } from '../hooks/useNotifications';
 
@@ -47,7 +48,10 @@ const Notification = (props: Props) => {
 
   return (
     <div className={styles.container} data-nosnippet={true}>
-      <FirstVisitNotification />
+      {notification.id === 'first-visit-notification' && (
+        <FirstVisitNotification />
+      )}
+      {notification.id === 'tools-down-2026-11-03' && <ToolsDownNotification />}
     </div>
   );
 };
