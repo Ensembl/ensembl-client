@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { lazy, useEffect } from 'react';
+import { use, lazy, useEffect } from 'react';
+import { browser } from 'react-dom';
 
 import { useAppDispatch } from 'src/store';
-import useHasMounted from 'src/shared/hooks/useHasMounted';
+
+import useToolsAvailability from 'src/content/app/tools/shared/hooks/useToolsAvailability';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+
+import ToolsDownError from 'src/content/app/tools/shared/components/tools-down-error/ToolsDownError';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
 
@@ -33,7 +37,8 @@ on genes, transcripts, and protein sequence, as well as regulatory regions.
 `;
 
 const VepPage = () => {
-  const hasMounted = useHasMounted();
+  use(browser());
+  const { areToolsAvailable, downtimeMessage } = useToolsAvailability();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -45,7 +50,16 @@ const VepPage = () => {
     );
   }, [dispatch]);
 
-  return hasMounted ? <VepPageContent /> : null;
+  if (!areToolsAvailable) {
+    return (
+      <ToolsDownError
+        toolName="Ensembl VEP"
+        description={downtimeMessage ?? undefined}
+      />
+    );
+  }
+
+  return <VepPageContent />;
 };
 
 export default VepPage;
