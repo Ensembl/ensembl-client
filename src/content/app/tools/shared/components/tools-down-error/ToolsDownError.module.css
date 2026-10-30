@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 25vh;
+}
+
+.alertButton {
+  --alert-icon-diameter: 30px;
+ }
+
+.errorMessage {
+  color: var(--color-red);
+  font-weight: var(--font-weight-bold);
+  font-size: 14px;
+  margin-top: 1rem;
+  max-width: 60ch;
+}
+
+.description {
+  margin-top: 1.5rem;
+  font-size: 14px;
+  max-width: 60ch;
+}

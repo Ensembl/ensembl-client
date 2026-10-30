@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { lazy, useEffect } from 'react';
+import { use, lazy, useEffect } from 'react';
+import { browser } from 'react-dom';
 import { Route, Routes } from 'react-router';
 
 import { useAppDispatch } from 'src/store';
-import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import { updatePageMeta } from 'src/shared/state/page-meta/pageMetaSlice';
+import useToolsAvailability from 'src/content/app/tools/shared/hooks/useToolsAvailability';
 
+import ToolsDownError from 'src/content/app/tools/shared/components/tools-down-error/ToolsDownError';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 import type { ServerFetch } from 'src/routes/routesConfig';
@@ -43,7 +45,8 @@ The emphasis of this tool is to find regions of sequence similarity, which will 
 `;
 
 const BlastPage = () => {
-  const hasMounted = useHasMounted();
+  use(browser());
+  const { areToolsAvailable, downtimeMessage } = useToolsAvailability();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -55,7 +58,16 @@ const BlastPage = () => {
     );
   }, [dispatch]);
 
-  return hasMounted ? (
+  if (!areToolsAvailable) {
+    return (
+      <ToolsDownError
+        toolName="Ensembl BLAST"
+        description={downtimeMessage ?? undefined}
+      />
+    );
+  }
+
+  return (
     <div className={styles.blastPage}>
       <Routes>
         <Route index element={<BlastForm />} />
@@ -66,7 +78,7 @@ const BlastPage = () => {
         <Route path="*" element={<NotFoundErrorScreen />} />
       </Routes>
     </div>
-  ) : null;
+  );
 };
 
 export default BlastPage;

@@ -30,7 +30,7 @@ let warningText: string | null = null;
 warningText = `
 Due to scheduled infrastructure maintenance,
 the BLAST and VEP tools will be unavailable
-from 8:00 AM on November 3rd until the afternoon of November 5th.
+from 8:00 AM GMT on November 3rd until the afternoon of November 5th.
 `;
 
 const ToolsTopBar = (props: Props) => {
