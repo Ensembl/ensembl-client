@@ -52,7 +52,7 @@ const LocationSequenceDownload = () => {
       }
     );
 
-  const onDownload = (params: {
+  const onDownload = async (params: {
     fileType: string;
     options: Record<string, boolean>;
   }) => {
@@ -75,7 +75,7 @@ const LocationSequenceDownload = () => {
       downloadParams.options = params.options;
     }
 
-    downloadSequence(downloadParams);
+    await downloadSequence(downloadParams);
   };
 
   if (isFetching) {

@@ -37,7 +37,7 @@ type GeneDownloadParams = {
 
 type TranscriptDownloadParams = {
   focus_transcript: { stable_id: string };
-  sequence_type: string;
+  sequence_type?: string;
 };
 
 type DownloadParams = CommonDownloadParams &
@@ -71,25 +71,19 @@ export const downloadSequence = async (params: DownloadParams) => {
     delete params.options;
   }
 
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(params)
-    });
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(params)
+  });
 
-    if (!response.ok) {
-      throw new Error(
-        `Sequence download failed with status ${response.status}`
-      );
-    }
-
-    const fileName = getFileName(response.headers.get('Content-Disposition'));
-    const file = await response.blob();
-    await downloadBlobAsFile(file, fileName);
-  } catch {
-    // FIXME: display an error somehow?
+  if (!response.ok) {
+    throw new Error(`Sequence download failed with status ${response.status}`);
   }
+
+  const fileName = getFileName(response.headers.get('Content-Disposition'));
+  const file = await response.blob();
+  await downloadBlobAsFile(file, fileName);
 };

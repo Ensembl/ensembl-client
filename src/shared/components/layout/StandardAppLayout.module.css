@@ -39,6 +39,8 @@
 .main {
   height: 100%;
   overflow: auto;
+  container-type: size;
+  container-name: main;
 }
 
 .mainDefault {

@@ -53,7 +53,7 @@ const GeneSequenceDownload = () => {
       }
     );
 
-  const onDownload = (params: {
+  const onDownload = async (params: {
     fileType: string;
     useSequenceOptions?: boolean;
     options?: Record<string, boolean>;
@@ -78,7 +78,7 @@ const GeneSequenceDownload = () => {
       downloadParams.options = params.options;
     }
 
-    downloadSequence(downloadParams);
+    await downloadSequence(downloadParams);
   };
 
   if (isFetching) {

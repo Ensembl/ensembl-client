@@ -97,7 +97,12 @@ const TranscriptSequence = (props: Props) => {
         </div>
       )}
       {data && !isLoading && !isError && (
-        <Sequence sequence={data.annotatedSequence} />
+        <Sequence
+          genomeId={genomeId}
+          transcript={{ stableId: transcriptId }}
+          sequenceView={transcriptView}
+          sequence={data.annotatedSequence}
+        />
       )}
     </div>
   );
