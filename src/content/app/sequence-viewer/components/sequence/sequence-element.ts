@@ -77,16 +77,26 @@ const staticStyles = `
   [popover]:popover-open {
     background-color: var(--color-black);
     color: var(--color-white);
+    border: none;
     padding: 12px 20px;
+    max-height: 80cqh;
+    filter: drop-shadow(2px 2px 3px var(--shadow-color));
+    position-try-fallbacks: --popover-center-on-line;
   }
 
   .sequence-popover {
     position: fixed;
     inset: auto;
     margin: 0;
-
     left: calc(anchor(left) + var(--letter-offset-x));
     top: calc(anchor(top) + var(--letter-offset-y) + 6px);
+  }
+
+  @position-try --popover-center-on-line {
+    top: auto;
+    bottom: auto;
+    height: max-content;
+    align-self: anchor-center;
   }
 `;
 
@@ -276,7 +286,7 @@ export class Sequence extends HTMLElement {
     popover.style.setProperty('position-anchor', anchorName);
     popover.style.setProperty(
       '--letter-offset-x',
-      `${boundingRect.left - anchorLineRect.left}px`
+      `${boundingRect.right - anchorLineRect.left}px`
     );
     popover.style.setProperty(
       '--letter-offset-y',
