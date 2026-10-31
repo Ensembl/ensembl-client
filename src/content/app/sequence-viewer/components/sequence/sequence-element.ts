@@ -48,7 +48,7 @@ const staticStyles = `
   }
 
   .line {
-    --_column-gap: 1rem;
+    --_column-gap: var(--sequence-line-column-gap, 1rem);
     display: grid;
     grid-template-columns: var(--gutter-width) 60ch var(--gutter-width);
     column-gap: var(--_column-gap);
