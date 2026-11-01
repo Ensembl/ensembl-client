@@ -19,6 +19,7 @@ import { useCallback } from 'react';
 import { useAppSelector, useAppDispatch } from 'src/store';
 
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
+import useSequenceViewerRouting from 'src/content/app/sequence-viewer/hooks/useSequenceViewerRouter';
 
 import { getIsSidebarOpen } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSelectors';
 import { toggleSidebar } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSlice';
@@ -55,6 +56,8 @@ const SequenceViewer = () => {
   const { genomeIdInUrl, focusObjectIdInUrl } = useSequenceViewerIds();
   const isSidebarOpen = useAppSelector(getIsSidebarOpen);
   const dispatch = useAppDispatch();
+
+  useSequenceViewerRouting();
 
   const onSidebarToggle = useCallback(() => {
     dispatch(toggleSidebar());

@@ -16,17 +16,27 @@
 
 import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import useLastVisitedPath from './useLastVisitedPath';
+
 import LaunchbarButton from './LaunchbarButton';
 import SequenceViewerIcon from 'src/shared/components/app-icon/SequenceViewerIcon';
 
+const sequenceViewerRootPath = urlFor.sequenceViewer();
+
 const SequenceViewerLaunchbarButton = () => {
+  const lastVisitedPath = useLastVisitedPath({
+    rootPath: sequenceViewerRootPath
+  });
+
   if (isProductionEnvironment()) {
     return null;
   }
 
   return (
     <LaunchbarButton
-      path="/sequence-viewer"
+      path={lastVisitedPath}
       description="Sequence viewer"
       icon={SequenceViewerIcon}
       enabled={true}
