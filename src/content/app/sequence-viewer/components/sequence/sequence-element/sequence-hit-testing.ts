@@ -15,7 +15,9 @@
  */
 
 export const getLetterInfoFromEvent = (event: PointerEvent | MouseEvent) => {
-  const target = event.target;
+  // Document listeners see the shadow host as event.target. The composed path
+  // retains the sequence element that was actually under the pointer.
+  const target = event.composedPath()[0] ?? event.target;
   if (!(target instanceof Element)) {
     return null;
   }
@@ -101,11 +103,12 @@ export type LetterHit = NonNullable<ReturnType<typeof getLetterInfoFromEvent>>;
 
 export type SequenceSelection = {
   lineBlock: HTMLElement;
-  rect: DOMRect;
+  rect: Omit<DOMRect, 'toJSON'>;
 };
 
 export const getSequenceSelection = (
-  root: ShadowRoot
+  root: ShadowRoot,
+  releaseEvent?: PointerEvent
 ): SequenceSelection | null => {
   // Chromium exposes getSelection on ShadowRoot; other browsers use the document.
   const selection =
@@ -134,6 +137,13 @@ export const getSequenceSelection = (
     !root.contains(range.endContainer)
   ) {
     return null;
+  }
+
+  if (releaseEvent) {
+    const letter = getLetterInfoFromEvent(releaseEvent);
+    if (letter && root.contains(letter.lineBlock)) {
+      return { lineBlock: letter.lineBlock, rect: letter.rect };
+    }
   }
 
   let position: SequenceSelection | null = null;

@@ -36,13 +36,19 @@ type Options = {
 export class SequenceInteractions {
   #listeners = new AbortController();
   #request: AbortController | null = null;
+  #selectionTimeout: ReturnType<typeof setTimeout> | null = null;
   #popover: SequencePopover;
   #state: PopoverState = { kind: 'closed' };
   #highlight = document.createElement('div');
   #hovered: LetterHit | null = null;
-  #gesture: { selecting: boolean; suppressClick: boolean } = {
+  #gesture: {
+    selecting: boolean;
+    suppressClick: boolean;
+    startedWithSelection: boolean;
+  } = {
     selecting: false,
-    suppressClick: false
+    suppressClick: false,
+    startedWithSelection: false
   };
 
   constructor(private options: Options) {
@@ -71,23 +77,36 @@ export class SequenceInteractions {
         ) {
           return;
         }
-        this.#gesture = { selecting: true, suppressClick: false };
-        this.#clearHover();
-        this.#closeCoordinates();
+        const startedWithSelection = Boolean(getSequenceSelection(root));
+        this.reset();
+        this.#gesture = {
+          selecting: true,
+          suppressClick: false,
+          startedWithSelection
+        };
       },
       { signal }
     );
     host.ownerDocument.addEventListener(
       'pointerup',
-      () => {
+      (event) => {
         if (!this.#gesture.selecting) {
           return;
         }
         this.#gesture.selecting = false;
-        const selection = getSequenceSelection(root);
-        this.#gesture.suppressClick = Boolean(selection);
+        const selection = getSequenceSelection(root, event);
+        this.#gesture.suppressClick =
+          Boolean(selection) || this.#gesture.startedWithSelection;
         if (selection) {
-          this.#showSelection(selection);
+          // Native light-dismiss runs on this release too. Open in a new task
+          // so the selection gesture cannot immediately dismiss its popover.
+          this.#selectionTimeout = setTimeout(() => {
+            this.#selectionTimeout = null;
+            // A click inside selected text can clear it after pointerup.
+            if (getSequenceSelection(root)) {
+              this.#showSelection(selection);
+            }
+          }, 0);
         }
       },
       { signal }
@@ -157,6 +176,7 @@ export class SequenceInteractions {
   }
 
   reset() {
+    this.#cancelPendingSelection();
     this.#request?.abort();
     this.#request = null;
     this.#clearHover();
@@ -274,9 +294,17 @@ export class SequenceInteractions {
   }
 
   #showSelection(selection: SequenceSelection) {
+    this.#cancelPendingSelection();
     this.#request?.abort();
     this.#request = null;
     this.#clearHover();
     this.#setState({ kind: 'selection', selection });
+  }
+
+  #cancelPendingSelection() {
+    if (this.#selectionTimeout !== null) {
+      clearTimeout(this.#selectionTimeout);
+      this.#selectionTimeout = null;
+    }
   }
 }

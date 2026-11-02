@@ -153,6 +153,34 @@ describe('sequence interactions', () => {
     );
   });
 
+  it('keeps selection actions open after a gesture that dismisses another popover', async () => {
+    const existing = document.createElement('div');
+    existing.popover = 'auto';
+    existing.textContent = 'Another popover';
+    document.body.append(existing);
+    existing.showPopover();
+    try {
+      const column = element.shadowRoot!.querySelector('.line-middle')!;
+      await userEvent.dragAndDrop(
+        column.firstElementChild!,
+        column.lastElementChild!,
+        {
+          sourcePosition: { x: 1, y: 7 },
+          targetPosition: { x: 15, y: 7 }
+        }
+      );
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      );
+      const popover = element.shadowRoot!.querySelector<HTMLElement>(
+        '[data-mode="selection"]'
+      );
+      expect(popover?.matches(':popover-open')).toBe(true);
+    } finally {
+      existing.remove();
+    }
+  });
+
   it('shows selection actions after a real drag across lines', async () => {
     element.sequence = response(sequenceLine(1, 4) + sequenceLine(5, 8));
     const columns = element.shadowRoot!.querySelectorAll('.line-middle');
@@ -172,6 +200,52 @@ describe('sequence interactions', () => {
       ).toBe('selection')
     );
   });
+
+  it.each(['upwards', 'downwards'])(
+    'anchors an %s selection at the released letter',
+    async (direction) => {
+      element.sequence = response(sequenceLine(1, 4) + sequenceLine(5, 8));
+      const root = element.shadowRoot!;
+      const columns = root.querySelectorAll('.line-middle');
+      const upwards = direction === 'upwards';
+      const source = columns[upwards ? 1 : 0].firstElementChild!;
+      const target = columns[upwards ? 0 : 1].firstElementChild!;
+      const letterRange = document.createRange();
+      letterRange.setStart(target.firstChild!, 0);
+      letterRange.setEnd(target.firstChild!, 1);
+      const letterRect = letterRange.getBoundingClientRect();
+      source.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, composed: true })
+      );
+      const selection = (
+        root as ShadowRoot & { getSelection: () => Selection }
+      ).getSelection();
+      selection.setBaseAndExtent(source.firstChild!, 1, target.firstChild!, 0);
+      target.dispatchEvent(
+        new PointerEvent('pointerup', {
+          bubbles: true,
+          composed: true,
+          clientX: letterRect.left + letterRect.width / 2,
+          clientY: letterRect.top + letterRect.height / 2
+        })
+      );
+      await vi.waitFor(() =>
+        expect(
+          root
+            .querySelector('[data-mode="selection"]')
+            ?.matches(':popover-open')
+        ).toBe(true)
+      );
+      const line = target.closest<HTMLElement>('.line')!;
+      const popover = root.querySelector<HTMLElement>('[popover]')!;
+      expect(popover.style.getPropertyValue('position-anchor')).toBe(
+        line.style.getPropertyValue('anchor-name')
+      );
+      expect(
+        parseFloat(popover.style.getPropertyValue('--letter-offset-x'))
+      ).toBeCloseTo(letterRect.right - line.getBoundingClientRect().left);
+    }
+  );
 
   it('shows selection actions after selecting a word with a double click', async () => {
     vi.spyOn(window, 'fetch').mockResolvedValue(
@@ -299,7 +373,7 @@ describe('sequence interactions', () => {
     );
   });
 
-  it('shows selection actions and suppresses the click following selection', () => {
+  it('opens selection actions after mouse release and suppresses the following click', async () => {
     const fetch = vi.spyOn(window, 'fetch');
     const root = element.shadowRoot!;
     const column = root.querySelector('.line-middle')!;
@@ -311,19 +385,67 @@ describe('sequence interactions', () => {
     ).getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
+    let openedDuringRelease = false;
+    document.addEventListener(
+      'pointerup',
+      () => {
+        openedDuringRelease = Boolean(
+          root.querySelector('[data-mode="selection"]')
+        );
+      },
+      { once: true }
+    );
     document.dispatchEvent(new PointerEvent('pointerup'));
+    expect(openedDuringRelease).toBe(false);
+    letterEvent(element, 'click');
+    expect(fetch).not.toHaveBeenCalled();
+    await vi.waitFor(() =>
+      expect(
+        root.querySelector('[data-mode="selection"]')?.matches(':popover-open')
+      ).toBe(true)
+    );
     const popover = root.querySelector('[popover]')!;
     expect(popover.getAttribute('data-mode')).toBe('selection');
     expect(popover.querySelector('button')!.textContent).toBe('Copy');
     expect(popover.textContent).toContain('hello world');
     expect(popover.querySelectorAll('button')).toHaveLength(2);
     expect(popover.querySelector('a')).toBeNull();
-    letterEvent(element, 'click');
-    expect(fetch).not.toHaveBeenCalled();
     letterEvent(element, 'mousemove');
     expect(root.querySelector('[popover]')!.getAttribute('data-mode')).toBe(
       'selection'
     );
+  });
+
+  it('only clears the selection when clicking inside selected text', async () => {
+    const fetch = vi
+      .spyOn(window, 'fetch')
+      .mockResolvedValue(new Response('<div>Features</div>'));
+    const root = element.shadowRoot!;
+    const column = root.querySelector('.line-middle')!;
+    const range = document.createRange();
+    range.selectNodeContents(column);
+    const selection = (
+      root as ShadowRoot & { getSelection: () => Selection }
+    ).getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    column.dispatchEvent(
+      new KeyboardEvent('keyup', {
+        key: 'ArrowRight',
+        shiftKey: true,
+        bubbles: true
+      })
+    );
+    expect(
+      root.querySelector('[data-mode="selection"]')?.matches(':popover-open')
+    ).toBe(true);
+    await userEvent.click(column.firstElementChild!);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(selection.isCollapsed).toBe(true);
+    expect(root.querySelector('[popover]')).toBeNull();
+    expect(fetch).not.toHaveBeenCalled();
+    await userEvent.click(column.firstElementChild!);
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
   });
 
   it('removes listeners on disconnection and installs them once on reconnection', () => {
@@ -400,4 +522,30 @@ describe('sequence interactions', () => {
     expect(popover.textContent).toContain('hello world');
     expect(popover.matches(':popover-open')).toBe(true);
   });
+
+  it.each(['Escape', 'replacement', 'disconnect'])(
+    'cancels a pending selection popover on %s',
+    async (action) => {
+      const root = element.shadowRoot!;
+      const column = root.querySelector('.line-middle')!;
+      column.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      const range = document.createRange();
+      range.selectNodeContents(column);
+      const selection = (
+        root as ShadowRoot & { getSelection: () => Selection }
+      ).getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      document.dispatchEvent(new PointerEvent('pointerup'));
+      if (action === 'Escape') {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+      } else if (action === 'replacement') {
+        element.sequence = response(sequenceLine());
+      } else {
+        element.remove();
+      }
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(root.querySelector('[popover]')).toBeNull();
+    }
+  );
 });
