@@ -100,17 +100,8 @@ export const getLetterInfoFromEvent = (event: PointerEvent | MouseEvent) => {
 export type LetterHit = NonNullable<ReturnType<typeof getLetterInfoFromEvent>>;
 
 export type SequenceSelection = {
-  sequence: string;
-  start: number;
-  end: number;
   lineBlock: HTMLElement;
   rect: DOMRect;
-  strand: 1 | -1;
-};
-
-export type SelectionActions = {
-  header: string;
-  browserUrl: string;
 };
 
 export const getSequenceSelection = (
@@ -145,55 +136,32 @@ export const getSequenceSelection = (
     return null;
   }
 
-  const parts: string[] = [];
-  let first: { coordinate: number; line: HTMLElement } | null = null;
-  let lastCoordinate = 0;
-  let lastLine: HTMLElement | null = null;
-  let lastRect: DOMRect | null = null;
+  let position: SequenceSelection | null = null;
 
   for (const container of root.querySelectorAll<HTMLElement>('.line-middle')) {
     if (!range.intersectsNode(container)) {
       continue;
     }
-    const line = container.closest<HTMLElement>('.line');
-    if (!line?.hasAttribute('data-start') || !line.hasAttribute('data-end')) {
+    const lineBlock = container.closest<HTMLElement>('.line');
+    if (!lineBlock) {
       continue;
     }
-    const start = Number(line.dataset.start);
-    const step = Number(line.dataset.end) < start ? -1 : 1;
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
-    let index = 0;
     while (walker.nextNode()) {
       const node = walker.currentNode as Text;
-      if (range.intersectsNode(node)) {
-        const from = node === range.startContainer ? range.startOffset : 0;
-        const to = node === range.endContainer ? range.endOffset : node.length;
-        if (to > from) {
-          parts.push(node.data.slice(from, to));
-          first ??= { coordinate: start + (index + from) * step, line };
-          lastLine = line;
-          lastCoordinate = start + (index + to - 1) * step;
-          const endRange = document.createRange();
-          endRange.setStart(node, to - 1);
-          endRange.setEnd(node, to);
-          lastRect = endRange.getBoundingClientRect();
-        }
+      if (!range.intersectsNode(node)) {
+        continue;
       }
-      index += node.length;
+      const from = node === range.startContainer ? range.startOffset : 0;
+      const to = node === range.endContainer ? range.endOffset : node.length;
+      if (to > from && node.data.slice(from, to).trim()) {
+        const endRange = document.createRange();
+        endRange.setStart(node, to - 1);
+        endRange.setEnd(node, to);
+        position = { lineBlock, rect: endRange.getBoundingClientRect() };
+      }
     }
   }
 
-  if (!first || !lastLine || !lastRect || !parts.length) {
-    return null;
-  }
-
-  return {
-    sequence: parts.join('').replace(/\s/g, ''),
-    start: first.coordinate,
-    end: lastCoordinate,
-    lineBlock: lastLine,
-    rect: lastRect,
-    strand:
-      Number(first.line.dataset.end) < Number(first.line.dataset.start) ? -1 : 1
-  };
+  return position;
 };

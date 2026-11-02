@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { userEvent } from 'vitest/browser';
+
 import { getSequenceSelection } from './sequence-hit-testing';
 
 import {
@@ -122,10 +124,6 @@ describe('sequence interactions', () => {
       genome_uuid: 'genome',
       focus_location: { region_name: '13', start: 1, end: 100 }
     });
-    element.getSelectionActions = () => ({
-      header: 'test sequence',
-      browserUrl: '/genome-browser/genome?location=13:1-4'
-    });
     document.body.append(element);
     element.sequence = response(sequenceLine());
   });
@@ -134,6 +132,61 @@ describe('sequence interactions', () => {
     element.remove();
     window.getSelection()?.removeAllRanges();
     vi.restoreAllMocks();
+  });
+
+  it('shows selection actions after a real mouse drag', async () => {
+    const column = element.shadowRoot!.querySelector('.line-middle')!;
+    await userEvent.dragAndDrop(
+      column.firstElementChild!,
+      column.lastElementChild!,
+      {
+        sourcePosition: { x: 1, y: 7 },
+        targetPosition: { x: 15, y: 7 }
+      }
+    );
+    await vi.waitFor(() =>
+      expect(
+        element
+          .shadowRoot!.querySelector('[popover]')
+          ?.getAttribute('data-mode')
+      ).toBe('selection')
+    );
+  });
+
+  it('shows selection actions after a real drag across lines', async () => {
+    element.sequence = response(sequenceLine(1, 4) + sequenceLine(5, 8));
+    const columns = element.shadowRoot!.querySelectorAll('.line-middle');
+    await userEvent.dragAndDrop(
+      columns[0].firstElementChild!,
+      columns[1].lastElementChild!,
+      {
+        sourcePosition: { x: 1, y: 7 },
+        targetPosition: { x: 15, y: 7 }
+      }
+    );
+    await vi.waitFor(() =>
+      expect(
+        element
+          .shadowRoot!.querySelector('[popover]')
+          ?.getAttribute('data-mode')
+      ).toBe('selection')
+    );
+  });
+
+  it('shows selection actions after selecting a word with a double click', async () => {
+    vi.spyOn(window, 'fetch').mockResolvedValue(
+      new Response('<div>Features</div>')
+    );
+    await userEvent.dblClick(
+      element.shadowRoot!.querySelector('.line-middle span')!
+    );
+    await vi.waitFor(() =>
+      expect(
+        element
+          .shadowRoot!.querySelector('[popover]')
+          ?.getAttribute('data-mode')
+      ).toBe('selection')
+    );
   });
 
   it('highlights letters and shows coordinates without fetching features', () => {
@@ -229,7 +282,7 @@ describe('sequence interactions', () => {
     );
   });
 
-  it('extracts selected letters across lines without gutters, including descending coordinates', () => {
+  it('anchors a multiline selection to its last selected sequence line', () => {
     element.sequence = response(sequenceLine(10, 7) + sequenceLine(6, 3));
     const root = element.shadowRoot!;
     const columns = root.querySelectorAll('.line-middle');
@@ -241,11 +294,9 @@ describe('sequence interactions', () => {
     ).getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
-    expect(getSequenceSelection(root)).toMatchObject({
-      sequence: 'CGTAC',
-      start: 9,
-      end: 5
-    });
+    expect(getSequenceSelection(root)?.lineBlock).toBe(
+      columns[1].closest('.line')
+    );
   });
 
   it('shows selection actions and suppresses the click following selection', () => {
@@ -264,9 +315,9 @@ describe('sequence interactions', () => {
     const popover = root.querySelector('[popover]')!;
     expect(popover.getAttribute('data-mode')).toBe('selection');
     expect(popover.querySelector('button')!.textContent).toBe('Copy');
-    expect(popover.querySelector('a')!.getAttribute('href')).toContain(
-      '13:1-4'
-    );
+    expect(popover.textContent).toContain('hello world');
+    expect(popover.querySelectorAll('button')).toHaveLength(2);
+    expect(popover.querySelector('a')).toBeNull();
     letterEvent(element, 'click');
     expect(fetch).not.toHaveBeenCalled();
     letterEvent(element, 'mousemove');
@@ -320,7 +371,7 @@ describe('sequence interactions', () => {
     expect(popover.textContent).toContain('C: 2');
   });
 
-  it('copies selected letters as FASTA and clears hover on ancestor scrolling', async () => {
+  it('shows unwired selection buttons and clears hover on ancestor scrolling', () => {
     const root = element.shadowRoot!;
     letterEvent(element, 'mousemove');
     document.dispatchEvent(new Event('scroll'));
@@ -340,10 +391,13 @@ describe('sequence interactions', () => {
         bubbles: true
       })
     );
-    const copy = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
-    root.querySelector<HTMLButtonElement>('[popover] button')!.click();
-    await vi.waitFor(() =>
-      expect(copy).toHaveBeenCalledWith('>test sequence\nACGT')
-    );
+    const popover = root.querySelector<HTMLElement>('[popover]')!;
+    expect(popover.textContent).toContain('hello world');
+    for (const button of popover.querySelectorAll('button')) {
+      expect(button.disabled).toBe(false);
+      button.click();
+    }
+    expect(popover.textContent).toContain('hello world');
+    expect(popover.matches(':popover-open')).toBe(true);
   });
 });

@@ -49,10 +49,6 @@
 import { SequenceInteractions } from './sequence-interactions';
 
 import type { OverlapRequestParamsWithoutLocation } from '../overlapRequest';
-import type {
-  SequenceSelection,
-  SelectionActions
-} from './sequence-hit-testing';
 
 const staticStyles = `
   :host {
@@ -128,7 +124,7 @@ const staticStyles = `
     margin-top: 12px;
   }
 
-  .sequence-popover button, .sequence-popover a {
+  .sequence-popover button {
     font: inherit;
     color: var(--color-white);
   }
@@ -166,9 +162,6 @@ export class Sequence extends HTMLElement {
   #interactions: SequenceInteractions | null = null;
   getOverlapRequestParams:
     (() => OverlapRequestParamsWithoutLocation | undefined) | null = null;
-  getSelectionActions:
-    ((selection: SequenceSelection) => SelectionActions | undefined) | null =
-    null;
 
   constructor() {
     super();
@@ -180,8 +173,7 @@ export class Sequence extends HTMLElement {
     this.#interactions = new SequenceInteractions({
       host: this,
       root: this.shadowRoot!,
-      getOverlapRequestParams: () => this.getOverlapRequestParams?.(),
-      getSelectionActions: (selection) => this.getSelectionActions?.(selection)
+      getOverlapRequestParams: () => this.getOverlapRequestParams?.()
     });
   }
 

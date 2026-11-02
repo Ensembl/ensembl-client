@@ -24,20 +24,13 @@ import {
 } from './sequence-hit-testing';
 import { SequencePopover, type PopoverState } from './sequence-popover';
 
-import type {
-  LetterHit,
-  SequenceSelection,
-  SelectionActions
-} from './sequence-hit-testing';
+import type { LetterHit, SequenceSelection } from './sequence-hit-testing';
 
 type Options = {
   host: HTMLElement;
   root: ShadowRoot;
   getOverlapRequestParams: () =>
     OverlapRequestParamsWithoutLocation | undefined;
-  getSelectionActions: (
-    selection: SequenceSelection
-  ) => SelectionActions | undefined;
 };
 
 export class SequenceInteractions {
@@ -281,13 +274,9 @@ export class SequenceInteractions {
   }
 
   #showSelection(selection: SequenceSelection) {
-    const actions = this.options.getSelectionActions(selection);
-    if (!actions) {
-      return;
-    }
     this.#request?.abort();
     this.#request = null;
     this.#clearHover();
-    this.#setState({ kind: 'selection', selection, actions });
+    this.#setState({ kind: 'selection', selection });
   }
 }

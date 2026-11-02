@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import { toFasta } from 'src/shared/helpers/formatters/fastaFormatter';
-
-import type {
-  LetterHit,
-  SequenceSelection,
-  SelectionActions
-} from './sequence-hit-testing';
+import type { LetterHit, SequenceSelection } from './sequence-hit-testing';
 
 export type PopoverState =
   | { kind: 'closed' }
@@ -36,7 +30,6 @@ export type PopoverState =
   | {
       kind: 'selection';
       selection: SequenceSelection;
-      actions: SelectionActions;
     };
 
 let popoverCounter = 0;
@@ -112,7 +105,7 @@ export class SequencePopover {
     );
 
     if (state.kind === 'selection') {
-      this.#renderSelection(state.selection, state.actions);
+      this.#renderSelection();
     } else {
       const coordinates = document.createElement('div');
       coordinates.textContent = `${state.letter.character}: ${state.letter.location.start}`;
@@ -153,28 +146,17 @@ export class SequencePopover {
     this.#anchor = null;
   }
 
-  #renderSelection(selection: SequenceSelection, actions: SelectionActions) {
+  #renderSelection() {
     const title = document.createElement('div');
-    title.textContent = `${selection.start}–${selection.end} (${selection.sequence.length} letters)`;
+    title.textContent = 'hello world';
     const controls = document.createElement('div');
     controls.className = 'sequence-popover-actions';
     const copy = document.createElement('button');
     copy.type = 'button';
     copy.textContent = 'Copy';
-    copy.disabled = !navigator.clipboard;
-    copy.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(
-          toFasta({ header: actions.header, value: selection.sequence })
-        );
-        copy.textContent = 'Copied';
-      } catch {
-        copy.textContent = 'Copy failed — retry';
-      }
-    });
-    const browser = document.createElement('a');
+    const browser = document.createElement('button');
+    browser.type = 'button';
     browser.textContent = 'View in genome browser';
-    browser.href = actions.browserUrl;
     controls.append(copy, browser);
     this.#element.append(title, controls);
   }
