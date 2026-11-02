@@ -22,6 +22,8 @@ import {
   type HTMLAttributes
 } from 'react';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { SequenceViewerLegendContext } from 'src/content/app/sequence-viewer/contexts/SequenceViewerLegendContext';
 
 import './sequence-element/sequence-element';
@@ -32,6 +34,10 @@ import type {
   LegendEventDetail
 } from './sequence-element/sequence-element';
 import type { OverlapRequestParamsWithoutLocation } from './overlapRequest';
+import type {
+  SequenceSelection,
+  SelectionActions
+} from './sequence-element/sequence-hit-testing';
 
 type FocusLocationProps = {
   location: GenomicLocation;
@@ -53,9 +59,10 @@ type FocusObjectProps =
 type Props = {
   genomeId: string;
   sequence: string;
+  regionName?: string;
 } & FocusObjectProps;
 
-const Sequence = ({ sequence, genomeId, ...otherProps }: Props) => {
+const Sequence = ({ sequence, genomeId, regionName, ...otherProps }: Props) => {
   const { setTemplate } = use(SequenceViewerLegendContext);
   const onLegend = useCallback(
     (event: CustomEvent<LegendEventDetail>) => {
@@ -88,10 +95,38 @@ const Sequence = ({ sequence, genomeId, ...otherProps }: Props) => {
     }
   }, [genomeId, otherProps]);
 
+  const getSelectionActions = useCallback(
+    (selection: SequenceSelection): SelectionActions => {
+      const region =
+        'location' in otherProps ? otherProps.location.regionName : regionName;
+      const focus =
+        'gene' in otherProps
+          ? `gene:${otherProps.gene.stableId}`
+          : 'transcript' in otherProps
+            ? `transcript:${otherProps.transcript.stableId}`
+            : undefined;
+      const sequenceType =
+        'sequenceView' in otherProps ? otherProps.sequenceView : 'genomic';
+      const start = Math.min(selection.start, selection.end);
+      const end = Math.max(selection.start, selection.end);
+      const location =
+        region && sequenceType === 'genomic'
+          ? `${region}:${start}-${end}`
+          : undefined;
+
+      return {
+        header: `${genomeId} ${location ?? `${focus ?? 'sequence'}:${selection.start}-${selection.end}`} ${sequenceType} strand=${selection.strand}`,
+        browserUrl: urlFor.browser({ genomeId, location, focus })
+      };
+    },
+    [genomeId, regionName, otherProps]
+  );
+
   return (
     <ens-sequence-viewer-sequence
       onreport-legend={onLegend}
       getOverlapRequestParams={getOverlapRequestParams}
+      getSelectionActions={getSelectionActions}
       sequence={sequence}
     />
   );
@@ -104,6 +139,7 @@ type SequenceElementProps = DetailedHTMLProps<
   sequence: string;
   getOverlapRequestParams: () =>
     OverlapRequestParamsWithoutLocation | undefined;
+  getSelectionActions: (selection: SequenceSelection) => SelectionActions;
   'onreport-legend'?: (event: CustomEvent<LegendEventDetail>) => void;
 };
 

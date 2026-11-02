@@ -88,6 +88,7 @@ const GeneSequence = (props: Props) => {
       Gene: {geneNameAndId}
       <Sequence
         genomeId={genomeId}
+        regionName={gene.transcripts[0]?.slice.region.name}
         gene={{ stableId: geneId }}
         sequence={annotatedSequence}
       />

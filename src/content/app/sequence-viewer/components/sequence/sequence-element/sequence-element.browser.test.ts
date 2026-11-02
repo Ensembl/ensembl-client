@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { getSequenceSelection } from './sequence-hit-testing';
+
 import {
   Sequence as SequenceElement,
   type LegendEventDetail
@@ -45,6 +47,8 @@ describe('ens-sequence-viewer-sequence element', () => {
 
   afterEach(() => {
     element.remove();
+    window.getSelection()?.removeAllRanges();
+    vi.restoreAllMocks();
   });
 
   it('handles the template property correctly', async () => {
@@ -77,5 +81,269 @@ describe('ens-sequence-viewer-sequence element', () => {
 
     // Check that a legend event is dispatched
     expect(events).toEqual([{ template: legend + styles }]);
+  });
+});
+
+const sequenceLine = (start = 1, end = 4) => `
+  <div class="line" data-start="${start}" data-end="${end}">
+    <span class="line-left">${start}</span>
+    <span class="line-middle"><span>AC</span><span>GT</span></span>
+    <span class="line-right">${end}</span>
+  </div>
+`;
+
+const letterEvent = (element: SequenceElement, type: string, index = 0) => {
+  const container = element.shadowRoot!.querySelector('.line-middle')!;
+  const text = container.querySelector('span')!.firstChild!;
+  const range = document.createRange();
+  range.setStart(text, index);
+  range.setEnd(text, index + 1);
+  const rect = range.getBoundingClientRect();
+  text.parentElement!.dispatchEvent(
+    new MouseEvent(type, {
+      bubbles: true,
+      composed: true,
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2
+    })
+  );
+};
+
+describe('sequence interactions', () => {
+  let element: SequenceElement;
+
+  beforeEach(() => {
+    element = document.createElement(
+      'ens-sequence-viewer-sequence'
+    ) as SequenceElement;
+    element.style.setProperty('--gutter-width', '8ch');
+    element.style.setProperty('--font-family-monospace', 'monospace');
+    element.getOverlapRequestParams = () => ({
+      genome_uuid: 'genome',
+      focus_location: { region_name: '13', start: 1, end: 100 }
+    });
+    element.getSelectionActions = () => ({
+      header: 'test sequence',
+      browserUrl: '/genome-browser/genome?location=13:1-4'
+    });
+    document.body.append(element);
+    element.sequence = response(sequenceLine());
+  });
+
+  afterEach(() => {
+    element.remove();
+    window.getSelection()?.removeAllRanges();
+    vi.restoreAllMocks();
+  });
+
+  it('highlights letters and shows coordinates without fetching features', () => {
+    const fetch = vi.spyOn(window, 'fetch');
+    letterEvent(element, 'mousemove');
+    const root = element.shadowRoot!;
+    const highlight = root.querySelector('.letter-highlight')!;
+    expect(root.querySelector('[popover]')!.textContent).toBe('A: 1');
+    expect(getComputedStyle(root.querySelector('.line-middle')!).cursor).toBe(
+      'pointer'
+    );
+    expect(getComputedStyle(highlight).pointerEvents).toBe('none');
+    letterEvent(element, 'mousemove', 1);
+    expect(root.querySelector('.letter-highlight')).toBe(highlight);
+    expect(root.querySelector('[popover]')!.textContent).toBe('C: 2');
+    expect(fetch).not.toHaveBeenCalled();
+    element.dispatchEvent(new MouseEvent('mouseleave'));
+    expect(root.querySelector('.letter-highlight')).toBeNull();
+    expect(root.querySelector('[popover]')).toBeNull();
+    expect(root.querySelector('.has-hovered-letter')).toBeNull();
+  });
+
+  it('keeps feature content open on hover and ignores stale requests', async () => {
+    let resolveFirst!: (response: Response) => void;
+    const fetch = vi
+      .spyOn(window, 'fetch')
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveFirst = resolve;
+          })
+      )
+      .mockResolvedValueOnce(new Response('<div>Second features</div>'));
+    letterEvent(element, 'click');
+    expect(
+      element.shadowRoot!.querySelector('[popover]')!.textContent
+    ).toContain('Loading');
+    letterEvent(element, 'click', 1);
+    expect((fetch.mock.calls[0][0] as Request).signal.aborted).toBe(true);
+    await vi.waitFor(() =>
+      expect(
+        element.shadowRoot!.querySelector('[popover]')!.textContent
+      ).toContain('Second features')
+    );
+    resolveFirst(new Response('<div>Stale features</div>'));
+    await Promise.resolve();
+    letterEvent(element, 'mousemove');
+    const popover = element.shadowRoot!.querySelector('[popover]')!;
+    expect(popover.textContent).toContain('Second features');
+    expect(popover.textContent).not.toContain('Stale features');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(element.shadowRoot!.querySelector('[popover]')).toBeNull();
+  });
+
+  it('shows errors and invalidates requests when the sequence is replaced', async () => {
+    const fetch = vi
+      .spyOn(window, 'fetch')
+      .mockRejectedValueOnce(new Error('offline'));
+    letterEvent(element, 'click');
+    await vi.waitFor(() =>
+      expect(
+        element.shadowRoot!.querySelector('[popover]')!.textContent
+      ).toContain('Unable to load')
+    );
+    fetch.mockImplementationOnce(() => new Promise(() => {}));
+    letterEvent(element, 'click');
+    element.sequence = response(sequenceLine());
+    expect((fetch.mock.calls[1][0] as Request).signal.aborted).toBe(true);
+    expect(element.shadowRoot!.querySelector('[popover]')).toBeNull();
+  });
+
+  it('keeps the clicked letter highlighted until its feature popover closes', async () => {
+    vi.spyOn(window, 'fetch').mockResolvedValue(
+      new Response('<div>Features</div>')
+    );
+    letterEvent(element, 'mousemove');
+    letterEvent(element, 'click', 1);
+    const root = element.shadowRoot!;
+    const highlight = root.querySelector<HTMLElement>('.letter-highlight')!;
+    expect(highlight).not.toBeNull();
+    const left = highlight.style.left;
+    await vi.waitFor(() =>
+      expect(root.querySelector('[popover]')!.textContent).toContain('Features')
+    );
+    letterEvent(element, 'mousemove');
+    element.dispatchEvent(new MouseEvent('mouseleave'));
+    document.dispatchEvent(new Event('scroll'));
+    expect(root.querySelector('.letter-highlight')).toBe(highlight);
+    expect(highlight.style.left).toBe(left);
+    root.querySelector<HTMLElement>('[popover]')!.hidePopover();
+    await vi.waitFor(() =>
+      expect(root.querySelector('.letter-highlight')).toBeNull()
+    );
+  });
+
+  it('extracts selected letters across lines without gutters, including descending coordinates', () => {
+    element.sequence = response(sequenceLine(10, 7) + sequenceLine(6, 3));
+    const root = element.shadowRoot!;
+    const columns = root.querySelectorAll('.line-middle');
+    const range = document.createRange();
+    range.setStart(columns[0].querySelector('span')!.firstChild!, 1);
+    range.setEnd(columns[1].querySelector('span')!.firstChild!, 2);
+    const selection = (
+      root as ShadowRoot & { getSelection: () => Selection }
+    ).getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    expect(getSequenceSelection(root)).toMatchObject({
+      sequence: 'CGTAC',
+      start: 9,
+      end: 5
+    });
+  });
+
+  it('shows selection actions and suppresses the click following selection', () => {
+    const fetch = vi.spyOn(window, 'fetch');
+    const root = element.shadowRoot!;
+    const column = root.querySelector('.line-middle')!;
+    column.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+    const range = document.createRange();
+    range.selectNodeContents(column);
+    const selection = (
+      root as ShadowRoot & { getSelection: () => Selection }
+    ).getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    document.dispatchEvent(new PointerEvent('pointerup'));
+    const popover = root.querySelector('[popover]')!;
+    expect(popover.getAttribute('data-mode')).toBe('selection');
+    expect(popover.querySelector('button')!.textContent).toBe('Copy');
+    expect(popover.querySelector('a')!.getAttribute('href')).toContain(
+      '13:1-4'
+    );
+    letterEvent(element, 'click');
+    expect(fetch).not.toHaveBeenCalled();
+    letterEvent(element, 'mousemove');
+    expect(root.querySelector('[popover]')!.getAttribute('data-mode')).toBe(
+      'selection'
+    );
+  });
+
+  it('removes listeners on disconnection and installs them once on reconnection', () => {
+    const fetch = vi
+      .spyOn(window, 'fetch')
+      .mockImplementation(() => new Promise(() => {}));
+    element.remove();
+    document.body.append(element);
+    letterEvent(element, 'click');
+    expect(fetch).toHaveBeenCalledTimes(1);
+    element.remove();
+    expect((fetch.mock.calls[0][0] as Request).signal.aborted).toBe(true);
+    expect(element.shadowRoot!.querySelector('[popover]')).toBeNull();
+  });
+  it('cancels a pending feature request when the native popover is dismissed', async () => {
+    const fetch = vi
+      .spyOn(window, 'fetch')
+      .mockImplementation(() => new Promise(() => {}));
+    letterEvent(element, 'click');
+    const popover =
+      element.shadowRoot!.querySelector<HTMLElement>('[popover]')!;
+    const hide = vi.spyOn(popover, 'hidePopover');
+    popover.hidePopover();
+    await vi.waitFor(() =>
+      expect((fetch.mock.calls[0][0] as Request).signal.aborted).toBe(true)
+    );
+    expect(element.shadowRoot!.querySelector('[popover]')).toBeNull();
+    expect(hide).toHaveBeenCalledTimes(1);
+    expect(
+      element
+        .shadowRoot!.querySelector<HTMLElement>('.line')!
+        .style.getPropertyValue('anchor-name')
+    ).toBe('');
+  });
+
+  it('keeps a newly opened popover when native dismissal cleanup is pending', async () => {
+    vi.spyOn(window, 'fetch').mockImplementation(() => new Promise(() => {}));
+    letterEvent(element, 'click');
+    element.shadowRoot!.querySelector<HTMLElement>('[popover]')!.hidePopover();
+    letterEvent(element, 'click', 1);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const popover =
+      element.shadowRoot!.querySelector<HTMLElement>('[popover]')!;
+    expect(popover.matches(':popover-open')).toBe(true);
+    expect(popover.textContent).toContain('C: 2');
+  });
+
+  it('copies selected letters as FASTA and clears hover on ancestor scrolling', async () => {
+    const root = element.shadowRoot!;
+    letterEvent(element, 'mousemove');
+    document.dispatchEvent(new Event('scroll'));
+    expect(root.querySelector('.letter-highlight')).toBeNull();
+    expect(root.querySelector('[popover]')).toBeNull();
+    const range = document.createRange();
+    range.selectNodeContents(root.querySelector('.line-middle')!);
+    const selection = (
+      root as ShadowRoot & { getSelection: () => Selection }
+    ).getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    root.querySelector('.line-middle')!.dispatchEvent(
+      new KeyboardEvent('keyup', {
+        key: 'ArrowRight',
+        shiftKey: true,
+        bubbles: true
+      })
+    );
+    const copy = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
+    root.querySelector<HTMLButtonElement>('[popover] button')!.click();
+    await vi.waitFor(() =>
+      expect(copy).toHaveBeenCalledWith('>test sequence\nACGT')
+    );
   });
 });

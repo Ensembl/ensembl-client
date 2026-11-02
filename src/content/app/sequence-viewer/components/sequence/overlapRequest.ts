@@ -54,10 +54,14 @@ export type OverlapRequestParams = CommonOverlapRequestFields &
   FocusFeatureFields;
 
 // Not using RTK-query, because the request will be sent from a web component outside of the react tree
-export const fetchOverlapTemplate = async (params: OverlapRequestParams) => {
+export const fetchOverlapTemplate = async (
+  params: OverlapRequestParams,
+  signal?: AbortSignal
+) => {
   const url = `${config.annotatedSequenceApi}/overlaps`;
   const request = new Request(url, {
     method: 'POST',
+    signal,
     headers: {
       'Content-Type': 'application/json'
     },
@@ -65,5 +69,8 @@ export const fetchOverlapTemplate = async (params: OverlapRequestParams) => {
   });
 
   const response = await fetch(request);
+  if (!response.ok) {
+    throw new Error(`Overlap request failed with status ${response.status}`);
+  }
   return response.text();
 };

@@ -99,6 +99,7 @@ const TranscriptSequence = (props: Props) => {
       {data && !isLoading && !isError && (
         <Sequence
           genomeId={genomeId}
+          regionName={data.transcript.slice.region.name}
           transcript={{ stableId: transcriptId }}
           sequenceView={transcriptView}
           sequence={data.annotatedSequence}
