@@ -131,13 +131,6 @@ export class Sequence extends HTMLElement {
         this.#handleClick(event);
       }
     });
-
-    this.shadowRoot!.addEventListener('pointerout', (event) => {
-      if (!(event instanceof PointerEvent)) {
-        return;
-      }
-      // console.log(event.target, event.relatedTarget);
-    });
   }
 
   set sequence(htmlTemplate: string) {
@@ -332,7 +325,7 @@ export class Sequence extends HTMLElement {
   }
 }
 
-const getLetterInfoFromEvent = (event: PointerEvent) => {
+const getLetterInfoFromEvent = (event: PointerEvent | MouseEvent) => {
   const target = event.target as HTMLElement;
   const sequenceContainer = target.closest('.line-middle');
   const lineBlock = target.closest('.line') as HTMLElement | null;
