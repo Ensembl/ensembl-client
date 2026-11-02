@@ -118,21 +118,31 @@ export const getSequenceSelection = (
       }
     ).getSelection?.() ?? root.ownerDocument.getSelection();
 
-  if (!selection || selection.isCollapsed || selection.rangeCount !== 1) {
+  if (!selection) {
     return null;
   }
 
-  const composed = selection.getComposedRanges?.({ shadowRoots: [root] })[0];
   const range = document.createRange();
-  if (composed) {
+  if (selection.getComposedRanges) {
+    const ranges = selection.getComposedRanges({ shadowRoots: [root] });
+    if (ranges.length !== 1) {
+      return null;
+    }
+    const composed = ranges[0];
     range.setStart(composed.startContainer, composed.startOffset);
     range.setEnd(composed.endContainer, composed.endOffset);
   } else {
+    if (selection.rangeCount !== 1) {
+      return null;
+    }
     const selectedRange = selection.getRangeAt(0);
     range.setStart(selectedRange.startContainer, selectedRange.startOffset);
     range.setEnd(selectedRange.endContainer, selectedRange.endOffset);
   }
+  // WebKit can report Selection.isCollapsed as true for a shadow-tree
+  // selection. Check the actual composed range instead.
   if (
+    range.collapsed ||
     !root.contains(range.startContainer) ||
     !root.contains(range.endContainer)
   ) {

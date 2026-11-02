@@ -373,6 +373,51 @@ describe('sequence interactions', () => {
     );
   });
 
+  it('opens selection actions when Safari reports a collapsed document selection for a noncollapsed shadow range', async () => {
+    const root = element.shadowRoot!;
+    const column = root.querySelector('.line-middle')!;
+    const start = column.firstElementChild!.firstChild!;
+    const end = column.lastElementChild!.firstChild!;
+    const getComposedRanges = vi.fn(() => [
+      new StaticRange({
+        startContainer: start,
+        startOffset: 0,
+        endContainer: end,
+        endOffset: 2
+      })
+    ]);
+    const getRangeAt = vi.fn();
+    const selection = {
+      isCollapsed: true,
+      rangeCount: 0,
+      getComposedRanges,
+      getRangeAt
+    } as unknown as Selection;
+    vi.spyOn(
+      root as ShadowRoot & { getSelection: () => Selection },
+      'getSelection'
+    ).mockReturnValue(selection);
+    column.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+    document.dispatchEvent(new PointerEvent('pointerup'));
+    await vi.waitFor(() =>
+      expect(
+        root.querySelector('[data-mode="selection"]')?.matches(':popover-open')
+      ).toBe(true)
+    );
+    expect(getComposedRanges).toHaveBeenCalledWith({ shadowRoots: [root] });
+    expect(getRangeAt).not.toHaveBeenCalled();
+
+    getComposedRanges.mockReturnValue([
+      new StaticRange({
+        startContainer: start,
+        startOffset: 0,
+        endContainer: start,
+        endOffset: 0
+      })
+    ]);
+    expect(getSequenceSelection(root)).toBeNull();
+  });
+
   it('opens selection actions after mouse release and suppresses the following click', async () => {
     const fetch = vi.spyOn(window, 'fetch');
     const root = element.shadowRoot!;

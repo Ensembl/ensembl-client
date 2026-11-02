@@ -78,6 +78,7 @@ const staticStyles = `
   .line-left, .line-right {
     font-size: 12px;
     font-weight: var(--font-weight-light);
+    -webkit-user-select: none;
     user-select: none;
   }
 
