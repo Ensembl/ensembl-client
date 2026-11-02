@@ -15,8 +15,9 @@
  */
 
 /**
- * A NOTE ABOUT THE STYLES:
+ * A NOTE ABOUT THIS COMPONENT:
  *
+ * 1. RENDERING THE SEQUENCE
  * Each sequence line is a grid that contains the sequence itself,
  * as well as the numbers at the start and the end of the sequence line
  * to indicate the coordinates of the nucleotides in the line.
@@ -31,29 +32,46 @@
  * so the browser can skip rendering whole sections of the sequence
  * when they are offscreen, which should improve the performance
  * during the initial rendering and subsequent scrolling.
+ *
+ * 2. INTERACTIVITY
+ * The component supports the following kinds of interaction:
+ * - Upon moving the mouse cursor over a letter, the component:
+ *  - Highlights the outline of the letter
+ *  - Shows a popover with letter coordinates next to the letter
+ * - Upon a click on a letter, the component fetches the features
+ *   that overlap the coordinate of this letter, and show them
+ *   in a popover
+ * - Upon selection of a subsequence, the component shows a popover
+ *   that has a "Copy" button (to copy the sequence with a FASTA header),
+ *   and a button that takes user to genome browser.
  */
 
 import {
   fetchOverlapTemplate,
   type OverlapRequestParamsWithoutLocation
-} from './overlapRequest';
+} from '../overlapRequest';
 
 const staticStyles = `
   :host {
+    --_column-gap: var(--sequence-line-column-gap, 1rem);
     font-family: var(--font-family-monospace);
   }
 
   .content-visibility-block {
     content-visibility: auto;
+    width: calc(2 * var(--gutter-width) + 60ch + 2 * var(--_column-gap));
   }
 
   .line {
-    --_column-gap: var(--sequence-line-column-gap, 1rem);
+    position: relative;
     display: grid;
     grid-template-columns: var(--gutter-width) 60ch var(--gutter-width);
     column-gap: var(--_column-gap);
     align-items: baseline;
     width: calc(2 * var(--gutter-width) + 60ch + 2 * var(--_column-gap));
+  }
+
+  .line:has(.letter-highlight) .line-middle {
   }
 
   .line-left, .line-right {
@@ -73,6 +91,15 @@ const staticStyles = `
   .protein {
     white-space: pre;
   }
+
+  .letter-highlight {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    box-sizing: border-box;
+    outline: 1px solid var(--color-black);
+  }
+
 
   [popover]:popover-open {
     background-color: var(--color-black);
@@ -108,6 +135,7 @@ export type LegendEventDetail = {
 
 export class Sequence extends HTMLElement {
   #popoverCounter = 0;
+  // #letterHighlight: HTMLDivElement | null = null;
   getOverlapRequestParams:
     (() => OverlapRequestParamsWithoutLocation | undefined) | null = null;
 
@@ -130,6 +158,20 @@ export class Sequence extends HTMLElement {
       if (event instanceof PointerEvent) {
         this.#handleClick(event);
       }
+    });
+
+    // this.shadowRoot!.addEventListener('mousemove', (event) => {
+    //   if (!(event instanceof MouseEvent)) {
+    //     return;
+    //   }
+    //   this.#handleHover(event);
+    // });
+
+    this.shadowRoot!.addEventListener('pointerout', (event) => {
+      if (!(event instanceof PointerEvent)) {
+        return;
+      }
+      // console.log(event.target, event.relatedTarget);
     });
   }
 
@@ -225,6 +267,11 @@ export class Sequence extends HTMLElement {
 
     this.shadowRoot!.adoptedStyleSheets = styleSheets;
   }
+
+  // #handleHover(event: MouseEvent) {
+  //   const letterInfo = getLetterInfoFromEvent(event);
+  //   console.log('letterInfo', letterInfo);
+  // }
 
   #handleClick(event: PointerEvent) {
     event.preventDefault();

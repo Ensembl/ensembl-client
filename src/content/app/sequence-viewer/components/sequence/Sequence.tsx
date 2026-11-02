@@ -24,13 +24,13 @@ import {
 
 import { SequenceViewerLegendContext } from 'src/content/app/sequence-viewer/contexts/SequenceViewerLegendContext';
 
-import './sequence-element';
+import './sequence-element/sequence-element';
 
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 import type {
   Sequence as SequenceElement,
   LegendEventDetail
-} from './sequence-element';
+} from './sequence-element/sequence-element';
 import type { OverlapRequestParamsWithoutLocation } from './overlapRequest';
 
 type FocusLocationProps = {
