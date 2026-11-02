@@ -62,7 +62,7 @@ const TranscriptSequenceDownload = () => {
       }
     );
 
-  const onDownload = (params: {
+  const onDownload = async (params: {
     fileType: string;
     useSequenceOptions?: boolean;
     options?: Record<string, boolean>;
@@ -75,7 +75,6 @@ const TranscriptSequenceDownload = () => {
     const downloadParams: Parameters<typeof downloadSequence>[0] = {
       genome_uuid: genomeId,
       focus_transcript: { stable_id: transcriptId },
-      sequence_type: 'genomic',
       file_type: params.fileType
     };
 
@@ -83,12 +82,13 @@ const TranscriptSequenceDownload = () => {
       const options = prepareOptionsForPayload(
         sequenceSettings as TranscriptSequenceSettings
       );
+      downloadParams.sequence_type = 'genomic';
       downloadParams.options = options;
     } else if (params.options) {
       downloadParams.options = params.options;
     }
 
-    downloadSequence(downloadParams);
+    await downloadSequence(downloadParams);
   };
 
   if (isFetching) {

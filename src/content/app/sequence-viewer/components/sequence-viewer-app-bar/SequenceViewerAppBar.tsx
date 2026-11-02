@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
+import { useNavigate } from 'react-router';
+
 import { useAppSelector } from 'src/store';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { latestRoutesMap } from 'src/content/app/sequence-viewer/utils/latestRoutes';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/species-selector-general-slice/speciesSelectorGeneralSelectors';
 
 import useGenomeRemoval from 'src/content/app/species-selector/hooks/useGenomeRemoval';
+import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
 import AppBar, { AppName } from 'src/shared/components/app-bar/AppBar';
 import SpeciesManagerIndicator from 'src/shared/components/species-manager-indicator/SpeciesManagerIndicator';
@@ -29,12 +36,22 @@ import { PlaceholderMessage } from 'src/content/app/species-selector/components/
 import type { CommittedItem } from 'src/content/app/species-selector/types/committedItem';
 
 const SequenceViewerAppBar = () => {
+  const { genomeId } = useSequenceViewerIds();
   const enabledCommittedSpecies = useAppSelector(getEnabledCommittedSpecies);
   const { removeGenome } = useGenomeRemoval();
+  const navigate = useNavigate();
 
-  // eslint-disable-next-line
   const onSpeciesClick = (genome: CommittedItem) => {
-    // FIXME: add click handler logic
+    const savedUrl = latestRoutesMap.genomeUrls[genome.genome_id];
+    if (savedUrl) {
+      navigate(savedUrl);
+    } else {
+      const genomeIdForUrl = genome.genome_tag ?? genome.genome_id;
+      const url = urlFor.sequenceViewer({
+        genomeId: genomeIdForUrl
+      });
+      navigate(url);
+    }
   };
 
   const mainContent = enabledCommittedSpecies.length ? (
@@ -43,6 +60,7 @@ const SequenceViewerAppBar = () => {
         <SelectedSpecies
           key={genome.genome_id}
           species={genome}
+          isActive={genome.genome_id === genomeId}
           onClick={() => onSpeciesClick(genome)}
           onRemove={removeGenome}
         />

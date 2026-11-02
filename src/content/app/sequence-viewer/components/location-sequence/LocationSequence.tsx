@@ -78,7 +78,11 @@ const LocationSequence = (props: Props) => {
 
   return (
     <div className={commonStyles.main} style={styles}>
-      <Sequence sequence={annotatedSequence} />
+      <Sequence
+        genomeId={genomeId}
+        location={parsedLocation}
+        sequence={annotatedSequence}
+      />
     </div>
   );
 };

@@ -19,7 +19,7 @@ import { useReducer, type ChangeEvent } from 'react';
 import SimpleSelect from 'src/shared/components/simple-select/SimpleSelect';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
-import { PrimaryButton } from 'src/shared/components/button/Button';
+import LoadingButton from 'src/shared/components/loading-button';
 
 import type {
   DownloadFileFormatWithOptions,
@@ -34,7 +34,7 @@ type Props = {
     fileType: string;
     useSequenceOptions?: boolean;
     options: Record<string, boolean>;
-  }) => void;
+  }) => Promise<void>;
 };
 
 type State = {
@@ -151,12 +151,12 @@ const DownloadFileFormats = ({
         />
       )) ?? null;
 
-  const onDownloadPress = () => {
+  const onDownloadPress = async () => {
     const shouldUseSequenceOptionsForDownload = formats.find(
       (format) => format.id === selectedFormat
     )!.use_sequence_options;
 
-    downloadHandlerFromProps({
+    await downloadHandlerFromProps({
       fileType: selectedFormat,
       useSequenceOptions: shouldUseSequenceOptionsForDownload,
       options: state.formatOptions[selectedFormat]
@@ -171,7 +171,7 @@ const DownloadFileFormats = ({
       />
       {optionSections}
       <div className={styles.downloadButtonContainer}>
-        <PrimaryButton onClick={onDownloadPress}>Download</PrimaryButton>
+        <LoadingButton onClick={onDownloadPress}>Download</LoadingButton>
       </div>
     </>
   );

@@ -204,7 +204,7 @@ export const sequenceViewer = ({
 }: {
   genomeId?: string;
   focusObject?: string;
-}) => {
+} = {}) => {
   let pathname = '/sequence-viewer';
 
   if (!genomeId) {
