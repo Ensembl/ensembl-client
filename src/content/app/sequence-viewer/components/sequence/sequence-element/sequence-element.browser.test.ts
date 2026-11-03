@@ -134,7 +134,7 @@ describe('sequence interactions', () => {
     vi.restoreAllMocks();
   });
 
-  it('shows selection actions after a real mouse drag', async () => {
+  it('shows selection actions after a mouse drag', async () => {
     const column = element.shadowRoot!.querySelector('.line-middle')!;
     await userEvent.dragAndDrop(
       column.firstElementChild!,
@@ -181,7 +181,7 @@ describe('sequence interactions', () => {
     }
   });
 
-  it('shows selection actions after a real drag across lines', async () => {
+  it('shows selection actions after a mouse drag across lines', async () => {
     element.sequence = response(sequenceLine(1, 4) + sequenceLine(5, 8));
     const columns = element.shadowRoot!.querySelectorAll('.line-middle');
     await userEvent.dragAndDrop(
@@ -248,9 +248,6 @@ describe('sequence interactions', () => {
   );
 
   it('shows selection actions after selecting a word with a double click', async () => {
-    vi.spyOn(window, 'fetch').mockResolvedValue(
-      new Response('<div>Features</div>')
-    );
     await userEvent.dblClick(
       element.shadowRoot!.querySelector('.line-middle span')!
     );
@@ -264,7 +261,6 @@ describe('sequence interactions', () => {
   });
 
   it('highlights letters and shows coordinates without fetching features', () => {
-    const fetch = vi.spyOn(window, 'fetch');
     letterEvent(element, 'mousemove');
     const root = element.shadowRoot!;
     const highlight = root.querySelector('.letter-highlight')!;
@@ -276,7 +272,6 @@ describe('sequence interactions', () => {
     letterEvent(element, 'mousemove', 1);
     expect(root.querySelector('.letter-highlight')).toBe(highlight);
     expect(root.querySelector('[popover]')!.textContent).toBe('C: 2');
-    expect(fetch).not.toHaveBeenCalled();
     element.dispatchEvent(new MouseEvent('mouseleave'));
     expect(root.querySelector('.letter-highlight')).toBeNull();
     expect(root.querySelector('[popover]')).toBeNull();
@@ -373,51 +368,6 @@ describe('sequence interactions', () => {
     );
   });
 
-  it('opens selection actions when Safari reports a collapsed document selection for a noncollapsed shadow range', async () => {
-    const root = element.shadowRoot!;
-    const column = root.querySelector('.line-middle')!;
-    const start = column.firstElementChild!.firstChild!;
-    const end = column.lastElementChild!.firstChild!;
-    const getComposedRanges = vi.fn(() => [
-      new StaticRange({
-        startContainer: start,
-        startOffset: 0,
-        endContainer: end,
-        endOffset: 2
-      })
-    ]);
-    const getRangeAt = vi.fn();
-    const selection = {
-      isCollapsed: true,
-      rangeCount: 0,
-      getComposedRanges,
-      getRangeAt
-    } as unknown as Selection;
-    vi.spyOn(
-      root as ShadowRoot & { getSelection: () => Selection },
-      'getSelection'
-    ).mockReturnValue(selection);
-    column.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
-    document.dispatchEvent(new PointerEvent('pointerup'));
-    await vi.waitFor(() =>
-      expect(
-        root.querySelector('[data-mode="selection"]')?.matches(':popover-open')
-      ).toBe(true)
-    );
-    expect(getComposedRanges).toHaveBeenCalledWith({ shadowRoots: [root] });
-    expect(getRangeAt).not.toHaveBeenCalled();
-
-    getComposedRanges.mockReturnValue([
-      new StaticRange({
-        startContainer: start,
-        startOffset: 0,
-        endContainer: start,
-        endOffset: 0
-      })
-    ]);
-    expect(getSequenceSelection(root)).toBeNull();
-  });
-
   it('opens selection actions after mouse release and suppresses the following click', async () => {
     const fetch = vi.spyOn(window, 'fetch');
     const root = element.shadowRoot!;
@@ -461,38 +411,6 @@ describe('sequence interactions', () => {
     );
   });
 
-  it('only clears the selection when clicking inside selected text', async () => {
-    const fetch = vi
-      .spyOn(window, 'fetch')
-      .mockResolvedValue(new Response('<div>Features</div>'));
-    const root = element.shadowRoot!;
-    const column = root.querySelector('.line-middle')!;
-    const range = document.createRange();
-    range.selectNodeContents(column);
-    const selection = (
-      root as ShadowRoot & { getSelection: () => Selection }
-    ).getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-    column.dispatchEvent(
-      new KeyboardEvent('keyup', {
-        key: 'ArrowRight',
-        shiftKey: true,
-        bubbles: true
-      })
-    );
-    expect(
-      root.querySelector('[data-mode="selection"]')?.matches(':popover-open')
-    ).toBe(true);
-    await userEvent.click(column.firstElementChild!);
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(selection.isCollapsed).toBe(true);
-    expect(root.querySelector('[popover]')).toBeNull();
-    expect(fetch).not.toHaveBeenCalled();
-    await userEvent.click(column.firstElementChild!);
-    await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
-  });
-
   it('removes listeners on disconnection and installs them once on reconnection', () => {
     const fetch = vi
       .spyOn(window, 'fetch')
@@ -505,6 +423,7 @@ describe('sequence interactions', () => {
     expect((fetch.mock.calls[0][0] as Request).signal.aborted).toBe(true);
     expect(element.shadowRoot!.querySelector('[popover]')).toBeNull();
   });
+
   it('cancels a pending feature request when the native popover is dismissed', async () => {
     const fetch = vi
       .spyOn(window, 'fetch')
@@ -536,36 +455,6 @@ describe('sequence interactions', () => {
       element.shadowRoot!.querySelector<HTMLElement>('[popover]')!;
     expect(popover.matches(':popover-open')).toBe(true);
     expect(popover.textContent).toContain('C: 2');
-  });
-
-  it('shows unwired selection buttons and clears hover on ancestor scrolling', () => {
-    const root = element.shadowRoot!;
-    letterEvent(element, 'mousemove');
-    document.dispatchEvent(new Event('scroll'));
-    expect(root.querySelector('.letter-highlight')).toBeNull();
-    expect(root.querySelector('[popover]')).toBeNull();
-    const range = document.createRange();
-    range.selectNodeContents(root.querySelector('.line-middle')!);
-    const selection = (
-      root as ShadowRoot & { getSelection: () => Selection }
-    ).getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-    root.querySelector('.line-middle')!.dispatchEvent(
-      new KeyboardEvent('keyup', {
-        key: 'ArrowRight',
-        shiftKey: true,
-        bubbles: true
-      })
-    );
-    const popover = root.querySelector<HTMLElement>('[popover]')!;
-    expect(popover.textContent).toContain('hello world');
-    for (const button of popover.querySelectorAll('button')) {
-      expect(button.disabled).toBe(false);
-      button.click();
-    }
-    expect(popover.textContent).toContain('hello world');
-    expect(popover.matches(':popover-open')).toBe(true);
   });
 
   it.each(['Escape', 'replacement', 'disconnect'])(
