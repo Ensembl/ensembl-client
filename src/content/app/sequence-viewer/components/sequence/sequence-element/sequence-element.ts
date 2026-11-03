@@ -50,6 +50,8 @@ import { SequenceInteractions } from './sequence-interactions';
 
 import type { OverlapRequestParamsWithoutLocation } from '../overlapRequest';
 
+// Safari still doesn't support `user-select: none`,
+// which is the reason for the `-webkit-user-select: none` rule in the styles below
 const staticStyles = `
   :host {
     --_column-gap: var(--sequence-line-column-gap, 1rem);
@@ -97,7 +99,6 @@ const staticStyles = `
   .letter-highlight {
     position: absolute;
     pointer-events: none;
-    user-select: none;
     box-sizing: border-box;
     outline: 1px solid var(--color-black);
   }
@@ -126,7 +127,6 @@ const staticStyles = `
   }
 
   .sequence-popover button {
-    font: inherit;
     color: var(--color-white);
   }
 
@@ -166,11 +166,10 @@ export class Sequence extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' }); // add a shadow DOM
   }
 
   connectedCallback() {
-    this.#interactions?.destroy();
     this.#interactions = new SequenceInteractions({
       host: this,
       root: this.shadowRoot!,

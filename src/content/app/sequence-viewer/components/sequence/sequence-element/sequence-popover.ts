@@ -146,6 +146,7 @@ export class SequencePopover {
     this.#anchor = null;
   }
 
+  // NOTE: The popover has mock content for the time being
   #renderSelection() {
     const title = document.createElement('div');
     title.textContent = 'hello world';

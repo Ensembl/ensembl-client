@@ -34,8 +34,8 @@ type Options = {
 };
 
 export class SequenceInteractions {
-  #listeners = new AbortController();
-  #request: AbortController | null = null;
+  #listenerController = new AbortController();
+  #requestController: AbortController | null = null;
   #selectionTimeout: ReturnType<typeof setTimeout> | null = null;
   #popover: SequencePopover;
   #state: PopoverState = { kind: 'closed' };
@@ -53,10 +53,9 @@ export class SequenceInteractions {
 
   constructor(private options: Options) {
     const { root, host } = options;
-    const { signal } = this.#listeners;
+    const { signal } = this.#listenerController;
     this.#popover = new SequencePopover(root, () => this.reset());
     this.#highlight.className = 'letter-highlight';
-    this.#highlight.setAttribute('aria-hidden', 'true');
 
     root.addEventListener(
       'mousemove',
@@ -177,15 +176,15 @@ export class SequenceInteractions {
 
   reset() {
     this.#cancelPendingSelection();
-    this.#request?.abort();
-    this.#request = null;
+    this.#requestController?.abort();
+    this.#requestController = null;
     this.#clearHover();
     this.#state = { kind: 'closed' };
     this.#popover.close();
   }
 
   destroy() {
-    this.#listeners.abort();
+    this.#listenerController.abort();
     this.reset();
   }
 
@@ -262,9 +261,9 @@ export class SequenceInteractions {
     if (!params) {
       return;
     }
-    this.#request?.abort();
-    const request = new AbortController();
-    this.#request = request;
+    this.#requestController?.abort();
+    const requestController = new AbortController();
+    this.#requestController = requestController;
     this.#setState({
       kind: 'features',
       letter,
@@ -273,9 +272,12 @@ export class SequenceInteractions {
     try {
       const template = await fetchOverlapTemplate(
         { ...params, location: letter.location },
-        request.signal
+        requestController.signal
       );
-      if (this.#request === request && !request.signal.aborted) {
+      if (
+        this.#requestController === requestController &&
+        !requestController.signal.aborted
+      ) {
         this.#setState({
           kind: 'features',
           letter,
@@ -283,7 +285,10 @@ export class SequenceInteractions {
         });
       }
     } catch {
-      if (this.#request === request && !request.signal.aborted) {
+      if (
+        this.#requestController === requestController &&
+        !requestController.signal.aborted
+      ) {
         this.#setState({
           kind: 'features',
           letter,
@@ -295,8 +300,8 @@ export class SequenceInteractions {
 
   #showSelection(selection: SequenceSelection) {
     this.#cancelPendingSelection();
-    this.#request?.abort();
-    this.#request = null;
+    this.#requestController?.abort();
+    this.#requestController = null;
     this.#clearHover();
     this.#setState({ kind: 'selection', selection });
   }
