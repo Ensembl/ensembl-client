@@ -19,7 +19,6 @@ import {
   timer,
   Subject,
   EMPTY,
-  pipe,
   map,
   mergeMap,
   concatMap,
@@ -32,6 +31,9 @@ import {
   scan,
   withLatestFrom,
   startWith,
+  defer,
+  ReplaySubject,
+  finalize,
   Observable,
   NEVER
 } from 'rxjs';
@@ -164,36 +166,45 @@ export const blastFailedSubmissionsEpic: Epic<Action, Action, RootState> = (
  * Here, as long as checkJobStatuses returns jobs whose status is RUNNING,
  * they will be fed back into the expand, and then back to checkJobStatuses
  */
-const poll = (action$: Observable<Action<any>>) =>
-  pipe(
-    expand((input: { submissionId: string; job: BlastJob }[]) => {
-      const runningJobsList = input.filter(
-        ({ job }) => job.status === 'RUNNING'
-      );
+const poll =
+  (action$: Observable<Action<any>>) =>
+  (source: Observable<{ submissionId: string; job: BlastJob }[]>) =>
+    defer(() => {
+      const deletedSubmissions$ = new ReplaySubject<string[]>(1);
+      const deletedSubmissionsSubscription =
+        getDeletedSubmissionsStream(action$).subscribe(deletedSubmissions$);
 
-      if (runningJobsList.length) {
-        return timer(POLLING_INTERVAL).pipe(
-          withLatestFrom(getDeletedSubmissionsStream(action$)),
-          concatMap(([, deletedSubmissions]) => {
-            const { submissionId } = runningJobsList[0];
-            // before issuing a network request, check whether,
-            // during the time of waiting, this submission has been deleted
-            if (deletedSubmissions.includes(submissionId)) {
-              return EMPTY;
-            } else {
-              return checkJobStatuses(runningJobsList);
-            }
-          })
-        );
-      } else {
-        return EMPTY;
-      }
-    }),
-    mergeMap((results) => from(results)), // transform the array of objects returned from the previous operator into individual objects
-    filter((pollingResult) =>
-      ['FINISHED', 'FAILURE'].includes(pollingResult.job.status)
-    ) // TODO: do we need to handle NOT_FOUND (aka 404) or ERROR (aka 500)?
-  );
+      return source.pipe(
+        expand((input: { submissionId: string; job: BlastJob }[]) => {
+          const runningJobsList = input.filter(
+            ({ job }) => job.status === 'RUNNING'
+          );
+
+          if (runningJobsList.length) {
+            return timer(POLLING_INTERVAL).pipe(
+              withLatestFrom(deletedSubmissions$),
+              concatMap(([, deletedSubmissions]) => {
+                const { submissionId } = runningJobsList[0];
+                // before issuing a network request, check whether,
+                // during the time of waiting, this submission has been deleted
+                if (deletedSubmissions.includes(submissionId)) {
+                  return EMPTY;
+                } else {
+                  return checkJobStatuses(runningJobsList);
+                }
+              })
+            );
+          } else {
+            return EMPTY;
+          }
+        }),
+        mergeMap((results) => from(results)), // transform the array of objects returned from the previous operator into individual objects
+        filter((pollingResult) =>
+          ['FINISHED', 'FAILURE'].includes(pollingResult.job.status)
+        ), // TODO: do we need to handle NOT_FOUND (aka 404) or ERROR (aka 500)?
+        finalize(() => deletedSubmissionsSubscription.unsubscribe())
+      );
+    });
 
 // query all running jobs once, one job after the other
 const checkJobStatuses = (input: { submissionId: string; job: BlastJob }[]) => {
