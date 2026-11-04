@@ -27,7 +27,7 @@ variables:
 
 # Template to build static assets
 .build-static:
-  image: node:24
+  image: node:26
   before_script:
   - npm ci --loglevel warn
   - npx playwright install chromium --with-deps
