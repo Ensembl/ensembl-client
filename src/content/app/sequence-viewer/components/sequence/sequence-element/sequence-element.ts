@@ -15,8 +15,9 @@
  */
 
 /**
- * A NOTE ABOUT THE STYLES:
+ * A NOTE ABOUT THIS COMPONENT:
  *
+ * 1. RENDERING THE SEQUENCE
  * Each sequence line is a grid that contains the sequence itself,
  * as well as the numbers at the start and the end of the sequence line
  * to indicate the coordinates of the nucleotides in the line.
@@ -31,24 +32,39 @@
  * so the browser can skip rendering whole sections of the sequence
  * when they are offscreen, which should improve the performance
  * during the initial rendering and subsequent scrolling.
+ *
+ * 2. INTERACTIVITY
+ * The component supports the following kinds of interaction:
+ * - Upon moving the mouse cursor over a letter, the component:
+ *  - Highlights the outline of the letter
+ *  - Shows a popover with letter coordinates next to the letter
+ * - Upon a click on a letter, the component fetches the features
+ *   that overlap the coordinate of this letter, and show them
+ *   in a popover
+ * - Upon selection of a subsequence, the component shows a popover
+ *   that has a "Copy" button (to copy the sequence with a FASTA header),
+ *   and a button that takes user to genome browser.
  */
 
-import {
-  fetchOverlapTemplate,
-  type OverlapRequestParamsWithoutLocation
-} from './overlapRequest';
+import { SequenceInteractions } from './sequence-interactions';
 
+import type { OverlapRequestParamsWithoutLocation } from '../overlapRequest';
+
+// Safari still doesn't support `user-select: none`,
+// which is the reason for the `-webkit-user-select: none` rule in the styles below
 const staticStyles = `
   :host {
+    --_column-gap: var(--sequence-line-column-gap, 1rem);
     font-family: var(--font-family-monospace);
   }
 
   .content-visibility-block {
     content-visibility: auto;
+    width: calc(2 * var(--gutter-width) + 60ch + 2 * var(--_column-gap));
   }
 
   .line {
-    --_column-gap: var(--sequence-line-column-gap, 1rem);
+    position: relative;
     display: grid;
     grid-template-columns: var(--gutter-width) 60ch var(--gutter-width);
     column-gap: var(--_column-gap);
@@ -56,9 +72,15 @@ const staticStyles = `
     width: calc(2 * var(--gutter-width) + 60ch + 2 * var(--_column-gap));
   }
 
+  .line-middle.has-hovered-letter,
+  .line-middle.has-hovered-letter * {
+    cursor: pointer;
+  }
+
   .line-left, .line-right {
     font-size: 12px;
     font-weight: var(--font-weight-light);
+    -webkit-user-select: none;
     user-select: none;
   }
 
@@ -74,14 +96,45 @@ const staticStyles = `
     white-space: pre;
   }
 
+  .letter-highlight {
+    position: absolute;
+    pointer-events: none;
+    box-sizing: border-box;
+    outline: 1px solid var(--color-black);
+  }
+
+
   [popover]:popover-open {
     background-color: var(--color-black);
     color: var(--color-white);
     border: none;
     padding: 12px 20px;
-    max-height: 80cqh;
+    max-height: min(80cqh, calc(100dvh - 16px));
+    box-sizing: border-box;
+    overflow: auto;
     filter: drop-shadow(2px 2px 3px var(--shadow-color));
     position-try-fallbacks: --popover-center-on-line;
+  }
+
+  .sequence-popover[data-mode="coordinates"] {
+    pointer-events: none;
+  }
+
+  .sequence-popover-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .sequence-popover button {
+    color: var(--color-white);
+  }
+
+  .sequence-popover button {
+    background: var(--color-blue);
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
   }
 
   .sequence-popover {
@@ -107,7 +160,7 @@ export type LegendEventDetail = {
 };
 
 export class Sequence extends HTMLElement {
-  #popoverCounter = 0;
+  #interactions: SequenceInteractions | null = null;
   getOverlapRequestParams:
     (() => OverlapRequestParamsWithoutLocation | undefined) | null = null;
 
@@ -117,20 +170,17 @@ export class Sequence extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#setListeners();
+    this.#interactions = new SequenceInteractions({
+      host: this,
+      root: this.shadowRoot!,
+      getOverlapRequestParams: () => this.getOverlapRequestParams?.()
+    });
   }
 
   disconnectedCallback() {
+    this.#interactions?.destroy();
+    this.#interactions = null;
     this.#reportLegend(null);
-  }
-
-  #setListeners() {
-    // TODO: make sure that this only happens on click, not on select
-    this.shadowRoot!.addEventListener('click', (event) => {
-      if (event instanceof PointerEvent) {
-        this.#handleClick(event);
-      }
-    });
   }
 
   set sequence(htmlTemplate: string) {
@@ -170,6 +220,7 @@ export class Sequence extends HTMLElement {
   }
 
   #renderChunks(sequenceTemplate: HTMLTemplateElement) {
+    this.#interactions?.reset();
     const groupedContent = document.createDocumentFragment();
     let linesInChunk: HTMLElement[] = [];
 
@@ -225,183 +276,6 @@ export class Sequence extends HTMLElement {
 
     this.shadowRoot!.adoptedStyleSheets = styleSheets;
   }
-
-  #handleClick(event: PointerEvent) {
-    event.preventDefault();
-    const letterInfo = getLetterInfoFromEvent(event);
-
-    if (!letterInfo) {
-      return;
-    }
-
-    const overlapRequestParams = this.getOverlapRequestParams?.();
-
-    if (overlapRequestParams) {
-      fetchOverlapTemplate({
-        ...overlapRequestParams,
-        location: letterInfo.location
-      }).then((template) => this.#injectOverlapInfoInPopover(template));
-    }
-
-    this.#showPopover({
-      location: letterInfo.location,
-      sequence: letterInfo.character,
-      boundingRect: letterInfo.rect,
-      anchorLine: letterInfo.lineBlock
-    });
-  }
-
-  #showPopover({
-    sequence,
-    location,
-    anchorLine,
-    boundingRect
-  }: {
-    sequence: string;
-    location: { start: number; end: number };
-    boundingRect: Omit<DOMRect, 'toJSON'>;
-    anchorLine: HTMLElement;
-  }) {
-    this.#popoverCounter++;
-    const anchorName = `--sequence-line-${this.#popoverCounter}`;
-
-    const popover = document.createElement('div');
-    popover.popover = 'auto';
-
-    const textContent = `${sequence}: ${location.start}`;
-
-    popover.textContent = textContent;
-    this.shadowRoot!.append(popover);
-
-    // set styles for anchor positioning
-    const anchorLineRect = anchorLine.getBoundingClientRect();
-    anchorLine.style.setProperty('anchor-name', anchorName);
-    popover.style.setProperty('position-anchor', anchorName);
-    popover.style.setProperty(
-      '--letter-offset-x',
-      `${boundingRect.right - anchorLineRect.left}px`
-    );
-    popover.style.setProperty(
-      '--letter-offset-y',
-      `${boundingRect.bottom - anchorLineRect.top}px`
-    );
-
-    popover.className = 'sequence-popover';
-
-    // maybe i don't even need this? just always have a popover available in the dom?
-    popover.addEventListener('toggle', (event) => {
-      if (event.newState === 'closed') {
-        popover.remove();
-
-        // Check that there isn't another popover anchored to this line.
-        if (anchorLine.style.getPropertyValue('anchor-name') !== anchorName) {
-          return;
-        }
-
-        anchorLine.style.removeProperty('anchor-name');
-
-        if (anchorLine.style.length === 0) {
-          anchorLine.removeAttribute('style');
-        }
-        anchorLine.style.removeProperty('anchor-name');
-      }
-    });
-
-    popover.showPopover();
-  }
-
-  #injectOverlapInfoInPopover(template: string) {
-    const popover = this.shadowRoot!.querySelector('div[popover]');
-    const parsedTemplate = new DOMParser().parseFromString(
-      template,
-      'text/html'
-    );
-    // const templateContent = parsedTemplate.body.childNodes;
-
-    popover?.append(
-      ...parsedTemplate.head.childNodes,
-      ...parsedTemplate.body.childNodes
-    );
-  }
 }
-
-const getLetterInfoFromEvent = (event: PointerEvent | MouseEvent) => {
-  const target = event.target as HTMLElement;
-  const sequenceContainer = target.closest('.line-middle');
-  const lineBlock = target.closest('.line') as HTMLElement | null;
-
-  const startAttr = lineBlock?.dataset.start;
-  const endAttr = lineBlock?.dataset.end;
-
-  if (!sequenceContainer || !lineBlock || !startAttr || !endAttr) {
-    return null;
-  }
-
-  const start = Number(startAttr);
-  const end = Number(endAttr);
-  const step = end < start ? -1 : 1;
-
-  const walker = document.createTreeWalker(
-    sequenceContainer,
-    NodeFilter.SHOW_TEXT
-  );
-  const range = document.createRange();
-  let characterIndex = 0;
-  let hit = null;
-
-  while (walker.nextNode()) {
-    const textNode = walker.currentNode;
-
-    // a check to make typescript happy
-    if (!(textNode instanceof Text)) {
-      continue;
-    }
-
-    for (let offset = 0; offset < textNode.length; offset++) {
-      range.setStart(textNode, offset);
-      range.setEnd(textNode, offset + 1);
-
-      const rect = range.getBoundingClientRect();
-      if (
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom
-      ) {
-        const locationStart = start + step * characterIndex;
-        const locationEnd = locationStart;
-
-        hit = {
-          character: textNode.data[offset],
-          index: characterIndex,
-          location: {
-            start: locationStart,
-            end: locationEnd
-          },
-          rect: {
-            x: rect.x,
-            y: rect.y,
-            top: rect.top,
-            right: rect.right,
-            bottom: rect.bottom,
-            left: rect.left,
-            width: rect.width,
-            height: rect.height
-          },
-          lineBlock
-        };
-        break;
-      }
-
-      characterIndex++;
-    }
-
-    if (hit) {
-      break;
-    }
-  }
-
-  return hit;
-};
 
 window.customElements.define('ens-sequence-viewer-sequence', Sequence);
