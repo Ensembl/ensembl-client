@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, type InputEvent, type ReactNode } from 'react';
+import { useEffect, useState, type InputEvent } from 'react';
 
 import {
   useLazySearchGenesQuery,
@@ -33,7 +33,11 @@ import GeneSearchMatches from 'src/shared/components/search-match/GeneSearchMatc
 import TranscriptSearchMatches from 'src/shared/components/search-match/TranscriptSearchMatches';
 import VariantSearchMatches from 'src/shared/components/search-match/VariantSearchMatches';
 
-import type { FeatureSearchAppName } from 'src/shared/helpers/featureSearchHelpers';
+import type {
+  FeatureSearchAppName,
+  FeatureSearchMode
+} from 'src/shared/helpers/featureSearchHelpers';
+import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
 import styles from './InterstitialSearch.module.css';
 
@@ -116,50 +120,19 @@ const InterstitialSearch = (props: Props) => {
 
   const searchResults = [
     {
+      searchMode: 'gene' as FeatureSearchMode,
       title: 'Gene search results',
-      results: currentGeneSearchResults,
-      content: currentGeneSearchResults?.matches.length ? (
-        <GeneSearchMatches
-          results={currentGeneSearchResults}
-          app={app}
-          mode="interstitial"
-          genomeIdForUrl={genomeIdForUrl}
-        />
-      ) : (
-        <NoResults />
-      )
+      results: currentGeneSearchResults
     },
     {
+      searchMode: 'transcript' as FeatureSearchMode,
       title: 'Transcript search results',
-      results: currentTranscriptSearchResults,
-      content: currentTranscriptSearchResults?.matches.length ? (
-        <TranscriptSearchMatches
-          results={currentTranscriptSearchResults}
-          app={app}
-          mode="interstitial"
-          genomeIdForUrl={genomeIdForUrl}
-        />
-      ) : (
-        <NoResults />
-      )
+      results: currentTranscriptSearchResults
     },
     {
+      searchMode: 'variant' as FeatureSearchMode,
       title: 'Variant search results',
-      results: currentVariantSearchResults,
-      content: isMissingResourceError(variantSearchError) ? (
-        <span className={styles.warning}>
-          {getErrorMessage(variantSearchError)}
-        </span>
-      ) : currentVariantSearchResults?.matches.length ? (
-        <VariantSearchMatches
-          results={currentVariantSearchResults}
-          app={app}
-          mode="interstitial"
-          genomeIdForUrl={genomeIdForUrl}
-        />
-      ) : (
-        <NoResults />
-      )
+      results: currentVariantSearchResults
     }
   ].sort(
     (first, second) =>
@@ -183,10 +156,23 @@ const InterstitialSearch = (props: Props) => {
       ) : (
         <div className={styles.resultsContainer}>
           {hasSearchResults &&
-            searchResults.map(({ title, content }) => (
-              <SearchResultsSection key={title} title={title}>
-                {content}
-              </SearchResultsSection>
+            searchResults.map(({ searchMode, title, results }) => (
+              <section className={styles.searchResultsSection} key={searchMode}>
+                <div className={styles.sectionTitle}>{title}</div>
+                {searchMode === 'variant' &&
+                isMissingResourceError(variantSearchError) ? (
+                  <span className={styles.warning}>
+                    {getErrorMessage(variantSearchError)}
+                  </span>
+                ) : (
+                  <ResultsContent
+                    app={app}
+                    genomeIdForUrl={genomeIdForUrl}
+                    searchMode={searchMode}
+                    results={results}
+                  />
+                )}
+              </section>
             ))}
         </div>
       )}
@@ -194,20 +180,50 @@ const InterstitialSearch = (props: Props) => {
   );
 };
 
-const SearchResultsSection = (props: {
-  title: string;
-  children: ReactNode;
-}) => {
-  return (
-    <section className={styles.searchResultsSection}>
-      <div className={styles.sectionTitle}>{props.title}</div>
-      {props.children}
-    </section>
-  );
+type ResultsContentProps = {
+  app: FeatureSearchAppName;
+  genomeIdForUrl: string;
+  searchMode: FeatureSearchMode;
+  results: SearchResults | undefined;
 };
 
-const NoResults = () => (
-  <div className={styles.noResults}>No results found</div>
-);
+const ResultsContent = (props: ResultsContentProps) => {
+  const { app, searchMode, results, genomeIdForUrl } = props;
+
+  if (!results || results.matches.length === 0) {
+    return <div className={styles.noResults}>No results found</div>;
+  }
+
+  if (searchMode === 'gene') {
+    return (
+      <GeneSearchMatches
+        results={results}
+        app={app}
+        mode="interstitial"
+        genomeIdForUrl={genomeIdForUrl}
+      />
+    );
+  }
+
+  if (searchMode === 'transcript') {
+    return (
+      <TranscriptSearchMatches
+        results={results}
+        app={app}
+        mode="interstitial"
+        genomeIdForUrl={genomeIdForUrl}
+      />
+    );
+  }
+
+  return (
+    <VariantSearchMatches
+      results={results}
+      app={app}
+      mode="interstitial"
+      genomeIdForUrl={genomeIdForUrl}
+    />
+  );
+};
 
 export default InterstitialSearch;
