@@ -24,14 +24,14 @@ type Props = {
   className?: string;
 };
 
-let warningText: string | null = null;
+const warningText: string | null = null;
 
 // Comment or uncomment the warning to show or hide it.
-warningText = `
-Due to scheduled infrastructure maintenance,
-the BLAST and VEP tools will be unavailable
-from 8:00 AM GMT on November 3rd until the afternoon of November 5th.
-`;
+// warningText = `
+// Due to scheduled infrastructure maintenance,
+// the BLAST and VEP tools will be unavailable
+// from 8:00 AM GMT on November 3rd until the afternoon of November 5th.
+// `;
 
 const ToolsTopBar = (props: Props) => {
   const componentClasses = classNames(styles.topBar, props.className);
