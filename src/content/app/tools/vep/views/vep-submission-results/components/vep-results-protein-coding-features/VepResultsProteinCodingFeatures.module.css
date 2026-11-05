@@ -1,0 +1,21 @@
+.features {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: baseline;
+  column-gap: 1ch;
+  row-gap: 2px;
+  margin: 0;
+}
+
+.label {
+  white-space: nowrap;
+}
+
+/* Codons and amino acids of a long indel run to hundreds of characters, so they
+   wrap rather than widen the table. */
+.value {
+  margin: 0;
+  max-width: 24ch;
+  overflow-wrap: break-word;
+}

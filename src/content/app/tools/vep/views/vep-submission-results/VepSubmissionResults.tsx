@@ -55,6 +55,7 @@ import VariantConsequence from 'src/shared/components/variant-consequence/Varian
 import VepResultsGene from './components/vep-results-gene/VepResultsGene';
 import VepResultsTranscript from './components/vep-results-transcript/VepResultsTranscript';
 import VepResultsRegulatoryFeature from './components/vep-results-regulatory-feature/VepResultsRegulatoryFeature';
+import VepResultsProteinCodingFeatures from './components/vep-results-protein-coding-features/VepResultsProteinCodingFeatures';
 import VepResultsLocation from './components/vep-results-location/VepResultsLocation';
 import VepResultsAllele from './components/vep-results-allele/VepResultsAllele';
 import VepResultsAnnotationDetail from './components/vep-results-annotation-detail/VepResultsAnnotationDetail';
@@ -452,6 +453,7 @@ export const VepResultsTable = (props: {
           <ColumnHead>Genes</ColumnHead>
           <ColumnHead>Transcripts</ColumnHead>
           {hasRegulatoryColumn && <ColumnHead>Regulatory</ColumnHead>}
+          <ColumnHead>Transcript position & protein change</ColumnHead>
           <ColumnHead>Predicted molecular consequence</ColumnHead>
           <ColumnHead>Annotations</ColumnHead>
         </tr>
@@ -477,7 +479,7 @@ export const VepResultsTable = (props: {
   );
 };
 
-const TABLE_COLUMN_COUNT = 9;
+const TABLE_COLUMN_COUNT = 10;
 
 const getTableColumnCount = (hasRegulatoryColumn: boolean) =>
   hasRegulatoryColumn ? TABLE_COLUMN_COUNT : TABLE_COLUMN_COUNT - 1;
@@ -758,6 +760,7 @@ const VariantRow = (props: {
             toggleExpanded={toggleExpandedTranscripts}
           />
           {hasRegulatoryColumn && <RegulatoryTableCell row={row} />}
+          <ProteinCodingTableCell row={row} />
           <td>
             <VariantConsequences consequences={row.consequence.consequences} />
           </td>
@@ -835,6 +838,25 @@ const RegulatoryTableCell = (props: { row: VepResultsTableRowData }) => {
   return (
     <td>
       <VepResultsRegulatoryFeature feature={consequence} />
+    </td>
+  );
+};
+
+export const ProteinCodingTableCell = (props: {
+  row: VepResultsTableRowData;
+}) => {
+  const { consequence } = props.row;
+
+  if (
+    consequence.feature_type !== 'transcript' ||
+    !consequence.protein_coding
+  ) {
+    return <td />;
+  }
+
+  return (
+    <td>
+      <VepResultsProteinCodingFeatures features={consequence.protein_coding} />
     </td>
   );
 };
