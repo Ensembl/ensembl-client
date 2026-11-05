@@ -25,26 +25,24 @@
     margin-top: 20px;
   }
 
-  .hitsNumber {
-    font-weight: var(--font-weight-bold);
+  .sectionTitle {
+    font-size: 14px;
+  }
+
+  .noResults {
+    font-size: 12px;
+    font-weight: var(--font-weight-light);
   }
 
   .warning {
     color: var(--color-red);
   }
 
-  .totalSearchHits {
-    margin: 20px 0 0 20px;
-  }
-
-  .tabs {
+  .searchResultsSection {
     display: flex;
-    gap: 25px;
-    margin-left: 20px;
-  }
-
-  .activeTab {
-    --text-button-disabled-color: var(--color-black);
+    flex-direction: column;
+    row-gap: 12px;
+    margin-bottom: 32px;
   }
 
 }
