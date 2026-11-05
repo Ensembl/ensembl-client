@@ -14,31 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type InputEvent } from 'react';
 
-import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
-
-import {
-  getFeatureSearchLabelsByMode,
-  getFeatureSearchModes,
-  type FeatureSearchAppName,
-  type FeatureSearchMode,
-  type FeatureSearchModesType
-} from 'src/shared/helpers/featureSearchHelpers';
-
-import { useAppDispatch, useAppSelector } from 'src/store';
-import { getFeatureSearchQueries } from 'src/shared/state/feature-search/featureSearchSelectors';
 import {
   useLazySearchGenesQuery,
   useLazySearchTranscriptsQuery,
   useLazySearchVariantsQuery
 } from 'src/shared/state/api-slices/searchApiSlice';
-import {
-  updateGeneQuery,
-  updateTranscriptQuery,
-  updateVariantQuery
-} from 'src/shared/state/feature-search/featureSearchSlice';
 import {
   isMissingResourceError,
   getErrorMessage
@@ -46,12 +28,15 @@ import {
 
 import { CircleLoader } from 'src/shared/components/loader';
 
-import FeatureSearchForm from 'src/shared/components/feature-search-form/FeatureSearchForm';
+import MainSearchField from 'src/shared/components/main-search-field/MainSearchField';
 import GeneSearchMatches from 'src/shared/components/search-match/GeneSearchMatches';
 import TranscriptSearchMatches from 'src/shared/components/search-match/TranscriptSearchMatches';
 import VariantSearchMatches from 'src/shared/components/search-match/VariantSearchMatches';
-import TextButton from '../text-button/TextButton';
 
+import type {
+  FeatureSearchAppName,
+  FeatureSearchMode
+} from 'src/shared/helpers/featureSearchHelpers';
 import type { SearchResults } from 'src/shared/types/search-api/search-results';
 
 import styles from './InterstitialSearch.module.css';
@@ -65,15 +50,13 @@ export type Props = {
 
 const InterstitialSearch = (props: Props) => {
   const { app, genomeId, genomeIdForUrl, onSearchSubmit } = props;
-  const dispatch = useAppDispatch();
+  const [searchInput, setSearchInput] = useState('');
+  const [prevGenomeId, setPrevGenomeId] = useState(genomeId);
 
-  const initialMode = 'gene';
-  const [activeSearchMode, setActiveSearchMode] =
-    useState<FeatureSearchMode>(initialMode);
-
-  const featureSearchQueries = useAppSelector((state) =>
-    getFeatureSearchQueries(state, app, genomeId)
-  );
+  if (genomeId !== prevGenomeId) {
+    setSearchInput('');
+    setPrevGenomeId(genomeId);
+  }
 
   const [triggerGeneSearch, geneSearchResults] = useLazySearchGenesQuery();
   const { currentData: currentGeneSearchResults } = geneSearchResults;
@@ -90,13 +73,6 @@ const InterstitialSearch = (props: Props) => {
     currentData: currentVariantSearchResults,
     error: variantSearchError
   } = variantSearchResults;
-  const searchModes = getFeatureSearchModes();
-
-  const query =
-    featureSearchQueries[activeSearchMode as keyof typeof featureSearchQueries];
-  const isGeneSearchMode = activeSearchMode === 'gene';
-  const isTranscriptSearchMode = activeSearchMode === 'transcript';
-  const isVariantSearchMode = activeSearchMode === 'variant';
 
   useEffect(() => {
     resetGeneSearch();
@@ -104,215 +80,149 @@ const InterstitialSearch = (props: Props) => {
     resetVariantSearch();
   }, [genomeId, resetGeneSearch, resetTranscriptSearch, resetVariantSearch]);
 
-  useEffect(() => {
-    if (!query) {
-      return;
-    }
-
+  const onFeatureSearchSubmit = (input: string) => {
+    const query = input.trim();
     const searchParams = {
       genome_ids: [genomeId],
-      query: query,
+      query,
       page: 1,
       per_page: 50
     };
 
-    if (isGeneSearchMode) {
-      triggerGeneSearch(searchParams);
-    }
+    triggerGeneSearch(searchParams);
+    triggerTranscriptSearch(searchParams);
+    triggerVariantSearch(searchParams);
 
-    if (isTranscriptSearchMode) {
-      triggerTranscriptSearch(searchParams);
-    }
+    onSearchSubmit?.(query);
+  };
 
-    if (isVariantSearchMode) {
-      triggerVariantSearch(searchParams);
-    }
-  }, [
-    query,
-    isGeneSearchMode,
-    isTranscriptSearchMode,
-    isVariantSearchMode,
-    genomeId,
-    triggerGeneSearch,
-    triggerTranscriptSearch,
-    triggerVariantSearch
-  ]);
+  const onInput = (event: InputEvent<HTMLInputElement>) => {
+    const newInput = event.currentTarget.value;
+    setSearchInput(newInput);
 
-  const onFeatureSearchSubmit = (input: string) => {
-    const isEmpty = input.trim() === '';
-
-    if (isGeneSearchMode) {
-      dispatch(
-        updateGeneQuery({
-          app,
-          genomeId,
-          query: input
-        })
-      );
-
-      if (isEmpty) {
-        geneSearchResults.reset();
-      }
-    } else if (isTranscriptSearchMode) {
-      dispatch(
-        updateTranscriptQuery({
-          app,
-          genomeId,
-          query: input
-        })
-      );
-
-      if (isEmpty) {
-        transcriptSearchResults.reset();
-      }
-    } else if (isVariantSearchMode) {
-      dispatch(
-        updateVariantQuery({
-          app,
-          genomeId,
-          query: input
-        })
-      );
-
-      if (isEmpty) {
-        variantSearchResults.reset();
-      }
-    }
-
-    if (onSearchSubmit) {
-      onSearchSubmit(input);
+    if (newInput.trim() === '') {
+      resetGeneSearch();
+      resetTranscriptSearch();
+      resetVariantSearch();
     }
   };
 
-  const onSearchModeChange = (featureSearchMode: FeatureSearchMode) => {
-    setActiveSearchMode(featureSearchMode);
-  };
-
-  const isGeneSearchResultsDefined =
-    isGeneSearchMode && currentGeneSearchResults;
-  const isTranscriptSearchResultsDefined =
-    isTranscriptSearchMode && currentTranscriptSearchResults;
-  const isVariantSearchResultsDefined =
-    isVariantSearchMode && currentVariantSearchResults;
   const isLoading =
-    (isGeneSearchMode && geneSearchResults.isFetching) ||
-    (isTranscriptSearchMode && transcriptSearchResults.isFetching) ||
-    (isVariantSearchMode && variantSearchResults.isFetching);
+    geneSearchResults.isFetching ||
+    transcriptSearchResults.isFetching ||
+    variantSearchResults.isFetching;
 
-  const totalSearchHitsComponent = isGeneSearchResultsDefined ? (
-    <TotalSearchHits
-      results={currentGeneSearchResults}
-      featureSearchMode={activeSearchMode}
-    />
-  ) : isTranscriptSearchResultsDefined ? (
-    <TotalSearchHits
-      results={currentTranscriptSearchResults}
-      featureSearchMode={activeSearchMode}
-    />
-  ) : isVariantSearchResultsDefined ? (
-    <TotalSearchHits
-      results={currentVariantSearchResults}
-      featureSearchMode={activeSearchMode}
-    />
-  ) : undefined;
+  const hasSearchResults =
+    currentGeneSearchResults ||
+    currentTranscriptSearchResults ||
+    currentVariantSearchResults ||
+    variantSearchError;
 
-  const matchesResultContent = isGeneSearchResultsDefined ? (
-    <GeneSearchMatches
-      results={currentGeneSearchResults}
-      app={app}
-      mode="interstitial"
-      genomeIdForUrl={genomeIdForUrl}
-    />
-  ) : isTranscriptSearchResultsDefined ? (
-    <TranscriptSearchMatches
-      results={currentTranscriptSearchResults}
-      app={app}
-      mode="interstitial"
-      genomeIdForUrl={genomeIdForUrl}
-    />
-  ) : isVariantSearchMode ? (
-    isMissingResourceError(variantSearchError) ? (
-      <span className={styles.warning}>
-        {getErrorMessage(variantSearchError)}
-      </span>
-    ) : isVariantSearchResultsDefined ? (
-      <VariantSearchMatches
-        results={currentVariantSearchResults}
+  const searchResults = [
+    {
+      searchMode: 'gene' as FeatureSearchMode,
+      title: 'Gene search results',
+      results: currentGeneSearchResults
+    },
+    {
+      searchMode: 'transcript' as FeatureSearchMode,
+      title: 'Transcript search results',
+      results: currentTranscriptSearchResults
+    },
+    {
+      searchMode: 'variant' as FeatureSearchMode,
+      title: 'Variant search results',
+      results: currentVariantSearchResults
+    }
+  ].sort(
+    (first, second) =>
+      (second.results?.meta.total_hits ?? 0) -
+      (first.results?.meta.total_hits ?? 0)
+  );
+
+  return (
+    <div className={styles.interstitialSearch}>
+      <MainSearchField
+        query={searchInput}
+        onInput={onInput}
+        onSearchSubmit={onFeatureSearchSubmit}
+        canSubmit={searchInput.trim() !== ''}
+        label="Find a feature in the selected genome"
+        placeholder="Gene, transcript or variant ID..."
+        help="Search for a gene, transcript or variant using a stable identifier, symbol or rsID"
+      />
+      {isLoading ? (
+        <CircleLoader className={styles.spinner} size="small" />
+      ) : (
+        <div className={styles.resultsContainer}>
+          {hasSearchResults &&
+            searchResults.map(({ searchMode, title, results }) => (
+              <section className={styles.searchResultsSection} key={searchMode}>
+                <div className={styles.sectionTitle}>{title}</div>
+                {searchMode === 'variant' &&
+                isMissingResourceError(variantSearchError) ? (
+                  <span className={styles.warning}>
+                    {getErrorMessage(variantSearchError)}
+                  </span>
+                ) : (
+                  <ResultsContent
+                    app={app}
+                    genomeIdForUrl={genomeIdForUrl}
+                    searchMode={searchMode}
+                    results={results}
+                  />
+                )}
+              </section>
+            ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+type ResultsContentProps = {
+  app: FeatureSearchAppName;
+  genomeIdForUrl: string;
+  searchMode: FeatureSearchMode;
+  results: SearchResults | undefined;
+};
+
+const ResultsContent = (props: ResultsContentProps) => {
+  const { app, searchMode, results, genomeIdForUrl } = props;
+
+  if (!results || results.matches.length === 0) {
+    return <div className={styles.noResults}>No results found</div>;
+  }
+
+  if (searchMode === 'gene') {
+    return (
+      <GeneSearchMatches
+        results={results}
         app={app}
         mode="interstitial"
         genomeIdForUrl={genomeIdForUrl}
       />
-    ) : null
-  ) : null;
+    );
+  }
 
-  return (
-    <div className={styles.interstitialSearch}>
-      <SearchTabs
-        activeFeatureSearchMode={activeSearchMode}
-        onSearchModeChange={onSearchModeChange}
-        featureSearchModes={searchModes}
+  if (searchMode === 'transcript') {
+    return (
+      <TranscriptSearchMatches
+        results={results}
+        app={app}
+        mode="interstitial"
+        genomeIdForUrl={genomeIdForUrl}
       />
-      {searchModes.includes(activeSearchMode) && (
-        <FeatureSearchForm
-          activeFeatureSearchMode={activeSearchMode}
-          query={query}
-          onSearchSubmit={onFeatureSearchSubmit}
-          onClear={() => onFeatureSearchSubmit('')}
-        />
-      )}
-      {totalSearchHitsComponent && (
-        <div className={styles.totalSearchHits}>{totalSearchHitsComponent}</div>
-      )}
-      {isLoading ? (
-        <CircleLoader className={styles.spinner} size="small" />
-      ) : (
-        <div className={styles.resultsContainer}>{matchesResultContent}</div>
-      )}
-    </div>
-  );
-};
-
-const SearchTabs = (props: {
-  activeFeatureSearchMode: FeatureSearchMode;
-  onSearchModeChange: (mode: FeatureSearchMode) => void;
-  featureSearchModes: FeatureSearchModesType;
-}) => {
-  const { activeFeatureSearchMode, onSearchModeChange, featureSearchModes } =
-    props;
+    );
+  }
 
   return (
-    <div className={styles.tabs}>
-      {featureSearchModes.map((searchMode) => {
-        const searchModeLabels = getFeatureSearchLabelsByMode(searchMode);
-        return searchMode === activeFeatureSearchMode ? (
-          <TextButton key={searchMode} className={styles.activeTab} disabled>
-            {searchModeLabels.label}
-          </TextButton>
-        ) : (
-          <TextButton
-            key={searchMode}
-            onClick={() => onSearchModeChange(searchMode)}
-          >
-            {searchModeLabels.label}
-          </TextButton>
-        );
-      })}
-    </div>
-  );
-};
-
-const TotalSearchHits = (props: {
-  results: SearchResults;
-  featureSearchMode: FeatureSearchMode;
-}) => {
-  const { results, featureSearchMode } = props;
-  return (
-    <div>
-      <span className={styles.hitsNumber}>
-        {formatNumber(results.meta.total_hits)}
-      </span>{' '}
-      {pluralise(featureSearchMode, results.meta.total_hits)}
-    </div>
+    <VariantSearchMatches
+      results={results}
+      app={app}
+      mode="interstitial"
+      genomeIdForUrl={genomeIdForUrl}
+    />
   );
 };
 
