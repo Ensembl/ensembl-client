@@ -90,6 +90,8 @@ const staticStyles = `
 
   .protein-line {
     margin-bottom: 5px;
+    pointer-events: none;
+    user-select: none;
   }
 
   .protein {
