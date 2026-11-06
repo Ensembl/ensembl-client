@@ -45,11 +45,6 @@ export type TranscriptsLozengeContent = {
   id: string; // stable id of the gene
 };
 
-export type TrackLegendHotspotPayload = Omit<HotspotPayload, 'content'> & {
-  content: TrackLegendHotspotContent[];
+export type TrackLegendHotspotPayload = HotspotPayload & {
   start: boolean; // true on mouse in; false on mouse out
-};
-
-export type TrackLegendHotspotContent = {
-  track: string; // track id
 };

@@ -16,7 +16,6 @@
 
 import { useAppDispatch, useAppSelector } from 'src/store';
 
-import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import { getTrackVisibility } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
@@ -37,9 +36,10 @@ import styles from './TrackPanelItem.module.css';
  * by the tracks api.
  */
 
-type Props = GenomicTrack & {
-  genomeId: string;
-};
+type Props = Pick<GenomicTrack, 'track_id' | 'label'> &
+  Partial<Pick<GenomicTrack, 'additional_info' | 'has_details'>> & {
+    genomeId: string;
+  };
 
 const TrackPanelRegularItem = (props: Props) => {
   const { genomeId, track_id } = props;
@@ -48,7 +48,6 @@ const TrackPanelRegularItem = (props: Props) => {
   );
   const { reportTrackVisibilityToggled, trackDrawerOpened } =
     useGenomeBrowserAnalytics();
-  const { toggleTrack } = useGenomeBrowser();
   const dispatch = useAppDispatch();
 
   const onShowMore = () => {
@@ -66,7 +65,6 @@ const TrackPanelRegularItem = (props: Props) => {
   };
 
   const onChangeVisibility = () => {
-    toggleTrack({ trackId: track_id, isEnabled: !isTrackVisible });
     reportTrackVisibilityToggled(props.label, !isTrackVisible);
 
     dispatch(
@@ -82,7 +80,7 @@ const TrackPanelRegularItem = (props: Props) => {
     <SimpleTrackPanelItemLayout
       visibilityStatus={isTrackVisible ? Status.SELECTED : Status.UNSELECTED}
       onChangeVisibility={onChangeVisibility}
-      onShowMore={onShowMore}
+      onShowMore={props.has_details === false ? undefined : onShowMore}
     >
       <div className={styles.label}>
         <span className={styles.labelText}>{props.label}</span>

@@ -9,7 +9,7 @@ module.exports = (api) => {
       {
         test: /\.tsx$/,
         presets: [
-          '@babel/preset-react'
+          ['@babel/preset-react', { runtime: 'automatic' }]
         ]
       }
     ],

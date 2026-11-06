@@ -26,9 +26,13 @@ import RegulationLegend from './drawer-views/regulation-legend/RegulationLegend'
 
 import { getActiveDrawerView } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 
+import TranscriptomicConfiguration from './drawer-views/transcriptomic-configuration/TranscriptomicConfiguration';
+import { getBrowserActiveGenomeId } from '../../state/browser-general/browserGeneralSelectors';
+
 import styles from './Drawer.module.css';
 
 export const Drawer = () => {
+  const genomeId = useSelector(getBrowserActiveGenomeId);
   const drawerView = useSelector(getActiveDrawerView);
 
   if (!drawerView) {
@@ -37,6 +41,10 @@ export const Drawer = () => {
 
   const getDrawerViewComponent = () => {
     switch (drawerView.name) {
+      case 'transcriptomic_configuration':
+        return genomeId ? (
+          <TranscriptomicConfiguration key={genomeId} genomeId={genomeId} />
+        ) : null;
       case 'track_details':
         return <TrackDetails drawerView={drawerView} />;
       case 'gene_summary':
