@@ -47,6 +47,9 @@
  */
 
 import { SequenceInteractions } from './sequence-interactions';
+import { VisibleRangeReporter } from './visible-range-reporter';
+
+export type { VisibleRange as VisibleRangeEventDetail } from './visible-range-reporter';
 
 import type { OverlapRequestParamsWithoutLocation } from '../overlapRequest';
 
@@ -163,6 +166,7 @@ export type LegendEventDetail = {
 
 export class Sequence extends HTMLElement {
   #interactions: SequenceInteractions | null = null;
+  #visibleRangeReporter: VisibleRangeReporter | null = null;
   getOverlapRequestParams:
     (() => OverlapRequestParamsWithoutLocation | undefined) | null = null;
 
@@ -177,11 +181,14 @@ export class Sequence extends HTMLElement {
       root: this.shadowRoot!,
       getOverlapRequestParams: () => this.getOverlapRequestParams?.()
     });
+    this.#startVisibleRangeReporting();
   }
 
   disconnectedCallback() {
     this.#interactions?.destroy();
     this.#interactions = null;
+    this.#visibleRangeReporter?.destroy();
+    this.#visibleRangeReporter = null;
     this.#reportLegend(null);
   }
 
@@ -222,6 +229,8 @@ export class Sequence extends HTMLElement {
   }
 
   #renderChunks(sequenceTemplate: HTMLTemplateElement) {
+    this.#visibleRangeReporter?.destroy();
+    this.#visibleRangeReporter = null;
     this.#interactions?.reset();
     const groupedContent = document.createDocumentFragment();
     let linesInChunk: HTMLElement[] = [];
@@ -259,6 +268,23 @@ export class Sequence extends HTMLElement {
 
     const resultContainer = this.shadowRoot;
     resultContainer!.replaceChildren(groupedContent);
+    this.#startVisibleRangeReporting();
+  }
+
+  #startVisibleRangeReporting() {
+    if (!this.isConnected) {
+      return;
+    }
+    this.#visibleRangeReporter?.destroy();
+
+    this.#visibleRangeReporter = new VisibleRangeReporter(
+      this,
+      Array.from(
+        this.shadowRoot!.querySelectorAll<HTMLElement>(
+          '.content-visibility-block'
+        )
+      )
+    );
   }
 
   #updateStyles(stylesTemplate: HTMLTemplateElement) {

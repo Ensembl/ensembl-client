@@ -20,7 +20,8 @@ import { getSequenceSelection } from './sequence-hit-testing';
 
 import {
   Sequence as SequenceElement,
-  type LegendEventDetail
+  type LegendEventDetail,
+  type VisibleRangeEventDetail
 } from './sequence-element';
 
 // register the element as a side effect of import
@@ -93,6 +94,123 @@ const sequenceLine = (start = 1, end = 4) => `
     <span class="line-right">${end}</span>
   </div>
 `;
+
+describe('sequence visible range', () => {
+  let container: HTMLDivElement;
+  let element: SequenceElement;
+  let ranges: VisibleRangeEventDetail[];
+
+  const template = (count: number, descending = false) =>
+    '<template id="styles"><style>' +
+    ':host { --gutter-width: 5ch; font: 16px/20px monospace; }' +
+    '.line { height: 20px; }' +
+    '</style></template><template id="sequence">' +
+    Array.from({ length: count }, (_, index) => {
+      const start = descending ? count * 4 - index * 4 : index * 4 + 1;
+      return sequenceLine(start, descending ? start - 3 : start + 3);
+    }).join('') +
+    '</template>';
+
+  beforeEach(() => {
+    ranges = [];
+    container = document.createElement('div');
+    container.style.cssText = 'height: 45px; width: 1000px; overflow: auto;';
+    element = document.createElement(
+      'ens-sequence-viewer-sequence'
+    ) as SequenceElement;
+    container.addEventListener('visible-range-change', (event) => {
+      ranges.push((event as CustomEvent<VisibleRangeEventDetail>).detail);
+    });
+    container.append(element);
+    document.body.append(container);
+  });
+
+  afterEach(() => {
+    container.remove();
+    vi.restoreAllMocks();
+  });
+
+  it('reports partially visible lines and scrolls within and across chunks', async () => {
+    const observe = vi.spyOn(IntersectionObserver.prototype, 'observe');
+    element.sequence = template(1000);
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+
+    // Ten chunk targets and the first hundred lines, rather than all 1000 lines.
+    expect(observe.mock.calls).toHaveLength(110);
+
+    container.scrollTop = 100;
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 21, end: 32 });
+
+    container.scrollTop = 4000;
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 801, end: 812 });
+
+    container.scrollTop = 0;
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+  });
+
+  it('excludes lines below the browser viewport even inside the scroll container', async () => {
+    container.style.cssText =
+      'position: fixed; bottom: -155px; left: 0; height: 200px; width: 1000px; overflow: auto;';
+    element.sequence = template(100);
+
+    // Only the top 45px of the 200px container is on screen.
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+
+    container.scrollTop = 20;
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 5, end: 16 });
+
+    // Moving the pane fully offscreen should clear the reported range.
+    container.style.bottom = '-201px';
+    await expect.poll(() => ranges.at(-1)).toBeNull();
+
+    container.style.bottom = '-155px';
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 5, end: 16 });
+  });
+
+  it('updates after resizing and suppresses unchanged ranges', async () => {
+    element.sequence = template(10);
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+    const eventCount = ranges.length;
+    container.scrollTop = 1;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(ranges).toHaveLength(eventCount);
+
+    container.style.height = '25px';
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 8 });
+  });
+
+  it('preserves descending coordinates in display order when scrolling both ways', async () => {
+    element.sequence = template(10, true);
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 40, end: 29 });
+
+    container.scrollTop = 20;
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 36, end: 25 });
+
+    container.scrollTop = 0;
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 40, end: 29 });
+  });
+
+  it('rebinds on sequence replacement and reports an empty sequence', async () => {
+    element.sequence = template(10);
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+    element.sequence = template(10, true);
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 40, end: 29 });
+    element.sequence = template(0);
+    await expect.poll(() => ranges.at(-1)).toBeNull();
+  });
+
+  it('stops reporting on disconnect and resumes on reconnect', async () => {
+    element.sequence = template(10);
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+    element.remove();
+    ranges.length = 0;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(ranges).toEqual([]);
+
+    container.append(element);
+    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+  });
+});
 
 const letterEvent = (element: SequenceElement, type: string, index = 0) => {
   const container = element.shadowRoot!.querySelector('.line-middle')!;

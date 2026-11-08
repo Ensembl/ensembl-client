@@ -29,7 +29,8 @@ import './sequence-element/sequence-element';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 import type {
   Sequence as SequenceElement,
-  LegendEventDetail
+  LegendEventDetail,
+  VisibleRangeEventDetail
 } from './sequence-element/sequence-element';
 import type { OverlapRequestParamsWithoutLocation } from './overlapRequest';
 
@@ -105,6 +106,9 @@ type SequenceElementProps = DetailedHTMLProps<
   getOverlapRequestParams: () =>
     OverlapRequestParamsWithoutLocation | undefined;
   'onreport-legend'?: (event: CustomEvent<LegendEventDetail>) => void;
+  'onvisible-range-change'?: (
+    event: CustomEvent<VisibleRangeEventDetail>
+  ) => void;
 };
 
 declare module 'react/jsx-runtime' {
