@@ -30,7 +30,8 @@ export enum StorageKeys {
   CHR_LOCATION = 'genomeBrowser.chrLocation',
   DEFAULT_CHR_LOCATION = 'genomeBrowser.defaultChrLocation',
   TRACK_STATES = 'genomeBrowser.trackStates',
-  TRACK_PANELS = 'genomeBrowser.trackPanels'
+  TRACK_PANELS = 'genomeBrowser.trackPanels',
+  TRANSCRIPTOMIC_SELECTIONS = 'genomeBrowser.transcriptomicSelections'
 }
 
 export class BrowserStorageService {
@@ -88,6 +89,19 @@ export class BrowserStorageService {
     this.storageService.update(StorageKeys.TRACK_PANELS, trackPanels);
   }
 
+  public getTranscriptomicSelections(): Record<string, string[]> {
+    return this.storageService.get(StorageKeys.TRANSCRIPTOMIC_SELECTIONS) || {};
+  }
+
+  public updateTranscriptomicSelections(
+    selections: Record<string, string[] | undefined>
+  ): void {
+    this.storageService.update(
+      StorageKeys.TRANSCRIPTOMIC_SELECTIONS,
+      selections
+    );
+  }
+
   public deleteGenome(genomeIdToDelete: string): void {
     const activeGenomeId = this.getActiveGenomeId();
     if (activeGenomeId === genomeIdToDelete) {
@@ -103,6 +117,7 @@ export class BrowserStorageService {
     this.updateTrackPanels({
       [genomeIdToDelete]: undefined
     });
+    this.updateTranscriptomicSelections({ [genomeIdToDelete]: undefined });
   }
 }
 

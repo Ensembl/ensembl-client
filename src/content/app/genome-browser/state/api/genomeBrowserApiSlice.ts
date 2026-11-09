@@ -123,12 +123,22 @@ const genomeBrowserApiSlice = graphqlApiSlice.injectEndpoints({
   })
 });
 
+import type { TranscriptomicConfiguration } from '../types/transcriptomic';
+
 type GenomeTrackCategoriesResponse = {
   track_categories: GenomeTrackCategory[];
 };
 
 const genomeBrowserRestApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    transcriptomicConfiguration: builder.query<
+      TranscriptomicConfiguration,
+      string
+    >({
+      query: (genomeId) => ({
+        url: `${config.tracksApiBaseUrl}/configuration/${genomeId}/transcriptomic`
+      })
+    }),
     genomeTracks: builder.query<GenomeTrackCategory[], string>({
       query: (genomeId) => ({
         url: `${config.tracksApiBaseUrl}/track_categories/${genomeId}`
@@ -155,4 +165,5 @@ export const {
   useGbVariantQuery
 } = genomeBrowserApiSlice;
 
-export const { useGenomeTracksQuery } = genomeBrowserRestApiSlice;
+export const { useGenomeTracksQuery, useTranscriptomicConfigurationQuery } =
+  genomeBrowserRestApiSlice;

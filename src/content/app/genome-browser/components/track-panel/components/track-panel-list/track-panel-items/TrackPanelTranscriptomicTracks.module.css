@@ -1,0 +1,15 @@
+.tissueHeading {
+  background-color: color-mix(
+    in srgb,
+    var(--color-light-grey) 50%,
+    var(--color-white)
+  );
+}
+
+.tissueHeading svg {
+  width: 12px;
+}
+
+.tissueTracks {
+  padding: 10px 0 12px;
+}

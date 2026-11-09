@@ -17,7 +17,7 @@
 import { useEffect, useRef } from 'react';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
-import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import useResolvedGenomeTracks from './useResolvedGenomeTracks';
 import useFocusTrack from './useFocusTrack';
 import useGenomicTracks from './useGenomicTracks';
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
@@ -59,11 +59,8 @@ import type { FocusObject } from 'src/shared/types/focus-object/focusObjectTypes
 
 const useGenomeBrowserTracks = () => {
   const genomeId = useAppSelector(getBrowserActiveGenomeId);
-  const { currentData: trackCategories } = useGenomeTracksQuery(
-    genomeId ?? '',
-    {
-      skip: !genomeId
-    }
+  const { currentData: trackCategories } = useResolvedGenomeTracks(
+    genomeId ?? ''
   );
   const focusObject = useAppSelector(getBrowserActiveFocusObject); // should we think about what to do if there is no focus object
   const trackSettingsForGenome =
@@ -85,19 +82,29 @@ const useGenomeBrowserTracks = () => {
     // or if they have already been set
     if (
       !trackCategories ||
-      !focusObject ||
-      trackSettingsForGenome ||
-      !genomeId
+      !genomeId ||
+      (trackSettingsForGenome &&
+        trackCategories.every((category) =>
+          category.track_list.every(
+            (track) => !!trackSettingsForGenome[track.track_id]
+          )
+        ))
     ) {
       return;
     }
 
+    let cancelled = false;
     initialiseTrackSettingsForGenome({
       genomeId,
       dispatch,
       trackCategories,
-      focusObject
+      focusObject,
+      existingSettings: trackSettingsForGenome,
+      isCancelled: () => cancelled
     });
+    return () => {
+      cancelled = true;
+    };
   }, [
     trackCategories,
     focusObject,
@@ -156,6 +163,8 @@ const initialiseTrackSettingsForGenome = async (params: {
   trackCategories: GenomeTrackCategory[];
   focusObject: FocusObject | null;
   dispatch: ReturnType<typeof useAppDispatch>;
+  existingSettings?: TrackSettingsPerTrack;
+  isCancelled: () => boolean;
 }) => {
   const { genomeId, dispatch } = params;
   const trackSettingsForGenome = prepareTrackSettings(params);
@@ -173,10 +182,11 @@ const initialiseTrackSettingsForGenome = async (params: {
     }
   }
 
+  if (params.isCancelled()) return;
   dispatch(
     setInitialTrackSettingsForGenome({
       genomeId,
-      trackSettings: trackSettingsForGenome
+      trackSettings: { ...trackSettingsForGenome, ...params.existingSettings }
     })
   );
 };

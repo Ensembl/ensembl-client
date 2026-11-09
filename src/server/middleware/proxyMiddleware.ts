@@ -54,6 +54,15 @@ const serverConfig = getConfigForServer();
 */
 
 const createApiProxyMiddleware = () => {
+  const tracksApiProxyMiddleware = process.env.TRACKS_API_PROXY_TARGET
+    ? createHttpProxyMiddleware({
+        pathFilter: '/api/tracks',
+        target: process.env.TRACKS_API_PROXY_TARGET,
+        changeOrigin: true,
+        secure: false
+      })
+    : null;
+
   const apiProxyMiddleware = createHttpProxyMiddleware({
     pathFilter: '/api',
     target: 'https://staging-2020.ensembl.org',
@@ -63,7 +72,9 @@ const createApiProxyMiddleware = () => {
 
   // returning an array so that the specific proxies can be easily modified in local development
   // (see example in the comment block above)
-  return [apiProxyMiddleware];
+  return tracksApiProxyMiddleware
+    ? [tracksApiProxyMiddleware, apiProxyMiddleware]
+    : [apiProxyMiddleware];
 };
 
 const createStaticAssetsMiddleware = () => {

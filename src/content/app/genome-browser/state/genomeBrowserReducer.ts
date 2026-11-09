@@ -24,7 +24,10 @@ import browserBookmarks from 'src/content/app/genome-browser/state/browser-bookm
 import focusObjects from 'src/content/app/genome-browser/state/focus-object/focusObjectSlice';
 import displayedTracks from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSlice';
 
+import transcriptomic from './transcriptomic/transcriptomicSlice';
+
 export default combineReducers({
+  transcriptomic,
   drawer,
   browserGeneral,
   trackSettings,
