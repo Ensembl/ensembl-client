@@ -30,6 +30,7 @@ import AlignmentsViewerLaunchbarButton from './AlignmentsViewerLaunchbarButton';
 import RegulatoryActivityViewerLaunchbarButton from './RegulationViewerLaunchbarButton';
 import BlastLaunchbarButton from './BlastLaunchbarButton';
 import VepLaunchbarButton from './VepLaunchbarButton';
+import DataDistillerLaunchbarButton from './DataDistillerLaunchbarButton';
 import EnsemblMarkIcon from 'src/shared/components/ensembl-mark-icon/EnsemblMarkIcon';
 
 import Logotype from 'static/img/brand/logotype.svg';
@@ -70,6 +71,7 @@ const Launchbar = () => {
           <div className={styles.category}>
             <BlastLaunchbarButton />
             <VepLaunchbarButton />
+            <DataDistillerLaunchbarButton />
           </div>
           <div className={styles.category}>
             <LaunchbarButton
