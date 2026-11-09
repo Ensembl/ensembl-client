@@ -15,7 +15,6 @@ that can be directly targeted by the parent:
     grid-template-columns: repeat(2, max-content);
     grid-template-rows: auto;
     column-gap: 42px;
-    row-gap: 0.2em;
   }
 
   .label {
@@ -39,11 +38,6 @@ that can be directly targeted by the parent:
     align-self: end;
     justify-self: end;
     font-size: 12px;
-  }
-
-  .geneSection .checkboxes {
-    display: flex;
-    flex-direction: column;
   }
 
   .layout {

@@ -1,0 +1,9 @@
+@layer elements {
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    row-gap: 12px;
+  }
+}
+
