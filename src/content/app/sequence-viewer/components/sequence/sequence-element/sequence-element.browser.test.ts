@@ -130,22 +130,77 @@ describe('sequence visible range', () => {
     vi.restoreAllMocks();
   });
 
+  it('ignores aligned protein lines, including at the viewport edges', async () => {
+    const observe = vi.spyOn(IntersectionObserver.prototype, 'observe');
+    const proteinLine = sequenceLine(1, 4).replace(
+      'class="line"',
+      'class="line protein-line"'
+    );
+    container.style.height = '125px';
+    element.sequence = template(0).replace(
+      '<template id="sequence">',
+      '<template id="sequence">' +
+        proteinLine +
+        sequenceLine(101, 104) +
+        proteinLine +
+        sequenceLine(201, 204) +
+        proteinLine
+    );
+
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 101, end: 104 },
+        lastLine: { start: 201, end: 204 }
+      });
+    expect(
+      observe.mock.calls.some(([target]) =>
+        target.classList.contains('protein-line')
+      )
+    ).toBe(false);
+
+    // A viewport showing only an aligned row has no primary sequence range.
+    container.style.height = '10px';
+    container.scrollTop = 50;
+    await expect.poll(() => ranges.at(-1)).toBeNull();
+  });
+
   it('reports partially visible lines and scrolls within and across chunks', async () => {
     const observe = vi.spyOn(IntersectionObserver.prototype, 'observe');
     element.sequence = template(1000);
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 1, end: 4 },
+        lastLine: { start: 9, end: 12 }
+      });
 
     // Ten chunk targets and the first hundred lines, rather than all 1000 lines.
     expect(observe.mock.calls).toHaveLength(110);
 
     container.scrollTop = 100;
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 21, end: 32 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 21, end: 24 },
+        lastLine: { start: 29, end: 32 }
+      });
 
     container.scrollTop = 4000;
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 801, end: 812 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 801, end: 804 },
+        lastLine: { start: 809, end: 812 }
+      });
 
     container.scrollTop = 0;
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 1, end: 4 },
+        lastLine: { start: 9, end: 12 }
+      });
   });
 
   it('excludes lines below the browser viewport even inside the scroll container', async () => {
@@ -154,61 +209,132 @@ describe('sequence visible range', () => {
     element.sequence = template(100);
 
     // Only the top 45px of the 200px container is on screen.
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 1, end: 4 },
+        lastLine: { start: 9, end: 12 }
+      });
 
     container.scrollTop = 20;
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 5, end: 16 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 5, end: 8 },
+        lastLine: { start: 13, end: 16 }
+      });
 
     // Moving the pane fully offscreen should clear the reported range.
     container.style.bottom = '-201px';
     await expect.poll(() => ranges.at(-1)).toBeNull();
 
     container.style.bottom = '-155px';
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 5, end: 16 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 5, end: 8 },
+        lastLine: { start: 13, end: 16 }
+      });
   });
 
   it('updates after resizing and suppresses unchanged ranges', async () => {
     element.sequence = template(10);
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 1, end: 4 },
+        lastLine: { start: 9, end: 12 }
+      });
     const eventCount = ranges.length;
     container.scrollTop = 1;
     await new Promise((resolve) => setTimeout(resolve, 100));
     expect(ranges).toHaveLength(eventCount);
 
     container.style.height = '25px';
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 8 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 1, end: 4 },
+        lastLine: { start: 5, end: 8 }
+      });
   });
 
   it('preserves descending coordinates in display order when scrolling both ways', async () => {
     element.sequence = template(10, true);
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 40, end: 29 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 40, end: 37 },
+        lastLine: { start: 32, end: 29 }
+      });
 
     container.scrollTop = 20;
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 36, end: 25 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 36, end: 33 },
+        lastLine: { start: 28, end: 25 }
+      });
 
     container.scrollTop = 0;
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 40, end: 29 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 40, end: 37 },
+        lastLine: { start: 32, end: 29 }
+      });
+  });
+
+  it('reports the same coordinates for both edges when only one line is visible', async () => {
+    container.style.height = '10px';
+    element.sequence = template(10, true);
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 40, end: 37 },
+        lastLine: { start: 40, end: 37 }
+      });
   });
 
   it('rebinds on sequence replacement and reports an empty sequence', async () => {
     element.sequence = template(10);
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 1, end: 4 },
+        lastLine: { start: 9, end: 12 }
+      });
     element.sequence = template(10, true);
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 40, end: 29 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 40, end: 37 },
+        lastLine: { start: 32, end: 29 }
+      });
     element.sequence = template(0);
     await expect.poll(() => ranges.at(-1)).toBeNull();
   });
 
   it('stops reporting on disconnect and resumes on reconnect', async () => {
     element.sequence = template(10);
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 1, end: 4 },
+        lastLine: { start: 9, end: 12 }
+      });
     element.remove();
     ranges.length = 0;
     await new Promise((resolve) => setTimeout(resolve, 100));
     expect(ranges).toEqual([]);
 
     container.append(element);
-    await expect.poll(() => ranges.at(-1)).toEqual({ start: 1, end: 12 });
+    await expect
+      .poll(() => ranges.at(-1))
+      .toEqual({
+        firstLine: { start: 1, end: 4 },
+        lastLine: { start: 9, end: 12 }
+      });
   });
 });
 

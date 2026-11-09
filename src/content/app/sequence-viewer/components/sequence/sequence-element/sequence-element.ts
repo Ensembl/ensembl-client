@@ -49,7 +49,7 @@
 import { SequenceInteractions } from './sequence-interactions';
 import { VisibleRangeReporter } from './visible-range-reporter';
 
-export type { VisibleRange as VisibleRangeEventDetail } from './visible-range-reporter';
+export type { VisibleRangeEventDetail } from './visible-range-reporter';
 
 import type { OverlapRequestParamsWithoutLocation } from '../overlapRequest';
 

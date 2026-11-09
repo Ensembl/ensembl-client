@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-/** Start of the first visible line and end of the last, in display order. */
-export type VisibleRange = { start: number; end: number } | null;
+type LineCoordinates = { start: number; end: number };
+
+/** Coordinates of the first and last visible primary sequence lines, in display order. */
+export type VisibleRangeEventDetail = {
+  firstLine: LineCoordinates;
+  lastLine: LineCoordinates;
+} | null;
 
 export class VisibleRangeReporter {
   #chunkObserver: IntersectionObserver;
   #lineObserver: IntersectionObserver;
   #activeChunks = new Map<Element, HTMLElement[]>();
-  #observedLines = new Map<Element, { start: number; end: number }>();
+  #observedLines = new Map<Element, LineCoordinates>();
   #visibleLines = new Set<Element>();
-  #lastReportedRange: VisibleRange | undefined;
+  #lastReportedRange: VisibleRangeEventDetail | undefined;
   #pendingFrame: number | null = null;
   #destroyed = false;
 
@@ -89,7 +94,10 @@ export class VisibleRangeReporter {
       return;
     }
     const lines = Array.from(
-      chunk.querySelectorAll<HTMLElement>('.line[data-start][data-end]')
+      // Aligned protein rows have their own coordinate system.
+      chunk.querySelectorAll<HTMLElement>(
+        '.line:not(.protein-line)[data-start][data-end]'
+      )
     );
     this.#activeChunks.set(chunk, lines);
     for (const line of lines) {
@@ -142,24 +150,26 @@ export class VisibleRangeReporter {
         lastLine = line;
       }
     }
-    const next: VisibleRange =
+    const next: VisibleRangeEventDetail =
       firstLine && lastLine
         ? {
-            start: this.#observedLines.get(firstLine)!.start,
-            end: this.#observedLines.get(lastLine)!.end
+            firstLine: { ...this.#observedLines.get(firstLine)! },
+            lastLine: { ...this.#observedLines.get(lastLine)! }
           }
         : null;
     const previous = this.#lastReportedRange;
     if (
       previous !== undefined &&
-      previous?.start === next?.start &&
-      previous?.end === next?.end
+      previous?.firstLine.start === next?.firstLine.start &&
+      previous?.firstLine.end === next?.firstLine.end &&
+      previous?.lastLine.start === next?.lastLine.start &&
+      previous?.lastLine.end === next?.lastLine.end
     ) {
       return;
     }
     this.#lastReportedRange = next;
     this.host.dispatchEvent(
-      new CustomEvent<VisibleRange>('visible-range-change', {
+      new CustomEvent<VisibleRangeEventDetail>('visible-range-change', {
         detail: next,
         bubbles: true
       })
