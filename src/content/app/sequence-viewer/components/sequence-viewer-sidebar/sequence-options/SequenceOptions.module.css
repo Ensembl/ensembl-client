@@ -6,9 +6,34 @@
 
 .featureWrapper {
   display: grid;
-  grid-template-columns: repeat(2, auto);
+  grid-template-columns: 1fr auto;
   column-gap: 0.6rem;
+  justify-items: start;
 }
+
+.featureWrapper:has(.featureBottomRow) {
+  grid-template-columns: auto 1fr auto;
+
+  &:not(:last-child) {
+    margin-bottom: 0.4rem;
+  }
+
+  .featureCheckbox {
+    align-self: center;
+  }
+
+  .featureBottomRow {
+    grid-row: 2/3;
+    grid-column: 2/4;
+  }
+
+  .featureButtons {
+    grid-row: 1/3;
+    grid-column: 3/4;
+    align-self: start;
+  }
+}
+
 
 .featureButtons {
   display: flex;
@@ -32,6 +57,11 @@
 
 .textFieldLabel {
   font-weight: var(--font-weight-light);
+}
+
+.smallLight {
+  font-weight: var(--font-weight-light);
+  font-size: 11px;
 }
 
 .error {

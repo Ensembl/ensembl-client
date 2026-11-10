@@ -20,12 +20,13 @@ import {
   useCallback,
   useMemo,
   useId,
-  type ReactNode,
   type SubmitEventHandler,
   type FocusEventHandler
 } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import classNames from 'classnames';
 
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
@@ -197,9 +198,11 @@ export const CheckboxOptionInMultiselect = memo(
 
     if (option.metadata?.type === 'transcript') {
       return (
-        <TranscriptOptionWrapper transcript={option.metadata}>
-          {checkboxWithLabel}
-        </TranscriptOptionWrapper>
+        <TranscriptOptionWrapper
+          transcript={option.metadata}
+          isChecked={isChecked}
+          onChange={onChange}
+        ></TranscriptOptionWrapper>
       );
     }
 
@@ -209,10 +212,12 @@ export const CheckboxOptionInMultiselect = memo(
 
 export const TranscriptOptionWrapper = ({
   transcript,
-  children
+  isChecked,
+  onChange
 }: {
   transcript: TranscriptMetadata;
-  children: ReactNode;
+  isChecked: boolean;
+  onChange: () => void;
 }) => {
   const urlLocation = useLocation();
   const navigate = useNavigate();
@@ -224,9 +229,26 @@ export const TranscriptOptionWrapper = ({
     navigate(url);
   };
 
+  const checkboxId = useId();
+
   return (
     <div className={styles.featureWrapper}>
-      {children}
+      <Checkbox
+        checked={isChecked}
+        onChange={onChange}
+        id={checkboxId}
+        className={styles.featureCheckbox}
+        aria-description={transcript.id}
+      />
+      <label htmlFor={checkboxId}>
+        <span>{transcript.id}</span>
+      </label>
+      <label
+        htmlFor={checkboxId}
+        className={classNames(styles.featureBottomRow, styles.smallLight)}
+      >
+        <span>Some extra information about transcript</span>
+      </label>
       <div className={styles.featureButtons}>
         <ImageButton
           status={Status.DEFAULT}
