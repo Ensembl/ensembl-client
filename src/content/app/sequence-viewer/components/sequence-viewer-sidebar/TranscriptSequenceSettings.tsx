@@ -81,19 +81,19 @@ const TranscriptSequenceSetttings = () => {
 
   return (
     <div>
-      {currentData && sequenceSettings?.options && (
-        <SequenceOptionsSections
-          appliedSettings={sequenceSettings.options}
-          onSettingsChange={onSettingsChange}
-          sections={currentData.sections}
-        />
-      )}
-
       {currentData?.flanking && sequenceSettings?.options && (
         <FlankingSequences
           flanking={currentData.flanking}
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
+        />
+      )}
+
+      {currentData && sequenceSettings?.options && (
+        <SequenceOptionsSections
+          appliedSettings={sequenceSettings.options}
+          onSettingsChange={onSettingsChange}
+          sections={currentData.sections}
         />
       )}
     </div>

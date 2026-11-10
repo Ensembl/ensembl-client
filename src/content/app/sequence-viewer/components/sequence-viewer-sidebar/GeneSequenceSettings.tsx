@@ -85,19 +85,19 @@ const GeneSequenceSetttings = () => {
       <Link to={mapk10Url}>MAPK10 (604,619 bp)</Link>
       <Link to={dmdUrl}>DMD (2,241,933 bp)</Link>
 
-      {currentData && sequenceSettings?.options && (
-        <SequenceOptionsSections
-          appliedSettings={sequenceSettings.options}
-          onSettingsChange={onSettingsChange}
-          sections={currentData.sections}
-        />
-      )}
-
       {currentData?.flanking && sequenceSettings?.options && (
         <FlankingSequences
           flanking={currentData.flanking}
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
+        />
+      )}
+
+      {currentData && sequenceSettings?.options && (
+        <SequenceOptionsSections
+          appliedSettings={sequenceSettings.options}
+          onSettingsChange={onSettingsChange}
+          sections={currentData.sections}
         />
       )}
     </div>
