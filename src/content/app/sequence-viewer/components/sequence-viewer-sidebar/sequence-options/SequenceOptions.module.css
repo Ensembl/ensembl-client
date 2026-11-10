@@ -39,6 +39,8 @@
   display: flex;
   justify-content: end;
   column-gap: 0.6rem;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .featureButton {
@@ -62,6 +64,11 @@
 .smallLight {
   font-weight: var(--font-weight-light);
   font-size: 11px;
+}
+
+.clipped {
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .error {
