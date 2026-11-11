@@ -58,21 +58,35 @@ import type { OverlapRequestParamsWithoutLocation } from '../overlapRequest';
 const staticStyles = `
   :host {
     --_column-gap: var(--sequence-line-column-gap, 1rem);
+    --_letter-spacing: 0px;
+    --_sequence-width: calc(60 * (1ch + var(--_letter-spacing)));
+    --_line-width: calc(2 * var(--gutter-width) + var(--_sequence-width) + 2 * var(--_column-gap));
+    display: block;
     font-family: var(--font-family-monospace);
+  }
+
+  @media (width >= 1500px) {
+    :host {
+      --_letter-spacing: 0.1em;
+      font-size: 16px;
+    }
   }
 
   .content-visibility-block {
     content-visibility: auto;
-    width: calc(2 * var(--gutter-width) + 60ch + 2 * var(--_column-gap));
+    width: var(--_line-width);
   }
 
   .line {
     position: relative;
     display: grid;
-    grid-template-columns: var(--gutter-width) 60ch var(--gutter-width);
+    grid-template-columns: var(--gutter-width) var(--_sequence-width) var(--gutter-width);
     column-gap: var(--_column-gap);
     align-items: baseline;
-    width: calc(2 * var(--gutter-width) + 60ch + 2 * var(--_column-gap));
+  }
+
+  .line-middle {
+    letter-spacing: var(--_letter-spacing);
   }
 
   .line-middle.has-hovered-letter,
@@ -110,6 +124,7 @@ const staticStyles = `
 
 
   [popover]:popover-open {
+    font-size: var(--body-font-size);
     background-color: var(--color-black);
     color: var(--color-white);
     border: none;
