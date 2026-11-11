@@ -199,6 +199,7 @@ export const CheckboxOptionInMultiselect = memo(
     if (option.metadata?.type === 'transcript') {
       return (
         <TranscriptOptionWrapper
+          label={option.label}
           transcript={option.metadata}
           isChecked={isChecked}
           onChange={onChange}
@@ -211,10 +212,12 @@ export const CheckboxOptionInMultiselect = memo(
 );
 
 export const TranscriptOptionWrapper = ({
+  label,
   transcript,
   isChecked,
   onChange
 }: {
+  label: string;
   transcript: TranscriptMetadata;
   isChecked: boolean;
   onChange: () => void;
@@ -241,7 +244,7 @@ export const TranscriptOptionWrapper = ({
         aria-description={transcript.id}
       />
       <label htmlFor={checkboxId}>
-        <span>{transcript.id}</span>
+        <span>{label}</span>
       </label>
       <label
         htmlFor={checkboxId}
