@@ -213,14 +213,23 @@ const checkJobStatuses = (input: { submissionId: string; job: BlastJob }[]) => {
       const { jobId } = job;
       const url = `${config.toolsApiBaseUrl}/blast/jobs/status/${jobId}`;
       return observableApiService.fetch<{ status: string }>(url).pipe(
-        map((response) => ({
-          submissionId,
-          job: {
-            ...job,
-            status:
-              'error' in response ? 'RUNNING' : (response.status as JobStatus)
+        map((response) => {
+          let status: JobStatus;
+          if ('error' in response) {
+            // Stop polling if the response is an HTTP error (4xx, 5xx);
+            // but continue polling if the problem was due to a network (connectivity) error
+            status =
+              'httpStatus' in response &&
+              response.httpStatus >= 400 &&
+              response.httpStatus < 600
+                ? 'FAILURE'
+                : 'RUNNING';
+          } else {
+            status = response.status as JobStatus;
           }
-        }))
+
+          return { submissionId, job: { ...job, status } };
+        })
       );
     }),
     toArray()
