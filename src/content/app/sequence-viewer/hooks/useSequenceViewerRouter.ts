@@ -75,7 +75,13 @@ const useSequenceViewerRouting = () => {
       const urlToSave = urlLocation.pathname + urlLocation.search;
       latestRoutesMap.genomeUrls[genomeId] = urlToSave;
     }
-  });
+  }, [
+    genomeId,
+    focusObjectIdInUrl,
+    navigate,
+    urlLocation.pathname,
+    urlLocation.search
+  ]);
 };
 
 export default useSequenceViewerRouting;

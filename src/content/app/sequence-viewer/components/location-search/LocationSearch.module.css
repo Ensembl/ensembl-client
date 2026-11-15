@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+}
+
+/* As of summer 2026, Firefox is still lacking support */
+@supports (field-sizing: content) {
+  .input [data-part="input"] {
+    field-sizing: content;
+    max-width: 55ch;
+    min-width: 10ch;
+  }
+}
+

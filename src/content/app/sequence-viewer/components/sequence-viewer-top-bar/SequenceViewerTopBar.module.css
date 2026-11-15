@@ -1,0 +1,65 @@
+.container {
+  display: flex;
+  align-items: center;
+  padding-left: var(--double-standard-gutter);
+  max-width: 100%;
+  min-width: 0;
+  column-gap: var(--standard-gutter);
+}
+
+/* allows text truncation with ellipsis when there isn't enough space */
+.focusWrapper {
+  align-items: baseline;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  > * {
+    display: inline;
+  }
+
+  > * + * {
+    margin-left: var(--standard-gutter);
+  }
+
+  .labelGroup {
+    display: inline-flex;
+    column-gap: 12px;
+    align-items: baseline;
+  }
+}
+
+/* to enable text ellipsis on the location label in LocationTopBar */
+.focusWrapper.locationFocus {
+  flex: 1;
+  min-width: 0;
+
+  > .labelGroup {
+    display: flex;
+    align-items: baseline;
+    min-width: 0;
+
+    > .label {
+      flex: 0 0 auto;
+    }
+
+    > span:last-child {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+
+.label {
+  font-size: 12px;
+  font-weight: var(--font-weight-light);
+}
+
+.rightCorner {
+  margin-left: auto;
+}

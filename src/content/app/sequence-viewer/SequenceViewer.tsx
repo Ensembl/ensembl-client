@@ -28,6 +28,7 @@ import { SequenceViewerIdsContextProvider } from './contexts/SequenceViewerIdsCo
 import { SequenceViewerLegendContextProvider } from './contexts/SequenceViewerLegendContext';
 
 import SequenceViewerAppBar from './components/sequence-viewer-app-bar/SequenceViewerAppBar';
+import SequenceViewerTopBar from './components/sequence-viewer-top-bar/SequenceViewerTopBar';
 import SequenceViewerSidebar, {
   type View as SidebarView
 } from './components/sequence-viewer-sidebar/SequenceViewerSidebar';
@@ -86,7 +87,7 @@ const SequenceViewer = () => {
         mainContent={<MainContent />}
         sidebarContent={<SidebarContent />}
         isSidebarOpen={isSidebarOpen}
-        topbarContent={<div />}
+        topbarContent={<SequenceViewerTopBar />}
         sidebarNavigation={<SequenceViewerSidebarTabs />}
         sidebarToolstripContent={<SidebarToolstrip />}
         onSidebarToggle={onSidebarToggle}
