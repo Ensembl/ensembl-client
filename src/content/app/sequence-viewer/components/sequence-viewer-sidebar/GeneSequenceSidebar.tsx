@@ -15,89 +15,112 @@
  */
 
 import { useCallback } from 'react';
-import { useSearchParams } from 'react-router';
 
-import { useAppSelector, useAppDispatch } from 'src/store';
-
-import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
-
+import { useAppDispatch, useAppSelector } from 'src/store';
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
 import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
+
 import {
   updateSequenceSettings,
   type SequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
-import { useTranscriptSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
+import {
+  useGeneInfoQuery,
+  useGeneSequenceOptionsQuery
+} from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
+import GeneName from 'src/shared/components/gene-name/GeneName';
+import { SidebarLoader } from 'src/shared/components/loader';
 import {
   SequenceOptionsSections,
   FlankingSequences
 } from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
 
-const TranscriptSequenceSetttings = () => {
+import styles from './SequenceViewerSidebar.module.css';
+
+const GeneSequenceSidebar = () => {
   const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
-  const transcriptId = parsedFocusObjectId?.objectId;
-  const [searchParams] = useSearchParams();
-  const dispatch = useAppDispatch();
-
-  const transcriptView =
-    getTranscriptSequenceViewFromSearchParams(searchParams);
-
+  const geneId = parsedFocusObjectId?.objectId;
   const sequenceSettings = useAppSelector((state) =>
     getSequenceSettings(state, {
-      type: 'transcript',
+      type: 'gene',
       genomeId: genomeId ?? '',
-      transcriptId: transcriptId ?? '',
-      sequenceView: transcriptView
+      geneId: geneId ?? ''
     })
   );
+  const dispatch = useAppDispatch();
 
-  const { currentData } = useTranscriptSequenceOptionsQuery({
-    genomeId: genomeId ?? '',
-    transcriptId: transcriptId ?? '',
-    sequenceType: transcriptView
-  });
+  const { currentData: geneInfo, isFetching: isFetchingGeneInfo } =
+    useGeneInfoQuery({
+      genomeId: genomeId ?? '',
+      stableId: geneId ?? ''
+    });
+  const { currentData: fetchedSequenceOptions } = useGeneSequenceOptionsQuery(
+    {
+      geneId: geneId ?? '',
+      genomeId: genomeId ?? ''
+    },
+    {
+      skip: !geneId || !genomeId
+    }
+  );
 
   const onSettingsChange = useCallback(
     (options: SequenceSettings['options']) => {
-      if (!genomeId || !transcriptId) {
+      if (!genomeId || !geneId) {
         // this shouldn't be possible
         return;
       }
 
       dispatch(
         updateSequenceSettings({
-          type: 'transcript',
+          type: 'gene',
           genomeId,
-          transcriptId,
-          sequenceView: transcriptView,
+          geneId,
           options
         })
       );
     },
-    [dispatch, genomeId, transcriptId, transcriptView]
+    [dispatch, genomeId, geneId]
   );
+
+  if (isFetchingGeneInfo) {
+    return <SidebarLoader />;
+  }
+  if (!geneInfo) {
+    return null;
+  }
+
+  // style={{ display: 'flex', flexDirection: 'column', rowGap: '0.6rem' }}
 
   return (
     <div>
-      {currentData?.flanking && sequenceSettings?.options && (
+      <div className={styles.labelledRow}>
+        <span className={styles.label}>Gene</span>
+        <GeneName
+          stable_id={geneInfo.gene.stable_id}
+          symbol={geneInfo.gene.symbol}
+        />
+      </div>
+
+      {fetchedSequenceOptions?.flanking && sequenceSettings?.options && (
         <FlankingSequences
-          flanking={currentData.flanking}
+          flanking={fetchedSequenceOptions.flanking}
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
         />
       )}
 
-      {currentData && sequenceSettings?.options && (
+      {fetchedSequenceOptions && sequenceSettings?.options && (
         <SequenceOptionsSections
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
-          sections={currentData.sections}
+          sections={fetchedSequenceOptions.sections}
         />
       )}
     </div>
   );
 };
 
-export default TranscriptSequenceSetttings;
+export default GeneSequenceSidebar;

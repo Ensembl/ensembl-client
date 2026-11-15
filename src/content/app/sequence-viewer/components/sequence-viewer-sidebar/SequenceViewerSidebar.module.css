@@ -1,0 +1,9 @@
+.labelledRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.6rem;
+}
+
+.label {
+  font-weight: var(--font-weight-light);
+}

@@ -24,9 +24,9 @@ import {
 } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSelectors';
 
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
-import GeneSequenceSetttings from './GeneSequenceSettings';
-import TranscriptSequenceSetttings from './TranscriptSequenceSettings';
-import LocationSequenceSetttings from './LocationSequenceSettings';
+import GeneSequenceSidebar from './GeneSequenceSidebar';
+import TranscriptSequenceSidebar from './TranscriptSequenceSidebar';
+import LocationSequenceSidebar from './LocationSequenceSidebar';
 import SequenceViewerSidebarModal from './sidebar-modal/SequenceViewerSidebarModal';
 import SidebarLegend from './sidebar-legend/SidebarLegend';
 
@@ -56,9 +56,9 @@ const SequenceViewerSidebar = (props: Props) => {
   return (
     <Sidebar>
       <div>
-        {props.view === 'gene' && <GeneSequenceSetttings />}
-        {props.view === 'transcript' && <TranscriptSequenceSetttings />}
-        {props.view === 'location' && <LocationSequenceSetttings />}
+        {props.view === 'gene' && <GeneSequenceSidebar />}
+        {props.view === 'transcript' && <TranscriptSequenceSidebar />}
+        {props.view === 'location' && <LocationSequenceSidebar />}
       </div>
     </Sidebar>
   );
