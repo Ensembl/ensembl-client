@@ -34,6 +34,8 @@ import type {
 } from './sequence-element/sequence-element';
 import type { OverlapRequestParamsWithoutLocation } from './overlapRequest';
 
+import './Sequence.module.css';
+
 type FocusLocationProps = {
   location: GenomicLocation;
 };

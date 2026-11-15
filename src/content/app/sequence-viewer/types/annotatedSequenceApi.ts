@@ -52,6 +52,7 @@ export type SequenceMultiselectOption = {
 export type TranscriptMetadata = {
   type: 'transcript';
   id: string;
+  additional_info: string;
   start: number;
   end: number;
 };
