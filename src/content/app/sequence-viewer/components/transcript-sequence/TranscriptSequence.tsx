@@ -91,6 +91,16 @@ const TranscriptSequence = (props: Props) => {
     paddingTop: 0 // override top padding of the main component to prevent sequence from being visible when it scrolls past the stuck TranscriptSequenceTypes
   };
 
+  if (isFetchingTranscriptInfo) {
+    return (
+      <div className={commonStyles.main}>
+        <div className={commonStyles.loadingSpinnerContainer}>
+          <CircleLoader />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={commonStyles.main} style={inlineStyles}>
       <div className={styles.sequenceTypesContainer}>
