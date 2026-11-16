@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
+import { useNavigate } from 'react-router';
+
 import { useAppDispatch } from 'src/store';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
 import { closeSidebarModal } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSlice';
 
+import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
+import LocationSearch from 'src/content/app/sequence-viewer/components/location-search/LocationSearch';
 import SidebarSearch from 'src/shared/components/sidebar-search/SidebarSearch';
 
 const SequenceViewerSearch = () => {
   const { genomeId, genomeIdForUrl } = useSequenceViewerIds();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const onSearchMatchNavigation = () => {
     if (!genomeId) {
@@ -34,15 +43,38 @@ const SequenceViewerSearch = () => {
     dispatch(closeSidebarModal({ genomeId }));
   };
 
-  return genomeId ? (
-    <SidebarSearch
-      key={genomeId}
-      app="sequenceViewer"
-      genomeId={genomeId}
-      genomeIdForUrl={genomeIdForUrl as string}
-      onMatchNavigation={onSearchMatchNavigation}
-    />
-  ) : null;
+  const onLocationChange = (nextLocation: string) => {
+    navigate(
+      urlFor.sequenceViewer({
+        genomeId: genomeIdForUrl,
+        focusObject: buildFocusIdForUrl({
+          type: 'location',
+          objectId: nextLocation
+        })
+      })
+    );
+  };
+
+  if (!genomeId) {
+    return null;
+  }
+
+  return (
+    <div>
+      <SidebarSectionHeading>Location</SidebarSectionHeading>
+      <div>
+        <LocationSearch genomeId={genomeId} onChange={onLocationChange} />
+      </div>
+      <SidebarSectionHeading>Search a feature</SidebarSectionHeading>
+      <SidebarSearch
+        key={genomeId}
+        app="sequenceViewer"
+        genomeId={genomeId}
+        genomeIdForUrl={genomeIdForUrl as string}
+        onMatchNavigation={onSearchMatchNavigation}
+      />
+    </div>
+  );
 };
 
 export default SequenceViewerSearch;
