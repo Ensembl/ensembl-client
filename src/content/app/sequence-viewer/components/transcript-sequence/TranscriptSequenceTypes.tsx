@@ -22,7 +22,12 @@ import TabButton from 'src/shared/components/tab-button/TabButton';
 
 import styles from './TranscriptSequenceTypes.module.css';
 
-const TranscriptSequenceTypes = () => {
+type Props = {
+  canDisplayGenomicSequence: boolean;
+  hasProtein: boolean;
+};
+
+const TranscriptSequenceTypes = (props: Props) => {
   const urlLocation = useLocation();
   const { pathname, search } = urlLocation;
   const navigate = useNavigate();
@@ -65,6 +70,7 @@ const TranscriptSequenceTypes = () => {
           classNames({ [styles.tabButtonPressed]: view === 'cds' }) ?? undefined
         }
         onClick={() => changeView('cds')}
+        disabled={!props.hasProtein}
       >
         CDS
       </TabButton>
@@ -75,6 +81,7 @@ const TranscriptSequenceTypes = () => {
           undefined
         }
         onClick={() => changeView('protein')}
+        disabled={!props.hasProtein}
       >
         Protein
       </TabButton>

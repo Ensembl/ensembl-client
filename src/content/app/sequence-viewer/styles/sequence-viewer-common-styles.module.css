@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
+  overflow: scroll;
+  scrollbar-gutter: stable;
   padding-top: var(--vertical-space-sm);
   padding-left: var(--double-standard-gutter);
 }
