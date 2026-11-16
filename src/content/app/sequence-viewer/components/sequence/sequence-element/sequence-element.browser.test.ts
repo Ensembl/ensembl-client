@@ -364,10 +364,10 @@ describe('sequence interactions', () => {
     ) as SequenceElement;
     element.style.setProperty('--gutter-width', '8ch');
     element.style.setProperty('--font-family-monospace', 'monospace');
-    element.getOverlapRequestParams = () => ({
-      genome_uuid: 'genome',
-      focus_location: { region_name: '13', start: 1, end: 100 }
-    });
+    element.sequenceContext = {
+      genomeId: 'genome',
+      location: { regionName: '13', start: 1, end: 100 }
+    };
     document.body.append(element);
     element.sequence = response(sequenceLine());
   });
@@ -521,6 +521,68 @@ describe('sequence interactions', () => {
     expect(root.querySelector('[popover]')).toBeNull();
     expect(root.querySelector('.has-hovered-letter')).toBeNull();
   });
+
+  it.each([
+    {
+      context: {
+        genomeId: 'location-genome',
+        location: { regionName: 'X', start: 10, end: 200 }
+      },
+      expected: {
+        genome_uuid: 'location-genome',
+        focus_location: { region_name: 'X', start: 10, end: 200 }
+      }
+    },
+    {
+      context: {
+        genomeId: 'gene-genome',
+        gene: { stableId: 'gene-id' }
+      },
+      expected: {
+        genome_uuid: 'gene-genome',
+        focus_gene: { stable_id: 'gene-id' }
+      }
+    },
+    {
+      context: {
+        genomeId: 'transcript-genome',
+        transcript: { stableId: 'transcript-id' },
+        sequenceView: 'cdna'
+      },
+      expected: {
+        genome_uuid: 'transcript-genome',
+        focus_transcript: { stable_id: 'transcript-id' },
+        sequence_type: 'cdna'
+      }
+    }
+  ])(
+    'uses the updated sequence context: $context',
+    async ({ context, expected }) => {
+      const fetch = vi
+        .spyOn(window, 'fetch')
+        .mockImplementation(async () => new Response('<div>Features</div>'));
+      letterEvent(element, 'click');
+      const firstRequest = fetch.mock.calls[0][0] as Request;
+      expect(await firstRequest.json()).toEqual({
+        genome_uuid: 'genome',
+        focus_location: { region_name: '13', start: 1, end: 100 },
+        location: { start: 1, end: 1 }
+      });
+
+      element.sequenceContext = context;
+      letterEvent(element, 'click', 1);
+      const updatedRequest = fetch.mock.calls[1][0] as Request;
+      expect(await updatedRequest.json()).toEqual({
+        ...expected,
+        location: { start: 2, end: 2 }
+      });
+      await vi.waitFor(() =>
+        expect(
+          element.shadowRoot!.querySelector('[popover]')!.textContent
+        ).toContain('Features')
+      );
+    }
+  );
 
   it('keeps feature content open on hover and ignores stale requests', async () => {
     let resolveFirst!: (response: Response) => void;

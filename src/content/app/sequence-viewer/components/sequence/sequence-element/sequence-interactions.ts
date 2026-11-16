@@ -16,21 +16,21 @@
 
 import {
   fetchOverlapTemplate,
-  type OverlapRequestParamsWithoutLocation
-} from '../overlapRequest';
+  getOverlapRequestParams
+} from './overlapRequest';
 import {
   getLetterInfoFromEvent,
   getSequenceSelection
 } from './sequence-hit-testing';
 import { SequencePopover, type PopoverState } from './sequence-popover';
 
+import type { SequenceContext } from './sequence-element';
 import type { LetterHit, SequenceSelection } from './sequence-hit-testing';
 
 type Options = {
   host: HTMLElement;
   root: ShadowRoot;
-  getOverlapRequestParams: () =>
-    OverlapRequestParamsWithoutLocation | undefined;
+  getSequenceContext: () => SequenceContext | undefined;
 };
 
 export class SequenceInteractions {
@@ -257,10 +257,11 @@ export class SequenceInteractions {
     if (!letter) {
       return;
     }
-    const params = this.options.getOverlapRequestParams();
-    if (!params) {
+    const context = this.options.getSequenceContext();
+    if (!context) {
       return;
     }
+    const params = getOverlapRequestParams(context);
     this.#requestController?.abort();
     const requestController = new AbortController();
     this.#requestController = requestController;

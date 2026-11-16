@@ -49,9 +49,20 @@
 import { SequenceInteractions } from './sequence-interactions';
 import { VisibleRangeReporter } from './visible-range-reporter';
 
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
+
 export type { VisibleRangeEventDetail } from './visible-range-reporter';
 
-import type { OverlapRequestParamsWithoutLocation } from '../overlapRequest';
+export type SequenceContext = {
+  genomeId: string;
+} & (
+  | { location: GenomicLocation }
+  | { gene: { stableId: string } }
+  | {
+      transcript: { stableId: string };
+      sequenceView: string;
+    }
+);
 
 // Safari still doesn't support `user-select: none`,
 // which is the reason for the `-webkit-user-select: none` rule in the styles below
@@ -182,8 +193,7 @@ export type LegendEventDetail = {
 export class Sequence extends HTMLElement {
   #interactions: SequenceInteractions | null = null;
   #visibleRangeReporter: VisibleRangeReporter | null = null;
-  getOverlapRequestParams:
-    (() => OverlapRequestParamsWithoutLocation | undefined) | null = null;
+  sequenceContext: SequenceContext | undefined = undefined;
 
   constructor() {
     super();
@@ -194,7 +204,7 @@ export class Sequence extends HTMLElement {
     this.#interactions = new SequenceInteractions({
       host: this,
       root: this.shadowRoot!,
-      getOverlapRequestParams: () => this.getOverlapRequestParams?.()
+      getSequenceContext: () => this.sequenceContext
     });
     this.#startVisibleRangeReporting();
   }

@@ -16,6 +16,8 @@
 
 import config from 'config';
 
+import type { SequenceContext } from './sequence-element';
+
 type CommonOverlapRequestFields = {
   genome_uuid: string;
   location: {
@@ -52,6 +54,36 @@ export type OverlapRequestParamsWithoutLocation = Omit<
 
 export type OverlapRequestParams = CommonOverlapRequestFields &
   FocusFeatureFields;
+
+export const getOverlapRequestParams = (
+  context: SequenceContext
+): OverlapRequestParamsWithoutLocation => {
+  const common = { genome_uuid: context.genomeId };
+
+  if ('location' in context) {
+    return {
+      ...common,
+      focus_location: {
+        region_name: context.location.regionName,
+        start: context.location.start,
+        end: context.location.end
+      }
+    };
+  }
+
+  if ('gene' in context) {
+    return {
+      ...common,
+      focus_gene: { stable_id: context.gene.stableId }
+    };
+  }
+
+  return {
+    ...common,
+    focus_transcript: { stable_id: context.transcript.stableId },
+    sequence_type: context.sequenceView
+  };
+};
 
 // Not using RTK-query, because the request will be sent from a web component outside of the react tree
 export const fetchOverlapTemplate = async (

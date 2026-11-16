@@ -17,6 +17,7 @@
 import {
   use,
   useCallback,
+  useMemo,
   memo,
   type DetailedHTMLProps,
   type HTMLAttributes
@@ -26,37 +27,18 @@ import { SequenceViewerLegendContext } from 'src/content/app/sequence-viewer/con
 
 import './sequence-element/sequence-element';
 
-import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 import type {
   Sequence as SequenceElement,
   LegendEventDetail,
   VisibleRangeEventDetail
 } from './sequence-element/sequence-element';
-import type { OverlapRequestParamsWithoutLocation } from './overlapRequest';
+import type { SequenceContext } from './sequence-element/sequence-element';
 
 import './Sequence.module.css';
 
-type FocusLocationProps = {
-  location: GenomicLocation;
-};
-type FocusGeneProps = {
-  gene: {
-    stableId: string;
-  };
-};
-type FocusTranscriptProps = {
-  transcript: {
-    stableId: string;
-  };
-  sequenceView: string;
-};
-type FocusObjectProps =
-  FocusLocationProps | FocusGeneProps | FocusTranscriptProps;
-
 type Props = {
-  genomeId: string;
   sequence: string;
-} & FocusObjectProps;
+} & SequenceContext;
 
 const Sequence = ({ sequence, genomeId, ...otherProps }: Props) => {
   const { setTemplate } = use(SequenceViewerLegendContext);
@@ -66,27 +48,31 @@ const Sequence = ({ sequence, genomeId, ...otherProps }: Props) => {
     },
     [setTemplate]
   );
-  const getOverlapRequestParams = useCallback(():
-    OverlapRequestParamsWithoutLocation | undefined => {
+
+  const sequenceContext = useMemo<SequenceContext | undefined>(() => {
     if ('location' in otherProps) {
       return {
-        genome_uuid: genomeId,
-        focus_location: {
-          region_name: otherProps.location.regionName,
+        genomeId,
+        location: {
+          regionName: otherProps.location.regionName,
           start: otherProps.location.start,
           end: otherProps.location.end
         }
       };
-    } else if ('gene' in otherProps) {
+    }
+
+    if ('gene' in otherProps) {
       return {
-        genome_uuid: genomeId,
-        focus_gene: { stable_id: otherProps.gene.stableId }
+        genomeId,
+        gene: { stableId: otherProps.gene.stableId }
       };
-    } else if ('transcript' in otherProps) {
+    }
+
+    if ('transcript' in otherProps) {
       return {
-        genome_uuid: genomeId,
-        focus_transcript: { stable_id: otherProps.transcript.stableId },
-        sequence_type: otherProps.sequenceView
+        genomeId,
+        transcript: { stableId: otherProps.transcript.stableId },
+        sequenceView: otherProps.sequenceView
       };
     }
   }, [genomeId, otherProps]);
@@ -94,7 +80,7 @@ const Sequence = ({ sequence, genomeId, ...otherProps }: Props) => {
   return (
     <ens-sequence-viewer-sequence
       onreport-legend={onLegend}
-      getOverlapRequestParams={getOverlapRequestParams}
+      sequenceContext={sequenceContext}
       sequence={sequence}
     />
   );
@@ -105,8 +91,7 @@ type SequenceElementProps = DetailedHTMLProps<
   SequenceElement
 > & {
   sequence: string;
-  getOverlapRequestParams: () =>
-    OverlapRequestParamsWithoutLocation | undefined;
+  sequenceContext: SequenceContext | undefined;
   'onreport-legend'?: (event: CustomEvent<LegendEventDetail>) => void;
   'onvisible-range-change'?: (
     event: CustomEvent<VisibleRangeEventDetail>
