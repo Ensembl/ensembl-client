@@ -2,6 +2,12 @@
   width: 80ch;
   display: flex;
   justify-content: center;
-  padding-top: 1rem;
-  padding-bottom: 2rem;
+  padding-top: calc(var(--vertical-space-sm) + 1rem);
+  padding-bottom: var(--vertical-space-xs);
+  margin-bottom: calc(var(--vertical-space-sm) - var(--vertical-space-xs));
+  width: 100%;
+  position: sticky;
+  top: 0;
+  background-color: var(--color-white);
+  z-index: 1;
 }

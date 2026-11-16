@@ -22,7 +22,12 @@ import TabButton from 'src/shared/components/tab-button/TabButton';
 
 import styles from './TranscriptSequenceTypes.module.css';
 
-const TranscriptSequenceTypes = () => {
+type Props = {
+  canDisplayGenomicSequence: boolean;
+  hasProtein: boolean;
+};
+
+const TranscriptSequenceTypes = (props: Props) => {
   const urlLocation = useLocation();
   const { pathname, search } = urlLocation;
   const navigate = useNavigate();
@@ -41,45 +46,42 @@ const TranscriptSequenceTypes = () => {
     <div className={styles.tabs}>
       <TabButton
         pressed={view === 'genomic'}
-        className={
-          classNames({ [styles.tabButtonPressed]: view === 'genomic' }) ??
-          undefined
-        }
+        className={getTabButtonClasses(view, 'genomic')}
         onClick={() => changeView('genomic')}
       >
         Genomic
       </TabButton>
       <TabButton
         pressed={view === 'cdna'}
-        className={
-          classNames({ [styles.tabButtonPressed]: view === 'cdna' }) ??
-          undefined
-        }
+        className={getTabButtonClasses(view, 'cdna')}
         onClick={() => changeView('cdna')}
       >
         cDNA
       </TabButton>
       <TabButton
         pressed={view === 'cds'}
-        className={
-          classNames({ [styles.tabButtonPressed]: view === 'cds' }) ?? undefined
-        }
+        className={getTabButtonClasses(view, 'cds')}
         onClick={() => changeView('cds')}
+        disabled={!props.hasProtein}
       >
         CDS
       </TabButton>
       <TabButton
         pressed={view === 'protein'}
-        className={
-          classNames({ [styles.tabButtonPressed]: view === 'protein' }) ??
-          undefined
-        }
+        className={getTabButtonClasses(view, 'protein')}
         onClick={() => changeView('protein')}
+        disabled={!props.hasProtein}
       >
         Protein
       </TabButton>
     </div>
   );
+};
+
+const getTabButtonClasses = (currentView: string, tabView: string) => {
+  return classNames(styles.tabButton, {
+    [styles.pressed]: currentView === tabView
+  });
 };
 
 export default memo(TranscriptSequenceTypes);

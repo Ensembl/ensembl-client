@@ -3,7 +3,14 @@
   column-gap: 0.4rem;
 }
 
-.tabButtonPressed {
-  --tab-button-color: var(--color-black);
-  --tab-button-border-color: var(--color-black);
+.tabButton {
+  &.pressed {
+    --tab-button-color: var(--color-black);
+    --tab-button-border-color: var(--color-black);
+  }
+
+  &:disabled:not(.pressed) {
+    --tab-button-color: var(--color-grey);
+    --tab-button-text-color: var(--color-white);
+  }
 }

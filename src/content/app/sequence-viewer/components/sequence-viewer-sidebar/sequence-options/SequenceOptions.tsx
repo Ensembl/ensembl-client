@@ -250,9 +250,7 @@ export const TranscriptOptionWrapper = ({
         htmlFor={checkboxId}
         className={classNames(styles.featureBottomRow, styles.smallLight)}
       >
-        <span className={styles.clipped}>
-          Some extra information about transcript
-        </span>
+        <span className={styles.clipped}>{transcript.additional_info}</span>
       </label>
       <div className={styles.featureButtons}>
         <ImageButton

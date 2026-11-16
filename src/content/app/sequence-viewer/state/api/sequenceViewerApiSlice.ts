@@ -20,7 +20,9 @@ import config from 'config';
 
 import type {
   AnnotatedSequenceOptionsResponsePayload,
-  SequenceDownloadOptionsResponsePayload
+  SequenceDownloadOptionsResponsePayload,
+  GeneFeatureResponsePayload,
+  TranscriptFeatureResponsePayload
 } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
 type GeneSequenceOptionsRequestParams = {
@@ -41,8 +43,62 @@ type LocationSequenceOptionsRequestParams = {
   end: number;
 };
 
+type FeatureRequestParams = {
+  genomeId: string;
+  stableId: string;
+};
+
 const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    /* Feature info  */
+    geneInfo: builder.query<GeneFeatureResponsePayload, FeatureRequestParams>({
+      queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
+        const payload = {
+          focus_type: 'gene',
+          genome_uuid: params.genomeId,
+          stable_id: params.stableId
+        };
+
+        const result = await baseQuery({
+          url: `${config.annotatedSequenceApi}/feature`,
+          method: 'POST',
+          body: payload
+        });
+
+        if (result.error) {
+          return { error: result.error };
+        }
+        return {
+          data: result.data as GeneFeatureResponsePayload
+        };
+      }
+    }),
+    transcriptInfo: builder.query<
+      TranscriptFeatureResponsePayload,
+      FeatureRequestParams
+    >({
+      queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
+        const payload = {
+          focus_type: 'transcript',
+          genome_uuid: params.genomeId,
+          stable_id: params.stableId
+        };
+
+        const result = await baseQuery({
+          url: `${config.annotatedSequenceApi}/feature`,
+          method: 'POST',
+          body: payload
+        });
+
+        if (result.error) {
+          return { error: result.error };
+        }
+        return {
+          data: result.data as TranscriptFeatureResponsePayload
+        };
+      }
+    }),
+
     /* Sequence options  */
 
     geneSequenceOptions: builder.query<
@@ -214,6 +270,8 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
 });
 
 export const {
+  useGeneInfoQuery,
+  useTranscriptInfoQuery,
   useGeneSequenceOptionsQuery,
   useTranscriptSequenceOptionsQuery,
   useLocationSequenceOptionsQuery,

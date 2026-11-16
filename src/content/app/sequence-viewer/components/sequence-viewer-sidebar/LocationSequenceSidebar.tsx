@@ -41,7 +41,7 @@ const getParsedLocation = (locationString: string) => {
   }
 };
 
-const LocationSequenceSetttings = () => {
+const LocationSequenceSidebar = () => {
   const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
   const genomicLocationString = parsedFocusObjectId?.objectId;
   const parsedLocation = genomicLocationString
@@ -101,4 +101,4 @@ const LocationSequenceSetttings = () => {
   );
 };
 
-export default LocationSequenceSetttings;
+export default LocationSequenceSidebar;

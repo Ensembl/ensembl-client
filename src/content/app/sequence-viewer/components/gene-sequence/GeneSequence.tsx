@@ -28,9 +28,6 @@ import { CircleLoader } from 'src/shared/components/loader';
 
 import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
 
-// Example url:
-// http://localhost:8080/sequence-viewer/GCA_000001405.29?focus=gene:ENSG00000139618
-
 type Props = {
   genomeId: string;
   geneId: string;
@@ -80,12 +77,8 @@ const GeneSequence = (props: Props) => {
     '--gutter-width': `${formattedGeneEndStringEnd}ch`
   };
 
-  const geneSymbol = gene.symbol;
-  const geneNameAndId = geneSymbol ? `${geneSymbol}  ${geneId}` : geneId;
-
   return (
     <div className={commonStyles.main} style={styles}>
-      Gene: {geneNameAndId}
       <Sequence
         genomeId={genomeId}
         gene={{ stableId: geneId }}

@@ -15,75 +15,94 @@
  */
 
 import { useCallback } from 'react';
-import { Link } from 'react-router';
+import { useSearchParams } from 'react-router';
 
-import { useAppDispatch, useAppSelector } from 'src/store';
+import { useAppSelector, useAppDispatch } from 'src/store';
+
+import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
+
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
 import { getSequenceSettings } from 'src/content/app/sequence-viewer/state/settings/settingsSelectors';
-
 import {
   updateSequenceSettings,
   type SequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
-import { useGeneSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
+import {
+  useTranscriptInfoQuery,
+  useTranscriptSequenceOptionsQuery
+} from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
+import { SidebarLoader } from 'src/shared/components/loader';
 import {
   SequenceOptionsSections,
   FlankingSequences
 } from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
 
-const brca2Url = '/sequence-viewer/GCA_000001405.29?focus=gene:ENSG00000139618';
-const mapk10Url =
-  '/sequence-viewer/GCA_000001405.29?focus=gene:ENSG00000109339'; // 604,619
-const dmdUrl = '/sequence-viewer/GCA_000001405.29?focus=gene:ENSG00000198947'; // 2,241,933
+import styles from './SequenceViewerSidebar.module.css';
 
-const GeneSequenceSetttings = () => {
+const TranscriptSequenceSidebar = () => {
   const { genomeId, parsedFocusObjectId } = useSequenceViewerIds();
-  const geneId = parsedFocusObjectId?.objectId;
-  const sequenceSettings = useAppSelector((state) =>
-    getSequenceSettings(state, {
-      type: 'gene',
-      genomeId: genomeId ?? '',
-      geneId: geneId ?? ''
-    })
-  );
+  const transcriptId = parsedFocusObjectId?.objectId;
+  const [searchParams] = useSearchParams();
   const dispatch = useAppDispatch();
 
-  const { currentData } = useGeneSequenceOptionsQuery(
-    {
-      geneId: geneId ?? '',
-      genomeId: genomeId ?? ''
-    },
-    {
-      skip: !geneId || !genomeId
-    }
+  const transcriptView =
+    getTranscriptSequenceViewFromSearchParams(searchParams);
+
+  const sequenceSettings = useAppSelector((state) =>
+    getSequenceSettings(state, {
+      type: 'transcript',
+      genomeId: genomeId ?? '',
+      transcriptId: transcriptId ?? '',
+      sequenceView: transcriptView
+    })
   );
+
+  const { currentData: transcriptInfo, isFetching: isFetchingTranscriptInfo } =
+    useTranscriptInfoQuery({
+      genomeId: genomeId ?? '',
+      stableId: transcriptId ?? ''
+    });
+  const { currentData } = useTranscriptSequenceOptionsQuery({
+    genomeId: genomeId ?? '',
+    transcriptId: transcriptId ?? '',
+    sequenceType: transcriptView
+  });
 
   const onSettingsChange = useCallback(
     (options: SequenceSettings['options']) => {
-      if (!genomeId || !geneId) {
+      if (!genomeId || !transcriptId) {
         // this shouldn't be possible
         return;
       }
 
       dispatch(
         updateSequenceSettings({
-          type: 'gene',
+          type: 'transcript',
           genomeId,
-          geneId,
+          transcriptId,
+          sequenceView: transcriptView,
           options
         })
       );
     },
-    [dispatch, genomeId, geneId]
+    [dispatch, genomeId, transcriptId, transcriptView]
   );
 
+  if (isFetchingTranscriptInfo) {
+    return <SidebarLoader />;
+  }
+  if (!transcriptInfo) {
+    return null;
+  }
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', rowGap: '0.6rem' }}>
-      <Link to={brca2Url}>BRCA2 (85,183 bp)</Link>
-      <Link to={mapk10Url}>MAPK10 (604,619 bp)</Link>
-      <Link to={dmdUrl}>DMD (2,241,933 bp)</Link>
+    <div>
+      <div className={styles.labelledRow}>
+        <span className={styles.label}>Transcript</span>
+        <span>{transcriptInfo.transcript.stable_id}</span>
+      </div>
 
       {currentData?.flanking && sequenceSettings?.options && (
         <FlankingSequences
@@ -104,4 +123,4 @@ const GeneSequenceSetttings = () => {
   );
 };
 
-export default GeneSequenceSetttings;
+export default TranscriptSequenceSidebar;

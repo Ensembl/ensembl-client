@@ -56,6 +56,7 @@ export const SequenceViewerIdsContextProvider = ({
   const {
     genomeId,
     genomeIdInUrl,
+    genomeIdForUrl,
     focusObjectIdInUrl,
     focusObjectId,
     isFetchingGenomeId,
@@ -70,6 +71,7 @@ export const SequenceViewerIdsContextProvider = ({
     activeGenomeId: genomeId ?? null, // FIXME: use active genome id from redux
     genomeId,
     genomeIdInUrl,
+    genomeIdForUrl,
     isFetchingGenomeId, // QUESTION: not sure if consumer needs to know about fetching/validation individual parts of url
     isMissingGenomeId,
     focusObjectIdInUrl,

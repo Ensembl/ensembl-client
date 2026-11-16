@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Strand } from 'src/shared/types/core-api/strand';
+
 export type AnnotatedSequenceRequestPayload = {
   genome_uuid: string;
 
@@ -50,6 +52,7 @@ export type SequenceMultiselectOption = {
 export type TranscriptMetadata = {
   type: 'transcript';
   id: string;
+  additional_info: string;
   start: number;
   end: number;
 };
@@ -89,4 +92,39 @@ export type DownloadFileFormatWithOptions = {
 
 export type SequenceDownloadOptionsResponsePayload = {
   formats: DownloadFileFormatWithOptions[];
+};
+
+/* Feature endpoint */
+
+export type GeneInFeatureResponse = {
+  stable_id: string;
+  unversioned_stable_id: string;
+  symbol: string | null;
+  biotype: string;
+  region_name: string;
+  start: number;
+  end: number;
+  strand: Strand;
+};
+
+export type TranscriptInFeatureResponse = {
+  stable_id: string;
+  unversioned_stable_id: string;
+  biotype: string;
+  has_protein: boolean;
+  gene_stable_id: string;
+  gene_unversioned_stable_id: string;
+  gene_symbol: string | null;
+  region_name: string;
+  start: number;
+  end: number;
+  strand: Strand;
+};
+
+export type GeneFeatureResponsePayload = {
+  gene: GeneInFeatureResponse;
+};
+
+export type TranscriptFeatureResponsePayload = {
+  transcript: TranscriptInFeatureResponse;
 };

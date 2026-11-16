@@ -17,12 +17,13 @@
 import type { CSSProperties } from 'react';
 import { useSearchParams } from 'react-router';
 
-import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
-
-import useTranscriptSequenceSettings from 'src/content/app/sequence-viewer/hooks/useTranscriptSequenceSettings';
-
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
+import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
+
+import { useTranscriptInfoQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
+
+import useTranscriptSequenceSettings from 'src/content/app/sequence-viewer/hooks/useTranscriptSequenceSettings';
 import useTranscriptSequence from './useTranscriptSequence';
 
 import TranscriptSequenceTypes from './TranscriptSequenceTypes';
@@ -37,15 +38,21 @@ type Props = {
   transcriptId: string;
 };
 
-// Example url:
-// http://localhost:8080/sequence-viewer/GCA_000001405.29?focus=transcript:ENST00000380152&location=13:32272786-32444334
-
 const TranscriptSequence = (props: Props) => {
   const { genomeId, transcriptId } = props;
   const [searchParams] = useSearchParams();
 
   const transcriptView =
     getTranscriptSequenceViewFromSearchParams(searchParams);
+
+  const {
+    currentData: transcriptInfo,
+    isFetching: isFetchingTranscriptInfo,
+    isError: transcriptInfoError
+  } = useTranscriptInfoQuery({
+    genomeId: genomeId ?? '',
+    stableId: transcriptId ?? ''
+  });
 
   const {
     settings: sequenceSettings,
@@ -67,21 +74,40 @@ const TranscriptSequence = (props: Props) => {
     settings: sequenceSettings
   });
   const isLoading =
-    isLoadingSettings || (!isSettingsError && isLoadingSequence);
-  const isError = isSettingsError || (!isLoadingSettings && isSequenceError);
+    isFetchingTranscriptInfo ||
+    isLoadingSettings ||
+    (!isSettingsError && isLoadingSequence);
+  const isError =
+    transcriptInfoError ||
+    isSettingsError ||
+    (!isLoadingSettings && isSequenceError);
 
   const transcriptEnd = data?.transcript.slice.location.end ?? 1;
   const formattedTranscriptEndString = formatNumber(transcriptEnd);
   const formattedGeneEndStringEnd = formattedTranscriptEndString.length;
 
   const inlineStyles: CSSProperties & { '--gutter-width': string } = {
-    '--gutter-width': `${formattedGeneEndStringEnd}ch`
+    '--gutter-width': `${formattedGeneEndStringEnd}ch`,
+    paddingTop: 0 // override top padding of the main component to prevent sequence from being visible when it scrolls past the stuck TranscriptSequenceTypes
   };
+
+  if (isFetchingTranscriptInfo) {
+    return (
+      <div className={commonStyles.main}>
+        <div className={commonStyles.loadingSpinnerContainer}>
+          <CircleLoader />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={commonStyles.main} style={inlineStyles}>
       <div className={styles.sequenceTypesContainer}>
-        <TranscriptSequenceTypes />
+        <TranscriptSequenceTypes
+          hasProtein={transcriptInfo?.transcript.has_protein ?? true}
+          canDisplayGenomicSequence={true}
+        />
       </div>
 
       {isLoading && (

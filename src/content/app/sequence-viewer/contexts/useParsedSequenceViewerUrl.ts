@@ -49,6 +49,8 @@ const useParsedSequenceViewerUrl = () => {
   const genomeId = genomeSummary?.genome_id;
   const isMissingGenomeId = isError && isGenomeNotFoundError(error);
 
+  const genomeIdForUrl = genomeSummary?.genome_tag ?? genomeSummary?.genome_id;
+
   let focusObjectId;
   let parsedFocusObjectId;
   let isMalformedFocusObjectId = false;
@@ -77,6 +79,7 @@ const useParsedSequenceViewerUrl = () => {
 
   return {
     genomeIdInUrl,
+    genomeIdForUrl,
     focusObjectIdInUrl,
     isFetchingGenomeId: isFetching,
     isMissingGenomeId,
