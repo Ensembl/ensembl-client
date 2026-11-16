@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+
 import type { LetterHit, SequenceSelection } from './sequence-hit-testing';
 
 export type PopoverState =
@@ -69,7 +71,7 @@ export class SequencePopover {
     this.#clearAnchor();
   }
 
-  render(state: PopoverState) {
+  render(state: PopoverState, regionName?: string) {
     if (state.kind === 'closed') {
       this.close();
       return;
@@ -108,7 +110,11 @@ export class SequencePopover {
       this.#renderSelection();
     } else {
       const coordinates = document.createElement('div');
-      coordinates.textContent = `${state.letter.character}: ${state.letter.location.start}`;
+      const formattedPosition = formatNumber(state.letter.location.start);
+      const location = regionName
+        ? `${regionName}:${formattedPosition}`
+        : formattedPosition;
+      coordinates.textContent = `${state.letter.character}: ${location}`;
       element.append(coordinates);
       if (state.kind === 'features') {
         if (state.content.status === 'ready') {

@@ -192,6 +192,7 @@ export type LegendEventDetail = {
 
 export class Sequence extends HTMLElement {
   #interactions: SequenceInteractions | null = null;
+  #regionName: string | undefined;
   #visibleRangeReporter: VisibleRangeReporter | null = null;
   sequenceContext: SequenceContext | undefined = undefined;
 
@@ -204,7 +205,8 @@ export class Sequence extends HTMLElement {
     this.#interactions = new SequenceInteractions({
       host: this,
       root: this.shadowRoot!,
-      getSequenceContext: () => this.sequenceContext
+      getSequenceContext: () => this.sequenceContext,
+      getRegionName: () => this.#regionName
     });
     this.#startVisibleRangeReporting();
   }
@@ -232,6 +234,8 @@ export class Sequence extends HTMLElement {
     if (!sequenceTemplate || !stylesTemplate) {
       throw new Error('No template found in response!');
     }
+
+    this.#regionName = sequenceTemplate.dataset.regionName;
 
     this.#updateStyles(stylesTemplate);
 

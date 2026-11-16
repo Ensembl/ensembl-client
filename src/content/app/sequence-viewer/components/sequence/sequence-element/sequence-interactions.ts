@@ -31,6 +31,7 @@ type Options = {
   host: HTMLElement;
   root: ShadowRoot;
   getSequenceContext: () => SequenceContext | undefined;
+  getRegionName: () => string | undefined;
 };
 
 export class SequenceInteractions {
@@ -193,7 +194,7 @@ export class SequenceInteractions {
     if (state.kind === 'features') {
       this.#highlightLetter(state.letter);
     }
-    this.#popover.render(state);
+    this.#popover.render(state, this.options.getRegionName());
   }
 
   #clearHover() {

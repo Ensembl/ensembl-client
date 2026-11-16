@@ -584,6 +584,55 @@ describe('sequence interactions', () => {
     }
   );
 
+  it.each([undefined, '13'])(
+    'formats coordinates in hover and click popovers with region %s',
+    async (regionName) => {
+      const fetch = vi
+        .spyOn(window, 'fetch')
+        .mockImplementation(async () => new Response('<div>Features</div>'));
+      const template = response(sequenceLine(32272829, 32272832));
+      element.sequence = regionName
+        ? template.replace(
+            '<template id="sequence">',
+            `<template id="sequence" data-region-name="${regionName}">`
+          )
+        : template;
+      const expected = regionName ? 'A: 13:32,272,829' : 'A: 32,272,829';
+
+      letterEvent(element, 'mousemove');
+      expect(element.shadowRoot!.querySelector('[popover]')!.textContent).toBe(
+        expected
+      );
+      expect(fetch).not.toHaveBeenCalled();
+
+      letterEvent(element, 'click');
+      expect(
+        element.shadowRoot!.querySelector('[popover]')!.firstElementChild!
+          .textContent
+      ).toBe(expected);
+      await vi.waitFor(() =>
+        expect(
+          element.shadowRoot!.querySelector('[popover]')!.textContent
+        ).toContain('Features')
+      );
+      expect(
+        element.shadowRoot!.querySelector('[popover]')!.firstElementChild!
+          .textContent
+      ).toBe(expected);
+      const request = fetch.mock.calls[0][0] as Request;
+      expect((await request.json()).location).toEqual({
+        start: 32272829,
+        end: 32272829
+      });
+
+      element.sequence = template;
+      letterEvent(element, 'mousemove');
+      expect(element.shadowRoot!.querySelector('[popover]')!.textContent).toBe(
+        'A: 32,272,829'
+      );
+    }
+  );
+
   it('keeps feature content open on hover and ignores stale requests', async () => {
     let resolveFirst!: (response: Response) => void;
     const fetch = vi
