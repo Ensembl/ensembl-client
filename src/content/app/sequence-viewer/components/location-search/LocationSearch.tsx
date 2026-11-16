@@ -165,6 +165,7 @@ const CompactLocationSearch = ({
           value={value}
           onInput={onInput}
           onBlur={onBlur}
+          aria-label="Genomic location"
         />
         {isValidationError && (
           <Tooltip anchor={inputAnchor} delay={0} onClose={onWarningRemoval}>
@@ -191,7 +192,12 @@ const DefaultLocationSearch = ({
   return (
     <>
       <div>
-        <FlatInput className={styles.input} value={value} onInput={onInput} />
+        <FlatInput
+          className={styles.input}
+          value={value}
+          onInput={onInput}
+          aria-label="Genomic location"
+        />
       </div>
       {isValidationError && <div>Invalid location</div>}
       <PrimaryButton disabled={!canSubmit}>Go</PrimaryButton>
