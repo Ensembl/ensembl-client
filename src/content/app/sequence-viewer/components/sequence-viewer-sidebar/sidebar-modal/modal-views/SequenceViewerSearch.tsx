@@ -53,6 +53,7 @@ const SequenceViewerSearch = () => {
         })
       })
     );
+    onSearchMatchNavigation();
   };
 
   if (!genomeId) {
