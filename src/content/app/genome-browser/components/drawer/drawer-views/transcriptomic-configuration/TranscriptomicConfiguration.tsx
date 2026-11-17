@@ -23,7 +23,8 @@ import {
   getTranscriptomicFilterOptions,
   groupTranscriptomicSelectionHierarchy,
   resolveTranscriptomicTracks,
-  toggleSelectionIds
+  toggleSelectionIds,
+  type TranscriptomicSelectionGroup
 } from 'src/content/app/genome-browser/helpers/transcriptomic';
 import type {
   TranscriptomicConfiguration as Configuration,
@@ -117,7 +118,7 @@ export function ConfigurationForm({
       ).length
     : configuration.track_count;
   const hiddenCount = configuration.track_count - selectableTrackCount;
-  const tissues = groupTranscriptomicSelectionHierarchy(
+  const groups = groupTranscriptomicSelectionHierarchy(
     matching,
     configuration.selection_hierarchy
   );
@@ -183,7 +184,7 @@ export function ConfigurationForm({
       <div className={styles.columns}>
         <section aria-label="Track selections">
           <div className={styles.sectionHeader}>
-            <h3>Tissues</h3>
+            <h3>Selections</h3>
             <TextButton
               disabled={pending || !draft.length}
               onClick={() => setDraft([])}
@@ -196,64 +197,14 @@ export function ConfigurationForm({
           ) : (
             !matching.length && <p>No selections match these filters.</p>
           )}
-          {tissues.map((tissue) => {
-            const tissueRunIds = tissue.samples.flatMap((group) =>
-              group.selections.map((selection) => selection.selection_id)
-            );
-            const samples = tissue.samples.map((group) => {
-              const runs = group.selections.map((selection) => (
-                <ConfigurationOption
-                  key={selection.selection_id}
-                  label={selection.display_label}
-                  checked={selected.has(selection.selection_id)}
-                  disabled={pending}
-                  onChange={(checked) =>
-                    toggle([selection.selection_id], checked)
-                  }
-                />
-              ));
-              const expansionKey = JSON.stringify([
-                'sample',
-                tissue.key,
-                group.sampleId
-              ]);
-              return (
-                <ConfigurationGroup
-                  key={group.sampleId}
-                  label={group.sampleId}
-                  count={group.selections.length}
-                  expanded={expanded[expansionKey] ?? false}
-                  onToggle={() => toggleExpanded(expansionKey)}
-                  selection={{
-                    ids: group.selections.map((s) => s.selection_id),
-                    selected,
-                    disabled: pending,
-                    onChange: toggle
-                  }}
-                >
-                  <div className={styles.runs}>{runs}</div>
-                </ConfigurationGroup>
-              );
-            });
-            const expansionKey = JSON.stringify(['tissue', tissue.key]);
-            return (
-              <ConfigurationGroup
-                key={tissue.key}
-                label={tissue.label}
-                count={tissueRunIds.length}
-                expanded={expanded[expansionKey] ?? false}
-                onToggle={() => toggleExpanded(expansionKey)}
-                selection={{
-                  ids: tissueRunIds,
-                  selected,
-                  disabled: pending,
-                  onChange: toggle
-                }}
-              >
-                <div className={styles.samples}>{samples}</div>
-              </ConfigurationGroup>
-            );
-          })}
+          <SelectionGroups
+            groups={groups}
+            selected={selected}
+            expanded={expanded}
+            pending={pending}
+            onToggleExpanded={toggleExpanded}
+            onChange={toggle}
+          />
         </section>
         <section aria-label="Selection filters" className={styles.filtersPane}>
           <div className={styles.sectionHeader}>
@@ -301,4 +252,69 @@ export function ConfigurationForm({
       </div>
     </>
   );
+}
+
+function SelectionGroups({
+  groups,
+  selected,
+  expanded,
+  pending,
+  onToggleExpanded,
+  onChange
+}: {
+  groups: TranscriptomicSelectionGroup[];
+  selected: Set<string>;
+  expanded: Record<string, boolean>;
+  pending: boolean;
+  onToggleExpanded: (key: string) => void;
+  onChange: (ids: string[], checked: boolean) => void;
+}) {
+  return groups.map((group) => (
+    <ConfigurationGroup
+      key={group.key}
+      label={group.label}
+      count={group.trackIds.length}
+      expanded={expanded[group.key] ?? false}
+      onToggle={() => onToggleExpanded(group.key)}
+      selection={{
+        ids: group.selectionIds,
+        selected,
+        disabled: pending,
+        onChange
+      }}
+    >
+      {group.selections.length > 0 && (
+        <div className={styles.selections}>
+          {group.selections.map((selection) => (
+            <ConfigurationOption
+              key={selection.selection_id}
+              label={resolveTranscriptomicTracks(
+                [selection],
+                [selection.selection_id]
+              )
+                .map(({ label }) => label)
+                .join(', ')}
+              checked={selected.has(selection.selection_id)}
+              disabled={pending}
+              onChange={(checked) =>
+                onChange([selection.selection_id], checked)
+              }
+            />
+          ))}
+        </div>
+      )}
+      {group.children.length > 0 && (
+        <div className={styles.childGroups}>
+          <SelectionGroups
+            groups={group.children}
+            selected={selected}
+            expanded={expanded}
+            pending={pending}
+            onToggleExpanded={onToggleExpanded}
+            onChange={onChange}
+          />
+        </div>
+      )}
+    </ConfigurationGroup>
+  ));
 }

@@ -38,12 +38,15 @@ import { GB_TRACK_SETTINGS_STORE_NAME } from 'src/content/app/genome-browser/ser
 import { saveTrackSettingsForGenome } from 'src/content/app/genome-browser/services/track-settings/trackSettingsStorageService';
 import { buildDefaultRegularTrack } from 'src/content/app/genome-browser/state/track-settings/trackSettingsConstants';
 import {
+  sampleIds,
+  trackLabels,
   createTranscriptomicConfiguration,
   genomeId,
   otherGenomeId,
   brainRun,
   liverRunA,
-  liverRunB
+  liverRunB,
+  liverRunC
 } from 'tests/fixtures/transcriptomic';
 
 const { tracksApiUrl, browser, toggleTrack, toggleTrackSetting } = vi.hoisted(
@@ -176,7 +179,10 @@ describe('transcriptomic browser integration', () => {
       .getByRole('button', { name: 'Liver', exact: true })
       .click();
     await page
-      .getByRole('checkbox', { name: liverRunA.parent_sample_id, exact: true })
+      .getByRole('checkbox', { name: sampleIds.liverOne, exact: true })
+      .click();
+    await page
+      .getByRole('checkbox', { name: sampleIds.liverTwo, exact: true })
       .click();
     await page.getByRole('checkbox', { name: 'Brain', exact: true }).click();
     await apply();
@@ -190,8 +196,19 @@ describe('transcriptomic browser integration', () => {
       exact: true
     });
     await expect
-      .element(brainGroup.getByText(brainRun.display_label, { exact: true }))
+      .element(brainGroup.getByText(trackLabels.brainRun, { exact: true }))
       .toBeVisible();
+    await expect
+      .element(liverGroup.getByText(trackLabels.liverRunC, { exact: true }))
+      .toBeVisible();
+    await expect
+      .element(
+        liverGroup.getByRole('button', {
+          name: sampleIds.liverOne,
+          exact: true
+        })
+      )
+      .not.toBeInTheDocument();
     const collapseLiver = liverGroup.getByRole('button', {
       name: 'Liver',
       exact: true
@@ -201,10 +218,10 @@ describe('transcriptomic browser integration', () => {
       .element(collapseLiver)
       .toHaveAttribute('aria-expanded', 'false');
     await expect
-      .element(liverGroup.getByText(liverRunA.display_label, { exact: true }))
+      .element(liverGroup.getByText(trackLabels.liverRunA, { exact: true }))
       .not.toBeInTheDocument();
     await expect
-      .element(brainGroup.getByText(brainRun.display_label, { exact: true }))
+      .element(brainGroup.getByText(trackLabels.brainRun, { exact: true }))
       .toBeVisible();
     await expect
       .element(
@@ -216,10 +233,10 @@ describe('transcriptomic browser integration', () => {
       .toBeVisible();
     await collapseLiver.click();
     await expect
-      .element(rows.getByText(liverRunA.display_label, { exact: true }))
+      .element(rows.getByText(trackLabels.liverRunA, { exact: true }))
       .toBeVisible();
     await expect
-      .element(rows.getByText(liverRunB.display_label, { exact: true }))
+      .element(rows.getByText(trackLabels.liverRunB, { exact: true }))
       .toBeVisible();
     await expect
       .element(rows.getByRole('button', { name: 'More information' }))
@@ -227,6 +244,7 @@ describe('transcriptomic browser integration', () => {
     for (const trackId of [
       trackA,
       trackB,
+      liverRunC.track_products[0].track_id,
       brainRun.track_products[0].track_id
     ]) {
       await expect
@@ -243,7 +261,7 @@ describe('transcriptomic browser integration', () => {
       .poll(() => toggleTrack.mock.calls)
       .toContainEqual([{ trackId: trackA, isEnabled: false }]);
     await expect
-      .element(rows.getByText(liverRunA.display_label, { exact: true }))
+      .element(rows.getByText(trackLabels.liverRunA, { exact: true }))
       .toBeVisible();
     toggleTrack.mockClear();
     await apply();
@@ -268,10 +286,10 @@ describe('transcriptomic browser integration', () => {
       .poll(() => toggleTrack.mock.calls)
       .toContainEqual([{ trackId: trackA, isEnabled: false }]);
     await expect
-      .element(rows.getByText(liverRunA.display_label, { exact: true }))
+      .element(rows.getByText(trackLabels.liverRunA, { exact: true }))
       .not.toBeInTheDocument();
     await expect
-      .element(rows.getByText(liverRunB.display_label, { exact: true }))
+      .element(rows.getByText(trackLabels.liverRunB, { exact: true }))
       .toBeVisible();
 
     // Closing discards draft deselection, filters and expansion, while retaining the applied run.
@@ -305,7 +323,7 @@ describe('transcriptomic browser integration', () => {
     const { store, screen } = await renderBrowser();
     const rows = page.getByRole('complementary');
     await expect
-      .element(rows.getByText(liverRunA.display_label, { exact: true }))
+      .element(rows.getByText(trackLabels.liverRunA, { exact: true }))
       .toBeVisible();
     await expect
       .poll(() => toggleTrack.mock.calls)
@@ -316,20 +334,20 @@ describe('transcriptomic browser integration', () => {
 
     store.dispatch(setActiveGenomeId(otherGenomeId));
     await expect
-      .element(rows.getByText(liverRunB.display_label, { exact: true }))
+      .element(rows.getByText(trackLabels.liverRunB, { exact: true }))
       .not.toBeInTheDocument();
     await expect
       .poll(() => toggleTrack.mock.calls)
       .toContainEqual([{ trackId: trackB, isEnabled: false }]);
     store.dispatch(setActiveGenomeId(genomeId));
     await expect
-      .element(rows.getByText(liverRunB.display_label, { exact: true }))
+      .element(rows.getByText(trackLabels.liverRunB, { exact: true }))
       .toBeVisible();
     await configure();
     await page.getByRole('button', { name: 'Clear selections' }).click();
     await apply();
     await expect
-      .element(rows.getByText(liverRunB.display_label, { exact: true }))
+      .element(rows.getByText(trackLabels.liverRunB, { exact: true }))
       .not.toBeInTheDocument();
     await screen.unmount();
     await renderBrowser();

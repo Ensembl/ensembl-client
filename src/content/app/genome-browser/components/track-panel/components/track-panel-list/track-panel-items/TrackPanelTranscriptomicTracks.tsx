@@ -37,10 +37,10 @@ export default function TrackPanelTranscriptomicTracks({
   return groupTranscriptomicTracks(tracks, configuration).map((group) => (
     <section key={group.key} aria-label={`${group.label} tracks`}>
       <CollapsibleSection>
-        <CollapsibleSectionHead className={styles.tissueHeading}>
+        <CollapsibleSectionHead className={styles.groupHeading}>
           {group.label}
         </CollapsibleSectionHead>
-        <CollapsibleSectionBody className={styles.tissueTracks}>
+        <CollapsibleSectionBody className={styles.groupTracks}>
           <dl>
             {group.tracks.map((track) => (
               <TrackPanelRegularItem

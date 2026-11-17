@@ -19,67 +19,78 @@ import type {
   TranscriptomicSelection
 } from 'src/content/app/genome-browser/state/types/transcriptomic';
 
-// Small, synthetic API catalogue: two tissues, three samples, four runs.
-// A/B share a sample; A/C share a filter value. IDs intentionally differ from UUIDs.
+// Small synthetic catalogue with different hierarchy depths and all four products.
+// A/B share a sample; A/C share a filter value. Selection IDs differ from UUIDs.
 export const genomeId = 'test-genome';
 export const otherGenomeId = 'other-genome';
+export const sampleIds = {
+  liverOne: 'liver-sample-1',
+  liverTwo: 'liver-sample-2',
+  brain: 'brain-sample'
+};
+export const trackLabels = {
+  liverRunA: 'Liver run A · Coverage forward',
+  liverRunB: 'Liver run B · Coverage reverse',
+  liverRunC: 'Liver run C · Splice junction',
+  brainRun: 'Brain run · Gene model'
+};
 
 export const liverRunA = {
   selection_id: 'run-a',
-  parent_sample_id: 'liver-sample-1',
   display_label: 'Liver run A',
   selection_level: 'run',
   data_type: 'rnaseq',
   metadata: { tissue: 'Liver', sex: 'female', cohort: 'cohort-a' },
   track_products: [
     {
-      track_type: 'rnaseq_coverage',
-      track_id: '00000000-0000-4000-8000-000000000001'
+      track_type: 'bigwig',
+      track_id: '00000000-0000-4000-8000-000000000001',
+      display_label: 'Coverage forward'
     }
   ]
 } satisfies TranscriptomicSelection;
 
 export const liverRunB = {
   selection_id: 'run-b',
-  parent_sample_id: 'liver-sample-1',
   display_label: 'Liver run B',
   selection_level: 'run',
   data_type: 'rnaseq',
   metadata: { tissue: 'Liver', sex: 'male', cohort: 'cohort-b' },
   track_products: [
     {
-      track_type: 'rnaseq_coverage',
-      track_id: '00000000-0000-4000-8000-000000000002'
+      track_type: 'bigwig',
+      track_id: '00000000-0000-4000-8000-000000000002',
+      display_label: 'Coverage reverse'
     }
   ]
 } satisfies TranscriptomicSelection;
 
 export const liverRunC = {
   selection_id: 'run-c',
-  parent_sample_id: 'liver-sample-2',
   display_label: 'Liver run C',
   selection_level: 'run',
   data_type: 'rnaseq',
   metadata: { tissue: 'Liver', sex: 'female', cohort: 'cohort-c' },
   track_products: [
     {
-      track_type: 'rnaseq_coverage',
-      track_id: '00000000-0000-4000-8000-000000000003'
+      track_type: 'bigbed',
+      track_id: '00000000-0000-4000-8000-000000000003',
+      display_label: 'Splice junction'
     }
   ]
 } satisfies TranscriptomicSelection;
 
 export const brainRun = {
   selection_id: 'run-d',
-  parent_sample_id: 'brain-sample',
   display_label: 'Brain run',
   selection_level: 'run',
   data_type: 'rnaseq',
   metadata: { tissue: 'Brain', sex: 'unknown', cohort: 'cohort-d' },
   track_products: [
     {
-      track_type: 'rnaseq_coverage',
-      track_id: '00000000-0000-4000-8000-000000000004'
+      track_type: 'bigbed',
+      track_id: '00000000-0000-4000-8000-000000000004',
+      display_label: 'Gene model'
     }
   ]
 } satisfies TranscriptomicSelection;
@@ -92,26 +103,47 @@ export const createTranscriptomicConfiguration =
     // API order deliberately differs from flat selection order.
     selection_hierarchy: [
       {
-        tissue: 'brain',
+        level: 'tissue',
+        value: 'brain',
         display_label: 'Brain',
-        samples: [
+        selection_ids: [],
+        children: [
           {
-            sample_id: brainRun.parent_sample_id,
-            selection_ids: [brainRun.selection_id]
+            level: 'biosample',
+            value: sampleIds.brain,
+            display_label: sampleIds.brain,
+            selection_ids: [],
+            children: [
+              {
+                level: 'run',
+                value: 'brain-run',
+                display_label: 'Brain run',
+                selection_ids: [brainRun.selection_id],
+                children: []
+              }
+            ]
           }
         ]
       },
       {
-        tissue: 'liver',
+        level: 'tissue',
+        value: 'liver',
         display_label: 'Liver',
-        samples: [
+        selection_ids: [],
+        children: [
           {
-            sample_id: liverRunA.parent_sample_id,
-            selection_ids: [liverRunA.selection_id, liverRunB.selection_id]
+            level: 'biosample',
+            value: sampleIds.liverOne,
+            display_label: sampleIds.liverOne,
+            selection_ids: [liverRunA.selection_id, liverRunB.selection_id],
+            children: []
           },
           {
-            sample_id: liverRunC.parent_sample_id,
-            selection_ids: [liverRunC.selection_id]
+            level: 'biosample',
+            value: sampleIds.liverTwo,
+            display_label: sampleIds.liverTwo,
+            selection_ids: [liverRunC.selection_id],
+            children: []
           }
         ]
       }

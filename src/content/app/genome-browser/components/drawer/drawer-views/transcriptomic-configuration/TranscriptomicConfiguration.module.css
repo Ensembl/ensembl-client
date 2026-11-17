@@ -115,11 +115,11 @@
   min-width: 0;
 }
 
-.samples {
+.childGroups {
   padding: 10px 0 16px 12px;
 }
 
-.runs {
+.selections {
   display: grid;
   gap: 8px;
   padding: 10px 15px 16px 17px;
@@ -170,7 +170,9 @@
   grid-auto-rows: minmax(var(--filter-value-height), max-content);
   gap: var(--filter-value-gap);
   line-height: var(--filter-value-height);
-  max-height: calc(4 * var(--filter-value-height) + 3 * var(--filter-value-gap));
+  max-height: calc(
+    4 * var(--filter-value-height) + 3 * var(--filter-value-gap)
+  );
   overflow-y: auto;
 }
 
@@ -179,4 +181,3 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
-

@@ -16,7 +16,6 @@
 
 export type TranscriptomicSelection = {
   selection_id: string;
-  parent_sample_id: string;
   display_label: string;
   selection_level: string;
   data_type: string;
@@ -27,21 +26,24 @@ export type TranscriptomicSelection = {
 export type TranscriptomicTrackProduct = {
   track_type: string;
   track_id: string;
+  display_label: string;
 };
 
 export type TranscriptomicConfiguration = {
   genome_id: string;
   track_count: number;
   selections: TranscriptomicSelection[];
-  selection_hierarchy: TranscriptomicTissueGroup[];
+  selection_hierarchy: TranscriptomicHierarchyNode[];
   filters: Record<string, { value: string; count: number }[]>;
 };
 
-export type TranscriptomicTissueGroup = {
+export type TranscriptomicHierarchyNode = {
   // Group identities describe the UI; selectable tracks use track_products UUIDs.
-  tissue: string;
-  display_label: string;
-  samples: { sample_id: string; selection_ids: string[] }[];
+  level: string;
+  value: string | null;
+  display_label: string | null;
+  selection_ids: string[];
+  children: TranscriptomicHierarchyNode[];
 };
 
 export type TranscriptomicFilters = Record<string, string[]>;

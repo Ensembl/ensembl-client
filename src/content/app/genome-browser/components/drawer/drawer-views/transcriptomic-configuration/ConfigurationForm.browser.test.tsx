@@ -24,10 +24,13 @@ import transcriptomic, {
 } from 'src/content/app/genome-browser/state/transcriptomic/transcriptomicSlice';
 import trackSettings from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
 import {
+  sampleIds,
+  trackLabels,
   createTranscriptomicConfiguration,
   genomeId,
   liverRunA,
-  liverRunB
+  liverRunB,
+  liverRunC
 } from 'tests/fixtures/transcriptomic';
 import type { TranscriptomicConfiguration } from 'src/content/app/genome-browser/state/types/transcriptomic';
 import styles from './TranscriptomicConfiguration.module.css';
@@ -98,32 +101,134 @@ describe('<ConfigurationForm />', () => {
 
     await expandLiver.click();
     const sample = page.getByRole('checkbox', {
-      name: liverRunA.parent_sample_id,
+      name: sampleIds.liverOne,
       exact: true
     });
     await expect.element(sample).toBeChecked();
     await expect.element(sample).toHaveAccessibleDescription('2');
     await page
-      .getByRole('button', { name: liverRunA.parent_sample_id, exact: true })
+      .getByRole('button', { name: sampleIds.liverOne, exact: true })
       .click();
     await page
-      .getByRole('checkbox', { name: liverRunA.display_label, exact: true })
+      .getByRole('checkbox', { name: trackLabels.liverRunA, exact: true })
       .click();
     await expect.element(sample).toBePartiallyChecked();
     await expect.element(liver).toBePartiallyChecked();
+  });
+
+  it('renders direct aggregates before arbitrary child groups and filters each track independently', async () => {
+    const configuration = createTranscriptomicConfiguration();
+    configuration.selections = [
+      {
+        ...liverRunC,
+        selection_level: 'tissue',
+        metadata: { tissue: 'Liver' }
+      },
+      liverRunA,
+      liverRunB
+    ];
+    configuration.track_count = 3;
+    configuration.selection_hierarchy = [
+      {
+        level: 'study',
+        value: 'project-1',
+        display_label: 'API Project',
+        selection_ids: [liverRunC.selection_id],
+        children: [
+          {
+            level: 'condition',
+            value: null,
+            display_label: null,
+            selection_ids: [],
+            children: [
+              {
+                level: 'batch',
+                value: 'batch-1',
+                display_label: 'API Batch',
+                selection_ids: [liverRunA.selection_id, liverRunB.selection_id],
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ];
+    await renderForm({ configuration });
+    const project = page.getByRole('checkbox', {
+      name: 'API Project',
+      exact: true
+    });
+    await expect.element(project).toHaveAccessibleDescription('3');
+    await project.click();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('3 of 3 tracks selected');
+    await page
+      .getByRole('button', { name: 'API Project', exact: true })
+      .click();
+    await expect
+      .element(
+        page.getByRole('checkbox', { name: trackLabels.liverRunC, exact: true })
+      )
+      .toBeChecked();
+    await expect
+      .element(
+        page.getByRole('checkbox', { name: trackLabels.liverRunA, exact: true })
+      )
+      .not.toBeInTheDocument();
+    await page
+      .getByRole('button', { name: 'Unspecified condition', exact: true })
+      .click();
+    const batch = page.getByRole('checkbox', {
+      name: 'API Batch',
+      exact: true
+    });
+    await batch.click();
+    await expect.element(project).toBePartiallyChecked();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('1 of 3 tracks selected');
+    await page.getByRole('button', { name: 'API Batch', exact: true }).click();
+    await page
+      .getByRole('checkbox', { name: trackLabels.liverRunA, exact: true })
+      .click();
+    await maleFilter().click();
+    await expect.element(project).toHaveAccessibleDescription('1');
+    await expect
+      .element(
+        page.getByRole('checkbox', { name: trackLabels.liverRunC, exact: true })
+      )
+      .not.toBeInTheDocument();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('0 of 1 track selected · 2 tracks hidden by filters');
+    await page.getByRole('button', { name: 'Clear filters' }).click();
+    await expect
+      .element(
+        page.getByRole('checkbox', { name: trackLabels.liverRunC, exact: true })
+      )
+      .not.toBeChecked();
+    await expect
+      .element(
+        page.getByRole('checkbox', { name: trackLabels.liverRunA, exact: true })
+      )
+      .not.toBeChecked();
   });
 
   it('clears hidden draft runs immediately and does not restore them when filters clear', async () => {
     const { store } = await renderForm({
       selectionIds: [liverRunA.selection_id, liverRunB.selection_id]
     });
-    const heading = page.getByRole('heading', { level: 3, name: /^Tissues/ });
+    const heading = page.getByRole('heading', {
+      level: 3,
+      name: /^Selections/
+    });
     const clearFilters = page.getByRole('button', { name: 'Clear filters' });
     await expect.element(clearFilters).toBeDisabled();
-    await expect.element(heading).toHaveTextContent('Tissues');
+    await expect.element(heading).toHaveTextContent('Selections');
     await maleFilter().click();
     await expect.element(clearFilters).toBeEnabled();
-    await expect.element(heading).toHaveTextContent('Tissues');
+    await expect.element(heading).toHaveTextContent('Selections');
     await expect
       .element(page.getByRole('checkbox', { name: 'Brain', exact: true }))
       .not.toBeInTheDocument();
@@ -149,12 +254,12 @@ describe('<ConfigurationForm />', () => {
 
     await page.getByRole('button', { name: 'Liver', exact: true }).click();
     await page
-      .getByRole('button', { name: liverRunA.parent_sample_id, exact: true })
+      .getByRole('button', { name: sampleIds.liverOne, exact: true })
       .click();
     await expect
       .element(
         page.getByRole('checkbox', {
-          name: liverRunA.display_label,
+          name: trackLabels.liverRunA,
           exact: true
         })
       )
@@ -162,7 +267,7 @@ describe('<ConfigurationForm />', () => {
     await expect
       .element(
         page.getByRole('checkbox', {
-          name: liverRunB.display_label,
+          name: trackLabels.liverRunB,
           exact: true
         })
       )
@@ -296,8 +401,8 @@ describe('<ConfigurationForm />', () => {
       .element(page.getByRole('status'))
       .toHaveTextContent('0 of 0 tracks selected · 4 tracks hidden by filters');
     await expect
-      .element(page.getByRole('heading', { level: 3, name: /^Tissues/ }))
-      .toHaveTextContent('Tissues');
+      .element(page.getByRole('heading', { level: 3, name: /^Selections/ }))
+      .toHaveTextContent('Selections');
     await apply();
     await expect
       .poll(() => store.getState().browser.transcriptomic[genomeId])
