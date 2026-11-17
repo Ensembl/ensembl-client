@@ -317,11 +317,23 @@ export class SequenceInteractions {
     this.#requestController = null;
     this.#clearHover();
     const context = this.options.getSequenceContext();
-    const unit =
-      context && 'transcript' in context && context.sequenceView === 'protein'
-        ? 'aa'
-        : 'bp';
-    this.#setState({ kind: 'selection', selection, unit });
+    const sequenceType =
+      context && 'transcript' in context ? context.sequenceView : 'genomic';
+    const regionName =
+      this.options.getRegionName() ||
+      (context && 'location' in context
+        ? context.location.regionName
+        : undefined);
+    const genomeBrowserLocation =
+      sequenceType === 'genomic' && regionName
+        ? { regionName, start: selection.start, end: selection.end }
+        : undefined;
+    this.#setState({
+      kind: 'selection',
+      selection,
+      sequenceType,
+      genomeBrowserLocation
+    });
   }
 
   #cancelPendingSelection() {

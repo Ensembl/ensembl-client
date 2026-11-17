@@ -16,7 +16,13 @@
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
+import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
 import type { LetterHit, SequenceSelection } from './sequence-hit-testing';
+
+export type GenomeBrowserNavigationEventDetail = {
+  location: GenomicLocation;
+};
 
 export type PopoverState =
   | { kind: 'closed' }
@@ -32,7 +38,8 @@ export type PopoverState =
   | {
       kind: 'selection';
       selection: SequenceSelection;
-      unit: 'bp' | 'aa';
+      sequenceType: TranscriptSequenceView;
+      genomeBrowserLocation?: GenomicLocation;
     };
 
 let popoverCounter = 0;
@@ -108,7 +115,7 @@ export class SequencePopover {
     );
 
     if (state.kind === 'selection') {
-      this.#renderSelection(state.selection, state.unit, regionName);
+      this.#renderSelection(state, regionName);
     } else {
       const coordinates = document.createElement('div');
       const formattedPosition = formatNumber(state.letter.location.start);
@@ -154,26 +161,45 @@ export class SequencePopover {
   }
 
   #renderSelection(
-    selection: SequenceSelection,
-    unit: 'bp' | 'aa',
+    state: Extract<PopoverState, { kind: 'selection' }>,
     regionName?: string
   ) {
+    const { selection, sequenceType, genomeBrowserLocation } = state;
     const title = document.createElement('div');
     title.textContent = 'Selected range';
     const location = document.createElement('div');
     const range = `${formatNumber(selection.start)}-${formatNumber(selection.end)}`;
     location.textContent = regionName ? `${regionName}:${range}` : range;
     const length = document.createElement('div');
+    const unit = sequenceType === 'protein' ? 'aa' : 'bp';
     length.textContent = `${formatNumber(selection.length)}${unit}`;
     const controls = document.createElement('div');
     controls.className = 'sequence-popover-actions';
     const copy = document.createElement('button');
     copy.type = 'button';
     copy.textContent = 'Copy';
-    const browser = document.createElement('button');
-    browser.type = 'button';
-    browser.textContent = 'View in genome browser';
-    controls.append(copy, browser);
+    controls.append(copy);
+    if (sequenceType === 'genomic' && genomeBrowserLocation) {
+      const genomeBrowserButton = document.createElement('button');
+      genomeBrowserButton.type = 'button';
+      genomeBrowserButton.textContent = 'View in genome browser';
+      genomeBrowserButton.addEventListener('click', () => {
+        if (!genomeBrowserLocation) {
+          return;
+        }
+        genomeBrowserButton.dispatchEvent(
+          new CustomEvent<GenomeBrowserNavigationEventDetail>(
+            'genome-browser-navigation',
+            {
+              detail: { location: genomeBrowserLocation },
+              bubbles: true,
+              composed: true
+            }
+          )
+        );
+      });
+      controls.append(genomeBrowserButton);
+    }
     this.#element.append(title, location, length, controls);
   }
 }

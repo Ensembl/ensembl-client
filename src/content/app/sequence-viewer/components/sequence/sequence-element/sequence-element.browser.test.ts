@@ -593,6 +593,59 @@ describe('sequence interactions', () => {
     }
   );
 
+  it.each([
+    { source: 'template', hasRegion: true },
+    { source: 'location context', hasRegion: true },
+    { source: 'unavailable', hasRegion: false }
+  ])('navigates only with a known region: $source', ({ source, hasRegion }) => {
+    element.sequenceContext =
+      source === 'location context'
+        ? {
+            genomeId: 'genome',
+            location: { regionName: '13', start: 1, end: 100 }
+          }
+        : {
+            genomeId: 'genome',
+            transcript: { stableId: 'transcript' },
+            sequenceView: 'genomic'
+          };
+    element.sequence = response(sequenceLine(2004, 2001)).replace(
+      '<template id="sequence">',
+      source === 'template'
+        ? '<template id="sequence" data-region-name="13">'
+        : '<template id="sequence">'
+    );
+    const root = element.shadowRoot!;
+    const column = root.querySelector('.line-middle')!;
+    const selection = (
+      root as ShadowRoot & { getSelection: () => Selection }
+    ).getSelection();
+    selection.setBaseAndExtent(
+      column.lastElementChild!.firstChild!,
+      2,
+      column.firstElementChild!.firstChild!,
+      1
+    );
+    column.dispatchEvent(
+      new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })
+    );
+    const events: CustomEvent[] = [];
+    element.addEventListener('genome-browser-navigation', (event) => {
+      events.push(event as CustomEvent);
+    });
+    const button =
+      root.querySelectorAll<HTMLButtonElement>('[popover] button')[1];
+    expect(button.textContent).toBe('View in genome browser');
+    expect(button.disabled).toBe(!hasRegion);
+    button.click();
+    expect(events.map((event) => event.detail)).toEqual(
+      hasRegion
+        ? [{ location: { regionName: '13', start: 2001, end: 2003 } }]
+        : []
+    );
+    expect(events.every((event) => event.bubbles && event.composed)).toBe(true);
+  });
+
   it('formats selection length and ignores whitespace and coordinate gutters', () => {
     element.sequence = response(sequenceLine(1000, 2003)).replace(
       '<span>AC</span><span>GT</span>',
