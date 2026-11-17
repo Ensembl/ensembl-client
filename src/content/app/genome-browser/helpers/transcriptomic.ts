@@ -72,29 +72,39 @@ export const groupTranscriptomicTracks = (
 
 export const filterTranscriptomicSelections = (
   selections: TranscriptomicSelection[],
-  filters: TranscriptomicFilters
+  filters: TranscriptomicFilters,
+  hiddenProducts: string[] = []
 ) =>
-  selections.filter(({ metadata }) =>
-    Object.entries(filters).every(
-      ([key, values]) =>
-        !values.length ||
-        values.some(
-          (value) => value.toLowerCase() === metadata[key]?.toLowerCase()
-        )
-    )
+  selections.filter(
+    ({ metadata, track_products }) =>
+      track_products.some(
+        ({ display_label }) => !hiddenProducts.includes(display_label)
+      ) &&
+      Object.entries(filters).every(
+        ([key, values]) =>
+          !values.length ||
+          values.some(
+            (value) => value.toLowerCase() === metadata[key]?.toLowerCase()
+          )
+      )
   );
 
 export const getTranscriptomicFilterOptions = (
   configuration: TranscriptomicConfiguration,
-  filters: TranscriptomicFilters
+  filters: TranscriptomicFilters,
+  hiddenProducts: string[] = []
 ) => {
   const options: TranscriptomicConfiguration['filters'] = {};
   for (const [name, values] of Object.entries(configuration.filters)) {
     // Ignore this group's choices so users can add alternatives within it.
-    const matching = filterTranscriptomicSelections(configuration.selections, {
-      ...filters,
-      [name]: []
-    });
+    const matching = filterTranscriptomicSelections(
+      configuration.selections,
+      {
+        ...filters,
+        [name]: []
+      },
+      hiddenProducts
+    );
     const counts = new Map<string, Set<string>>();
     for (const selection of matching) {
       const value = selection.metadata[name]?.toLowerCase();
@@ -125,6 +135,31 @@ export const getTranscriptomicFilterOptions = (
     if (available.length) options[name] = available;
   }
   return options;
+};
+
+export const getTranscriptomicProductOptions = (
+  configuration: TranscriptomicConfiguration,
+  filters: TranscriptomicFilters
+) => {
+  const products = new Map<string, Set<string>>();
+  for (const selection of configuration.selections) {
+    for (const { display_label } of selection.track_products) {
+      if (!products.has(display_label)) products.set(display_label, new Set());
+    }
+  }
+  // Like metadata facets, Show counts ignore its own choices.
+  for (const selection of filterTranscriptomicSelections(
+    configuration.selections,
+    filters
+  )) {
+    for (const { display_label, track_id } of selection.track_products) {
+      products.get(display_label)!.add(track_id);
+    }
+  }
+  return [...products].map(([value, tracks]) => ({
+    value,
+    count: tracks.size
+  }));
 };
 
 export const toggleSelectionIds = (

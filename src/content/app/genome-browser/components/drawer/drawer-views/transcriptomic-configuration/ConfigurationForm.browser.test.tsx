@@ -80,6 +80,56 @@ const apply = () =>
 beforeEach(() => localStorage.clear());
 
 describe('<ConfigurationForm />', () => {
+  it('shows all product types by default and clears hidden selections without restoring them', async () => {
+    await renderForm({
+      selectionIds: [liverRunA.selection_id, liverRunB.selection_id]
+    });
+    const show = page.getByRole('region', { name: 'Show filter', exact: true });
+    const products = [
+      'Coverage forward',
+      'Coverage reverse',
+      'Splice junction',
+      'Gene model'
+    ];
+    for (const name of products) {
+      await expect
+        .element(show.getByRole('checkbox', { name, exact: true }))
+        .toBeChecked();
+    }
+    const forward = show.getByRole('checkbox', {
+      name: 'Coverage forward',
+      exact: true
+    });
+    await forward.click();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('1 of 3 tracks selected · 1 track hidden by filters');
+    await expect
+      .element(page.getByRole('checkbox', { name: 'Liver', exact: true }))
+      .toHaveAccessibleDescription('2');
+    await maleFilter().click();
+    await expect.element(forward).toHaveAccessibleDescription('0');
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('1 of 1 track selected · 3 tracks hidden by filters');
+    await page.getByRole('button', { name: 'Clear filters' }).click();
+    await expect.element(forward).toBeChecked();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('1 of 4 tracks selected');
+    for (const name of products) {
+      await show.getByRole('checkbox', { name, exact: true }).click();
+    }
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('0 of 0 tracks selected · 4 tracks hidden by filters');
+    // Even with no matching selections, all Show options remain available.
+    await forward.click();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('0 of 1 track selected · 3 tracks hidden by filters');
+  });
+
   it('selects collapsed descendants and shows mixed group states independently of expansion', async () => {
     await renderForm();
     await expect

@@ -17,6 +17,7 @@
 import {
   filterTranscriptomicSelections,
   getTranscriptomicFilterOptions,
+  getTranscriptomicProductOptions,
   groupTranscriptomicSelectionHierarchy,
   groupTranscriptomicTracks,
   resolveTranscriptomicTracks,
@@ -185,6 +186,35 @@ describe('filterTranscriptomicSelections', () => {
 });
 
 describe('getTranscriptomicFilterOptions', () => {
+  it('narrows selections and metadata facets by the visible products', () => {
+    const configuration = createTranscriptomicConfiguration();
+    const hiddenProducts = ['Coverage forward', 'Gene model'];
+    expect(
+      selectionIds(
+        filterTranscriptomicSelections(
+          configuration.selections,
+          {},
+          hiddenProducts
+        )
+      )
+    ).toEqual([liverRunB.selection_id, liverRunC.selection_id]);
+    expect(
+      getTranscriptomicFilterOptions(configuration, {}, hiddenProducts).sex
+    ).toEqual([
+      { value: 'female', count: 1 },
+      { value: 'male', count: 1 }
+    ]);
+    expect(
+      selectionIds(
+        filterTranscriptomicSelections(
+          configuration.selections,
+          { sex: ['female'] },
+          hiddenProducts
+        )
+      )
+    ).toEqual([liverRunC.selection_id]);
+  });
+
   it('narrows other groups and counts while allowing alternatives in the active group', () => {
     const configuration = createTranscriptomicConfiguration();
     const options = getTranscriptomicFilterOptions(configuration, {
@@ -246,6 +276,21 @@ describe('getTranscriptomicFilterOptions', () => {
     expect(
       getTranscriptomicFilterOptions({ ...configuration, selections: [] }, {})
     ).toEqual({});
+  });
+});
+
+describe('getTranscriptomicProductOptions', () => {
+  it('uses catalogue labels and counts unique UUIDs matching metadata, including zero counts', () => {
+    const configuration = createTranscriptomicConfiguration();
+    configuration.selections.push({ ...liverRunA, selection_id: 'alias' });
+    expect(
+      getTranscriptomicProductOptions(configuration, { tissue: ['liver'] })
+    ).toEqual([
+      { value: 'Coverage forward', count: 1 },
+      { value: 'Coverage reverse', count: 1 },
+      { value: 'Splice junction', count: 1 },
+      { value: 'Gene model', count: 0 }
+    ]);
   });
 });
 

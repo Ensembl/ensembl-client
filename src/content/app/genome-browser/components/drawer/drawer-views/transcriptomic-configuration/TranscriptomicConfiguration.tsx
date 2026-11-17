@@ -21,6 +21,7 @@ import { applyTranscriptomicSelections } from 'src/content/app/genome-browser/st
 import {
   filterTranscriptomicSelections,
   getTranscriptomicFilterOptions,
+  getTranscriptomicProductOptions,
   groupTranscriptomicSelectionHierarchy,
   resolveTranscriptomicTracks,
   toggleSelectionIds,
@@ -98,13 +99,17 @@ export function ConfigurationForm({
   const dispatch = useAppDispatch();
   const [draft, setDraft] = useState(selectionIds);
   const [filters, setFilters] = useState<TranscriptomicFilters>({});
-  const hasFilters = Object.values(filters).some((values) => values.length > 0);
+  const [hiddenProducts, setHiddenProducts] = useState<string[]>([]);
+  const hasFilters =
+    hiddenProducts.length > 0 ||
+    Object.values(filters).some((values) => values.length > 0);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(false);
   const matching = filterTranscriptomicSelections(
     configuration.selections,
-    filters
+    filters,
+    hiddenProducts
   );
   const selected = new Set(draft);
   const trackCount = resolveTranscriptomicTracks(
@@ -122,20 +127,34 @@ export function ConfigurationForm({
     matching,
     configuration.selection_hierarchy
   );
-  const filterOptions = getTranscriptomicFilterOptions(configuration, filters);
+  const filterOptions = getTranscriptomicFilterOptions(
+    configuration,
+    filters,
+    hiddenProducts
+  );
+  const productOptions = getTranscriptomicProductOptions(
+    configuration,
+    filters
+  );
 
   const toggle = (ids: string[], checked: boolean) =>
     setDraft((current) => toggleSelectionIds(current, ids, checked));
   const toggleExpanded = (key: string) =>
     setExpanded((current) => ({ ...current, [key]: !current[key] }));
 
-  const changeFilters = (nextFilters: TranscriptomicFilters) => {
+  const changeFilters = (
+    nextFilters: TranscriptomicFilters,
+    nextHiddenProducts = hiddenProducts
+  ) => {
     const matchingIds = new Set(
-      filterTranscriptomicSelections(configuration.selections, nextFilters).map(
-        (selection) => selection.selection_id
-      )
+      filterTranscriptomicSelections(
+        configuration.selections,
+        nextFilters,
+        nextHiddenProducts
+      ).map((selection) => selection.selection_id)
     );
     setFilters(nextFilters);
+    setHiddenProducts(nextHiddenProducts);
     setDraft((current) => current.filter((id) => matchingIds.has(id)));
   };
 
@@ -211,12 +230,33 @@ export function ConfigurationForm({
             <h3>Filters</h3>
             <TextButton
               disabled={pending || !hasFilters}
-              onClick={() => changeFilters({})}
+              onClick={() => changeFilters({}, [])}
             >
               Clear filters
             </TextButton>
           </div>
           <div className={styles.filterGroups}>
+            <ConfigurationGroup label="Show" expanded={true}>
+              <div className={styles.filterValues}>
+                <div className={styles.filterOptions}>
+                  {productOptions.map(({ value, count }) => (
+                    <ConfigurationOption
+                      key={value}
+                      label={value}
+                      count={count}
+                      checked={!hiddenProducts.includes(value)}
+                      disabled={pending}
+                      onChange={(checked) =>
+                        changeFilters(
+                          filters,
+                          toggleSelectionIds(hiddenProducts, [value], !checked)
+                        )
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            </ConfigurationGroup>
             {Object.entries(filterOptions).map(([name, values]) => {
               const label = name.replaceAll('_', ' ');
               return (
