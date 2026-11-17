@@ -32,6 +32,7 @@ export type PopoverState =
   | {
       kind: 'selection';
       selection: SequenceSelection;
+      unit: 'bp' | 'aa';
     };
 
 let popoverCounter = 0;
@@ -107,7 +108,7 @@ export class SequencePopover {
     );
 
     if (state.kind === 'selection') {
-      this.#renderSelection();
+      this.#renderSelection(state.selection, state.unit, regionName);
     } else {
       const coordinates = document.createElement('div');
       const formattedPosition = formatNumber(state.letter.location.start);
@@ -152,10 +153,18 @@ export class SequencePopover {
     this.#anchor = null;
   }
 
-  // NOTE: The popover has mock content for the time being
-  #renderSelection() {
+  #renderSelection(
+    selection: SequenceSelection,
+    unit: 'bp' | 'aa',
+    regionName?: string
+  ) {
     const title = document.createElement('div');
-    title.textContent = 'hello world';
+    title.textContent = 'Selected range';
+    const location = document.createElement('div');
+    const range = `${formatNumber(selection.start)}-${formatNumber(selection.end)}`;
+    location.textContent = regionName ? `${regionName}:${range}` : range;
+    const length = document.createElement('div');
+    length.textContent = `${formatNumber(selection.length)}${unit}`;
     const controls = document.createElement('div');
     controls.className = 'sequence-popover-actions';
     const copy = document.createElement('button');
@@ -165,6 +174,6 @@ export class SequencePopover {
     browser.type = 'button';
     browser.textContent = 'View in genome browser';
     controls.append(copy, browser);
-    this.#element.append(title, controls);
+    this.#element.append(title, location, length, controls);
   }
 }

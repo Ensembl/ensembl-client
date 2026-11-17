@@ -491,6 +491,145 @@ describe('sequence interactions', () => {
     }
   );
 
+  it.each([
+    {
+      name: 'genomic coordinates across a gap',
+      lines:
+        sequenceLine(32272829, 32272832) + sequenceLine(32273001, 32273004),
+      regionName: '13',
+      expectedRange: '13:32,272,830-32,273,002'
+    },
+    {
+      name: 'descending genomic coordinates',
+      lines: sequenceLine(2004, 2001) + sequenceLine(1004, 1001),
+      regionName: undefined,
+      expectedRange: '1,003-2,003'
+    },
+    {
+      name: 'aligned protein annotations',
+      lines:
+        sequenceLine(1, 4) +
+        sequenceLine(101, 104).replace(
+          'class="line"',
+          'class="line protein-line"'
+        ) +
+        sequenceLine(5, 8),
+      regionName: undefined,
+      expectedRange: '2-6'
+    }
+  ])(
+    'shows the selected range for $name',
+    ({ lines, regionName, expectedRange }) => {
+      element.sequence = response(lines).replace(
+        '<template id="sequence">',
+        regionName
+          ? `<template id="sequence" data-region-name="${regionName}">`
+          : '<template id="sequence">'
+      );
+      const root = element.shadowRoot!;
+      const columns = root.querySelectorAll(
+        '.line:not(.protein-line) .line-middle'
+      );
+      const range = document.createRange();
+      range.setStart(columns[0].firstElementChild!.firstChild!, 1);
+      range.setEnd(columns[1].firstElementChild!.firstChild!, 2);
+      const selection = (
+        root as ShadowRoot & { getSelection: () => Selection }
+      ).getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      columns[1].dispatchEvent(
+        new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })
+      );
+      const popover = root.querySelector('[data-mode="selection"]')!;
+      expect(
+        Array.from(popover.children)
+          .slice(0, 3)
+          .map((node) => node.textContent)
+      ).toEqual(['Selected range', expectedRange, '5bp']);
+    }
+  );
+
+  it.each([
+    { view: 'cdna', unit: 'bp' },
+    { view: 'cds', unit: 'bp' },
+    { view: 'protein', unit: 'aa' }
+  ] as const)(
+    'uses molecule-relative positions for $view selections',
+    ({ view, unit }) => {
+      element.sequenceContext = {
+        genomeId: 'genome',
+        transcript: { stableId: 'transcript' },
+        sequenceView: view
+      };
+      // The first line is unselected. Positions continue from the first residue,
+      // independently of any genomic coordinates attached to the lines.
+      element.sequence = response(
+        sequenceLine(32272829, 32272832) +
+          sequenceLine(32273001, 32273004) +
+          sequenceLine(32273101, 32273104)
+      );
+      const root = element.shadowRoot!;
+      const columns = root.querySelectorAll('.line-middle');
+      const selection = (
+        root as ShadowRoot & { getSelection: () => Selection }
+      ).getSelection();
+      // Select backwards, across lines and nested spans.
+      selection.setBaseAndExtent(
+        columns[2].firstElementChild!.firstChild!,
+        2,
+        columns[1].firstElementChild!.firstChild!,
+        1
+      );
+      columns[1].dispatchEvent(
+        new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })
+      );
+      const popover = root.querySelector('[data-mode="selection"]')!;
+      expect(
+        Array.from(popover.children)
+          .slice(0, 3)
+          .map((node) => node.textContent)
+      ).toEqual(['Selected range', '6-10', `5${unit}`]);
+    }
+  );
+
+  it('formats selection length and ignores whitespace and coordinate gutters', () => {
+    element.sequence = response(sequenceLine(1000, 2003)).replace(
+      '<span>AC</span><span>GT</span>',
+      `<span> ${'A'.repeat(1000)} </span><span>AAAA </span>`
+    );
+    const root = element.shadowRoot!;
+    const line = root.querySelector('.line')!;
+    const selection = (
+      root as ShadowRoot & { getSelection: () => Selection }
+    ).getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(line);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    line.dispatchEvent(
+      new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })
+    );
+    const popover = root.querySelector('[data-mode="selection"]')!;
+    expect(
+      Array.from(popover.children)
+        .slice(0, 3)
+        .map((node) => node.textContent)
+    ).toEqual(['Selected range', '1,000-2,003', '1,004bp']);
+  });
+
+  it('ignores a selection containing only coordinate gutters', () => {
+    const root = element.shadowRoot!;
+    const range = document.createRange();
+    range.selectNodeContents(root.querySelector('.line-left')!);
+    const selection = (
+      root as ShadowRoot & { getSelection: () => Selection }
+    ).getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    expect(getSequenceSelection({ root })).toBeNull();
+  });
+
   it('shows selection actions after selecting a word with a double click', async () => {
     await userEvent.dblClick(
       element.shadowRoot!.querySelector('.line-middle span')!
@@ -547,7 +686,7 @@ describe('sequence interactions', () => {
       context: {
         genomeId: 'transcript-genome',
         transcript: { stableId: 'transcript-id' },
-        sequenceView: 'cdna'
+        sequenceView: 'cdna' as const
       },
       expected: {
         genome_uuid: 'transcript-genome',
@@ -718,7 +857,7 @@ describe('sequence interactions', () => {
     ).getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
-    expect(getSequenceSelection(root)?.lineBlock).toBe(
+    expect(getSequenceSelection({ root })?.lineBlock).toBe(
       columns[1].closest('.line')
     );
   });
@@ -757,7 +896,11 @@ describe('sequence interactions', () => {
     const popover = root.querySelector('[popover]')!;
     expect(popover.getAttribute('data-mode')).toBe('selection');
     expect(popover.querySelector('button')!.textContent).toBe('Copy');
-    expect(popover.textContent).toContain('hello world');
+    expect(
+      Array.from(popover.children)
+        .slice(0, 3)
+        .map((node) => node.textContent)
+    ).toEqual(['Selected range', '1-4', '4bp']);
     expect(popover.querySelectorAll('button')).toHaveLength(2);
     expect(popover.querySelector('a')).toBeNull();
     letterEvent(element, 'mousemove');

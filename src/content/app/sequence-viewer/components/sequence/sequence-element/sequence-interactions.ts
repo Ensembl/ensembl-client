@@ -77,7 +77,7 @@ export class SequenceInteractions {
         ) {
           return;
         }
-        const startedWithSelection = Boolean(getSequenceSelection(root));
+        const startedWithSelection = Boolean(this.#getSelection());
         this.reset();
         this.#gesture = {
           selecting: true,
@@ -94,7 +94,7 @@ export class SequenceInteractions {
           return;
         }
         this.#gesture.selecting = false;
-        const selection = getSequenceSelection(root, event);
+        const selection = this.#getSelection(event);
         this.#gesture.suppressClick =
           Boolean(selection) || this.#gesture.startedWithSelection;
         if (selection) {
@@ -103,7 +103,7 @@ export class SequenceInteractions {
           this.#selectionTimeout = setTimeout(() => {
             this.#selectionTimeout = null;
             // A click inside selected text can clear it after pointerup.
-            if (getSequenceSelection(root)) {
+            if (this.#getSelection()) {
               this.#showSelection(selection);
             }
           }, 0);
@@ -120,7 +120,7 @@ export class SequenceInteractions {
         ) {
           return;
         }
-        const selection = getSequenceSelection(root);
+        const selection = this.#getSelection();
         if (selection) {
           this.#showSelection(selection);
         }
@@ -300,12 +300,28 @@ export class SequenceInteractions {
     }
   }
 
+  #getSelection(releaseEvent?: PointerEvent) {
+    const context = this.options.getSequenceContext();
+    const sequenceType =
+      context && 'transcript' in context ? context.sequenceView : 'genomic';
+    return getSequenceSelection({
+      root: this.options.root,
+      releaseEvent,
+      sequenceType
+    });
+  }
+
   #showSelection(selection: SequenceSelection) {
     this.#cancelPendingSelection();
     this.#requestController?.abort();
     this.#requestController = null;
     this.#clearHover();
-    this.#setState({ kind: 'selection', selection });
+    const context = this.options.getSequenceContext();
+    const unit =
+      context && 'transcript' in context && context.sequenceView === 'protein'
+        ? 'aa'
+        : 'bp';
+    this.#setState({ kind: 'selection', selection, unit });
   }
 
   #cancelPendingSelection() {

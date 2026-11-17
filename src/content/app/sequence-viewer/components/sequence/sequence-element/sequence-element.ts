@@ -49,6 +49,7 @@
 import { SequenceInteractions } from './sequence-interactions';
 import { VisibleRangeReporter } from './visible-range-reporter';
 
+import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 
 export type { VisibleRangeEventDetail } from './visible-range-reporter';
@@ -60,7 +61,7 @@ export type SequenceContext = {
   | { gene: { stableId: string } }
   | {
       transcript: { stableId: string };
-      sequenceView: string;
+      sequenceView: TranscriptSequenceView;
     }
 );
 
