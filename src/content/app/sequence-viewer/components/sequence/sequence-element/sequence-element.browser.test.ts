@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { userEvent } from 'vitest/browser';
+import { page, userEvent } from 'vitest/browser';
 
 import { getSequenceSelection } from './sequence-hit-testing';
 
@@ -364,10 +364,10 @@ describe('sequence interactions', () => {
     ) as SequenceElement;
     element.style.setProperty('--gutter-width', '8ch');
     element.style.setProperty('--font-family-monospace', 'monospace');
-    element.getOverlapRequestParams = () => ({
-      genome_uuid: 'genome',
-      focus_location: { region_name: '13', start: 1, end: 100 }
-    });
+    element.sequenceContext = {
+      genomeId: 'genome',
+      location: { regionName: '13', start: 1, end: 100 }
+    };
     document.body.append(element);
     element.sequence = response(sequenceLine());
   });
@@ -491,6 +491,222 @@ describe('sequence interactions', () => {
     }
   );
 
+  it.each([
+    {
+      name: 'genomic coordinates across a gap',
+      lines:
+        sequenceLine(32272829, 32272832) + sequenceLine(32273001, 32273004),
+      regionName: '13',
+      expectedRange: '13:32,272,830-32,273,002'
+    },
+    {
+      name: 'descending genomic coordinates',
+      lines: sequenceLine(2004, 2001) + sequenceLine(1004, 1001),
+      regionName: undefined,
+      expectedRange: '1,003-2,003'
+    },
+    {
+      name: 'aligned protein annotations',
+      lines:
+        sequenceLine(1, 4) +
+        sequenceLine(101, 104).replace(
+          'class="line"',
+          'class="line protein-line"'
+        ) +
+        sequenceLine(5, 8),
+      regionName: undefined,
+      expectedRange: '2-6'
+    }
+  ])(
+    'shows the selected range for $name',
+    ({ lines, regionName, expectedRange }) => {
+      element.sequence = response(lines).replace(
+        '<template id="sequence">',
+        regionName
+          ? `<template id="sequence" data-region-name="${regionName}">`
+          : '<template id="sequence">'
+      );
+      const root = element.shadowRoot!;
+      const columns = root.querySelectorAll(
+        '.line:not(.protein-line) .line-middle'
+      );
+      const range = document.createRange();
+      range.setStart(columns[0].firstElementChild!.firstChild!, 1);
+      range.setEnd(columns[1].firstElementChild!.firstChild!, 2);
+      const selection = (
+        root as ShadowRoot & { getSelection: () => Selection }
+      ).getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      columns[1].dispatchEvent(
+        new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })
+      );
+      const popover = root.querySelector('[data-mode="selection"]')!;
+      expect(
+        Array.from(popover.children)
+          .slice(0, 3)
+          .map((node) => node.textContent)
+      ).toEqual(['Selected range', expectedRange, '5bp']);
+    }
+  );
+
+  it.each([
+    { view: 'cdna', unit: 'bp' },
+    { view: 'cds', unit: 'bp' },
+    { view: 'protein', unit: 'aa' }
+  ] as const)(
+    'uses molecule-relative positions for $view selections',
+    ({ view, unit }) => {
+      element.sequenceContext = {
+        genomeId: 'genome',
+        transcript: { stableId: 'transcript' },
+        sequenceView: view
+      };
+      // The first line is unselected. Positions continue from the first residue,
+      // independently of any genomic coordinates attached to the lines.
+      element.sequence = response(
+        sequenceLine(32272829, 32272832) +
+          sequenceLine(32273001, 32273004) +
+          sequenceLine(32273101, 32273104)
+      );
+      const root = element.shadowRoot!;
+      const columns = root.querySelectorAll('.line-middle');
+      const selection = (
+        root as ShadowRoot & { getSelection: () => Selection }
+      ).getSelection();
+      // Select backwards, across lines and nested spans.
+      selection.setBaseAndExtent(
+        columns[2].firstElementChild!.firstChild!,
+        2,
+        columns[1].firstElementChild!.firstChild!,
+        1
+      );
+      columns[1].dispatchEvent(
+        new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })
+      );
+      const popover = root.querySelector('[data-mode="selection"]')!;
+      expect(
+        Array.from(popover.children)
+          .slice(0, 3)
+          .map((node) => node.textContent)
+      ).toEqual(['Selected range', '6-10', `5${unit}`]);
+    }
+  );
+
+  it.each(['template', 'location context'])(
+    'emits navigation using the region from %s',
+    async (source) => {
+      element.sequenceContext =
+        source === 'location context'
+          ? {
+              genomeId: 'genome',
+              location: { regionName: '13', start: 1, end: 100 }
+            }
+          : {
+              genomeId: 'genome',
+              transcript: { stableId: 'transcript' },
+              sequenceView: 'genomic'
+            };
+      element.sequence = response(sequenceLine(2004, 2001)).replace(
+        '<template id="sequence">',
+        source === 'template'
+          ? '<template id="sequence" data-region-name="13">'
+          : '<template id="sequence">'
+      );
+      const root = element.shadowRoot!;
+      const column = root.querySelector('.line-middle')!;
+      const selection = (
+        root as ShadowRoot & { getSelection: () => Selection }
+      ).getSelection();
+      selection.setBaseAndExtent(
+        column.lastElementChild!.firstChild!,
+        2,
+        column.firstElementChild!.firstChild!,
+        1
+      );
+      column.dispatchEvent(
+        new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })
+      );
+      const events: CustomEvent[] = [];
+      element.addEventListener('genome-browser-navigation', (event) => {
+        events.push(event as CustomEvent);
+      });
+      const button = page.getByRole('button', {
+        name: 'View in genome browser'
+      });
+      await expect.element(button).toBeVisible();
+      await button.click();
+      expect(events.map((event) => event.detail)).toEqual([
+        { location: { regionName: '13', start: 2001, end: 2003 } }
+      ]);
+      expect(events.every((event) => event.bubbles && event.composed)).toBe(
+        true
+      );
+    }
+  );
+
+  it('hides the genome browser button when the region is unavailable', async () => {
+    element.sequenceContext = {
+      genomeId: 'genome',
+      transcript: { stableId: 'transcript' },
+      sequenceView: 'genomic'
+    };
+    const root = element.shadowRoot!;
+    const column = root.querySelector('.line-middle')!;
+    const selection = (
+      root as ShadowRoot & { getSelection: () => Selection }
+    ).getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(column);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    column.dispatchEvent(
+      new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })
+    );
+
+    expect(root.querySelector('[data-mode="selection"]')).not.toBeNull();
+    await expect
+      .element(page.getByRole('button', { name: 'View in genome browser' }))
+      .not.toBeInTheDocument();
+  });
+
+  it('formats selection length and ignores whitespace and coordinate gutters', () => {
+    element.sequence = response(sequenceLine(1000, 2003)).replace(
+      '<span>AC</span><span>GT</span>',
+      `<span> ${'A'.repeat(1000)} </span><span>AAAA </span>`
+    );
+    const root = element.shadowRoot!;
+    const line = root.querySelector('.line')!;
+    const selection = (
+      root as ShadowRoot & { getSelection: () => Selection }
+    ).getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(line);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    line.dispatchEvent(
+      new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })
+    );
+    const popover = root.querySelector('[data-mode="selection"]')!;
+    expect(
+      Array.from(popover.children)
+        .slice(0, 3)
+        .map((node) => node.textContent)
+    ).toEqual(['Selected range', '1,000-2,003', '1,004bp']);
+  });
+
+  it('ignores a selection containing only coordinate gutters', () => {
+    const root = element.shadowRoot!;
+    const range = document.createRange();
+    range.selectNodeContents(root.querySelector('.line-left')!);
+    const selection = (
+      root as ShadowRoot & { getSelection: () => Selection }
+    ).getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    expect(getSequenceSelection({ root })).toBeNull();
+  });
+
   it('shows selection actions after selecting a word with a double click', async () => {
     await userEvent.dblClick(
       element.shadowRoot!.querySelector('.line-middle span')!
@@ -521,6 +737,117 @@ describe('sequence interactions', () => {
     expect(root.querySelector('[popover]')).toBeNull();
     expect(root.querySelector('.has-hovered-letter')).toBeNull();
   });
+
+  it.each([
+    {
+      context: {
+        genomeId: 'location-genome',
+        location: { regionName: 'X', start: 10, end: 200 }
+      },
+      expected: {
+        genome_uuid: 'location-genome',
+        focus_location: { region_name: 'X', start: 10, end: 200 }
+      }
+    },
+    {
+      context: {
+        genomeId: 'gene-genome',
+        gene: { stableId: 'gene-id' }
+      },
+      expected: {
+        genome_uuid: 'gene-genome',
+        focus_gene: { stable_id: 'gene-id' }
+      }
+    },
+    {
+      context: {
+        genomeId: 'transcript-genome',
+        transcript: { stableId: 'transcript-id' },
+        sequenceView: 'cdna' as const
+      },
+      expected: {
+        genome_uuid: 'transcript-genome',
+        focus_transcript: { stable_id: 'transcript-id' },
+        sequence_type: 'cdna'
+      }
+    }
+  ])(
+    'uses the updated sequence context: $context',
+    async ({ context, expected }) => {
+      const fetch = vi
+        .spyOn(window, 'fetch')
+        .mockImplementation(async () => new Response('<div>Features</div>'));
+      letterEvent(element, 'click');
+      const firstRequest = fetch.mock.calls[0][0] as Request;
+      expect(await firstRequest.json()).toEqual({
+        genome_uuid: 'genome',
+        focus_location: { region_name: '13', start: 1, end: 100 },
+        location: { start: 1, end: 1 }
+      });
+
+      element.sequenceContext = context;
+      letterEvent(element, 'click', 1);
+      const updatedRequest = fetch.mock.calls[1][0] as Request;
+      expect(await updatedRequest.json()).toEqual({
+        ...expected,
+        location: { start: 2, end: 2 }
+      });
+      await vi.waitFor(() =>
+        expect(
+          element.shadowRoot!.querySelector('[popover]')!.textContent
+        ).toContain('Features')
+      );
+    }
+  );
+
+  it.each([undefined, '13'])(
+    'formats coordinates in hover and click popovers with region %s',
+    async (regionName) => {
+      const fetch = vi
+        .spyOn(window, 'fetch')
+        .mockImplementation(async () => new Response('<div>Features</div>'));
+      const template = response(sequenceLine(32272829, 32272832));
+      element.sequence = regionName
+        ? template.replace(
+            '<template id="sequence">',
+            `<template id="sequence" data-region-name="${regionName}">`
+          )
+        : template;
+      const expected = regionName ? 'A: 13:32,272,829' : 'A: 32,272,829';
+
+      letterEvent(element, 'mousemove');
+      expect(element.shadowRoot!.querySelector('[popover]')!.textContent).toBe(
+        expected
+      );
+      expect(fetch).not.toHaveBeenCalled();
+
+      letterEvent(element, 'click');
+      expect(
+        element.shadowRoot!.querySelector('[popover]')!.firstElementChild!
+          .textContent
+      ).toBe(expected);
+      await vi.waitFor(() =>
+        expect(
+          element.shadowRoot!.querySelector('[popover]')!.textContent
+        ).toContain('Features')
+      );
+      expect(
+        element.shadowRoot!.querySelector('[popover]')!.firstElementChild!
+          .textContent
+      ).toBe(expected);
+      const request = fetch.mock.calls[0][0] as Request;
+      expect((await request.json()).location).toEqual({
+        start: 32272829,
+        end: 32272829
+      });
+
+      element.sequence = template;
+      letterEvent(element, 'mousemove');
+      expect(element.shadowRoot!.querySelector('[popover]')!.textContent).toBe(
+        'A: 32,272,829'
+      );
+    }
+  );
 
   it('keeps feature content open on hover and ignores stale requests', async () => {
     let resolveFirst!: (response: Response) => void;
@@ -607,7 +934,7 @@ describe('sequence interactions', () => {
     ).getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
-    expect(getSequenceSelection(root)?.lineBlock).toBe(
+    expect(getSequenceSelection({ root })?.lineBlock).toBe(
       columns[1].closest('.line')
     );
   });
@@ -646,7 +973,11 @@ describe('sequence interactions', () => {
     const popover = root.querySelector('[popover]')!;
     expect(popover.getAttribute('data-mode')).toBe('selection');
     expect(popover.querySelector('button')!.textContent).toBe('Copy');
-    expect(popover.textContent).toContain('hello world');
+    expect(
+      Array.from(popover.children)
+        .slice(0, 3)
+        .map((node) => node.textContent)
+    ).toEqual(['Selected range', '1-4', '4bp']);
     expect(popover.querySelectorAll('button')).toHaveLength(2);
     expect(popover.querySelector('a')).toBeNull();
     letterEvent(element, 'mousemove');

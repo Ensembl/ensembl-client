@@ -16,21 +16,22 @@
 
 import {
   fetchOverlapTemplate,
-  type OverlapRequestParamsWithoutLocation
-} from '../overlapRequest';
+  getOverlapRequestParams
+} from './overlapRequest';
 import {
   getLetterInfoFromEvent,
   getSequenceSelection
 } from './sequence-hit-testing';
 import { SequencePopover, type PopoverState } from './sequence-popover';
 
+import type { SequenceContext } from './sequence-element';
 import type { LetterHit, SequenceSelection } from './sequence-hit-testing';
 
 type Options = {
   host: HTMLElement;
   root: ShadowRoot;
-  getOverlapRequestParams: () =>
-    OverlapRequestParamsWithoutLocation | undefined;
+  getSequenceContext: () => SequenceContext | undefined;
+  getRegionName: () => string | undefined;
 };
 
 export class SequenceInteractions {
@@ -76,7 +77,7 @@ export class SequenceInteractions {
         ) {
           return;
         }
-        const startedWithSelection = Boolean(getSequenceSelection(root));
+        const startedWithSelection = Boolean(this.#getSelection());
         this.reset();
         this.#gesture = {
           selecting: true,
@@ -93,7 +94,7 @@ export class SequenceInteractions {
           return;
         }
         this.#gesture.selecting = false;
-        const selection = getSequenceSelection(root, event);
+        const selection = this.#getSelection(event);
         this.#gesture.suppressClick =
           Boolean(selection) || this.#gesture.startedWithSelection;
         if (selection) {
@@ -102,7 +103,7 @@ export class SequenceInteractions {
           this.#selectionTimeout = setTimeout(() => {
             this.#selectionTimeout = null;
             // A click inside selected text can clear it after pointerup.
-            if (getSequenceSelection(root)) {
+            if (this.#getSelection()) {
               this.#showSelection(selection);
             }
           }, 0);
@@ -119,7 +120,7 @@ export class SequenceInteractions {
         ) {
           return;
         }
-        const selection = getSequenceSelection(root);
+        const selection = this.#getSelection();
         if (selection) {
           this.#showSelection(selection);
         }
@@ -193,7 +194,7 @@ export class SequenceInteractions {
     if (state.kind === 'features') {
       this.#highlightLetter(state.letter);
     }
-    this.#popover.render(state);
+    this.#popover.render(state, this.options.getRegionName());
   }
 
   #clearHover() {
@@ -257,10 +258,11 @@ export class SequenceInteractions {
     if (!letter) {
       return;
     }
-    const params = this.options.getOverlapRequestParams();
-    if (!params) {
+    const context = this.options.getSequenceContext();
+    if (!context) {
       return;
     }
+    const params = getOverlapRequestParams(context);
     this.#requestController?.abort();
     const requestController = new AbortController();
     this.#requestController = requestController;
@@ -298,12 +300,40 @@ export class SequenceInteractions {
     }
   }
 
+  #getSelection(releaseEvent?: PointerEvent) {
+    const context = this.options.getSequenceContext();
+    const sequenceType =
+      context && 'transcript' in context ? context.sequenceView : 'genomic';
+    return getSequenceSelection({
+      root: this.options.root,
+      releaseEvent,
+      sequenceType
+    });
+  }
+
   #showSelection(selection: SequenceSelection) {
     this.#cancelPendingSelection();
     this.#requestController?.abort();
     this.#requestController = null;
     this.#clearHover();
-    this.#setState({ kind: 'selection', selection });
+    const context = this.options.getSequenceContext();
+    const sequenceType =
+      context && 'transcript' in context ? context.sequenceView : 'genomic';
+    const regionName =
+      this.options.getRegionName() ||
+      (context && 'location' in context
+        ? context.location.regionName
+        : undefined);
+    const genomeBrowserLocation =
+      sequenceType === 'genomic' && regionName
+        ? { regionName, start: selection.start, end: selection.end }
+        : undefined;
+    this.#setState({
+      kind: 'selection',
+      selection,
+      sequenceType,
+      genomeBrowserLocation
+    });
   }
 
   #cancelPendingSelection() {

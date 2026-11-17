@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
+
 export const getLetterInfoFromEvent = (event: PointerEvent | MouseEvent) => {
   // Document listeners see the shadow host as event.target. The composed path
   // retains the sequence element that was actually under the pointer.
@@ -104,12 +106,23 @@ export type LetterHit = NonNullable<ReturnType<typeof getLetterInfoFromEvent>>;
 export type SequenceSelection = {
   lineBlock: HTMLElement;
   rect: Omit<DOMRect, 'toJSON'>;
+  start: number;
+  end: number;
+  length: number;
 };
 
-export const getSequenceSelection = (
-  root: ShadowRoot,
-  releaseEvent?: PointerEvent
-): SequenceSelection | null => {
+type SequenceSelectionOptions = {
+  root: ShadowRoot;
+  releaseEvent?: PointerEvent;
+  sequenceType?: TranscriptSequenceView;
+};
+
+export const getSequenceSelection = ({
+  root,
+  releaseEvent,
+  sequenceType = 'genomic'
+}: SequenceSelectionOptions): SequenceSelection | null => {
+  const useMoleculeCoordinates = sequenceType !== 'genomic';
   // Chromium exposes getSelection on ShadowRoot; other browsers use the document.
   const selection =
     (
@@ -149,39 +162,79 @@ export const getSequenceSelection = (
     return null;
   }
 
-  if (releaseEvent) {
-    const letter = getLetterInfoFromEvent(releaseEvent);
-    if (letter && root.contains(letter.lineBlock)) {
-      return { lineBlock: letter.lineBlock, rect: letter.rect };
-    }
-  }
-
-  let position: SequenceSelection | null = null;
+  let position: Pick<SequenceSelection, 'lineBlock' | 'rect'> | null = null;
+  let start = Infinity;
+  let end = -Infinity;
+  let length = 0;
+  let sequenceOffset = 0;
 
   for (const container of root.querySelectorAll<HTMLElement>('.line-middle')) {
-    if (!range.intersectsNode(container)) {
-      continue;
-    }
     const lineBlock = container.closest<HTMLElement>('.line');
-    if (!lineBlock) {
+    // Aligned translations are annotations of the primary nucleotide sequence.
+    if (!lineBlock || lineBlock.classList.contains('protein-line')) {
       continue;
     }
+
+    if (!range.intersectsNode(container)) {
+      if (length) {
+        break;
+      }
+      if (useMoleculeCoordinates) {
+        sequenceOffset += container.textContent.replace(/\s/g, '').length;
+      }
+      continue;
+    }
+
+    const lineStart = Number(lineBlock.dataset.start);
+    const lineEnd = Number(lineBlock.dataset.end);
+    const step = lineEnd < lineStart ? -1 : 1;
+    let lineOffset = 0;
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
       const node = walker.currentNode as Text;
-      if (!range.intersectsNode(node)) {
-        continue;
+      const nodeLength = node.data.replace(/\s/g, '').length;
+      if (
+        range.intersectsNode(node) &&
+        (useMoleculeCoordinates ||
+          (Number.isFinite(lineStart) && Number.isFinite(lineEnd)))
+      ) {
+        const from = node === range.startContainer ? range.startOffset : 0;
+        const to = node === range.endContainer ? range.endOffset : node.length;
+        const selected = node.data.slice(from, to);
+        const selectedLength = selected.replace(/\s/g, '').length;
+        if (selectedLength) {
+          const offset = node.data.slice(0, from).replace(/\s/g, '').length;
+          const first = useMoleculeCoordinates
+            ? sequenceOffset + offset + 1
+            : lineStart + step * (lineOffset + offset);
+          const last =
+            first + (useMoleculeCoordinates ? 1 : step) * (selectedLength - 1);
+          start = Math.min(start, first, last);
+          end = Math.max(end, first, last);
+          length += selectedLength;
+
+          const lastOffset = from + selected.trimEnd().length - 1;
+          const endRange = document.createRange();
+          endRange.setStart(node, lastOffset);
+          endRange.setEnd(node, lastOffset + 1);
+          position = { lineBlock, rect: endRange.getBoundingClientRect() };
+        }
       }
-      const from = node === range.startContainer ? range.startOffset : 0;
-      const to = node === range.endContainer ? range.endOffset : node.length;
-      if (to > from && node.data.slice(from, to).trim()) {
-        const endRange = document.createRange();
-        endRange.setStart(node, to - 1);
-        endRange.setEnd(node, to);
-        position = { lineBlock, rect: endRange.getBoundingClientRect() };
-      }
+      lineOffset += nodeLength;
+      sequenceOffset += nodeLength;
     }
   }
 
-  return position;
+  if (!position || !length) {
+    return null;
+  }
+
+  if (releaseEvent) {
+    const letter = getLetterInfoFromEvent(releaseEvent);
+    if (letter && root.contains(letter.lineBlock)) {
+      position = { lineBlock: letter.lineBlock, rect: letter.rect };
+    }
+  }
+
+  return { ...position, start, end, length };
 };

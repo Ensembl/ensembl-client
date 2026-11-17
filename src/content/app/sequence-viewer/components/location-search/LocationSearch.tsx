@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { useState, useRef, type InputEvent, type SubmitEvent } from 'react';
+import {
+  useState,
+  useRef,
+  useId,
+  type InputEvent,
+  type SubmitEvent
+} from 'react';
 import classNames from 'classnames';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -24,6 +30,7 @@ import { validateGenomicLocation } from 'src/content/app/genome-browser/helpers/
 import useDOMElement from 'src/shared/hooks/useDOMElement';
 
 import FlatInput from 'src/shared/components/input/FlatInput';
+import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
@@ -104,8 +111,6 @@ export const LocationSearch = (props: Props) => {
     }
   };
 
-  const componentClasses = classNames(styles.container, props.className);
-
   const removeWarning = () => {
     if (isInputError) {
       setIsInputError(false);
@@ -113,7 +118,7 @@ export const LocationSearch = (props: Props) => {
   };
 
   return (
-    <form className={componentClasses} onSubmit={onSubmit}>
+    <form onSubmit={onSubmit}>
       {props.variety === 'compact' ? (
         <CompactLocationSearch
           value={inputValue}
@@ -144,7 +149,8 @@ const CompactLocationSearch = ({
   onBlur,
   onWarningRemoval,
   isValidationError,
-  canSubmit
+  canSubmit,
+  className: classNameFromProps
 }: {
   value: string;
   onInput: (event: InputEvent<HTMLInputElement>) => void;
@@ -153,15 +159,21 @@ const CompactLocationSearch = ({
   blurOnSubmit?: boolean;
   isValidationError: boolean;
   canSubmit: boolean;
+  className?: string;
 }) => {
   const [inputAnchor, setInputAnchorRef] = useDOMElement<HTMLInputElement>();
 
+  const componentClasses = classNames(
+    styles.containerCompact,
+    classNameFromProps
+  );
+
   return (
-    <>
+    <div className={componentClasses}>
       <div>
         <FlatInput
           ref={setInputAnchorRef}
-          className={styles.input}
+          className={styles.inputCompact}
           value={value}
           onInput={onInput}
           onBlur={onBlur}
@@ -174,7 +186,7 @@ const CompactLocationSearch = ({
         )}
       </div>
       <PrimaryButton disabled={!canSubmit}>Go</PrimaryButton>
-    </>
+    </div>
   );
 };
 
@@ -182,26 +194,37 @@ const DefaultLocationSearch = ({
   value,
   onInput,
   isValidationError,
-  canSubmit
+  canSubmit,
+  className: classNameFromProps
 }: {
   value: string;
   onInput: (event: InputEvent<HTMLInputElement>) => void;
   isValidationError: boolean;
   canSubmit: boolean;
+  className?: string;
 }) => {
+  const inputId = useId();
+
   return (
-    <>
-      <div>
-        <FlatInput
+    <div className={classNameFromProps}>
+      <div className={styles.containerDefault}>
+        <label htmlFor={inputId} className={styles.label}>
+          Go to
+        </label>
+        <ShadedInput
+          id={inputId}
           className={styles.input}
           value={value}
           onInput={onInput}
           aria-label="Genomic location"
+          placeholder="Add location co-ordinates"
         />
+        <PrimaryButton disabled={!canSubmit}>Go</PrimaryButton>
       </div>
-      {isValidationError && <div>Invalid location</div>}
-      <PrimaryButton disabled={!canSubmit}>Go</PrimaryButton>
-    </>
+      {isValidationError && (
+        <div className={styles.warning}>Invalid location</div>
+      )}
+    </div>
   );
 };
 

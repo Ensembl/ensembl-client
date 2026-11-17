@@ -1,15 +1,29 @@
-.container {
+.containerCompact {
   display: flex;
   align-items: center;
   column-gap: 1rem;
 }
 
-/* As of summer 2026, Firefox is still lacking support */
+/* Firefox added support in June 2026 */
 @supports (field-sizing: content) {
-  .input [data-part="input"] {
+  .inputCompact [data-part="input"] {
     field-sizing: content;
     max-width: 55ch;
     min-width: 10ch;
   }
 }
 
+.containerDefault {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.label {
+  font-weight: var(--font-weight-light);
+}
+
+.warning {
+  color: var(--color-red);
+}
