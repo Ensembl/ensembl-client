@@ -37,8 +37,7 @@ const ExceptionWarning = (props: Props) => {
 const TransSplicingWarning = () => {
   return (
     <div className={styles.warning}>
-      Unable to display genomic sequence due to the feature crossing the origin
-      of a circular region
+      Unable to display genomic sequence due to trans-splicing
     </div>
   );
 };
@@ -46,7 +45,8 @@ const TransSplicingWarning = () => {
 const CrossOriginWarning = () => {
   return (
     <div className={styles.warning}>
-      Unable to display genomic sequence due to trans-splicing
+      Unable to display genomic sequence due to the feature crossing the origin
+      of a circular region
     </div>
   );
 };
