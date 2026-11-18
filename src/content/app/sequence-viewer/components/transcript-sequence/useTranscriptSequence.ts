@@ -19,20 +19,22 @@ import { from } from 'rxjs';
 
 import { useAppDispatch, type AppDispatch } from 'src/store';
 
-import { getGBTranscriptSummary } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import { hasGenomicSequenceException } from 'src/content/app/sequence-viewer/utils/exceptionsChecker';
+
+import { fetchTranscriptInfo } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 import {
   fetchAnnotatedSequence,
   prepareOptionsForPayload
 } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
 
-import type { TranscriptSummaryQueryResult } from 'src/content/app/genome-browser/state/api/queries/transcriptSummaryQuery';
+import type { TranscriptFeatureResponsePayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 import type {
   SequenceSettings,
   TranscriptSequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 
 type Data = {
-  transcript: TranscriptSummaryQueryResult['transcript'];
+  transcript: TranscriptFeatureResponsePayload['transcript'];
   annotatedSequence: string;
 };
 
@@ -106,9 +108,9 @@ async function* fetchData({
   };
 
   const { data: transcriptResponse } = await reduxDispatch(
-    getGBTranscriptSummary.initiate(
+    fetchTranscriptInfo.initiate(
       {
-        transcriptId,
+        stableId: transcriptId,
         genomeId
       },
       { subscribe: false }
@@ -126,7 +128,19 @@ async function* fetchData({
 
   const { transcript } = transcriptResponse;
 
-  let annotatedSequence: string;
+  let annotatedSequence: string = '';
+
+  if (hasGenomicSequenceException(transcript.exceptions)) {
+    yield {
+      data: {
+        transcript,
+        annotatedSequence
+      },
+      isLoading: false,
+      isError: false
+    };
+    return; // don't fetch the sequence
+  }
 
   try {
     annotatedSequence = await fetchAnnotatedSequence({

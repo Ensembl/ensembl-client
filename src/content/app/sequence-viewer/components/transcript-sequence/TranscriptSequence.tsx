@@ -18,6 +18,7 @@ import type { CSSProperties } from 'react';
 import { useSearchParams } from 'react-router';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { hasGenomicSequenceException } from 'src/content/app/sequence-viewer/utils/exceptionsChecker';
 
 import { getTranscriptSequenceViewFromSearchParams } from 'src/content/app/sequence-viewer/utils/getTranscriptSequenceView';
 
@@ -28,6 +29,7 @@ import useTranscriptSequence from './useTranscriptSequence';
 
 import TranscriptSequenceTypes from './TranscriptSequenceTypes';
 import { CircleLoader } from 'src/shared/components/loader';
+import ExceptionWarning from 'src/content/app/sequence-viewer/components/exception-warning/ExceptionWarning';
 import Sequence from 'src/content/app/sequence-viewer/components/sequence/Sequence';
 
 import commonStyles from '../../styles/sequence-viewer-common-styles.module.css';
@@ -82,7 +84,7 @@ const TranscriptSequence = (props: Props) => {
     isSettingsError ||
     (!isLoadingSettings && isSequenceError);
 
-  const transcriptEnd = data?.transcript.slice.location.end ?? 1;
+  const transcriptEnd = data?.transcript.end ?? 1;
   const formattedTranscriptEndString = formatNumber(transcriptEnd);
   const formattedGeneEndStringEnd = formattedTranscriptEndString.length;
 
@@ -101,6 +103,12 @@ const TranscriptSequence = (props: Props) => {
     );
   }
 
+  const isGenomicSequenceException =
+    transcriptView === 'genomic' &&
+    hasGenomicSequenceException(data?.transcript.exceptions ?? []);
+  const canShowSequence =
+    data && !isLoading && !isError && !isGenomicSequenceException;
+
   return (
     <div className={commonStyles.main} style={inlineStyles}>
       <div className={styles.sequenceTypesContainer}>
@@ -116,13 +124,18 @@ const TranscriptSequence = (props: Props) => {
         </div>
       )}
 
+      {data && isGenomicSequenceException && (
+        <ExceptionWarning exceptions={data?.transcript.exceptions} />
+      )}
+
       {isError && (
         <div>
           There has been an error loading the {transcriptView} sequence of{' '}
           {transcriptId}
         </div>
       )}
-      {data && !isLoading && !isError && (
+
+      {canShowSequence && (
         <Sequence
           genomeId={genomeId}
           transcript={{ stableId: transcriptId }}
