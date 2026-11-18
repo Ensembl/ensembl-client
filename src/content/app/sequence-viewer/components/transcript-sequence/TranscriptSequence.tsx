@@ -73,6 +73,7 @@ const TranscriptSequence = (props: Props) => {
   } = useTranscriptSequence({
     genomeId,
     transcriptId,
+    sequenceView: transcriptView,
     settings: sequenceSettings
   });
   const isLoading =

@@ -27,6 +27,7 @@ import {
   prepareOptionsForPayload
 } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
 
+import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
 import type { TranscriptFeatureResponsePayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 import type {
   SequenceSettings,
@@ -44,30 +45,43 @@ type State = {
   isError: boolean;
 };
 
-const initialState: State = {
+type StoredState = {
+  genomeId: string;
+  transcriptId: string;
+  sequenceView: TranscriptSequenceView;
+  settings: TranscriptSequenceSettings;
+  result: State;
+};
+
+const loadingState: State = {
   data: null,
-  isLoading: false,
+  isLoading: true,
   isError: false
 };
 
 const useTranscriptSequence = ({
   genomeId,
   transcriptId,
+  sequenceView,
   settings
 }: {
   genomeId: string;
   transcriptId: string;
+  sequenceView: TranscriptSequenceView;
   settings: SequenceSettings | null;
 }) => {
-  const [state, setState] = useState(initialState);
+  const [storedState, setStoredState] = useState<StoredState | null>(null);
   const reduxDispatch = useAppDispatch();
 
+  const matchingSettings =
+    settings?.type === 'transcript' &&
+    settings.transcriptId === transcriptId &&
+    settings.sequenceView === sequenceView
+      ? settings
+      : null;
+
   useEffect(() => {
-    if (
-      !settings ||
-      settings.type !== 'transcript' ||
-      settings.transcriptId !== transcriptId
-    ) {
+    if (!matchingSettings) {
       return;
     }
 
@@ -76,18 +90,32 @@ const useTranscriptSequence = ({
         reduxDispatch,
         transcriptId,
         genomeId,
-        settings
+        settings: matchingSettings
       })
-    ).subscribe((data) => {
-      setState(data);
+    ).subscribe((result) => {
+      setStoredState({
+        genomeId,
+        transcriptId,
+        sequenceView,
+        settings: matchingSettings,
+        result
+      });
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [reduxDispatch, genomeId, transcriptId, settings]);
+  }, [reduxDispatch, genomeId, transcriptId, sequenceView, matchingSettings]);
 
-  return state;
+  const matchesCurrentRequest =
+    matchingSettings !== null &&
+    storedState !== null &&
+    storedState.genomeId === genomeId &&
+    storedState.transcriptId === transcriptId &&
+    storedState.sequenceView === sequenceView &&
+    storedState.settings === matchingSettings;
+
+  return matchesCurrentRequest ? storedState.result : loadingState;
 };
 
 async function* fetchData({
@@ -101,12 +129,6 @@ async function* fetchData({
   settings: TranscriptSequenceSettings;
   reduxDispatch: AppDispatch;
 }) {
-  yield {
-    data: null,
-    isLoading: true,
-    isError: false
-  };
-
   const { data: transcriptResponse } = await reduxDispatch(
     fetchTranscriptInfo.initiate(
       {
@@ -130,7 +152,10 @@ async function* fetchData({
 
   let annotatedSequence: string = '';
 
-  if (hasGenomicSequenceException(transcript.exceptions)) {
+  if (
+    settings.sequenceView === 'genomic' &&
+    hasGenomicSequenceException(transcript.exceptions)
+  ) {
     yield {
       data: {
         transcript,
