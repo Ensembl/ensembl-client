@@ -217,7 +217,7 @@ describe('blast epics', () => {
     it('is resistant to network errors', async () => {
       const jobMap: Record<string, boolean> = {};
 
-      // respond with a 404 error or a network error the first time the request is received
+      // Respond with a network error on the first request for each job.
       server.use(
         http.get(
           'http://tools-api-url/blast/jobs/status/:jobId',
@@ -225,11 +225,7 @@ describe('blast epics', () => {
             const jobId = params.jobId as string;
             if (!jobMap[jobId]) {
               jobMap[jobId] = true;
-              if (jobId === firstJobInResponse.job_id) {
-                return new HttpResponse(null, { status: 404 });
-              } else {
-                return HttpResponse.error();
-              }
+              return HttpResponse.error();
             } else {
               return HttpResponse.json(createFinishedJobStatusResponse());
             }
@@ -244,12 +240,59 @@ describe('blast epics', () => {
         const submissions = getBlastSubmissions(store.getState());
         const [, submission] = Object.entries(submissions)[0];
         expect(
-          (submission as SuccessfulBlastSubmission).results.every((job) =>
-            ['FINISHED', 'FAILURE'].includes(job.status)
+          (submission as SuccessfulBlastSubmission).results.every(
+            (job) => job.status === 'FINISHED'
           )
         ).toBe(true);
       });
     });
+
+    it.each([400, 404, 429, 500, 503, 599])(
+      'marks jobs as failed and stops polling after HTTP %i',
+      async (httpStatus) => {
+        const pollCounts: Record<string, number> = {};
+        server.use(
+          http.get(
+            'http://tools-api-url/blast/jobs/status/:jobId',
+            ({ params }) => {
+              const jobId = params.jobId as string;
+              pollCounts[jobId] = (pollCounts[jobId] ?? 0) + 1;
+              return new HttpResponse(null, { status: httpStatus });
+            }
+          )
+        );
+
+        await store.dispatch(
+          submitBlast.initiate(createBlastSubmissionPayload())
+        );
+
+        await waitFor(() => {
+          const submissions = getBlastSubmissions(store.getState());
+          const submission = submissions[
+            successfulSubmission.submission_id
+          ] as SuccessfulBlastSubmission;
+          expect(
+            submission.results.every((job) => job.status === 'FAILURE')
+          ).toBe(true);
+          for (const job of submission.results) {
+            expect(
+              blastStorageService.updateSavedBlastJob
+            ).toHaveBeenCalledWith({
+              submissionId: successfulSubmission.submission_id,
+              jobId: job.jobId,
+              fragment: { status: 'FAILURE' }
+            });
+          }
+        });
+
+        // Allow further polling cycles to expose any unintended retries.
+        await setTimeout(20);
+        expect(pollCounts).toEqual({
+          [firstJobInResponse.job_id]: 1,
+          [secondJobInResponse.job_id]: 1
+        });
+      }
+    );
 
     it('stops polling if a submission gets deleted', async () => {
       let pollCount = 0;

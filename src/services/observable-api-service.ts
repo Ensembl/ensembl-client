@@ -25,7 +25,11 @@ export const fetch = <T>(url: string) =>
         return response.json() as Promise<T>;
       } else {
         // Server is returning a status requiring the client to try something else.
-        return of({ error: true, message: `Error ${response.status}` });
+        return of({
+          error: true,
+          httpStatus: response.status,
+          message: `Error ${response.status}`
+        });
       }
     }),
     catchError((err) => {
