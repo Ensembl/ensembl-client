@@ -17,12 +17,14 @@
 import type { CSSProperties } from 'react';
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { hasGenomicSequenceException } from 'src/content/app/sequence-viewer/utils/exceptionsChecker';
 
 import useGeneSequenceSettings from 'src/content/app/sequence-viewer/hooks/useGeneSequenceSettings';
 
 import useGeneSequence from './useGeneSequence';
 
 import Sequence from 'src/content/app/sequence-viewer/components/sequence/Sequence';
+import ExceptionWarning from 'src/content/app/sequence-viewer/components/exception-warning/ExceptionWarning';
 
 import { CircleLoader } from 'src/shared/components/loader';
 
@@ -62,6 +64,12 @@ const GeneSequence = (props: Props) => {
         </div>
       </div>
     );
+  } else if (data?.gene && hasGenomicSequenceException(data.gene.exceptions)) {
+    return (
+      <div className={commonStyles.main}>
+        <ExceptionWarning exceptions={data.gene.exceptions} />
+      </div>
+    );
   } else if (isError) {
     return <div>There has been an error fetching the sequence</div>;
   } else if (!data) {
@@ -69,7 +77,7 @@ const GeneSequence = (props: Props) => {
   }
 
   const { annotatedSequence, gene } = data;
-  const geneEnd = gene.slice.location.end;
+  const geneEnd = gene.end;
   const formattedGeneEndString = formatNumber(geneEnd);
   const formattedGeneEndStringEnd = formattedGeneEndString.length;
 

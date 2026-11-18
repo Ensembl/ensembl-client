@@ -19,20 +19,22 @@ import { from } from 'rxjs';
 
 import { useAppDispatch, type AppDispatch } from 'src/store';
 
-import { fetchDefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import { hasGenomicSequenceException } from 'src/content/app/sequence-viewer/utils/exceptionsChecker';
+
+import { fetchGeneInfo } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 import {
   fetchAnnotatedSequence,
   prepareOptionsForPayload
 } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
 
+import type { GeneFeatureResponsePayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 import type {
   SequenceSettings,
   GeneSequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
-import type { DefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 type Data = {
-  gene: DefaultEntityViewerGene;
+  gene: GeneFeatureResponsePayload['gene'];
   annotatedSequence: string;
 };
 
@@ -102,9 +104,9 @@ async function* fetchData({
   };
 
   const { data: geneResponse } = await reduxDispatch(
-    fetchDefaultEntityViewerGene.initiate(
+    fetchGeneInfo.initiate(
       {
-        geneId,
+        stableId: geneId,
         genomeId
       },
       { subscribe: false }
@@ -122,7 +124,20 @@ async function* fetchData({
 
   const { gene } = geneResponse;
 
-  let annotatedSequence: string;
+  let annotatedSequence: string = '';
+
+  if (hasGenomicSequenceException(gene.exceptions)) {
+    // don't try to fetch the sequence
+    yield {
+      data: {
+        gene,
+        annotatedSequence
+      },
+      isLoading: false,
+      isError: false
+    };
+    return;
+  }
 
   try {
     const options = prepareOptionsForPayload(settings);
