@@ -197,6 +197,12 @@ Node:review:
   needs:
     - Test_N_Build:review
 
+# Container scanning job for Live deployments
+container_scanning:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: on_success
+    - when: never
 
 ######## DEPLOYMENT JOBS ########
 
