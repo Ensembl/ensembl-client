@@ -203,6 +203,8 @@ container_scanning:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: on_success
     - when: never
+  variables:
+    CS_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
 
 ######## DEPLOYMENT JOBS ########
 
