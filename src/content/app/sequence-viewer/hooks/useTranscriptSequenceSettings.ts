@@ -22,7 +22,7 @@ import {
   setInitialSequenceSettings,
   createInitialTranscriptSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
-import { useTranscriptSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
+import { useTranscriptSidebarPanelsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
 import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
 
@@ -51,7 +51,7 @@ const useTranscriptSequenceSettings = ({
   );
 
   const { currentData, isError: queryIsError } =
-    useTranscriptSequenceOptionsQuery(
+    useTranscriptSidebarPanelsQuery(
       {
         genomeId,
         transcriptId,

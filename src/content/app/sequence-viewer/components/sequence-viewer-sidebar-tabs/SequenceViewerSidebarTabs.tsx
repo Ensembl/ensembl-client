@@ -22,15 +22,12 @@ import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSeque
 
 import {
   getIsSidebarOpen,
-  getSidebarView,
   getSidebarModalView
 } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSelectors';
 
 import {
   openSidebar,
-  changeSidebarView,
-  closeSidebarModal,
-  type SidebarView
+  closeSidebarModal
 } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSlice';
 
 import TextButton from 'src/shared/components/text-button/TextButton';
@@ -40,7 +37,6 @@ import styles from './SequenceViewerSidebarTabs.module.css';
 const SequenceViewerSidebarTabs = () => {
   const { genomeId } = useSequenceViewerIds();
   const dispatch = useAppDispatch();
-  const activeView = useAppSelector(getSidebarView);
   const isSidebarOpen = useAppSelector(getIsSidebarOpen);
   const sidebarModalView = useAppSelector((state) =>
     getSidebarModalView(state, genomeId ?? '')
@@ -48,7 +44,7 @@ const SequenceViewerSidebarTabs = () => {
 
   const isSidebarModalOpen = sidebarModalView !== null;
 
-  const onViewChange = (view: SidebarView) => {
+  const onConfigureClick = () => {
     if (!genomeId) {
       // this should not happen
       return;
@@ -59,43 +55,21 @@ const SequenceViewerSidebarTabs = () => {
     if (isSidebarModalOpen) {
       dispatch(closeSidebarModal({ genomeId }));
     }
-
-    dispatch(
-      changeSidebarView({
-        view
-      })
-    );
   };
 
-  const isDefaultTabSelected = activeView === 'default';
-  const isDefaultTabActive =
-    isDefaultTabSelected && isSidebarOpen && !isSidebarModalOpen;
+  const isDefaultTabActive = isSidebarOpen && !isSidebarModalOpen;
   const defaultTabClasses = classNames(styles.tab, {
     [styles.activeTab]: isDefaultTabActive
-  });
-
-  const isLegendTabSelected = activeView === 'legend';
-  const isLegendTabActive =
-    isLegendTabSelected && isSidebarOpen && !isSidebarModalOpen;
-  const legendTabClasses = classNames(styles.tab, {
-    [styles.activeTab]: isLegendTabActive
   });
 
   return (
     <div className={styles.container}>
       <TextButton
-        onClick={() => onViewChange('default')}
+        onClick={onConfigureClick}
         disabled={isDefaultTabActive}
         className={defaultTabClasses}
       >
         Configure
-      </TextButton>
-      <TextButton
-        onClick={() => onViewChange('legend')}
-        disabled={isLegendTabActive}
-        className={legendTabClasses}
-      >
-        Key
       </TextButton>
     </div>
   );

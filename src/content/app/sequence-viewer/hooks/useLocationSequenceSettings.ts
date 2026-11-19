@@ -22,7 +22,7 @@ import {
   setInitialSequenceSettings,
   createInitialLocationSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
-import { useLocationSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
+import { useLocationSidebarPanelsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
 import {
   getGenomicLocationFromString,
@@ -57,16 +57,15 @@ const useLocationSequenceSettings = ({
     // Invalid locations cannot be used to fetch sequence options.
   }
 
-  const { currentData, isError: queryIsError } =
-    useLocationSequenceOptionsQuery(
-      {
-        genomeId,
-        regionName: parsedLocation?.regionName ?? '',
-        start: parsedLocation?.start ?? 1,
-        end: parsedLocation?.end ?? 1
-      },
-      { skip: !genomeId || !parsedLocation }
-    );
+  const { currentData, isError: queryIsError } = useLocationSidebarPanelsQuery(
+    {
+      genomeId,
+      regionName: parsedLocation?.regionName ?? '',
+      start: parsedLocation?.start ?? 1,
+      end: parsedLocation?.end ?? 1
+    },
+    { skip: !genomeId || !parsedLocation }
+  );
 
   useEffect(() => {
     if (!genomeId || !location || !currentData || settings) {

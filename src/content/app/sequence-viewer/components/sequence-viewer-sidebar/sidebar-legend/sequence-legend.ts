@@ -29,7 +29,6 @@ const staticStyles = `
     font-weight: var(--font-weight-light);
     border-bottom: 1px solid var(--color-medium-light-grey);
     padding-bottom: 3px;
-    margin-top: 20px;
     margin-bottom: 15px;
   }
 
@@ -62,35 +61,13 @@ export class SequenceLegend extends HTMLElement {
       htmlTemplate,
       'text/html'
     );
-    const stylesTemplate = parsedTemplate.querySelector(
-      'template#styles'
-    ) as HTMLTemplateElement;
-    const legendTemplate = parsedTemplate.querySelector(
-      'template#legend'
-    ) as HTMLTemplateElement;
-
-    this.#updateStyles(stylesTemplate);
-
-    const resultContainer = this.shadowRoot;
-    resultContainer!.replaceChildren(...legendTemplate.content.childNodes);
-  }
-
-  #updateStyles(stylesTemplate: HTMLTemplateElement) {
-    const dynamicStylesNode = stylesTemplate.content.querySelector('style');
-
     const staticStyleSheet = new CSSStyleSheet();
     staticStyleSheet.replaceSync(staticStyles);
-
-    const styleSheets: CSSStyleSheet[] = [staticStyleSheet];
-
-    if (dynamicStylesNode) {
-      const dynamicStyles = dynamicStylesNode.textContent;
-      const dynamicStyleSheet = new CSSStyleSheet();
-      dynamicStyleSheet.replaceSync(dynamicStyles);
-      styleSheets.push(dynamicStyleSheet);
-    }
-
-    this.shadowRoot!.adoptedStyleSheets = styleSheets;
+    this.shadowRoot!.adoptedStyleSheets = [staticStyleSheet];
+    this.shadowRoot!.replaceChildren(
+      ...parsedTemplate.head.childNodes,
+      ...parsedTemplate.body.childNodes
+    );
   }
 }
 

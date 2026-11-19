@@ -45,7 +45,7 @@ export type SequenceMultiselectOption = {
     label: string;
     value: string | number | boolean; // value in the array of values
     checked: boolean; // whether this is selected by default
-    metadata?: TranscriptMetadata;
+    metadata?: GeneMetadata | TranscriptMetadata;
   }[];
 };
 
@@ -57,10 +57,38 @@ export type TranscriptMetadata = {
   end: number;
 };
 
-export type SequenceOptionsSection = {
+export type GeneMetadata = {
+  type: 'gene';
+  id: string;
+  start: number;
+  end: number;
+  symbol: string | null;
+  biotype: string;
+};
+
+type SidebarPanelBase = {
   label: string;
+  is_collapsible: boolean;
+  expanded_by_default: boolean;
+};
+
+export type SequenceOptionsPanel = SidebarPanelBase & {
+  type: 'sequence_options';
   children: Array<SequenceBooleanOption | SequenceMultiselectOption>;
 };
+
+export type FlankingPanel = SidebarPanelBase & {
+  type: 'flanking';
+  settings: FlankingInfo;
+};
+
+export type LegendPanel = SidebarPanelBase & {
+  type: 'legend';
+  value: string | null;
+};
+
+export type SequenceSidebarPanel =
+  SequenceOptionsPanel | FlankingPanel | LegendPanel;
 
 export type FlankingInfo = {
   default: number; // how many flanking bases upstream and downstream to show by default
@@ -69,9 +97,8 @@ export type FlankingInfo = {
   downstream_id: string;
 };
 
-export type AnnotatedSequenceOptionsResponsePayload = {
-  sections: SequenceOptionsSection[];
-  flanking?: FlankingInfo;
+export type SequenceSidebarPanelsResponsePayload = {
+  panels: SequenceSidebarPanel[];
 };
 
 export type DownloadOption = Omit<SequenceBooleanOption, 'value'> & {

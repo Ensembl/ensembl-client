@@ -16,18 +16,15 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-export type SidebarView = 'default' | 'legend';
 export type SidebarModalView = 'search' | 'download';
 
 export type SequenceViewerSidebarState = Readonly<{
   isSidebarOpen: boolean;
-  sidebarView: SidebarView;
   sidebarModalView: Record<string, SidebarModalView | null>;
 }>;
 
 const initialState: SequenceViewerSidebarState = {
   isSidebarOpen: true,
-  sidebarView: 'default',
   sidebarModalView: {}
 };
 
@@ -43,17 +40,6 @@ const sequenceViewerSidebarSlice = createSlice({
     },
     toggleSidebar(state) {
       state.isSidebarOpen = !state.isSidebarOpen;
-    },
-    changeSidebarView(
-      state,
-      action: PayloadAction<{
-        view: SidebarView;
-      }>
-    ) {
-      state.sidebarView = action.payload.view;
-    },
-    resetSidebarView(state) {
-      state.sidebarView = initialState.sidebarView;
     },
     openSidebarModal(
       state,
@@ -77,9 +63,7 @@ export const {
   closeSidebar,
   toggleSidebar,
   openSidebarModal,
-  closeSidebarModal,
-  changeSidebarView,
-  resetSidebarView
+  closeSidebarModal
 } = sequenceViewerSidebarSlice.actions;
 
 export default sequenceViewerSidebarSlice.reducer;

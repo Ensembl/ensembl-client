@@ -19,6 +19,7 @@ import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/store';
 
 import { getGenomicLocationFromString } from 'src/shared/helpers/genomicLocationHelpers';
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
@@ -28,9 +29,11 @@ import {
   updateSequenceSettings,
   type SequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
-import { useLocationSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
+import { useLocationSidebarPanelsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
-import { SequenceOptionsSections } from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
+import SequenceSidebarPanels from './SequenceSidebarPanels';
+
+import styles from './SequenceViewerSidebar.module.css';
 
 const getParsedLocation = (locationString: string) => {
   try {
@@ -57,7 +60,7 @@ const LocationSequenceSidebar = () => {
   );
   const dispatch = useAppDispatch();
 
-  const { currentData } = useLocationSequenceOptionsQuery(
+  const { currentData } = useLocationSidebarPanelsQuery(
     {
       genomeId: genomeId ?? '',
       regionName: parsedLocation?.regionName ?? '',
@@ -88,13 +91,29 @@ const LocationSequenceSidebar = () => {
     [dispatch, genomeId, genomicLocationString]
   );
 
+  const formattedLocation = parsedLocation
+    ? getFormattedLocation({
+        chromosome: parsedLocation.regionName,
+        start: parsedLocation.start,
+        end: parsedLocation.end
+      })
+    : '';
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', rowGap: '0.6rem' }}>
+    <div>
+      <div className={styles.focusInfoContainer}>
+        <div className={styles.labelledRow}>
+          <span className={styles.label}>Location</span>
+          <span>{formattedLocation}</span>
+        </div>
+      </div>
+
       {currentData && sequenceSettings?.options && (
-        <SequenceOptionsSections
+        <SequenceSidebarPanels
+          key={`${genomeId}:${genomicLocationString}`}
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
-          sections={currentData.sections}
+          panels={currentData.panels}
         />
       )}
     </div>
