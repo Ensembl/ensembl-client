@@ -4,13 +4,21 @@
 # - Development deployment (runs the latest code, has all in-progress features enabled)
 
 # include template to setup review app
-include: '/gitlab-ci-templates/.setup-review-template.yaml'
+include:
+  - local: '/gitlab-ci-templates/.setup-review-template.yaml'
+  - project: 'ensembl-web/ensembl-gitlab-ci-templates'
+    ref: 'main'
+    file: 'security-scan/.ensembl-security-jobs.yaml'
+    inputs:
+      docker_build_job: 'Node:Live'
 
 # Define stages for the CI/CD pipeline
 stages:
+  - security-scan
   - setup
   - test_build_static
   - build_docker_images
+  - container-scan
   - deploy-preview
   - deploy-live
 
@@ -189,6 +197,12 @@ Node:review:
   needs:
     - Test_N_Build:review
 
+# Container scanning job for Live deployments
+container_scanning:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: on_success
+    - when: never
 
 ######## DEPLOYMENT JOBS ########
 
