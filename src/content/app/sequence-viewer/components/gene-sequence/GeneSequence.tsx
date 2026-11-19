@@ -64,14 +64,14 @@ const GeneSequence = (props: Props) => {
         </div>
       </div>
     );
+  } else if (isError) {
+    return <div>There has been an error fetching the sequence</div>;
   } else if (data?.gene && hasGenomicSequenceException(data.gene.exceptions)) {
     return (
       <div className={commonStyles.main}>
         <ExceptionWarning exceptions={data.gene.exceptions} />
       </div>
     );
-  } else if (isError) {
-    return <div>There has been an error fetching the sequence</div>;
   } else if (!data) {
     return null;
   }

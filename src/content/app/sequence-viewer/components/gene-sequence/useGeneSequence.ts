@@ -44,9 +44,16 @@ type State = {
   isError: boolean;
 };
 
-const initialState: State = {
+type StoredState = {
+  genomeId: string;
+  geneId: string;
+  settings: GeneSequenceSettings;
+  result: State;
+};
+
+const loadingState: State = {
   data: null,
-  isLoading: false,
+  isLoading: true,
   isError: false
 };
 
@@ -59,11 +66,14 @@ const useGeneSequence = ({
   geneId: string;
   settings: SequenceSettings | null;
 }) => {
-  const [state, setState] = useState(initialState);
+  const [storedState, setStoredState] = useState<StoredState | null>(null);
   const reduxDispatch = useAppDispatch();
 
+  const matchingSettings =
+    settings?.type === 'gene' && settings.geneId === geneId ? settings : null;
+
   useEffect(() => {
-    if (!settings || settings.type !== 'gene' || settings.geneId !== geneId) {
+    if (!matchingSettings) {
       return;
     }
 
@@ -72,18 +82,30 @@ const useGeneSequence = ({
         reduxDispatch,
         geneId,
         genomeId,
-        settings
+        settings: matchingSettings
       })
-    ).subscribe((data) => {
-      setState(data);
+    ).subscribe((result) => {
+      setStoredState({
+        genomeId,
+        geneId,
+        settings: matchingSettings,
+        result
+      });
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [reduxDispatch, genomeId, geneId, settings]);
+  }, [reduxDispatch, genomeId, geneId, matchingSettings]);
 
-  return state;
+  const matchesCurrentRequest =
+    matchingSettings !== null &&
+    storedState !== null &&
+    storedState.genomeId === genomeId &&
+    storedState.geneId === geneId &&
+    storedState.settings === matchingSettings;
+
+  return matchesCurrentRequest ? storedState.result : loadingState;
 };
 
 async function* fetchData({
@@ -97,12 +119,6 @@ async function* fetchData({
   reduxDispatch: AppDispatch;
   settings: GeneSequenceSettings;
 }) {
-  yield {
-    data: null,
-    isLoading: true,
-    isError: false
-  };
-
   const { data: geneResponse } = await reduxDispatch(
     fetchGeneInfo.initiate(
       {
