@@ -1,5 +1,4 @@
 .sequenceTypesContainer {
-  width: 80ch;
   display: flex;
   justify-content: center;
   padding-top: calc(var(--vertical-space-sm) + 1rem);

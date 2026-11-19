@@ -279,3 +279,6 @@ export const {
   useTranscriptSequenceDownloadOptionsQuery,
   useLocationSequenceDownloadOptionsQuery
 } = sequenceViewerRestApiSlice;
+
+export const { geneInfo: fetchGeneInfo, transcriptInfo: fetchTranscriptInfo } =
+  sequenceViewerRestApiSlice.endpoints;

@@ -96,6 +96,11 @@ export type SequenceDownloadOptionsResponsePayload = {
 
 /* Feature endpoint */
 
+// The "exceptions" field contains a list of exceptions (i.e. characteristics of the sequence that
+// prevent us from displaying some of its views or annotations)
+// Two notable exceptions that should stop us from displaying the genomic sequence of a feature
+// are strings "trans_spliced" and "circular_cross_origin"
+
 export type GeneInFeatureResponse = {
   stable_id: string;
   unversioned_stable_id: string;
@@ -105,6 +110,7 @@ export type GeneInFeatureResponse = {
   start: number;
   end: number;
   strand: Strand;
+  exceptions: string[];
 };
 
 export type TranscriptInFeatureResponse = {
@@ -119,6 +125,7 @@ export type TranscriptInFeatureResponse = {
   start: number;
   end: number;
   strand: Strand;
+  exceptions: string[];
 };
 
 export type GeneFeatureResponsePayload = {

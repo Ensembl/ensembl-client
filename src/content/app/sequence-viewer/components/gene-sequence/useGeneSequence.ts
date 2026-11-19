@@ -19,20 +19,22 @@ import { from } from 'rxjs';
 
 import { useAppDispatch, type AppDispatch } from 'src/store';
 
-import { fetchDefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
+import { hasGenomicSequenceException } from 'src/content/app/sequence-viewer/utils/exceptionsChecker';
+
+import { fetchGeneInfo } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 import {
   fetchAnnotatedSequence,
   prepareOptionsForPayload
 } from 'src/content/app/sequence-viewer/utils/fetchAnnotatedSequence';
 
+import type { GeneFeatureResponsePayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 import type {
   SequenceSettings,
   GeneSequenceSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
-import type { DefaultEntityViewerGene } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 type Data = {
-  gene: DefaultEntityViewerGene;
+  gene: GeneFeatureResponsePayload['gene'];
   annotatedSequence: string;
 };
 
@@ -42,9 +44,16 @@ type State = {
   isError: boolean;
 };
 
-const initialState: State = {
+type StoredState = {
+  genomeId: string;
+  geneId: string;
+  settings: GeneSequenceSettings;
+  result: State;
+};
+
+const loadingState: State = {
   data: null,
-  isLoading: false,
+  isLoading: true,
   isError: false
 };
 
@@ -57,11 +66,14 @@ const useGeneSequence = ({
   geneId: string;
   settings: SequenceSettings | null;
 }) => {
-  const [state, setState] = useState(initialState);
+  const [storedState, setStoredState] = useState<StoredState | null>(null);
   const reduxDispatch = useAppDispatch();
 
+  const matchingSettings =
+    settings?.type === 'gene' && settings.geneId === geneId ? settings : null;
+
   useEffect(() => {
-    if (!settings || settings.type !== 'gene' || settings.geneId !== geneId) {
+    if (!matchingSettings) {
       return;
     }
 
@@ -70,18 +82,30 @@ const useGeneSequence = ({
         reduxDispatch,
         geneId,
         genomeId,
-        settings
+        settings: matchingSettings
       })
-    ).subscribe((data) => {
-      setState(data);
+    ).subscribe((result) => {
+      setStoredState({
+        genomeId,
+        geneId,
+        settings: matchingSettings,
+        result
+      });
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [reduxDispatch, genomeId, geneId, settings]);
+  }, [reduxDispatch, genomeId, geneId, matchingSettings]);
 
-  return state;
+  const matchesCurrentRequest =
+    matchingSettings !== null &&
+    storedState !== null &&
+    storedState.genomeId === genomeId &&
+    storedState.geneId === geneId &&
+    storedState.settings === matchingSettings;
+
+  return matchesCurrentRequest ? storedState.result : loadingState;
 };
 
 async function* fetchData({
@@ -95,16 +119,10 @@ async function* fetchData({
   reduxDispatch: AppDispatch;
   settings: GeneSequenceSettings;
 }) {
-  yield {
-    data: null,
-    isLoading: true,
-    isError: false
-  };
-
   const { data: geneResponse } = await reduxDispatch(
-    fetchDefaultEntityViewerGene.initiate(
+    fetchGeneInfo.initiate(
       {
-        geneId,
+        stableId: geneId,
         genomeId
       },
       { subscribe: false }
@@ -122,7 +140,20 @@ async function* fetchData({
 
   const { gene } = geneResponse;
 
-  let annotatedSequence: string;
+  let annotatedSequence: string = '';
+
+  if (hasGenomicSequenceException(gene.exceptions)) {
+    // don't try to fetch the sequence
+    yield {
+      data: {
+        gene,
+        annotatedSequence
+      },
+      isLoading: false,
+      isError: false
+    };
+    return;
+  }
 
   try {
     const options = prepareOptionsForPayload(settings);
