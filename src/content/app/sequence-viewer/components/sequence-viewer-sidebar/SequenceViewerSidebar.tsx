@@ -18,17 +18,13 @@ import { useAppSelector } from 'src/store';
 
 import useSequenceViewerIds from 'src/content/app/sequence-viewer/hooks/useSequenceViewerIds';
 
-import {
-  getSidebarView,
-  getSidebarModalView
-} from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSelectors';
+import { getSidebarModalView } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSelectors';
 
 import Sidebar from 'src/shared/components/layout/sidebar/Sidebar';
 import GeneSequenceSidebar from './GeneSequenceSidebar';
 import TranscriptSequenceSidebar from './TranscriptSequenceSidebar';
 import LocationSequenceSidebar from './LocationSequenceSidebar';
 import SequenceViewerSidebarModal from './sidebar-modal/SequenceViewerSidebarModal';
-import SidebarLegend from './sidebar-legend/SidebarLegend';
 
 export type View = 'location' | 'gene' | 'transcript';
 
@@ -38,19 +34,12 @@ type Props = {
 
 const SequenceViewerSidebar = (props: Props) => {
   const { genomeId } = useSequenceViewerIds();
-  const sidebarView = useAppSelector(getSidebarView);
   const sidebarModalView = useAppSelector((state) =>
     getSidebarModalView(state, genomeId ?? '')
   );
 
   if (sidebarModalView) {
     return <SequenceViewerSidebarModal />;
-  } else if (sidebarView === 'legend') {
-    return (
-      <Sidebar>
-        <SidebarLegend />
-      </Sidebar>
-    );
   }
 
   return (

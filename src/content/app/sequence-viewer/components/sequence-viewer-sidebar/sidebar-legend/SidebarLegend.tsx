@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import { use, type DetailedHTMLProps, HTMLAttributes } from 'react';
-
-import { SequenceViewerLegendContext } from 'src/content/app/sequence-viewer/contexts/SequenceViewerLegendContext';
+import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 
 import './sequence-legend';
 
 import type { SequenceLegend as SequenceLegendElement } from './sequence-legend';
 
-const SidebarLegend = () => {
-  const { template } = use(SequenceViewerLegendContext);
-
+const SidebarLegend = ({ template }: { template: string | null }) => {
   return (
     <div>
       <ens-sequence-viewer-legend template={template} />

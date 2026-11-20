@@ -28,7 +28,6 @@ import classNames from 'classnames';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
-import SidebarSectionHeading from 'src/shared/components/sidebar-section-heading/SidebarSectionHeading';
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -38,7 +37,7 @@ import { SequenceViewerIcon } from 'src/shared/components/app-icon';
 import { Status } from 'src/shared/types/status';
 import type {
   SequenceBooleanOption as SequenceBooleanOptionType,
-  SequenceOptionsSection as SequenceOptionsSectionType,
+  SequenceOptionsPanel as SequenceOptionsPanelType,
   SequenceMultiselectOption as SequenceMultiselectOptionType,
   FlankingInfo,
   TranscriptMetadata
@@ -52,31 +51,12 @@ import styles from './SequenceOptions.module.css';
 
 type AppliedSettings = SequenceSettings['options'];
 
-export const SequenceOptionsSections = ({
-  sections,
-  appliedSettings,
-  onSettingsChange
-}: {
-  sections: SequenceOptionsSectionType[];
-  appliedSettings: AppliedSettings;
-  onSettingsChange: (settings: AppliedSettings) => void;
-}) => {
-  return sections.map((section) => (
-    <SequenceOptionsSection
-      key={section.label}
-      section={section}
-      appliedSettings={appliedSettings}
-      onSettingsChange={onSettingsChange}
-    />
-  ));
-};
-
 export const SequenceOptionsSection = ({
   section,
   appliedSettings,
   onSettingsChange
 }: {
-  section: SequenceOptionsSectionType;
+  section: SequenceOptionsPanelType;
   appliedSettings: AppliedSettings;
   onSettingsChange: (settings: AppliedSettings) => void;
 }) => {
@@ -106,7 +86,6 @@ export const SequenceOptionsSection = ({
 
   return (
     <div>
-      <SidebarSectionHeading>{section.label}</SidebarSectionHeading>
       <div className={styles.column}>{sectionChildren}</div>
     </div>
   );
@@ -403,7 +382,6 @@ export const FlankingSequences = ({
 
   return (
     <>
-      <SidebarSectionHeading>Flanking sequences</SidebarSectionHeading>
       <form onSubmit={handleSubmit}>
         <div className={styles.textField}>
           <label htmlFor={upstreamInputId} className={styles.textFieldLabel}>
@@ -411,7 +389,10 @@ export const FlankingSequences = ({
           </label>
           <ShadedInput
             id={upstreamInputId}
-            defaultValue={flanking.default}
+            defaultValue={
+              (appliedSettings[flanking.upstream_id] as number) ??
+              flanking.default
+            }
             name="flanking-upstream"
             onBlur={onBlur}
             autoComplete="off"
@@ -425,7 +406,10 @@ export const FlankingSequences = ({
           </label>
           <ShadedInput
             id={downstreamInputId}
-            defaultValue={flanking.default}
+            defaultValue={
+              (appliedSettings[flanking.downstream_id] as number) ??
+              flanking.default
+            }
             name="flanking-downstream"
             onBlur={onBlur}
             autoComplete="off"

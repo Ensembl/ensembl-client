@@ -1,3 +1,7 @@
+.focusInfoContainer {
+  margin-bottom: var(--vertical-space-md);
+}
+
 .labelledRow {
   display: grid;
   grid-template-columns: auto 1fr;

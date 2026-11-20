@@ -22,7 +22,7 @@ import {
   setInitialSequenceSettings,
   createInitialGeneSettings
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
-import { useGeneSequenceOptionsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
+import { useGeneSidebarPanelsQuery } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
 /**
  * This hook is used to fetch and initialise gene sequence settings;
@@ -45,7 +45,7 @@ const useGeneSequenceSettings = ({
     })
   );
 
-  const { currentData, isError: queryIsError } = useGeneSequenceOptionsQuery(
+  const { currentData, isError: queryIsError } = useGeneSidebarPanelsQuery(
     {
       genomeId,
       geneId

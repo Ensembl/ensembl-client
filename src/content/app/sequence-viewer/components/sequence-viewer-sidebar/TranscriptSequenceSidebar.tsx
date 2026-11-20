@@ -30,14 +30,11 @@ import {
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 import {
   useTranscriptInfoQuery,
-  useTranscriptSequenceOptionsQuery
+  useTranscriptSidebarPanelsQuery
 } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
 import { SidebarLoader } from 'src/shared/components/loader';
-import {
-  SequenceOptionsSections,
-  FlankingSequences
-} from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
+import SequenceSidebarPanels from './SequenceSidebarPanels';
 
 import styles from './SequenceViewerSidebar.module.css';
 
@@ -64,7 +61,7 @@ const TranscriptSequenceSidebar = () => {
       genomeId: genomeId ?? '',
       stableId: transcriptId ?? ''
     });
-  const { currentData } = useTranscriptSequenceOptionsQuery({
+  const { currentData } = useTranscriptSidebarPanelsQuery({
     genomeId: genomeId ?? '',
     transcriptId: transcriptId ?? '',
     sequenceType: transcriptView
@@ -99,24 +96,19 @@ const TranscriptSequenceSidebar = () => {
 
   return (
     <div>
-      <div className={styles.labelledRow}>
-        <span className={styles.label}>Transcript</span>
-        <span>{transcriptInfo.transcript.stable_id}</span>
+      <div className={styles.focusInfoContainer}>
+        <div className={styles.labelledRow}>
+          <span className={styles.label}>Transcript</span>
+          <span>{transcriptInfo.transcript.stable_id}</span>
+        </div>
       </div>
 
-      {currentData?.flanking && sequenceSettings?.options && (
-        <FlankingSequences
-          flanking={currentData.flanking}
-          appliedSettings={sequenceSettings.options}
-          onSettingsChange={onSettingsChange}
-        />
-      )}
-
       {currentData && sequenceSettings?.options && (
-        <SequenceOptionsSections
+        <SequenceSidebarPanels
+          key={`${genomeId}:${transcriptId}:${transcriptView}`}
+          panels={currentData.panels}
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
-          sections={currentData.sections}
         />
       )}
     </div>

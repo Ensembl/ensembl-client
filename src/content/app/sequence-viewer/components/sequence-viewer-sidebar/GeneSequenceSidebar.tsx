@@ -27,15 +27,12 @@ import {
 } from 'src/content/app/sequence-viewer/state/settings/settingsSlice';
 import {
   useGeneInfoQuery,
-  useGeneSequenceOptionsQuery
+  useGeneSidebarPanelsQuery
 } from 'src/content/app/sequence-viewer/state/api/sequenceViewerApiSlice';
 
 import GeneName from 'src/shared/components/gene-name/GeneName';
 import { SidebarLoader } from 'src/shared/components/loader';
-import {
-  SequenceOptionsSections,
-  FlankingSequences
-} from 'src/content/app/sequence-viewer/components/sequence-viewer-sidebar/sequence-options/SequenceOptions';
+import SequenceSidebarPanels from './SequenceSidebarPanels';
 
 import styles from './SequenceViewerSidebar.module.css';
 
@@ -56,7 +53,7 @@ const GeneSequenceSidebar = () => {
       genomeId: genomeId ?? '',
       stableId: geneId ?? ''
     });
-  const { currentData: fetchedSequenceOptions } = useGeneSequenceOptionsQuery(
+  const { currentData: fetchedSequenceOptions } = useGeneSidebarPanelsQuery(
     {
       geneId: geneId ?? '',
       genomeId: genomeId ?? ''
@@ -96,27 +93,22 @@ const GeneSequenceSidebar = () => {
 
   return (
     <div>
-      <div className={styles.labelledRow}>
-        <span className={styles.label}>Gene</span>
-        <GeneName
-          stable_id={geneInfo.gene.stable_id}
-          symbol={geneInfo.gene.symbol}
-        />
+      <div className={styles.focusInfoContainer}>
+        <div className={styles.labelledRow}>
+          <span className={styles.label}>Gene</span>
+          <GeneName
+            stable_id={geneInfo.gene.stable_id}
+            symbol={geneInfo.gene.symbol}
+          />
+        </div>
       </div>
 
-      {fetchedSequenceOptions?.flanking && sequenceSettings?.options && (
-        <FlankingSequences
-          flanking={fetchedSequenceOptions.flanking}
-          appliedSettings={sequenceSettings.options}
-          onSettingsChange={onSettingsChange}
-        />
-      )}
-
       {fetchedSequenceOptions && sequenceSettings?.options && (
-        <SequenceOptionsSections
+        <SequenceSidebarPanels
+          key={`${genomeId}:${geneId}`}
+          panels={fetchedSequenceOptions.panels}
           appliedSettings={sequenceSettings.options}
           onSettingsChange={onSettingsChange}
-          sections={fetchedSequenceOptions.sections}
         />
       )}
     </div>

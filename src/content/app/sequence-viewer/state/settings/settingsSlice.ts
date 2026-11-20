@@ -19,7 +19,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { getSequenceSettingsKey } from './getSettingsKey';
 
 import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
-import type { AnnotatedSequenceOptionsResponsePayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
+import type { SequenceSidebarPanelsResponsePayload } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 
 export type TranscriptSequenceLineNumbering =
   'region' | 'gene' | 'transcript' | 'cdna' | 'cds';
@@ -51,14 +51,20 @@ export type SequenceSettings =
 // A map of genome id to sequence settings
 type SequenceSettingsState = Record<string, SequenceSettings>;
 
-const buildInitialOptions = (
-  payload: AnnotatedSequenceOptionsResponsePayload
-) => {
+const buildInitialOptions = (payload: SequenceSidebarPanelsResponsePayload) => {
   const options: Record<string, SequenceOptionValue | SequenceOptionValue[]> =
     {};
 
-  for (const section of payload.sections) {
-    for (const child of section.children) {
+  for (const panel of payload.panels) {
+    if (panel.type === 'flanking') {
+      options[panel.settings.upstream_id] = panel.settings.default;
+      options[panel.settings.downstream_id] = panel.settings.default;
+      continue;
+    }
+    if (panel.type !== 'sequence_options') {
+      continue;
+    }
+    for (const child of panel.children) {
       if (child.type === 'checkbox') {
         if (child.checked) {
           options[child.id] = child.value;
@@ -85,7 +91,7 @@ export const createInitialGeneSettings = ({
   payload
 }: {
   geneId: string;
-  payload: AnnotatedSequenceOptionsResponsePayload;
+  payload: SequenceSidebarPanelsResponsePayload;
 }): GeneSequenceSettings => {
   return {
     type: 'gene',
@@ -101,7 +107,7 @@ export const createInitialTranscriptSettings = ({
 }: {
   transcriptId: string;
   sequenceView: TranscriptSequenceView;
-  payload: AnnotatedSequenceOptionsResponsePayload;
+  payload: SequenceSidebarPanelsResponsePayload;
 }): TranscriptSequenceSettings => {
   return {
     type: 'transcript',
@@ -116,7 +122,7 @@ export const createInitialLocationSettings = ({
   payload
 }: {
   location: string;
-  payload: AnnotatedSequenceOptionsResponsePayload;
+  payload: SequenceSidebarPanelsResponsePayload;
 }): LocationSequenceSettings => {
   return {
     type: 'location',

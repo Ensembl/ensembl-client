@@ -22,6 +22,7 @@
     padding-left: var(--collapsible-section-padding-left);
     padding-right: var(--collapsible-section-padding-right);
     font-size: 12px;
+    line-height: initial;
     width: 100%;
   }
 

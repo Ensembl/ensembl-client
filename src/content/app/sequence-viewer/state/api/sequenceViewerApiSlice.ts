@@ -19,7 +19,7 @@ import restApiSlice from 'src/shared/state/api-slices/restSlice';
 import config from 'config';
 
 import type {
-  AnnotatedSequenceOptionsResponsePayload,
+  SequenceSidebarPanelsResponsePayload,
   SequenceDownloadOptionsResponsePayload,
   GeneFeatureResponsePayload,
   TranscriptFeatureResponsePayload
@@ -101,8 +101,8 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
 
     /* Sequence options  */
 
-    geneSequenceOptions: builder.query<
-      AnnotatedSequenceOptionsResponsePayload,
+    geneSidebarPanels: builder.query<
+      SequenceSidebarPanelsResponsePayload,
       GeneSequenceOptionsRequestParams
     >({
       queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
@@ -113,7 +113,7 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
         };
 
         const result = await baseQuery({
-          url: `${config.annotatedSequenceApi}/sequence-options`,
+          url: `${config.annotatedSequenceApi}/sidebar-panels`,
           method: 'POST',
           body: payload
         });
@@ -122,12 +122,12 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
           return { error: result.error };
         }
         return {
-          data: result.data as AnnotatedSequenceOptionsResponsePayload
+          data: result.data as SequenceSidebarPanelsResponsePayload
         };
       }
     }),
-    transcriptSequenceOptions: builder.query<
-      AnnotatedSequenceOptionsResponsePayload,
+    transcriptSidebarPanels: builder.query<
+      SequenceSidebarPanelsResponsePayload,
       TranscriptSequenceOptionsRequestParams
     >({
       queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
@@ -139,7 +139,7 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
         };
 
         const result = await baseQuery({
-          url: `${config.annotatedSequenceApi}/sequence-options`,
+          url: `${config.annotatedSequenceApi}/sidebar-panels`,
           method: 'POST',
           body: payload
         });
@@ -148,12 +148,12 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
           return { error: result.error };
         }
         return {
-          data: result.data as AnnotatedSequenceOptionsResponsePayload
+          data: result.data as SequenceSidebarPanelsResponsePayload
         };
       }
     }),
-    locationSequenceOptions: builder.query<
-      AnnotatedSequenceOptionsResponsePayload,
+    locationSidebarPanels: builder.query<
+      SequenceSidebarPanelsResponsePayload,
       LocationSequenceOptionsRequestParams
     >({
       queryFn: async (params, _queryApi, _extraOptions, baseQuery) => {
@@ -166,7 +166,7 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
         };
 
         const result = await baseQuery({
-          url: `${config.annotatedSequenceApi}/sequence-options`,
+          url: `${config.annotatedSequenceApi}/sidebar-panels`,
           method: 'POST',
           body: payload
         });
@@ -175,7 +175,7 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
           return { error: result.error };
         }
         return {
-          data: result.data as AnnotatedSequenceOptionsResponsePayload
+          data: result.data as SequenceSidebarPanelsResponsePayload
         };
       }
     }),
@@ -272,9 +272,9 @@ const sequenceViewerRestApiSlice = restApiSlice.injectEndpoints({
 export const {
   useGeneInfoQuery,
   useTranscriptInfoQuery,
-  useGeneSequenceOptionsQuery,
-  useTranscriptSequenceOptionsQuery,
-  useLocationSequenceOptionsQuery,
+  useGeneSidebarPanelsQuery,
+  useTranscriptSidebarPanelsQuery,
+  useLocationSidebarPanelsQuery,
   useGeneSequenceDownloadOptionsQuery,
   useTranscriptSequenceDownloadOptionsQuery,
   useLocationSequenceDownloadOptionsQuery
