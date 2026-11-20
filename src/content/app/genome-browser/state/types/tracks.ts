@@ -19,6 +19,7 @@ import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/
 type GenomicTrackType = 'gene' | 'variant' | 'regular';
 
 export type GenomicTrack = {
+  has_details?: boolean;
   track_id: string;
   type: GenomicTrackType;
   label: string;

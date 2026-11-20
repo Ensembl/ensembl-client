@@ -18,7 +18,10 @@ import { memo, type ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { useAppDispatch, useAppSelector } from 'src/store';
-import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import useResolvedGenomeTracks from 'src/content/app/genome-browser/hooks/useResolvedGenomeTracks';
+import { changeDrawerViewAndOpen } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
+import TextButton from 'src/shared/components/text-button/TextButton';
+import CogIcon from 'static/icons/icon_settings.svg';
 import useGenomeBrowserAnalytics from 'src/content/app/genome-browser/hooks/useGenomeBrowserAnalytics';
 
 import {
@@ -35,6 +38,7 @@ import TrackPanelGene from './track-panel-items/TrackPanelGene';
 import TrackPanelTranscript from './track-panel-items/track-panel-transcript/TrackPanelTranscript';
 import TrackPanelVariant from './track-panel-items/track-panel-variant/TrackPanelVariant';
 import TrackPanelRegularItem from './track-panel-items/TrackPanelRegularItem';
+import TrackPanelTranscriptomicTracks from './track-panel-items/TrackPanelTranscriptomicTracks';
 import {
   Accordion,
   AccordionItem,
@@ -67,10 +71,16 @@ export const TrackPanelList = () => {
 
   const dispatch = useAppDispatch();
 
-  const { data: genomeTrackCategories } = useGenomeTracksQuery(activeGenomeId);
+  const { currentData, categories, configurationQuery } =
+    useResolvedGenomeTracks(activeGenomeId);
+  const genomeTrackCategories = currentData ?? categories;
 
   const openSearch = () => {
     dispatch(openBrowserSidebarModal(BrowserSidebarModalView.SEARCH));
+  };
+
+  const openTranscriptomicConfiguration = () => {
+    dispatch(changeDrawerViewAndOpen({ name: 'transcriptomic_configuration' }));
   };
 
   const currentTrackCategories = genomeTrackCategories?.filter(
@@ -79,7 +89,11 @@ export const TrackPanelList = () => {
 
   const trackCategoryIds =
     currentTrackCategories
-      ?.filter((category: GenomeTrackCategory) => category.track_list.length)
+      ?.filter(
+        (category: GenomeTrackCategory) =>
+          category.track_list.length ||
+          category.track_category_id === 'transcriptomic'
+      )
       .map((category: GenomeTrackCategory) => category.track_category_id) ?? [];
 
   return (
@@ -121,7 +135,8 @@ export const TrackPanelList = () => {
               styles.trackPanelAccordionButton,
               {
                 [styles.trackPanelAccordionButtonDisabled]:
-                  !category.track_list.length
+                  !category.track_list.length &&
+                  category.track_category_id !== 'transcriptomic'
               }
             );
 
@@ -136,7 +151,10 @@ export const TrackPanelList = () => {
                 >
                   <AccordionItemButton
                     className={accordionButtonClassNames}
-                    disabled={!category.track_list.length}
+                    disabled={
+                      !category.track_list.length &&
+                      category.track_category_id !== 'transcriptomic'
+                    }
                     onToggle={(isExpanded: boolean) =>
                       reportTrackPanelSectionToggled(category.label, isExpanded)
                     }
@@ -147,15 +165,35 @@ export const TrackPanelList = () => {
                 <AccordionItemPanel
                   className={styles.trackPanelAccordionItemContent}
                 >
-                  <dl>
-                    {category.track_list.map((track) => (
-                      <TrackPanelRegularItem
-                        {...track}
-                        genomeId={activeGenomeId}
-                        key={track.track_id}
-                      />
-                    ))}
-                  </dl>
+                  {category.track_category_id === 'transcriptomic' ? (
+                    <>
+                      {configurationQuery.currentData && (
+                        <TrackPanelTranscriptomicTracks
+                          key={activeGenomeId}
+                          genomeId={activeGenomeId}
+                          tracks={category.track_list}
+                          configuration={configurationQuery.currentData}
+                        />
+                      )}
+                      <TextButton
+                        className={styles.configureButton}
+                        aria-label="Configure transcriptomic tracks"
+                        onClick={openTranscriptomicConfiguration}
+                      >
+                        Configure <CogIcon aria-hidden={true} />
+                      </TextButton>
+                    </>
+                  ) : (
+                    <dl>
+                      {category.track_list.map((track) => (
+                        <TrackPanelRegularItem
+                          {...track}
+                          genomeId={activeGenomeId}
+                          key={track.track_id}
+                        />
+                      ))}
+                    </dl>
+                  )}
                 </AccordionItemPanel>
               </AccordionItem>
             );
