@@ -39,9 +39,22 @@ export type ExpandedTranscriptsPath = {
   geneId: string;
 };
 
+/**
+ * An alt allele's regulatory features are grouped by their exact list of
+ * consequences. A group larger than REGULATORY_GROUP_VISIBLE_COUNT shows its
+ * first rows until the user expands it.
+ */
+export type ExpandedRegulatoryGroupPath = {
+  altAllele: string;
+  groupKey: string;
+};
+
+export const REGULATORY_GROUP_VISIBLE_COUNT = 3;
+
 type Params = {
   variant: VariantInResponse;
   expandedTranscriptPaths: ExpandedTranscriptsPath[];
+  expandedRegulatoryGroupPaths: ExpandedRegulatoryGroupPath[];
 };
 
 /**
@@ -56,13 +69,14 @@ type Params = {
  * seems to be predicted molecular consequences of a variant allele.
  */
 const useVepVariantTabularData = (params: Params) => {
-  const { variant, expandedTranscriptPaths } = params;
+  const { variant, expandedTranscriptPaths, expandedRegulatoryGroupPaths } =
+    params;
 
   const tabularData = useMemo(() => {
     return getTabularData(params);
     // `params` is new on every render, so its fields are the dependencies.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variant, expandedTranscriptPaths]);
+  }, [variant, expandedTranscriptPaths, expandedRegulatoryGroupPaths]);
 
   return tabularData;
 };
@@ -74,9 +88,15 @@ type VariantAffectedGene = {
   transcriptsCount: number;
 };
 
+type RegulatoryGroup = {
+  key: string;
+  size: number;
+  shownConsequences: PredictedRegulatoryConsequence[];
+};
+
 type UpdatedAlternativeAllele = AlternativeVariantAllele & {
   genes: VariantAffectedGene[];
-  regulatoryConsequences: PredictedRegulatoryConsequence[];
+  regulatoryGroups: RegulatoryGroup[];
   intergenicConsequences: PredictedIntergenicConsequence[];
 };
 
@@ -89,11 +109,9 @@ type ReshapedVariant = Omit<VariantInResponse, 'alternative_alleles'> & {
  */
 const reshapeVariant = ({
   variant,
-  expandedTranscriptPaths
-}: {
-  variant: VariantInResponse;
-  expandedTranscriptPaths: ExpandedTranscriptsPath[];
-}) => {
+  expandedTranscriptPaths,
+  expandedRegulatoryGroupPaths
+}: Params) => {
   const alternativeAlleles: UpdatedAlternativeAllele[] =
     variant.alternative_alleles.map((allele) => {
       const {
@@ -110,10 +128,16 @@ const reshapeVariant = ({
         expandedTranscriptPaths
       });
 
+      const regulatoryGroups = buildRegulatoryGroups({
+        regulatoryConsequences,
+        altAllele: allele,
+        expandedRegulatoryGroupPaths
+      });
+
       return {
         ...allele,
         genes,
-        regulatoryConsequences,
+        regulatoryGroups,
         intergenicConsequences
       };
     });
@@ -199,6 +223,48 @@ const buildGeneData = ({
   return [...genesMap.values()];
 };
 
+const getRegulatoryGroupKey = (consequences: string[]) =>
+  consequences.join('&');
+
+const buildRegulatoryGroups = ({
+  regulatoryConsequences,
+  expandedRegulatoryGroupPaths,
+  altAllele
+}: {
+  regulatoryConsequences: PredictedRegulatoryConsequence[];
+  expandedRegulatoryGroupPaths: ExpandedRegulatoryGroupPath[];
+  altAllele: AlternativeVariantAllele;
+}): RegulatoryGroup[] => {
+  const expandedGroupKeys = new Set(
+    expandedRegulatoryGroupPaths
+      .filter((path) => path.altAllele === altAllele.allele_sequence)
+      .map((path) => path.groupKey)
+  );
+
+  // A Map keeps groups in the order of their first appearance.
+  const groupedConsequences = new Map<
+    string,
+    PredictedRegulatoryConsequence[]
+  >();
+  for (const consequence of regulatoryConsequences) {
+    const key = getRegulatoryGroupKey(consequence.consequences);
+    const group = groupedConsequences.get(key);
+    if (group) {
+      group.push(consequence);
+    } else {
+      groupedConsequences.set(key, [consequence]);
+    }
+  }
+
+  return [...groupedConsequences].map(([key, consequences]) => ({
+    key,
+    size: consequences.length,
+    shownConsequences: expandedGroupKeys.has(key)
+      ? consequences
+      : consequences.slice(0, REGULATORY_GROUP_VISIBLE_COUNT)
+  }));
+};
+
 type ConsequenceGroups = {
   transcriptConsequences: PredictedTranscriptConsequence[];
   regulatoryConsequences: PredictedRegulatoryConsequence[];
@@ -236,7 +302,11 @@ export type VepResultsTableRowData = {
   // first row holds the allele cell.
   consequence: (
     | PredictedIntergenicConsequence
-    | PredictedRegulatoryConsequence
+    | (PredictedRegulatoryConsequence & {
+        groupKey: string;
+        groupSize: number;
+        isLastShownInGroup: boolean;
+      })
     | (PredictedTranscriptConsequence & {
         totalTranscriptsCount: number;
         isLastTranscript: boolean;
@@ -267,22 +337,15 @@ export type VepResultsTableRowData = {
 };
 
 /**
- * Each consequence gets its own row, except transcripts a collapsed gene hides.
+ * Each consequence gets its own row, except transcripts a collapsed gene hides
+ * and regulatory features a collapsed group hides.
  * Within an alt allele, rows run from most to least interesting: transcripts,
  * then regulatory features, then intergenic.
  */
-export const getTabularData = ({
-  variant,
-  expandedTranscriptPaths
-}: {
-  variant: VariantInResponse;
-  expandedTranscriptPaths: ExpandedTranscriptsPath[];
-}): VepResultsTableRowData[] => {
+export const getTabularData = (params: Params): VepResultsTableRowData[] => {
+  const { variant } = params;
   const result: VepResultsTableRowData[] = [];
-  const reshapedVariant = reshapeVariant({
-    variant,
-    expandedTranscriptPaths
-  });
+  const reshapedVariant = reshapeVariant(params);
 
   for (const altAllele of reshapedVariant.alternative_alleles) {
     const altAlleleSequence = altAllele.allele_sequence;
@@ -314,10 +377,24 @@ export const getTabularData = ({
       }
     }
 
-    for (const consequence of [
-      ...altAllele.regulatoryConsequences,
-      ...altAllele.intergenicConsequences
-    ]) {
+    for (const group of altAllele.regulatoryGroups) {
+      group.shownConsequences.forEach((consequence, i) => {
+        alleleRows.push({
+          consequence: {
+            ...consequence,
+            groupKey: group.key,
+            groupSize: group.size,
+            isLastShownInGroup: i === group.shownConsequences.length - 1,
+            altAlleleSequence
+          },
+          gene: null,
+          alternativeAllele: null,
+          variant: null
+        });
+      });
+    }
+
+    for (const consequence of altAllele.intergenicConsequences) {
       alleleRows.push({
         consequence: { ...consequence, altAlleleSequence },
         gene: null,
@@ -373,12 +450,15 @@ export const getRowKeys = (rows: VepResultsTableRowData[]): string[] => {
   });
 };
 
-// Note: the number of transcripts in allele->gene
-// will depend on whether the list of transcripts is collapsed or expanded
-// (see how transcripts are filtered out in the reshapeVariant function)
+// Note: the number of transcripts in allele->gene and of regulatory features
+// in a group depends on whether that list is collapsed or expanded
+// (see how they are filtered out in the reshapeVariant function)
 const countAlleleRows = (allele: UpdatedAlternativeAllele) =>
   allele.genes.reduce((count, gene) => count + gene.transcripts.length, 0) +
-  allele.regulatoryConsequences.length +
+  allele.regulatoryGroups.reduce(
+    (count, group) => count + group.shownConsequences.length,
+    0
+  ) +
   allele.intergenicConsequences.length;
 
 const getTotalRowsForVariant = (variant: ReshapedVariant) =>

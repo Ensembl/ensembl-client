@@ -423,6 +423,79 @@ describe('VepResultsTable', () => {
       ]);
     }
   );
+
+  describe('regulatory groups', () => {
+    const groupedVariant: Variant = {
+      ...variant,
+      alternative_alleles: [
+        {
+          allele_sequence: 'T',
+          allele_type: 'SNV',
+          predicted_molecular_consequences: [1, 2, 3, 4, 5].map((n) => ({
+            feature_type: 'regulatory',
+            stable_id: `ENSR0000000000${n}`,
+            biotype: 'enhancer',
+            consequences: [
+              'regulatory_region_ablation',
+              'regulatory_region_variant'
+            ]
+          }))
+        }
+      ]
+    };
+
+    const renderGroupedTable = () =>
+      render(
+        <VepResultsTable
+          variants={[groupedVariant]}
+          genomeId="grch38"
+          parameters={{ spdi: true }}
+          panels={tablePanels}
+          display={displaySpecFixture}
+          availableAfSources={[]}
+          detailExpansion={{ action: 'collapse', nonce: 0 }}
+          hasSelectedOptions={true}
+          hasRegulatoryColumn={true}
+        />
+      );
+
+    const expandName = /^\+ 2 ?regulatory features$/;
+    const collapseName = 'Show fewer regulatory features';
+
+    const featureIds = (container: HTMLElement) =>
+      [...container.querySelectorAll('tbody tr')].map(
+        (row) => row.textContent?.match(/ENSR\d+/)?.[0]
+      );
+
+    it('shows three features and a pill for the rest', () => {
+      const { container, getByRole } = renderGroupedTable();
+      const expandButton = getByRole('button', { name: expandName });
+
+      expect(featureIds(container)).toEqual([
+        'ENSR00000000001',
+        'ENSR00000000002',
+        'ENSR00000000003'
+      ]);
+      expect(expandButton.textContent).toBe('+ 2regulatory features');
+      expect(occupiedColumnCounts(container)).toEqual([10, 10, 10]);
+    });
+
+    it('expands the group and collapses it again', async () => {
+      const { container, getByRole, queryByRole } = renderGroupedTable();
+
+      await userEvent.click(getByRole('button', { name: expandName }));
+
+      expect(featureIds(container)).toHaveLength(5);
+      expect(occupiedColumnCounts(container)).toEqual([10, 10, 10, 10, 10]);
+      expect(queryByRole('button', { name: expandName })).toBeNull();
+
+      await userEvent.click(getByRole('button', { name: collapseName }));
+
+      expect(featureIds(container)).toHaveLength(3);
+      expect(queryByRole('button', { name: collapseName })).toBeNull();
+      expect(queryByRole('button', { name: expandName })).not.toBeNull();
+    });
+  });
 });
 
 describe('formatAfSourceLabel', () => {

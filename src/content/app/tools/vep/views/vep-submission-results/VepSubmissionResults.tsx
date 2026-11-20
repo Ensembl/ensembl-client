@@ -40,8 +40,10 @@ import { updateSubmission } from 'src/content/app/tools/vep/state/vep-submission
 
 import useVepVariantTabularData, {
   getRowKeys,
+  REGULATORY_GROUP_VISIBLE_COUNT,
   type VepResultsTableRowData,
-  type ExpandedTranscriptsPath
+  type ExpandedTranscriptsPath,
+  type ExpandedRegulatoryGroupPath
 } from './useVepVariantTabularData';
 
 import {
@@ -620,6 +622,8 @@ const VariantRow = (props: {
   const [expandedTranscriptPaths, setExpandedTranscriptPaths] = useState<
     ExpandedTranscriptsPath[]
   >([]);
+  const [expandedRegulatoryGroupPaths, setExpandedRegulatoryGroupPaths] =
+    useState<ExpandedRegulatoryGroupPath[]>([]);
   const [openDetailKeys, setOpenDetailKeys] = useState<Set<string>>(new Set());
 
   const allelesBySequence = useMemo(
@@ -635,7 +639,8 @@ const VariantRow = (props: {
 
   const tabularData = useVepVariantTabularData({
     variant,
-    expandedTranscriptPaths
+    expandedTranscriptPaths,
+    expandedRegulatoryGroupPaths
   });
 
   const rowKeys = useMemo(() => getRowKeys(tabularData), [tabularData]);
@@ -710,6 +715,25 @@ const VariantRow = (props: {
     }
   };
 
+  const toggleExpandedRegulatoryGroup = (
+    altAllele: string,
+    groupKey: string,
+    action: 'expand' | 'collapse'
+  ) => {
+    if (action === 'expand') {
+      setExpandedRegulatoryGroupPaths([
+        ...expandedRegulatoryGroupPaths,
+        { altAllele, groupKey }
+      ]);
+    } else {
+      setExpandedRegulatoryGroupPaths(
+        expandedRegulatoryGroupPaths.filter(
+          (path) => path.altAllele !== altAllele || path.groupKey !== groupKey
+        )
+      );
+    }
+  };
+
   return tabularData.map((row, index) => {
     const isDetailOpen = expandedDetailRows.has(index);
     const allele = allelesBySequence.get(row.consequence.altAlleleSequence);
@@ -759,7 +783,13 @@ const VariantRow = (props: {
             expandedTranscriptPaths={expandedTranscriptPaths}
             toggleExpanded={toggleExpandedTranscripts}
           />
-          {hasRegulatoryColumn && <RegulatoryTableCell row={row} />}
+          {hasRegulatoryColumn && (
+            <RegulatoryTableCell
+              row={row}
+              expandedRegulatoryGroupPaths={expandedRegulatoryGroupPaths}
+              toggleExpanded={toggleExpandedRegulatoryGroup}
+            />
+          )}
           <ProteinCodingTableCell row={row} />
           <td>
             <VariantConsequences consequences={row.consequence.consequences} />
@@ -828,16 +858,57 @@ const GeneTableCell = (props: {
   }
 };
 
-const RegulatoryTableCell = (props: { row: VepResultsTableRowData }) => {
+const RegulatoryTableCell = (props: {
+  row: VepResultsTableRowData;
+  expandedRegulatoryGroupPaths: ExpandedRegulatoryGroupPath[];
+  toggleExpanded: (
+    altAllele: string,
+    groupKey: string,
+    action: 'expand' | 'collapse'
+  ) => void;
+}) => {
+  const { expandedRegulatoryGroupPaths, toggleExpanded } = props;
   const { consequence } = props.row;
 
   if (consequence.feature_type !== 'regulatory') {
     return <td />;
   }
 
+  const { altAlleleSequence, groupKey, groupSize, isLastShownInGroup } =
+    consequence;
+  const isCollapsible = groupSize > REGULATORY_GROUP_VISIBLE_COUNT;
+  const isExpanded = expandedRegulatoryGroupPaths.some(
+    (path) => path.altAllele === altAlleleSequence && path.groupKey === groupKey
+  );
+
+  const onToggleClick = () => {
+    toggleExpanded(
+      altAlleleSequence,
+      groupKey,
+      isExpanded ? 'collapse' : 'expand'
+    );
+  };
+
   return (
     <td>
       <VepResultsRegulatoryFeature feature={consequence} />
+      {isCollapsible && isLastShownInGroup && !isExpanded && (
+        <div>
+          <button onClick={onToggleClick} className={styles.expandButton}>
+            <Pill>+ {groupSize - REGULATORY_GROUP_VISIBLE_COUNT}</Pill>
+            <span className={styles.smallLight}>regulatory features</span>
+          </button>
+        </div>
+      )}
+      {isCollapsible && isLastShownInGroup && isExpanded && (
+        <div>
+          <CloseButton
+            onClick={onToggleClick}
+            className={styles.collapseButton}
+            aria-label="Show fewer regulatory features"
+          />
+        </div>
+      )}
     </td>
   );
 };
