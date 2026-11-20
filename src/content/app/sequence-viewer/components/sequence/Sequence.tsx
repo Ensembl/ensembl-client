@@ -15,7 +15,6 @@
  */
 
 import {
-  use,
   useCallback,
   useMemo,
   memo,
@@ -29,13 +28,10 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getGenomicLocationString } from 'src/shared/helpers/genomicLocationHelpers';
 
-import { SequenceViewerLegendContext } from 'src/content/app/sequence-viewer/contexts/SequenceViewerLegendContext';
-
 import './sequence-element/sequence-element';
 
 import type {
   Sequence as SequenceElement,
-  LegendEventDetail,
   VisibleRangeEventDetail,
   GenomeBrowserNavigationEventDetail,
   SequenceContext
@@ -49,13 +45,6 @@ type Props = {
 
 const Sequence = ({ sequence, genomeId, ...otherProps }: Props) => {
   const navigate = useNavigate();
-  const { setTemplate } = use(SequenceViewerLegendContext);
-  const onLegend = useCallback(
-    (event: CustomEvent<LegendEventDetail>) => {
-      setTemplate(event.detail.template);
-    },
-    [setTemplate]
-  );
 
   const onGenomeBrowserNavigation = useCallback(
     (event: CustomEvent<GenomeBrowserNavigationEventDetail>) => {
@@ -101,7 +90,6 @@ const Sequence = ({ sequence, genomeId, ...otherProps }: Props) => {
 
   return (
     <ens-sequence-viewer-sequence
-      onreport-legend={onLegend}
       ongenome-browser-navigation={onGenomeBrowserNavigation}
       sequenceContext={sequenceContext}
       sequence={sequence}
@@ -118,7 +106,6 @@ type SequenceElementProps = DetailedHTMLProps<
   'ongenome-browser-navigation'?: (
     event: CustomEvent<GenomeBrowserNavigationEventDetail>
   ) => void;
-  'onreport-legend'?: (event: CustomEvent<LegendEventDetail>) => void;
   'onvisible-range-change'?: (
     event: CustomEvent<VisibleRangeEventDetail>
   ) => void;
