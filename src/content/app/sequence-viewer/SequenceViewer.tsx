@@ -25,7 +25,6 @@ import { getIsSidebarOpen } from 'src/content/app/sequence-viewer/state/sidebar/
 import { toggleSidebar } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSlice';
 
 import { SequenceViewerIdsContextProvider } from './contexts/SequenceViewerIdsContext';
-import { SequenceViewerLegendContextProvider } from './contexts/SequenceViewerLegendContext';
 
 import SequenceViewerAppBar from './components/sequence-viewer-app-bar/SequenceViewerAppBar';
 import SequenceViewerTopBar from './components/sequence-viewer-top-bar/SequenceViewerTopBar';
@@ -36,7 +35,6 @@ import { StandardAppLayout } from 'src/shared/components/layout';
 import GeneSequence from './components/gene-sequence/GeneSequence';
 import TranscriptSequence from './components/transcript-sequence/TranscriptSequence';
 import LocationSequence from './components/location-sequence/LocationSequence';
-import SequenceViewerSidebarTabs from './components/sequence-viewer-sidebar-tabs/SequenceViewerSidebarTabs';
 import SidebarToolstrip from './components/sequence-viewer-sidebar/sidebar-toolstrip/SequenceViewerSidebarToolstrip';
 import SequenceViewerInterstitial from './components/sequence-viewer-interstitial/SequenceViewerInterstitial';
 
@@ -46,9 +44,7 @@ import styles from './SequenceViewer.module.css';
 const WrappedSequenceViewer = () => {
   return (
     <SequenceViewerIdsContextProvider>
-      <SequenceViewerLegendContextProvider>
-        <SequenceViewer />
-      </SequenceViewerLegendContextProvider>
+      <SequenceViewer />
     </SequenceViewerIdsContextProvider>
   );
 };
@@ -88,7 +84,7 @@ const SequenceViewer = () => {
         sidebarContent={<SidebarContent />}
         isSidebarOpen={isSidebarOpen}
         topbarContent={<SequenceViewerTopBar />}
-        sidebarNavigation={<SequenceViewerSidebarTabs />}
+        sidebarNavigation={null}
         sidebarToolstripContent={<SidebarToolstrip />}
         onSidebarToggle={onSidebarToggle}
         viewportWidth={1800}

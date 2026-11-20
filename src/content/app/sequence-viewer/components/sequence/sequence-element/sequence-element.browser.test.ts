@@ -20,7 +20,6 @@ import { getSequenceSelection } from './sequence-hit-testing';
 
 import {
   Sequence as SequenceElement,
-  type LegendEventDetail,
   type VisibleRangeEventDetail
 } from './sequence-element';
 
@@ -55,13 +54,6 @@ describe('ens-sequence-viewer-sequence element', () => {
   });
 
   it('handles the template property correctly', async () => {
-    // Set event listener before setting the "sequence" property
-    // (because the legend event will be sent synchronously after the template is parsed)
-    const events: LegendEventDetail[] = [];
-    element.addEventListener('report-legend', (event) => {
-      events.push((event as CustomEvent<LegendEventDetail>).detail);
-    });
-
     // Set the sequence property on the element
     element.sequence = response(
       Array.from(
@@ -81,9 +73,6 @@ describe('ens-sequence-viewer-sequence element', () => {
     expect(
       getComputedStyle(element.shadowRoot!.querySelector('.feature')!).color
     ).toBe('rgb(12, 34, 56)');
-
-    // Check that a legend event is dispatched
-    expect(events).toEqual([{ template: legend + styles }]);
   });
 });
 

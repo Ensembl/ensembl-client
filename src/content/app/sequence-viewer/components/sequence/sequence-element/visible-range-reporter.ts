@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// Edge contact can yield a tiny positive intersection due to rounding.
+const MIN_VISIBLE_INTERSECTION_RATIO = 0.000001;
+
 type LineCoordinates = { start: number; end: number };
 
 /** Coordinates of the first and last visible primary sequence lines, in display order. */
@@ -48,7 +51,8 @@ export class VisibleRangeReporter {
           if (
             entry.isIntersecting &&
             entry.intersectionRect.height > 0 &&
-            entry.intersectionRect.width > 0
+            entry.intersectionRect.width > 0 &&
+            entry.intersectionRatio >= MIN_VISIBLE_INTERSECTION_RATIO
           ) {
             this.#visibleLines.add(entry.target);
           } else {
@@ -60,9 +64,7 @@ export class VisibleRangeReporter {
       {
         // The viewport root also respects clipping by scrolling ancestors.
         root: null,
-        // Include a positive threshold: edge contact can have zero area while
-        // isIntersecting is true. We need another notification on entry.
-        threshold: [0, 0.000001]
+        threshold: [0, MIN_VISIBLE_INTERSECTION_RATIO]
       }
     );
 
