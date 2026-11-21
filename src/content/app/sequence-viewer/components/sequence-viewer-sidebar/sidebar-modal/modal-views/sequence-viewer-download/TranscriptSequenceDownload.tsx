@@ -54,7 +54,7 @@ const TranscriptSequenceDownload = () => {
     useTranscriptSequenceDownloadOptionsQuery(
       {
         genomeId: genomeId ?? '',
-        sequenceType: 'genomic',
+        sequenceType: transcriptView,
         transcriptId
       },
       {
@@ -82,7 +82,7 @@ const TranscriptSequenceDownload = () => {
       const options = prepareOptionsForPayload(
         sequenceSettings as TranscriptSequenceSettings
       );
-      downloadParams.sequence_type = 'genomic';
+      downloadParams.sequence_type = transcriptView;
       downloadParams.options = options;
     } else if (params.options) {
       downloadParams.options = params.options;
