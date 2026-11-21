@@ -26,6 +26,7 @@ import {
 import { useLocation, useNavigate } from 'react-router';
 import classNames from 'classnames';
 
+import GeneName from 'src/shared/components/gene-name/GeneName';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
@@ -40,6 +41,7 @@ import type {
   SequenceOptionsPanel as SequenceOptionsPanelType,
   SequenceMultiselectOption as SequenceMultiselectOptionType,
   FlankingInfo,
+  GeneMetadata,
   TranscriptMetadata
 } from 'src/content/app/sequence-viewer/types/annotatedSequenceApi';
 import type {
@@ -175,14 +177,23 @@ export const CheckboxOptionInMultiselect = memo(
       );
     }, [isChecked, option, onChange]);
 
+    if (option.metadata?.type === 'gene') {
+      return (
+        <GeneOption
+          gene={option.metadata}
+          isChecked={isChecked}
+          onChange={onChange}
+        ></GeneOption>
+      );
+    }
     if (option.metadata?.type === 'transcript') {
       return (
-        <TranscriptOptionWrapper
+        <TranscriptOption
           label={option.label}
           transcript={option.metadata}
           isChecked={isChecked}
           onChange={onChange}
-        ></TranscriptOptionWrapper>
+        ></TranscriptOption>
       );
     }
 
@@ -190,7 +201,63 @@ export const CheckboxOptionInMultiselect = memo(
   }
 );
 
-export const TranscriptOptionWrapper = ({
+export const GeneOption = ({
+  gene,
+  isChecked,
+  onChange
+}: {
+  gene: GeneMetadata;
+  isChecked: boolean;
+  onChange: () => void;
+}) => {
+  const urlLocation = useLocation();
+  const navigate = useNavigate();
+
+  const onTranscriptSequenceViewClick = () => {
+    const pathname = urlLocation.pathname;
+    const focusParam = `gene:${gene.id}`;
+    const url = `${pathname}?focus=${focusParam}`;
+    navigate(url);
+  };
+
+  const checkboxId = useId();
+
+  return (
+    <div className={styles.featureWrapper}>
+      <Checkbox
+        checked={isChecked}
+        onChange={onChange}
+        id={checkboxId}
+        className={styles.featureCheckbox}
+        aria-description={gene.id}
+      />
+      <label htmlFor={checkboxId}>
+        <GeneName
+          className={styles.geneName}
+          symbol={gene.symbol}
+          stable_id={gene.id}
+        />
+      </label>
+      <label
+        htmlFor={checkboxId}
+        className={classNames(styles.featureBottomRow, styles.smallLight)}
+      >
+        <span className={styles.clipped}>{gene.biotype}</span>
+      </label>
+      <div className={styles.featureButtons}>
+        <ImageButton
+          status={Status.DEFAULT}
+          className={styles.featureButton}
+          description={`Show sequence of gene ${gene.id}`}
+          image={SequenceViewerIcon}
+          onClick={onTranscriptSequenceViewClick}
+        />
+      </div>
+    </div>
+  );
+};
+
+export const TranscriptOption = ({
   label,
   transcript,
   isChecked,
