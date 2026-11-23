@@ -119,6 +119,33 @@ describe('sequence visible range', () => {
     vi.restoreAllMocks();
   });
 
+  it.each([
+    { descending: false, start: 5, end: 12, row: 1 },
+    { descending: false, start: 0, end: 12, row: 0 },
+    { descending: true, start: 0, end: 16, row: 6 },
+    { descending: true, start: 0, end: 45, row: 0 }
+  ])(
+    'jumps to row $row for $start–$end with descending=$descending',
+    ({ descending, start, end, row }) => {
+      element.sequence = template(10, descending);
+      container.scrollTop = 20;
+
+      element.scrollToInterval({ start, end });
+
+      expect(container.scrollTop).toBe(row * 20);
+    }
+  );
+
+  it('jumps to an offscreen chunk and keeps its position for a disjoint interval', () => {
+    element.sequence = template(1_000);
+
+    element.scrollToInterval({ start: 2_000, end: 2_050 });
+    expect(container.scrollTop).toBe(499 * 20);
+
+    element.scrollToInterval({ start: 4_001, end: 4_050 });
+    expect(container.scrollTop).toBe(499 * 20);
+  });
+
   it('ignores aligned protein lines, including at the viewport edges', async () => {
     const observe = vi.spyOn(IntersectionObserver.prototype, 'observe');
     const proteinLine = sequenceLine(1, 4).replace(

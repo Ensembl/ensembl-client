@@ -47,6 +47,15 @@ type Props = {
 
 const Sequence = ({ sequence, genomeId, ...otherProps }: Props) => {
   const navigate = useNavigate();
+  const { setJumpFunction } = useSequenceJump();
+
+  const attachSequenceElement = useCallback(
+    (element: SequenceElement) => {
+      setJumpFunction((interval) => element.scrollToInterval(interval));
+      return () => setJumpFunction(null);
+    },
+    [setJumpFunction]
+  );
 
   const onGenomeBrowserNavigation = useCallback(
     (event: CustomEvent<GenomeBrowserNavigationEventDetail>) => {
@@ -92,6 +101,7 @@ const Sequence = ({ sequence, genomeId, ...otherProps }: Props) => {
 
   return (
     <ens-sequence-viewer-sequence
+      ref={attachSequenceElement}
       ongenome-browser-navigation={onGenomeBrowserNavigation}
       sequenceContext={sequenceContext}
       sequence={sequence}

@@ -26,6 +26,8 @@ import {
 import { useLocation, useNavigate } from 'react-router';
 import classNames from 'classnames';
 
+import useSequenceJump from 'src/content/app/sequence-viewer/contexts/useSequenceJump';
+
 import GeneName from 'src/shared/components/gene-name/GeneName';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
@@ -213,6 +215,8 @@ export const GeneOption = ({
 }) => {
   const urlLocation = useLocation();
   const navigate = useNavigate();
+  const { jumpToInterval } = useSequenceJump();
+  const jumpLabel = `Jump to gene ${gene.id}`;
 
   const onTranscriptSequenceViewClick = () => {
     const pathname = urlLocation.pathname;
@@ -247,11 +251,12 @@ export const GeneOption = ({
       </label>
       <div className={styles.featureButtons}>
         <ImageButton
-          status={Status.DEFAULT}
+          status={jumpToInterval ? Status.DEFAULT : Status.DISABLED}
           className={styles.featureButton}
-          description={`Show sequence of gene ${gene.id}`}
+          description={jumpLabel}
+          aria-label={jumpLabel}
           image={ScrollToIcon}
-          onClick={onTranscriptSequenceViewClick}
+          onClick={() => jumpToInterval?.({ start: gene.start, end: gene.end })}
         />
         <ImageButton
           status={Status.DEFAULT}
@@ -278,6 +283,8 @@ export const TranscriptOption = ({
 }) => {
   const urlLocation = useLocation();
   const navigate = useNavigate();
+  const { jumpToInterval } = useSequenceJump();
+  const jumpLabel = `Jump to transcript ${transcript.id}`;
 
   const onTranscriptSequenceViewClick = () => {
     const pathname = urlLocation.pathname;
@@ -308,11 +315,14 @@ export const TranscriptOption = ({
       </label>
       <div className={styles.featureButtons}>
         <ImageButton
-          status={Status.DEFAULT}
+          status={jumpToInterval ? Status.DEFAULT : Status.DISABLED}
           className={styles.featureButton}
-          description={`Show sequence of gene`}
+          description={jumpLabel}
+          aria-label={jumpLabel}
           image={ScrollToIcon}
-          onClick={onTranscriptSequenceViewClick}
+          onClick={() =>
+            jumpToInterval?.({ start: transcript.start, end: transcript.end })
+          }
         />
         <ImageButton
           status={Status.DEFAULT}

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useState, createContext, type ReactNode } from 'react';
+import { useCallback, useState, createContext, type ReactNode } from 'react';
 
 type JumpFn = (params: { start: number; end: number }) => void;
 
 type SequenceJumpContextType = {
   jumpToInterval: JumpFn | null;
-  setJumpFunction: (fn: JumpFn) => void;
+  setJumpFunction: (fn: JumpFn | null) => void;
 };
 
 export const SequenceViewerJumpContext =
@@ -32,10 +32,13 @@ export const SequenceViewerJumpContextProvider = ({
   children: ReactNode;
 }) => {
   const [jumpFn, setJumpFn] = useState<JumpFn | null>(null);
+  const setJumpFunction = useCallback((fn: JumpFn | null) => {
+    setJumpFn(() => fn);
+  }, []);
 
   const contextValue: SequenceJumpContextType = {
     jumpToInterval: jumpFn,
-    setJumpFunction: setJumpFn
+    setJumpFunction
   };
 
   return (
