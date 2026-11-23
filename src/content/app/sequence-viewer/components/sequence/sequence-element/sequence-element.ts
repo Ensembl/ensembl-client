@@ -188,10 +188,6 @@ const staticStyles = `
 
 const LINES_PER_CHUNK = 100;
 
-export type LegendEventDetail = {
-  template: string | null;
-};
-
 export class Sequence extends HTMLElement {
   #interactions: SequenceInteractions | null = null;
   #regionName: string | undefined;
@@ -218,7 +214,6 @@ export class Sequence extends HTMLElement {
     this.#interactions = null;
     this.#visibleRangeReporter?.destroy();
     this.#visibleRangeReporter = null;
-    this.#reportLegend(null);
   }
 
   set sequence(htmlTemplate: string) {
@@ -230,8 +225,6 @@ export class Sequence extends HTMLElement {
       parsedTemplate.querySelector<HTMLTemplateElement>('template#sequence');
     const stylesTemplate =
       parsedTemplate.querySelector<HTMLTemplateElement>('template#styles');
-    const legendTemplate =
-      parsedTemplate.querySelector<HTMLTemplateElement>('template#legend');
 
     if (!sequenceTemplate || !stylesTemplate) {
       throw new Error('No template found in response!');
@@ -242,21 +235,6 @@ export class Sequence extends HTMLElement {
     this.#updateStyles(stylesTemplate);
 
     this.#renderChunks(sequenceTemplate);
-
-    const legendTemplateForEvent = legendTemplate
-      ? legendTemplate.outerHTML + stylesTemplate.outerHTML
-      : null;
-
-    this.#reportLegend(legendTemplateForEvent);
-  }
-
-  #reportLegend(template: string | null) {
-    this.dispatchEvent(
-      new CustomEvent<LegendEventDetail>('report-legend', {
-        detail: { template },
-        bubbles: true
-      })
-    );
   }
 
   #renderChunks(sequenceTemplate: HTMLTemplateElement) {

@@ -50,6 +50,10 @@
   --image-button-default-svg-color: var(--color-white);
 }
 
+.geneName {
+  --gene-name-primary-font-weight: var(--font-weight-normal);
+}
+
 .textField {
   display: flex;
   flex-direction: column;
