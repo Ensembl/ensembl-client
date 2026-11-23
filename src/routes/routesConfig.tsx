@@ -47,6 +47,9 @@ import BlastPage, {
 import VepPage, {
   serverFetch as vepServerFetch
 } from 'src/content/app/tools/vep/VepPage';
+import DataDistillerPage, {
+  serverFetch as dataDistillerServerFetch
+} from 'src/content/app/data-distiller/DataDistillerPage';
 import AboutPage, {
   serverFetch as aboutPageServerFetch
 } from 'src/content/app/about/AboutPage';
@@ -124,6 +127,11 @@ const routes: RouteConfig[] = [
     path: '/tools/vep/*',
     element: <VepPage />,
     serverFetch: vepServerFetch
+  },
+  {
+    path: '/tools/distiller/*',
+    element: <DataDistillerPage />,
+    serverFetch: dataDistillerServerFetch
   },
   {
     path: '/about/*',

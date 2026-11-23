@@ -17,6 +17,7 @@
 export { default as ActivityViewerIcon } from './ActivityViewerIcon';
 export { default as AlignmentsViewerIcon } from './AlignmentsViewerIcon';
 export { default as BlastIcon } from './BlastIcon';
+export { default as DataDistillerIcon } from './DataDistillerIcon';
 export { default as HelpIcon } from './HelpIcon';
 export { default as GenomeBrowserIcon } from './GenomeBrowserIcon';
 export { default as GlobalSearchIcon } from './GlobalSearchIcon';

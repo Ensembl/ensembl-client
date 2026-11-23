@@ -32,6 +32,7 @@ export type BaseApiUrls = {
   variationApiUrl: string;
   regulationApiBaseUrl: string;
   structuralVariantsApiBaseUrl: string;
+  distillerApiBaseUrl: string;
 };
 
 export type PublicKeys = {
@@ -51,7 +52,8 @@ export const defaultApiUrls: BaseApiUrls = {
   searchApiBaseUrl: '/api/search',
   variationApiUrl: '/api/graphql/variation',
   regulationApiBaseUrl: 'https://regulation.ensembl.org/api', // <-- calling the api deployed on the regulation site
-  structuralVariantsApiBaseUrl: '/api/sv-alignments'
+  structuralVariantsApiBaseUrl: '/api/sv-alignments',
+  distillerApiBaseUrl: '/api/distiller'
 };
 
 const defaultKeys = {
@@ -85,7 +87,8 @@ const getBaseApiUrls = (): BaseApiUrls => {
     tracksApiBaseUrl: defaultApiUrls.tracksApiBaseUrl, // irrelevant for server-side rendering
     toolsApiBaseUrl: defaultApiUrls.toolsApiBaseUrl, // irrelevant for server-side rendering
     searchApiBaseUrl: defaultApiUrls.searchApiBaseUrl, // irrelevant for server-side rendering
-    structuralVariantsApiBaseUrl: defaultApiUrls.structuralVariantsApiBaseUrl // irrelevant for server-side rendering
+    structuralVariantsApiBaseUrl: defaultApiUrls.structuralVariantsApiBaseUrl, // irrelevant for server-side rendering
+    distillerApiBaseUrl: defaultApiUrls.distillerApiBaseUrl // irrelevant for server-side rendering
   };
 };
 
