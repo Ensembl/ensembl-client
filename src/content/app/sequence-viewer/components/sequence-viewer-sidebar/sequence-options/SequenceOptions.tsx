@@ -34,6 +34,7 @@ import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import { SequenceViewerIcon } from 'src/shared/components/app-icon';
+import TargetIcon from 'static/icons/icon_target.svg';
 
 import { Status } from 'src/shared/types/status';
 import type {
@@ -249,6 +250,13 @@ export const GeneOption = ({
           status={Status.DEFAULT}
           className={styles.featureButton}
           description={`Show sequence of gene ${gene.id}`}
+          image={ScrollToIcon}
+          onClick={onTranscriptSequenceViewClick}
+        />
+        <ImageButton
+          status={Status.DEFAULT}
+          className={styles.featureButton}
+          description={`Show sequence of gene ${gene.id}`}
           image={SequenceViewerIcon}
           onClick={onTranscriptSequenceViewClick}
         />
@@ -299,6 +307,13 @@ export const TranscriptOption = ({
         <span className={styles.clipped}>{transcript.additional_info}</span>
       </label>
       <div className={styles.featureButtons}>
+        <ImageButton
+          status={Status.DEFAULT}
+          className={styles.featureButton}
+          description={`Show sequence of gene`}
+          image={ScrollToIcon}
+          onClick={onTranscriptSequenceViewClick}
+        />
         <ImageButton
           status={Status.DEFAULT}
           className={styles.featureButton}
@@ -546,4 +561,8 @@ const parseFlankingSequenceInput = ({
     upstream: upstreamParsedResult,
     downstream: downstreamParsedResult
   };
+};
+
+const ScrollToIcon = () => {
+  return <TargetIcon className={styles.targetIcon} />;
 };

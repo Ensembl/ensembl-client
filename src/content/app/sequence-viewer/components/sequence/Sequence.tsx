@@ -25,6 +25,8 @@ import { useNavigate } from 'react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import useSequenceJump from 'src/content/app/sequence-viewer/contexts/useSequenceJump';
+
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getGenomicLocationString } from 'src/shared/helpers/genomicLocationHelpers';
 

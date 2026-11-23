@@ -25,6 +25,7 @@ import { getIsSidebarOpen } from 'src/content/app/sequence-viewer/state/sidebar/
 import { toggleSidebar } from 'src/content/app/sequence-viewer/state/sidebar/sequenceViewerSidebarSlice';
 
 import { SequenceViewerIdsContextProvider } from './contexts/SequenceViewerIdsContext';
+import { SequenceViewerJumpContextProvider } from './contexts/SequenceJumpContext';
 
 import SequenceViewerAppBar from './components/sequence-viewer-app-bar/SequenceViewerAppBar';
 import SequenceViewerTopBar from './components/sequence-viewer-top-bar/SequenceViewerTopBar';
@@ -44,7 +45,9 @@ import styles from './SequenceViewer.module.css';
 const WrappedSequenceViewer = () => {
   return (
     <SequenceViewerIdsContextProvider>
-      <SequenceViewer />
+      <SequenceViewerJumpContextProvider>
+        <SequenceViewer />
+      </SequenceViewerJumpContextProvider>
     </SequenceViewerIdsContextProvider>
   );
 };
