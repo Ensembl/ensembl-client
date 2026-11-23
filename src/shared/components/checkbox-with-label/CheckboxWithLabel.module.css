@@ -2,23 +2,26 @@
 
   .grid {
     display: inline-grid;
-    grid-template-columns: auto 1fr;
-    font-size: 0;
+    grid-template-columns: auto auto;
+    /* width: max-content;
+    max-width: 100%; */
+    column-gap: 12px;
+    justify-content: start;
   }
   
   .grid input[type="checkbox"] {
-    margin-top: var(--checkbox-margin-top, 8px);
+    margin-top: calc(0.5lh / 2);
   }
   
   .label {
     color: var(--checkbox-label-color, var(--color-black));
     font-size: var(--checkbox-label-font-size, 13px);
     font-weight: var(--checkbox-label-font-weight, var(--font-weight-normal));
-    line-height: var(--checkbox-label-line-height, 30px);
-    padding-left: 12px;
     cursor: pointer;
     user-select: none;
     overflow-wrap: break-word;
+    text-box-trim: trim-both;
+    /* text-box-edge: cap alphabetic; */
   }
   
   .grid:has(input[type="checkbox"]:disabled) .label {
@@ -35,7 +38,6 @@
     border-color: var(--checkbox-border-color, var(--color-dark-grey));
     height: var(--checkbox-side-size, 12px);
     width: var(--checkbox-side-size, 12px);
-    margin-top: var(--checkbox-margin-top, 9px);
   }
   
   .themeDark input[type="checkbox"]:checked {
