@@ -1,23 +1,29 @@
-name: Delete removed branch from GitLab mirror
+name: "Review Environment Cleanup: Delete removed GitHub branch from GitLab remote"
 
 on:
   delete:
-    branches-ignore:
-      - master
-      - dev
-
-permissions: {}
 
 jobs:
   branch-delete:
-    if: github.event.ref_type == 'branch'
+    if: >-
+      github.event.ref_type == 'branch' &&
+      github.event.ref != 'main' &&
+      github.event.ref != 'dev'
     runs-on: ubuntu-latest
     env:
-      TOKEN: ${{ secrets.GITLAB_TOKEN }}
       REPO: ensembl-web%2F${{ github.event.repository.name }}
+      TOKEN: ${{ secrets.GITLAB_TOKEN }}
       BRANCH: ${{ github.event.ref }}
     steps:
       - name: Send branch delete request
         run: |
-          BRANCH=${BRANCH//\//%2F}
-          curl --request DELETE --header "PRIVATE-TOKEN: $TOKEN" "https://gitlab.ebi.ac.uk/api/v4/projects/$REPO/repository/branches/$BRANCH"
+          BRANCH=$(jq -rn --arg branch "$BRANCH" '$branch | @uri')
+
+          echo "Deleting branch '$BRANCH' from GitLab project '$REPO'..."
+          if ! curl --fail-with-body --silent --show-error \
+            --request DELETE \
+            --header "PRIVATE-TOKEN: $TOKEN" \
+            "https://gitlab.ebi.ac.uk/api/v4/projects/$REPO/repository/branches/$BRANCH"; then
+            echo "ERROR: There was a failure encountered while deleting branch from GitLab project '$REPO'."
+            exit 1
+          fi
