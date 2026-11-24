@@ -26,6 +26,8 @@ import {
 import { useLocation, useNavigate } from 'react-router';
 import classNames from 'classnames';
 
+import useSequenceJump from 'src/content/app/sequence-viewer/contexts/useSequenceJump';
+
 import GeneName from 'src/shared/components/gene-name/GeneName';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import CheckboxWithLabel from 'src/shared/components/checkbox-with-label/CheckboxWithLabel';
@@ -34,6 +36,7 @@ import ShadedInput from 'src/shared/components/input/ShadedInput';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import { SequenceViewerIcon } from 'src/shared/components/app-icon';
+import TargetIcon from 'static/icons/icon_target.svg';
 
 import { Status } from 'src/shared/types/status';
 import type {
@@ -212,6 +215,7 @@ export const GeneOption = ({
 }) => {
   const urlLocation = useLocation();
   const navigate = useNavigate();
+  const { jumpToInterval } = useSequenceJump();
 
   const onTranscriptSequenceViewClick = () => {
     const pathname = urlLocation.pathname;
@@ -246,9 +250,18 @@ export const GeneOption = ({
       </label>
       <div className={styles.featureButtons}>
         <ImageButton
+          status={jumpToInterval ? Status.DEFAULT : Status.DISABLED}
+          className={styles.featureButton}
+          description="Jump to gene"
+          aria-label={`Jump to gene ${gene.id}`}
+          image={ScrollToIcon}
+          onClick={() => jumpToInterval?.({ start: gene.start, end: gene.end })}
+        />
+        <ImageButton
           status={Status.DEFAULT}
           className={styles.featureButton}
-          description={`Show sequence of gene ${gene.id}`}
+          description="Show gene sequence"
+          aria-label={`Show sequence of gene ${gene.id}`}
           image={SequenceViewerIcon}
           onClick={onTranscriptSequenceViewClick}
         />
@@ -270,6 +283,7 @@ export const TranscriptOption = ({
 }) => {
   const urlLocation = useLocation();
   const navigate = useNavigate();
+  const { jumpToInterval } = useSequenceJump();
 
   const onTranscriptSequenceViewClick = () => {
     const pathname = urlLocation.pathname;
@@ -300,9 +314,20 @@ export const TranscriptOption = ({
       </label>
       <div className={styles.featureButtons}>
         <ImageButton
+          status={jumpToInterval ? Status.DEFAULT : Status.DISABLED}
+          className={styles.featureButton}
+          description="Jump to transcript"
+          aria-label={`Jump to transcript ${transcript.id}`}
+          image={ScrollToIcon}
+          onClick={() =>
+            jumpToInterval?.({ start: transcript.start, end: transcript.end })
+          }
+        />
+        <ImageButton
           status={Status.DEFAULT}
           className={styles.featureButton}
-          description={`Show sequence of transcript ${transcript.id}`}
+          description="Show transcript sequence"
+          aria-label={`Show sequence of transcript ${transcript.id}`}
           image={SequenceViewerIcon}
           onClick={onTranscriptSequenceViewClick}
         />
@@ -546,4 +571,8 @@ const parseFlankingSequenceInput = ({
     upstream: upstreamParsedResult,
     downstream: downstreamParsedResult
   };
+};
+
+const ScrollToIcon = () => {
+  return <TargetIcon className={styles.targetIcon} />;
 };

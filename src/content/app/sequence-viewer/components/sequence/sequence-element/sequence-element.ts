@@ -237,6 +237,45 @@ export class Sequence extends HTMLElement {
     this.#renderChunks(sequenceTemplate);
   }
 
+  scrollToInterval({ start, end }: { start: number; end: number }) {
+    const intervalLow = Math.min(start, end);
+    const intervalHigh = Math.max(start, end);
+    const rows = this.shadowRoot!.querySelectorAll<HTMLElement>(
+      '.line:not(.protein-line)[data-start][data-end]'
+    );
+
+    for (const row of rows) {
+      const rowStart = Number(row.dataset.start);
+      const rowEnd = Number(row.dataset.end);
+      if (!Number.isFinite(rowStart) || !Number.isFinite(rowEnd)) {
+        continue;
+      }
+
+      const rowLow = Math.min(rowStart, rowEnd);
+      const rowHigh = Math.max(rowStart, rowEnd);
+      if (rowLow <= intervalHigh && intervalLow <= rowHigh) {
+        this.#scrollToRow(row);
+        return;
+      }
+    }
+  }
+
+  #scrollToRow(row: HTMLElement) {
+    let pane = this.parentElement;
+    while (
+      pane &&
+      !/^(auto|scroll|overlay)$/.test(getComputedStyle(pane).overflowY)
+    ) {
+      pane = pane.parentElement;
+    }
+    if (!pane) {
+      return;
+    }
+
+    const paneTop = pane.getBoundingClientRect().top + pane.clientTop;
+    pane.scrollTop += row.getBoundingClientRect().top - paneTop;
+  }
+
   #renderChunks(sequenceTemplate: HTMLTemplateElement) {
     this.#visibleRangeReporter?.destroy();
     this.#visibleRangeReporter = null;

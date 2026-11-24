@@ -18,6 +18,8 @@ import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { MemoryRouter, useLocation } from 'react-router';
 
+import { SequenceViewerJumpContextProvider } from 'src/content/app/sequence-viewer/contexts/SequenceJumpContext';
+
 import Sequence from './Sequence';
 
 const CurrentLocation = () => {
@@ -37,11 +39,13 @@ describe('Sequence navigation', () => {
     `;
     const screen = await render(
       <MemoryRouter initialEntries={['/sequence-viewer']}>
-        <Sequence
-          genomeId="genome-id"
-          gene={{ stableId: 'gene-id' }}
-          sequence={sequence}
-        />
+        <SequenceViewerJumpContextProvider>
+          <Sequence
+            genomeId="genome-id"
+            gene={{ stableId: 'gene-id' }}
+            sequence={sequence}
+          />
+        </SequenceViewerJumpContextProvider>
         <CurrentLocation />
       </MemoryRouter>
     );
