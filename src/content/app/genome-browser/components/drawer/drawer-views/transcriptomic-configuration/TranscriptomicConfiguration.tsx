@@ -189,7 +189,7 @@ export function ConfigurationForm({
       {error && (
         <p role="alert">Could not apply selections. Please try again.</p>
       )}
-      <p role="status">
+      <p role="status" className={styles.status}>
         {trackCount} of {selectableTrackCount}{' '}
         {selectableTrackCount === 1 ? 'track' : 'tracks'} selected
         {hasFilters && (

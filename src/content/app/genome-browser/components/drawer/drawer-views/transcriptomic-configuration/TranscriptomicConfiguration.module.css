@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 16px 20px;
+  padding: 8px 20px;
   container: transcriptomic-panel / inline-size;
 }
 
@@ -12,12 +12,17 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding-block: 12px;
+  padding-block: 4px;
   background: var(--color-white);
 }
 
 .header h2 {
+  margin: 0;
   font-size: 16px;
+}
+
+.status {
+  margin: 4px 0 8px;
 }
 
 .columns {
@@ -31,6 +36,7 @@
 }
 
 .columns h3 {
+  margin: 0;
   font-size: 14px;
 }
 
@@ -43,8 +49,8 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  padding-block: 8px;
-  margin-bottom: 8px;
+  padding-block: 4px;
+  margin-bottom: 4px;
   background: var(--color-white);
 }
 
