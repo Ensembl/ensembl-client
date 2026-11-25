@@ -216,6 +216,11 @@ const TranscriptStableId = ({
     entityId: focusIdForUrl
   });
 
+  const sequenceViewerUrl = urlFor.sequenceViewer({
+    genomeId: genomeIdForUrl,
+    focusObject: focusIdForUrl
+  });
+
   return (
     <ViewInAppPopup
       links={{
@@ -224,6 +229,9 @@ const TranscriptStableId = ({
         },
         entityViewer: {
           url: featureExplorerUrl
+        },
+        sequenceViewer: {
+          url: sequenceViewerUrl
         }
       }}
     >

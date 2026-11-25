@@ -107,13 +107,17 @@ const GeneNameSection = ({
     objectId: gene.unversioned_stable_id,
     type: 'gene'
   });
-  const linkToGenomeBrowser = urlFor.browser({
+  const genomeBrowserLink = urlFor.browser({
     genomeId: genomeId,
     focus: geneFocusIdForUrl
   });
-  const linkToEntityViewer = urlFor.entityViewer({
+  const entityViewerLink = urlFor.entityViewer({
     genomeId: genomeId,
     entityId: geneFocusIdForUrl
+  });
+  const sequenceViewerLink = urlFor.sequenceViewer({
+    genomeId,
+    focusObject: geneFocusIdForUrl
   });
 
   return (
@@ -131,8 +135,9 @@ const GeneNameSection = ({
 
         <ViewInApp
           links={{
-            genomeBrowser: { url: linkToGenomeBrowser },
-            entityViewer: { url: linkToEntityViewer }
+            genomeBrowser: { url: genomeBrowserLink },
+            entityViewer: { url: entityViewerLink },
+            sequenceViewer: { url: sequenceViewerLink }
           }}
           theme="light"
           className={styles.viewInAppGene}

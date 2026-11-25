@@ -123,7 +123,7 @@ const NoFocusInterstitial = () => {
           genomeId={genomeId}
         />
       )}
-      {searchQuery && (
+      {searchQuery && genomeIdForUrl && (
         <div className={styles.results} aria-live="polite">
           {geneSearchResults.isFetching ||
           transcriptSearchResults.isFetching ? (
@@ -137,7 +137,11 @@ const NoFocusInterstitial = () => {
                 {currentGeneSearchResults?.matches.length ? (
                   <>
                     {currentGeneSearchResults.matches.map((match) => (
-                      <GeneLink key={match.stable_id} searchMatch={match} />
+                      <GeneLink
+                        key={match.stable_id}
+                        genomeIdForUrl={genomeIdForUrl}
+                        searchMatch={match}
+                      />
                     ))}
                   </>
                 ) : (
@@ -153,6 +157,7 @@ const NoFocusInterstitial = () => {
                     {currentTranscriptSearchResults.matches.map((match) => (
                       <TranscriptLink
                         key={match.stable_id}
+                        genomeIdForUrl={genomeIdForUrl}
                         searchMatch={match}
                       />
                     ))}
@@ -221,13 +226,19 @@ const ExampleLinks = ({
   return <div className={styles.exampleLinks}>{exampleLinks}</div>;
 };
 
-const GeneLink = ({ searchMatch }: { searchMatch: GeneSearchMatch }) => {
+const GeneLink = ({
+  genomeIdForUrl,
+  searchMatch
+}: {
+  genomeIdForUrl: string;
+  searchMatch: GeneSearchMatch;
+}) => {
   const focusIdForUrl = buildFocusIdForUrl({
     type: 'gene',
     objectId: searchMatch.unversioned_stable_id
   });
   const url = urlFor.sequenceViewer({
-    genomeId: searchMatch.genome_id,
+    genomeId: genomeIdForUrl,
     focusObject: focusIdForUrl
   });
 
@@ -239,8 +250,10 @@ const GeneLink = ({ searchMatch }: { searchMatch: GeneSearchMatch }) => {
 };
 
 const TranscriptLink = ({
+  genomeIdForUrl,
   searchMatch
 }: {
+  genomeIdForUrl: string;
   searchMatch: TranscriptSearchMatch;
 }) => {
   const focusIdForUrl = buildFocusIdForUrl({
@@ -248,7 +261,7 @@ const TranscriptLink = ({
     objectId: searchMatch.unversioned_stable_id
   });
   const url = urlFor.sequenceViewer({
-    genomeId: searchMatch.genome_id,
+    genomeId: genomeIdForUrl,
     focusObject: focusIdForUrl
   });
 

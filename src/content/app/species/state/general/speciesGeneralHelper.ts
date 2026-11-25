@@ -572,6 +572,12 @@ const getExampleLinks = (props: {
           genomeId: genomeIdForUrl,
           entityId: focusId
         })
+      },
+      sequenceViewer: {
+        url: urlFor.sequenceViewer({
+          genomeId: genomeIdForUrl,
+          focusObject: focusId
+        })
       }
     };
   } else if (section === 'assembly_stats') {
@@ -592,6 +598,12 @@ const getExampleLinks = (props: {
         url: urlFor.browser({
           genomeId: genomeIdForUrl,
           focus: focusId
+        })
+      },
+      sequenceViewer: {
+        url: urlFor.sequenceViewer({
+          genomeId: genomeIdForUrl,
+          focusObject: focusId
         })
       }
     };
@@ -714,7 +726,9 @@ export const getStatsForSection = (props: {
               section,
               allStats
             });
-            individualStat && processedSubGroupStats.push(individualStat);
+            if (individualStat) {
+              processedSubGroupStats.push(individualStat);
+            }
           }
         });
 

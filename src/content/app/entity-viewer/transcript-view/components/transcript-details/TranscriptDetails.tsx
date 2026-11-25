@@ -50,12 +50,17 @@ const TranscriptDetails = (props: Props) => {
   } = props.transcript;
   const transcriptStartX = scale(relativeTranscriptStart) as number;
   const transcriptWidth = scale(transcriptLength) as number;
+  const transcriptParamForUrl = buildFocusIdForUrl({
+    type: 'transcript',
+    objectId: props.transcript.unversioned_stable_id
+  });
   const genomeBrowserUrl = urlFor.browser({
     genomeId: props.genomeIdForUrl,
-    focus: buildFocusIdForUrl({
-      type: 'transcript',
-      objectId: props.transcript.unversioned_stable_id
-    })
+    focus: transcriptParamForUrl
+  });
+  const sequenceViewerUrl = urlFor.sequenceViewer({
+    genomeId: props.genomeIdForUrl,
+    focusObject: transcriptParamForUrl
   });
 
   return (
@@ -83,7 +88,10 @@ const TranscriptDetails = (props: Props) => {
             <div>{props.transcript.stable_id}</div>
             <div className={styles.viewInApp}>
               <ViewInApp
-                links={{ genomeBrowser: { url: genomeBrowserUrl } }}
+                links={{
+                  genomeBrowser: { url: genomeBrowserUrl },
+                  sequenceViewer: { url: sequenceViewerUrl }
+                }}
                 theme="dark"
               />
             </div>

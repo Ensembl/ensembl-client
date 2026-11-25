@@ -86,6 +86,10 @@ const GeneSummary = (props: Props) => {
     genomeId: genomeIdForUrl,
     entityId: focusId
   });
+  const sequenceViewerUrl = urlFor.sequenceViewer({
+    genomeId: genomeIdForUrl,
+    focusObject: focusId
+  });
 
   const rowClasses = classNames(styles.row, styles.spaceAbove);
 
@@ -206,7 +210,12 @@ const GeneSummary = (props: Props) => {
 
       <div className={rowClasses}>
         <div className={styles.value}>
-          <ViewInApp links={{ entityViewer: { url: entityViewerUrl } }} />
+          <ViewInApp
+            links={{
+              entityViewer: { url: entityViewerUrl },
+              sequenceViewer: { url: sequenceViewerUrl }
+            }}
+          />
         </div>
       </div>
     </div>

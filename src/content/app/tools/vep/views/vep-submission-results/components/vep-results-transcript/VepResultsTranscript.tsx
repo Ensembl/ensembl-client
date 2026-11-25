@@ -56,6 +56,11 @@ const VepResultsTranscript = (props: Props) => {
     entityId: focusIdForUrl
   });
 
+  const sequenceViewerUrl = urlFor.sequenceViewer({
+    genomeId,
+    focusObject: focusIdForUrl
+  });
+
   return (
     <>
       <div>
@@ -66,6 +71,9 @@ const VepResultsTranscript = (props: Props) => {
             },
             entityViewer: {
               url: featureExplorerUrl
+            },
+            sequenceViewer: {
+              url: sequenceViewerUrl
             }
           }}
         >
