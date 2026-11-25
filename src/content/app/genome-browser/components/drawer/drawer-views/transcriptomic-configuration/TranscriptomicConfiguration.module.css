@@ -22,7 +22,8 @@
 }
 
 .status {
-  margin: 4px 0 8px;
+  margin: 0 0 0 auto;
+  text-align: right;
 }
 
 .columns {
@@ -167,10 +168,6 @@
 
 .filterGroups .group {
   break-inside: avoid;
-}
-
-.filterGroups .groupLabel {
-  text-transform: capitalize;
 }
 
 .filterValues {

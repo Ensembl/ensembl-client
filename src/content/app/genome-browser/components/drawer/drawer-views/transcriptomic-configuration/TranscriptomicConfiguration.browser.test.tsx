@@ -222,10 +222,16 @@ describe('transcriptomic browser integration', () => {
       .getByRole('button', { name: 'Liver', exact: true })
       .click();
     await page
-      .getByRole('checkbox', { name: sampleIds.liverOne, exact: true })
+      .getByRole('checkbox', {
+        name: new RegExp(sampleIds.liverOne, 'i'),
+        exact: true
+      })
       .click();
     await page
-      .getByRole('checkbox', { name: sampleIds.liverTwo, exact: true })
+      .getByRole('checkbox', {
+        name: new RegExp(sampleIds.liverTwo, 'i'),
+        exact: true
+      })
       .click();
     await page.getByRole('checkbox', { name: 'Brain', exact: true }).click();
     await apply();
@@ -247,7 +253,7 @@ describe('transcriptomic browser integration', () => {
     await expect
       .element(
         liverGroup.getByRole('button', {
-          name: sampleIds.liverOne,
+          name: new RegExp(sampleIds.liverOne, 'i'),
           exact: true
         })
       )
@@ -349,7 +355,7 @@ describe('transcriptomic browser integration', () => {
       .toContainEqual([{ trackId: trackA, isEnabled: true }]);
 
     await page
-      .getByRole('region', { name: 'sex filter', exact: true })
+      .getByRole('region', { name: 'Sex filter', exact: true })
       .getByRole('checkbox', { name: /^male\b/ })
       .click();
     await expect

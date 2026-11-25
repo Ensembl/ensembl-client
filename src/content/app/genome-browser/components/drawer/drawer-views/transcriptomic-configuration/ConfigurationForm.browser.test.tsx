@@ -76,7 +76,7 @@ async function renderForm({
 }
 const maleFilter = () =>
   page
-    .getByRole('region', { name: 'sex filter', exact: true })
+    .getByRole('region', { name: 'Sex filter', exact: true })
     .getByRole('checkbox', { name: /^male\b/ });
 const apply = () =>
   page.getByRole('button', { name: 'Apply', exact: true }).click();
@@ -88,7 +88,10 @@ describe('<ConfigurationForm />', () => {
     await renderForm();
     await page.getByRole('button', { name: 'Liver', exact: true }).click();
     await page
-      .getByRole('button', { name: sampleIds.liverOne, exact: true })
+      .getByRole('button', {
+        name: new RegExp(sampleIds.liverOne, 'i'),
+        exact: true
+      })
       .click();
     const track = page.getByRole('checkbox', {
       name: trackLabels.liverRunA,
@@ -181,6 +184,20 @@ describe('<ConfigurationForm />', () => {
       })
     );
     await renderForm({ configuration, height: 320, width: 1000 });
+    const status = page.getByRole('status').element().getBoundingClientRect();
+    const applyButton = page
+      .getByRole('button', { name: 'Apply', exact: true })
+      .element()
+      .getBoundingClientRect();
+    expect(status.right).toBeLessThan(applyButton.left);
+    expect(
+      Math.abs(
+        status.top +
+          status.height / 2 -
+          applyButton.top -
+          applyButton.height / 2
+      )
+    ).toBeLessThan(1);
     const tracksHeader = page
       .getByRole('heading', { name: 'Tracks', exact: true, level: 3 })
       .element();
@@ -228,13 +245,16 @@ describe('<ConfigurationForm />', () => {
 
     await expandLiver.click();
     const sample = page.getByRole('checkbox', {
-      name: sampleIds.liverOne,
+      name: new RegExp(sampleIds.liverOne, 'i'),
       exact: true
     });
     await expect.element(sample).toBeChecked();
     await expect.element(sample).toHaveAccessibleDescription('2');
     await page
-      .getByRole('button', { name: sampleIds.liverOne, exact: true })
+      .getByRole('button', {
+        name: new RegExp(sampleIds.liverOne, 'i'),
+        exact: true
+      })
       .click();
     await page
       .getByRole('checkbox', { name: trackLabels.liverRunA, exact: true })
@@ -382,7 +402,10 @@ describe('<ConfigurationForm />', () => {
 
     await page.getByRole('button', { name: 'Liver', exact: true }).click();
     await page
-      .getByRole('button', { name: sampleIds.liverOne, exact: true })
+      .getByRole('button', {
+        name: new RegExp(sampleIds.liverOne, 'i'),
+        exact: true
+      })
       .click();
     await expect
       .element(
@@ -428,23 +451,37 @@ describe('<ConfigurationForm />', () => {
   });
 
   it('keeps all filter groups open without expansion or search controls', async () => {
-    await renderForm();
+    const configuration = createTranscriptomicConfiguration();
+    configuration.filters.METADATA_SOURCE = [{ value: 'Genebuild', count: 4 }];
+    configuration.selections.forEach((selection) => {
+      selection.metadata.METADATA_SOURCE = 'Genebuild';
+    });
+    configuration.selection_hierarchy[0].display_label = 'brain RNA';
+    await renderForm({ configuration });
+    await expect
+      .element(
+        page.getByRole('heading', { name: 'Metadata source', exact: true })
+      )
+      .toBeVisible();
+    await expect
+      .element(page.getByRole('checkbox', { name: 'Brain RNA', exact: true }))
+      .toBeVisible();
     await expect.element(maleFilter()).toBeVisible();
     await expect
-      .element(page.getByRole('button', { name: 'sex', exact: true }))
+      .element(page.getByRole('button', { name: 'Sex', exact: true }))
       .not.toBeInTheDocument();
     const cohort = page.getByRole('region', {
-      name: 'cohort filter',
+      name: 'Cohort filter',
       exact: true
     });
     await expect
-      .element(cohort.getByRole('heading', { name: 'cohort', exact: true }))
-      .toHaveTextContent('cohort');
+      .element(cohort.getByRole('heading', { name: 'Cohort', exact: true }))
+      .toHaveTextContent('Cohort');
     // Filter values show run counts; category headers have none.
     await expect.element(maleFilter()).toHaveAccessibleDescription('1');
     await expect
-      .element(page.getByRole('heading', { name: 'sex', exact: true }))
-      .toHaveTextContent('sex');
+      .element(page.getByRole('heading', { name: 'Sex', exact: true }))
+      .toHaveTextContent('Sex');
     await expect.element(cohort.getByRole('button')).not.toBeInTheDocument();
     expect(cohort.getByRole('checkbox').all()).toHaveLength(4);
     await expect.element(page.getByRole('searchbox')).not.toBeInTheDocument();
@@ -457,13 +494,13 @@ describe('<ConfigurationForm />', () => {
 
   it('narrows filter choices and counts, supports alternatives, and restores choices on clearing', async () => {
     await renderForm();
-    const sex = page.getByRole('region', { name: 'sex filter', exact: true });
+    const sex = page.getByRole('region', { name: 'Sex filter', exact: true });
     const tissue = page.getByRole('region', {
-      name: 'tissue filter',
+      name: 'Tissue filter',
       exact: true
     });
     const cohort = page.getByRole('region', {
-      name: 'cohort filter',
+      name: 'Cohort filter',
       exact: true
     });
     const female = sex.getByRole('checkbox', { name: 'female', exact: true });
@@ -509,18 +546,18 @@ describe('<ConfigurationForm />', () => {
       .element(page.getByRole('button', { name: 'Clear selections' }))
       .toBeDisabled();
     const unknown = page
-      .getByRole('region', { name: 'sex filter', exact: true })
+      .getByRole('region', { name: 'Sex filter', exact: true })
       .getByRole('checkbox', { name: 'unknown', exact: true });
     await unknown.click();
     await page
-      .getByRole('region', { name: 'tissue filter', exact: true })
+      .getByRole('region', { name: 'Tissue filter', exact: true })
       .getByRole('checkbox', { name: /^brain\b/ })
       .click();
     await unknown.click();
     await expect.element(maleFilter()).toBeChecked();
     await expect.element(maleFilter()).toHaveAccessibleDescription('0');
     await expect
-      .element(page.getByRole('region', { name: 'cohort filter', exact: true }))
+      .element(page.getByRole('region', { name: 'Cohort filter', exact: true }))
       .not.toBeInTheDocument();
     await expect
       .element(page.getByText('No selections match these filters.'))
@@ -543,7 +580,7 @@ describe('<ConfigurationForm />', () => {
       .element(page.getByRole('status'))
       .toHaveTextContent('0 of 1 track selected · 3 tracks hidden by filters');
     await expect
-      .element(page.getByRole('region', { name: 'cohort filter', exact: true }))
+      .element(page.getByRole('region', { name: 'Cohort filter', exact: true }))
       .toBeVisible();
   });
 

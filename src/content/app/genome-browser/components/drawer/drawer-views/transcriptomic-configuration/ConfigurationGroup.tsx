@@ -21,7 +21,7 @@ import TextButton from 'src/shared/components/text-button/TextButton';
 import styles from './TranscriptomicConfiguration.module.css';
 
 export default function ConfigurationGroup({
-  label,
+  label: title,
   count,
   expanded,
   onToggle,
@@ -40,6 +40,7 @@ export default function ConfigurationGroup({
   };
   children: ReactNode;
 }) {
+  const label = title.charAt(0).toUpperCase() + title.slice(1);
   const bodyId = useId();
   const countId = useId();
   const checkedCount =
