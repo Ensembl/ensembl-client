@@ -3,6 +3,8 @@ name: "Review Environment Cleanup: Delete removed GitHub branch from GitLab remo
 on:
   delete:
 
+permissions: {}
+
 jobs:
   branch-delete:
     if: >-
