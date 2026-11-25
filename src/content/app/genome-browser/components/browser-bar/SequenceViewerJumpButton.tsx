@@ -22,6 +22,7 @@ import { useAppSelector } from 'src/store';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getGenomicLocationString } from 'src/shared/helpers/genomicLocationHelpers';
+import { isProductionEnvironment } from 'src/shared/helpers/environment';
 
 import useGenomeBrowserIds from 'src/content/app/genome-browser/hooks/useGenomeBrowserIds';
 
@@ -40,6 +41,10 @@ const SequenceViewerJumpButton = () => {
   const chrLocation = useAppSelector(getActualChrLocation);
   const { activeGenomeId, genomeIdForUrl } = useGenomeBrowserIds();
   const navigate = useNavigate();
+
+  if (isProductionEnvironment()) {
+    return null;
+  }
 
   const onClick = () => {
     if (!chrLocation) {
