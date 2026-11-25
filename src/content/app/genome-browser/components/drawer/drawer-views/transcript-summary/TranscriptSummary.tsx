@@ -98,6 +98,10 @@ const TranscriptSummary = (props: Props) => {
     genomeId: genomeIdForUrl,
     entityId: focusId
   });
+  const sequenceViewerUrl = urlFor.sequenceViewer({
+    genomeId: genomeIdForUrl,
+    focusObject: focusId
+  });
 
   const uniprotXref = product?.external_references.find(
     (xref) => xref.source.id === 'Uniprot/SWISSPROT'
@@ -295,7 +299,12 @@ const TranscriptSummary = (props: Props) => {
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
-          <ViewInApp links={{ entityViewer: { url: entityViewerUrl } }} />
+          <ViewInApp
+            links={{
+              entityViewer: { url: entityViewerUrl },
+              sequenceViewer: { url: sequenceViewerUrl }
+            }}
+          />
         </div>
       </div>
     </div>

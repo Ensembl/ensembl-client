@@ -70,6 +70,12 @@ const ZmenuAppLinks = (props: Props) => {
         genomeId: genomeIdForUrl,
         entityId: featureId
       })
+    },
+    sequenceViewer: {
+      url: urlFor.sequenceViewer({
+        genomeId: genomeIdForUrl,
+        focusObject: featureId
+      })
     }
   };
 
