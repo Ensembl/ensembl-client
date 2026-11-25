@@ -108,6 +108,12 @@ const BottomContentGene = ({
         genomeId: genomeIdForUrl,
         entityId: geneFocusId
       })
+    },
+    sequenceViewer: {
+      url: urlFor.sequenceViewer({
+        genomeId: genomeIdForUrl,
+        focusObject: geneFocusId
+      })
     }
   };
 
