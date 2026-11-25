@@ -46,11 +46,15 @@ vi.mock(
 async function renderForm({
   configuration = createTranscriptomicConfiguration(),
   selectionIds = [],
-  ready = true
+  ready = true,
+  height,
+  width
 }: {
   configuration?: TranscriptomicConfiguration;
   selectionIds?: string[];
   ready?: boolean;
+  height?: number;
+  width?: number;
 } = {}) {
   const store = configureStore({
     reducer: { browser: combineReducers({ transcriptomic, trackSettings }) }
@@ -58,7 +62,7 @@ async function renderForm({
   store.dispatch(restoreTranscriptomicSelections({ genomeId, selectionIds }));
   const screen = await render(
     <Provider store={store}>
-      <div className={styles.panel}>
+      <div className={styles.panel} style={{ height, width }}>
         <ConfigurationForm
           genomeId={genomeId}
           configuration={configuration}
@@ -80,11 +84,14 @@ const apply = () =>
 beforeEach(() => localStorage.clear());
 
 describe('<ConfigurationForm />', () => {
-  it('shows all product types by default and clears hidden selections without restoring them', async () => {
+  it('shows all track types with no checks and narrows to checked types', async () => {
     await renderForm({
       selectionIds: [liverRunA.selection_id, liverRunB.selection_id]
     });
-    const show = page.getByRole('region', { name: 'Show filter', exact: true });
+    const types = page.getByRole('region', {
+      name: 'Track types filter',
+      exact: true
+    });
     const products = [
       'Coverage forward',
       'Coverage reverse',
@@ -93,41 +100,93 @@ describe('<ConfigurationForm />', () => {
     ];
     for (const name of products) {
       await expect
-        .element(show.getByRole('checkbox', { name, exact: true }))
-        .toBeChecked();
+        .element(types.getByRole('checkbox', { name, exact: true }))
+        .not.toBeChecked();
     }
-    const forward = show.getByRole('checkbox', {
+    const clearFilters = page.getByRole('button', { name: 'Clear filters' });
+    await expect.element(clearFilters).toBeDisabled();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('2 of 4 tracks selected');
+    const forward = types.getByRole('checkbox', {
       name: 'Coverage forward',
       exact: true
     });
     await forward.click();
-    await expect
-      .element(page.getByRole('status'))
-      .toHaveTextContent('1 of 3 tracks selected · 1 track hidden by filters');
-    await expect
-      .element(page.getByRole('checkbox', { name: 'Liver', exact: true }))
-      .toHaveAccessibleDescription('2');
-    await maleFilter().click();
-    await expect.element(forward).toHaveAccessibleDescription('0');
+    await expect.element(forward).toBeChecked();
+    await expect.element(clearFilters).toBeEnabled();
     await expect
       .element(page.getByRole('status'))
       .toHaveTextContent('1 of 1 track selected · 3 tracks hidden by filters');
-    await page.getByRole('button', { name: 'Clear filters' }).click();
+    await expect
+      .element(page.getByRole('checkbox', { name: 'Liver', exact: true }))
+      .toHaveAccessibleDescription('1');
+    await types
+      .getByRole('checkbox', { name: 'Coverage reverse', exact: true })
+      .click();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('1 of 2 tracks selected · 2 tracks hidden by filters');
+    await maleFilter().click();
+    await expect.element(forward).toHaveAccessibleDescription('0');
     await expect.element(forward).toBeChecked();
     await expect
       .element(page.getByRole('status'))
-      .toHaveTextContent('1 of 4 tracks selected');
-    for (const name of products) {
-      await show.getByRole('checkbox', { name, exact: true }).click();
-    }
-    await expect
-      .element(page.getByRole('status'))
-      .toHaveTextContent('0 of 0 tracks selected · 4 tracks hidden by filters');
-    // Even with no matching selections, all Show options remain available.
-    await forward.click();
-    await expect
-      .element(page.getByRole('status'))
       .toHaveTextContent('0 of 1 track selected · 3 tracks hidden by filters');
+    await clearFilters.click();
+    for (const name of products) {
+      await expect
+        .element(types.getByRole('checkbox', { name, exact: true }))
+        .not.toBeChecked();
+    }
+    // Clearing filters does not restore selections hidden by them.
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('0 of 4 tracks selected');
+    await forward.click();
+    await forward.click();
+    await expect.element(clearFilters).toBeDisabled();
+    await expect
+      .element(page.getByRole('status'))
+      .toHaveTextContent('0 of 4 tracks selected');
+  });
+
+  it('keeps Tracks and Filters headers visible while the panel body scrolls', async () => {
+    const configuration = createTranscriptomicConfiguration();
+    const group = configuration.selection_hierarchy[0];
+    configuration.selection_hierarchy = Array.from(
+      { length: 30 },
+      (_, index) => ({
+        ...group,
+        value: `group-${index}`,
+        display_label: `Group ${index}`
+      })
+    );
+    await renderForm({ configuration, height: 320, width: 1000 });
+    const tracksHeader = page
+      .getByRole('heading', { name: 'Tracks', exact: true, level: 3 })
+      .element();
+    const filtersHeader = page
+      .getByRole('heading', { name: 'Filters', exact: true, level: 3 })
+      .element();
+    const body = page
+      .getByRole('region', { name: 'Track selections', exact: true })
+      .element().parentElement!;
+    const tracksTop = tracksHeader.getBoundingClientRect().top;
+    const filtersTop = filtersHeader.getBoundingClientRect().top;
+    expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
+    body.scrollTop = body.scrollHeight;
+    await expect.poll(() => body.scrollTop).toBeGreaterThan(0);
+    await expect
+      .poll(() =>
+        Math.abs(tracksHeader.getBoundingClientRect().top - tracksTop)
+      )
+      .toBeLessThan(1);
+    await expect
+      .poll(() =>
+        Math.abs(filtersHeader.getBoundingClientRect().top - filtersTop)
+      )
+      .toBeLessThan(1);
   });
 
   it('selects collapsed descendants and shows mixed group states independently of expansion', async () => {
@@ -271,14 +330,15 @@ describe('<ConfigurationForm />', () => {
     });
     const heading = page.getByRole('heading', {
       level: 3,
-      name: /^Selections/
+      name: 'Tracks',
+      exact: true
     });
     const clearFilters = page.getByRole('button', { name: 'Clear filters' });
     await expect.element(clearFilters).toBeDisabled();
-    await expect.element(heading).toHaveTextContent('Selections');
+    await expect.element(heading).toHaveTextContent('Tracks');
     await maleFilter().click();
     await expect.element(clearFilters).toBeEnabled();
-    await expect.element(heading).toHaveTextContent('Selections');
+    await expect.element(heading).toHaveTextContent('Tracks');
     await expect
       .element(page.getByRole('checkbox', { name: 'Brain', exact: true }))
       .not.toBeInTheDocument();
@@ -451,8 +511,10 @@ describe('<ConfigurationForm />', () => {
       .element(page.getByRole('status'))
       .toHaveTextContent('0 of 0 tracks selected · 4 tracks hidden by filters');
     await expect
-      .element(page.getByRole('heading', { level: 3, name: /^Selections/ }))
-      .toHaveTextContent('Selections');
+      .element(
+        page.getByRole('heading', { level: 3, name: 'Tracks', exact: true })
+      )
+      .toHaveTextContent('Tracks');
     await apply();
     await expect
       .poll(() => store.getState().browser.transcriptomic[genomeId])

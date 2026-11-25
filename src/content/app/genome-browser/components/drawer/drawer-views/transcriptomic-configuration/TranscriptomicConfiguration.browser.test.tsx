@@ -162,7 +162,7 @@ afterEach(() => {
 });
 
 describe('transcriptomic browser integration', () => {
-  it('switches off hidden product UUIDs on Apply while keeping other types enabled', async () => {
+  it('switches off tracks excluded by checked types on Apply', async () => {
     await renderBrowser();
     await configure();
     await page.getByRole('checkbox', { name: 'Liver', exact: true }).click();
@@ -173,8 +173,8 @@ describe('transcriptomic browser integration', () => {
       .toContainEqual([{ trackId: trackA, isEnabled: true }]);
     toggleTrack.mockClear();
     await page
-      .getByRole('region', { name: 'Show filter', exact: true })
-      .getByRole('checkbox', { name: 'Coverage forward', exact: true })
+      .getByRole('region', { name: 'Track types filter', exact: true })
+      .getByRole('checkbox', { name: 'Coverage reverse', exact: true })
       .click();
     expect(toggleTrack).not.toHaveBeenCalled();
     await apply();
@@ -185,15 +185,20 @@ describe('transcriptomic browser integration', () => {
     await expect
       .element(rows.getByText(trackLabels.liverRunA, { exact: true }))
       .not.toBeInTheDocument();
-    for (const label of [
-      trackLabels.liverRunB,
-      trackLabels.liverRunC,
-      trackLabels.brainRun
+    for (const [label, trackId] of [
+      [trackLabels.liverRunC, liverRunC.track_products[0].track_id],
+      [trackLabels.brainRun, brainRun.track_products[0].track_id]
     ]) {
       await expect
         .element(rows.getByText(label, { exact: true }))
-        .toBeVisible();
+        .not.toBeInTheDocument();
+      await expect
+        .poll(() => toggleTrack.mock.calls)
+        .toContainEqual([{ trackId, isEnabled: false }]);
     }
+    await expect
+      .element(rows.getByText(trackLabels.liverRunB, { exact: true }))
+      .toBeVisible();
     expect(toggleTrack.mock.calls).not.toContainEqual([
       { trackId: trackB, isEnabled: false }
     ]);

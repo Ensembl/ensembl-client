@@ -73,13 +73,14 @@ export const groupTranscriptomicTracks = (
 export const filterTranscriptomicSelections = (
   selections: TranscriptomicSelection[],
   filters: TranscriptomicFilters,
-  hiddenProducts: string[] = []
+  selectedProducts: string[] = []
 ) =>
   selections.filter(
     ({ metadata, track_products }) =>
-      track_products.some(
-        ({ display_label }) => !hiddenProducts.includes(display_label)
-      ) &&
+      (!selectedProducts.length ||
+        track_products.some(({ display_label }) =>
+          selectedProducts.includes(display_label)
+        )) &&
       Object.entries(filters).every(
         ([key, values]) =>
           !values.length ||
@@ -92,7 +93,7 @@ export const filterTranscriptomicSelections = (
 export const getTranscriptomicFilterOptions = (
   configuration: TranscriptomicConfiguration,
   filters: TranscriptomicFilters,
-  hiddenProducts: string[] = []
+  selectedProducts: string[] = []
 ) => {
   const options: TranscriptomicConfiguration['filters'] = {};
   for (const [name, values] of Object.entries(configuration.filters)) {
@@ -103,7 +104,7 @@ export const getTranscriptomicFilterOptions = (
         ...filters,
         [name]: []
       },
-      hiddenProducts
+      selectedProducts
     );
     const counts = new Map<string, Set<string>>();
     for (const selection of matching) {
@@ -147,7 +148,7 @@ export const getTranscriptomicProductOptions = (
       if (!products.has(display_label)) products.set(display_label, new Set());
     }
   }
-  // Like metadata facets, Show counts ignore its own choices.
+  // Like metadata facets, track type counts ignore their own choices.
   for (const selection of filterTranscriptomicSelections(
     configuration.selections,
     filters

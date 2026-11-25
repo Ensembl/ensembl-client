@@ -1,13 +1,14 @@
 .panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   padding: 16px 20px;
   container: transcriptomic-panel / inline-size;
 }
 
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -21,8 +22,11 @@
 
 .columns {
   display: grid;
+  flex: 1;
+  min-height: 0;
   grid-template-columns: minmax(0, 270px) minmax(0, 1fr);
   gap: 48px;
+  overflow-y: auto;
   overflow-wrap: anywhere;
 }
 
@@ -31,12 +35,17 @@
 }
 
 .sectionHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
+  padding-block: 8px;
+  margin-bottom: 8px;
+  background: var(--color-white);
 }
 
 .count {

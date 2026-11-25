@@ -188,18 +188,18 @@ describe('filterTranscriptomicSelections', () => {
 describe('getTranscriptomicFilterOptions', () => {
   it('narrows selections and metadata facets by the visible products', () => {
     const configuration = createTranscriptomicConfiguration();
-    const hiddenProducts = ['Coverage forward', 'Gene model'];
+    const selectedProducts = ['Coverage reverse', 'Splice junction'];
     expect(
       selectionIds(
         filterTranscriptomicSelections(
           configuration.selections,
           {},
-          hiddenProducts
+          selectedProducts
         )
       )
     ).toEqual([liverRunB.selection_id, liverRunC.selection_id]);
     expect(
-      getTranscriptomicFilterOptions(configuration, {}, hiddenProducts).sex
+      getTranscriptomicFilterOptions(configuration, {}, selectedProducts).sex
     ).toEqual([
       { value: 'female', count: 1 },
       { value: 'male', count: 1 }
@@ -209,7 +209,7 @@ describe('getTranscriptomicFilterOptions', () => {
         filterTranscriptomicSelections(
           configuration.selections,
           { sex: ['female'] },
-          hiddenProducts
+          selectedProducts
         )
       )
     ).toEqual([liverRunC.selection_id]);

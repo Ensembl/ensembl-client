@@ -99,9 +99,9 @@ export function ConfigurationForm({
   const dispatch = useAppDispatch();
   const [draft, setDraft] = useState(selectionIds);
   const [filters, setFilters] = useState<TranscriptomicFilters>({});
-  const [hiddenProducts, setHiddenProducts] = useState<string[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const hasFilters =
-    hiddenProducts.length > 0 ||
+    selectedProducts.length > 0 ||
     Object.values(filters).some((values) => values.length > 0);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [pending, setPending] = useState(false);
@@ -109,7 +109,7 @@ export function ConfigurationForm({
   const matching = filterTranscriptomicSelections(
     configuration.selections,
     filters,
-    hiddenProducts
+    selectedProducts
   );
   const selected = new Set(draft);
   const trackCount = resolveTranscriptomicTracks(
@@ -130,7 +130,7 @@ export function ConfigurationForm({
   const filterOptions = getTranscriptomicFilterOptions(
     configuration,
     filters,
-    hiddenProducts
+    selectedProducts
   );
   const productOptions = getTranscriptomicProductOptions(
     configuration,
@@ -144,17 +144,17 @@ export function ConfigurationForm({
 
   const changeFilters = (
     nextFilters: TranscriptomicFilters,
-    nextHiddenProducts = hiddenProducts
+    nextSelectedProducts = selectedProducts
   ) => {
     const matchingIds = new Set(
       filterTranscriptomicSelections(
         configuration.selections,
         nextFilters,
-        nextHiddenProducts
+        nextSelectedProducts
       ).map((selection) => selection.selection_id)
     );
     setFilters(nextFilters);
-    setHiddenProducts(nextHiddenProducts);
+    setSelectedProducts(nextSelectedProducts);
     setDraft((current) => current.filter((id) => matchingIds.has(id)));
   };
 
@@ -203,7 +203,7 @@ export function ConfigurationForm({
       <div className={styles.columns}>
         <section aria-label="Track selections">
           <div className={styles.sectionHeader}>
-            <h3>Selections</h3>
+            <h3>Tracks</h3>
             <TextButton
               disabled={pending || !draft.length}
               onClick={() => setDraft([])}
@@ -236,7 +236,7 @@ export function ConfigurationForm({
             </TextButton>
           </div>
           <div className={styles.filterGroups}>
-            <ConfigurationGroup label="Show" expanded={true}>
+            <ConfigurationGroup label="Track type" expanded={true}>
               <div className={styles.filterValues}>
                 <div className={styles.filterOptions}>
                   {productOptions.map(({ value, count }) => (
@@ -244,12 +244,12 @@ export function ConfigurationForm({
                       key={value}
                       label={value}
                       count={count}
-                      checked={!hiddenProducts.includes(value)}
+                      checked={selectedProducts.includes(value)}
                       disabled={pending}
                       onChange={(checked) =>
                         changeFilters(
                           filters,
-                          toggleSelectionIds(hiddenProducts, [value], !checked)
+                          toggleSelectionIds(selectedProducts, [value], checked)
                         )
                       }
                     />
