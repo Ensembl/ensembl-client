@@ -725,12 +725,17 @@ const renderTranscriptId = (
     genomeId: genomeIdForUrl,
     focus: transcriptIdForUrl
   });
+  const sequenceViewerUrl = urlFor.sequenceViewer({
+    genomeId: genomeIdForUrl,
+    focusObject: transcriptIdForUrl
+  });
 
   return (
     <ViewInAppPopup
       links={{
         genomeBrowser: { url: genomeBrowserUrl },
-        entityViewer: { url: featureExplorerUrl}
+        entityViewer: { url: featureExplorerUrl},
+        sequenceViewer: { url: sequenceViewerUrl }
       }}
     >
       { transcriptId }
