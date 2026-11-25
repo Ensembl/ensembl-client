@@ -37,7 +37,7 @@ import styles from './TrackPanelItem.module.css';
  */
 
 type Props = Pick<GenomicTrack, 'track_id' | 'label'> &
-  Partial<Pick<GenomicTrack, 'additional_info' | 'has_details'>> & {
+  Partial<Pick<GenomicTrack, 'additional_info'>> & {
     genomeId: string;
   };
 
@@ -80,7 +80,7 @@ const TrackPanelRegularItem = (props: Props) => {
     <SimpleTrackPanelItemLayout
       visibilityStatus={isTrackVisible ? Status.SELECTED : Status.UNSELECTED}
       onChangeVisibility={onChangeVisibility}
-      onShowMore={props.has_details === false ? undefined : onShowMore}
+      onShowMore={onShowMore}
     >
       <div className={styles.label}>
         <span className={styles.labelText}>{props.label}</span>

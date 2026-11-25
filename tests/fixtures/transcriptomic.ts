@@ -45,7 +45,15 @@ export const liverRunA = {
     {
       track_type: 'bigwig',
       track_id: '00000000-0000-4000-8000-000000000001',
-      display_label: 'Coverage forward'
+      display_label: 'Coverage forward',
+      description: 'Forward-strand coverage for liver sample 1.',
+      sources: [
+        {
+          name: 'Test archive',
+          url: 'https://example.org/run-a',
+          details: 'Run A'
+        }
+      ]
     }
   ]
 } satisfies TranscriptomicSelection;
@@ -60,7 +68,15 @@ export const liverRunB = {
     {
       track_type: 'bigwig',
       track_id: '00000000-0000-4000-8000-000000000002',
-      display_label: 'Coverage reverse'
+      display_label: 'Coverage reverse',
+      description: 'Reverse-strand coverage for liver sample 1.',
+      sources: [
+        {
+          name: 'Test archive',
+          url: 'https://example.org/run-b',
+          details: 'Run B'
+        }
+      ]
     }
   ]
 } satisfies TranscriptomicSelection;
@@ -75,7 +91,9 @@ export const liverRunC = {
     {
       track_type: 'bigbed',
       track_id: '00000000-0000-4000-8000-000000000003',
-      display_label: 'Splice junction'
+      display_label: 'Splice junction',
+      description: 'Splice junctions for liver sample 2.',
+      sources: []
     }
   ]
 } satisfies TranscriptomicSelection;
@@ -90,7 +108,9 @@ export const brainRun = {
     {
       track_type: 'bigbed',
       track_id: '00000000-0000-4000-8000-000000000004',
-      display_label: 'Gene model'
+      display_label: 'Gene model',
+      description: 'Gene models for the brain sample.',
+      sources: []
     }
   ]
 } satisfies TranscriptomicSelection;

@@ -38,11 +38,10 @@ export const resolveTranscriptomicTracks = (
         label: `${selection.display_label} · ${product.display_label}`,
         type: 'regular',
         additional_info: '',
-        description: '',
-        sources: [],
+        description: product.description,
+        sources: product.sources,
         on_by_default: true,
-        display_order: tracks.size,
-        has_details: false
+        display_order: tracks.size
       });
     }
   }

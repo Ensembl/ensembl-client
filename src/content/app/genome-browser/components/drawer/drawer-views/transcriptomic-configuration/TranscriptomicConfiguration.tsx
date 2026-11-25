@@ -328,6 +328,9 @@ function SelectionGroups({
           {group.selections.map((selection) => (
             <ConfigurationOption
               key={selection.selection_id}
+              description={selection.track_products
+                .map(({ description }) => description)
+                .join('\n\n')}
               label={resolveTranscriptomicTracks(
                 [selection],
                 [selection.selection_id]

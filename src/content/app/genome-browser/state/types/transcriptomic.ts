@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { GenomicTrack } from './tracks';
+
 export type TranscriptomicSelection = {
   selection_id: string;
   display_label: string;
@@ -27,6 +29,8 @@ export type TranscriptomicTrackProduct = {
   track_type: string;
   track_id: string;
   display_label: string;
+  description: string;
+  sources: GenomicTrack['sources'];
 };
 
 export type TranscriptomicConfiguration = {

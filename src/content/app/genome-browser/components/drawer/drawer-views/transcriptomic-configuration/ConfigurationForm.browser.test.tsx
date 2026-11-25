@@ -84,12 +84,30 @@ const apply = () =>
 beforeEach(() => localStorage.clear());
 
 describe('<ConfigurationForm />', () => {
+  it('shows a selectable track description on hover', async () => {
+    await renderForm();
+    await page.getByRole('button', { name: 'Liver', exact: true }).click();
+    await page
+      .getByRole('button', { name: sampleIds.liverOne, exact: true })
+      .click();
+    const track = page.getByRole('checkbox', {
+      name: trackLabels.liverRunA,
+      exact: true
+    });
+    await track.hover();
+    await expect
+      .element(page.getByRole('tooltip'))
+      .toHaveTextContent(liverRunA.track_products[0].description);
+    await track.unhover();
+    await expect.element(page.getByRole('tooltip')).not.toBeInTheDocument();
+  });
+
   it('shows all track types with no checks and narrows to checked types', async () => {
     await renderForm({
       selectionIds: [liverRunA.selection_id, liverRunB.selection_id]
     });
     const types = page.getByRole('region', {
-      name: 'Track types filter',
+      name: 'Track type filter',
       exact: true
     });
     const products = [

@@ -14,39 +14,58 @@
  * limitations under the License.
  */
 
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import styles from './TranscriptomicConfiguration.module.css';
 
 export default function ConfigurationOption({
   label,
+  description,
   count,
   checked,
   disabled,
   onChange
 }: {
   label: string;
+  description?: string;
   count?: number;
   checked: boolean;
   disabled: boolean;
   onChange: (checked: boolean) => void;
 }) {
   const countId = useId();
+  const [tooltipAnchor, setTooltipAnchor] = useState<HTMLLabelElement | null>(
+    null
+  );
   return (
-    <label className={styles.option}>
-      <span>{label}</span>
-      {count !== undefined && (
-        <span id={countId} className={styles.count}>
-          {count}
-        </span>
+    <>
+      <label
+        className={styles.option}
+        onMouseEnter={(event) => setTooltipAnchor(event.currentTarget)}
+        onMouseLeave={() => setTooltipAnchor(null)}
+        onFocus={(event) => setTooltipAnchor(event.currentTarget)}
+        onBlur={() => setTooltipAnchor(null)}
+      >
+        <span>{label}</span>
+        {count !== undefined && (
+          <span id={countId} className={styles.count}>
+            {count}
+          </span>
+        )}
+        <Checkbox
+          aria-label={label}
+          aria-describedby={count === undefined ? undefined : countId}
+          checked={checked}
+          disabled={disabled}
+          onChange={(event) => onChange(event.target.checked)}
+        />
+      </label>
+      {description && (
+        <Tooltip anchor={tooltipAnchor} autoAdjust={true}>
+          <span role="tooltip">{description}</span>
+        </Tooltip>
       )}
-      <Checkbox
-        aria-label={label}
-        aria-describedby={count === undefined ? undefined : countId}
-        checked={checked}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.checked)}
-      />
-    </label>
+    </>
   );
 }

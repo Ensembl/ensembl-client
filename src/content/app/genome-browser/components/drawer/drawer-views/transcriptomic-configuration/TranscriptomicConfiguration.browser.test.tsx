@@ -173,7 +173,7 @@ describe('transcriptomic browser integration', () => {
       .toContainEqual([{ trackId: trackA, isEnabled: true }]);
     toggleTrack.mockClear();
     await page
-      .getByRole('region', { name: 'Track types filter', exact: true })
+      .getByRole('region', { name: 'Track type filter', exact: true })
       .getByRole('checkbox', { name: 'Coverage reverse', exact: true })
       .click();
     expect(toggleTrack).not.toHaveBeenCalled();
@@ -281,9 +281,45 @@ describe('transcriptomic browser integration', () => {
     await expect
       .element(rows.getByText(trackLabels.liverRunB, { exact: true }))
       .toBeVisible();
+    expect(
+      rows.getByRole('button', { name: 'More information' }).all()
+    ).toHaveLength(4);
+    await liverGroup
+      .getByRole('button', { name: 'More information' })
+      .first()
+      .click();
+    const details = page.getByRole('main');
     await expect
-      .element(rows.getByRole('button', { name: 'More information' }))
-      .not.toBeInTheDocument();
+      .element(
+        details.getByText(liverRunA.track_products[0].description, {
+          exact: true
+        })
+      )
+      .toBeVisible();
+    await expect
+      .element(details.getByRole('link', { name: 'Test archive' }))
+      .toHaveAttribute('href', liverRunA.track_products[0].sources[0].url);
+    await expect
+      .element(details.getByText('Run A', { exact: true }))
+      .toBeVisible();
+    await liverGroup
+      .getByRole('button', { name: 'More information' })
+      .nth(1)
+      .click();
+    await expect
+      .element(
+        details.getByText(liverRunB.track_products[0].description, {
+          exact: true
+        })
+      )
+      .toBeVisible();
+    await expect
+      .element(details.getByRole('link', { name: 'Test archive' }))
+      .toHaveAttribute('href', liverRunB.track_products[0].sources[0].url);
+    await expect
+      .element(details.getByText('Run B', { exact: true }))
+      .toBeVisible();
+    await configure();
     for (const trackId of [
       trackA,
       trackB,

@@ -68,21 +68,24 @@ describe('resolveTranscriptomicTracks', () => {
       liverRunA.selection_id
     ]);
     expect(
-      tracks.map(({ track_id, label, has_details }) => ({
+      tracks.map(({ track_id, label, description, sources }) => ({
         track_id,
         label,
-        has_details
+        description,
+        sources
       }))
     ).toEqual([
       {
         track_id: liverRunA.track_products[0].track_id,
         label: trackLabels.liverRunA,
-        has_details: false
+        description: liverRunA.track_products[0].description,
+        sources: liverRunA.track_products[0].sources
       },
       {
         track_id: liverRunB.track_products[0].track_id,
         label: trackLabels.liverRunB,
-        has_details: false
+        description: liverRunB.track_products[0].description,
+        sources: liverRunB.track_products[0].sources
       }
     ]);
   });
