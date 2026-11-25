@@ -52,6 +52,12 @@ const VepResultsGene = (props: Props) => {
         genomeId,
         entityId: focusIdForUrl
       })
+    },
+    sequenceViewer: {
+      url: urlFor.sequenceViewer({
+        genomeId,
+        focusObject: focusIdForUrl
+      })
     }
   };
 
