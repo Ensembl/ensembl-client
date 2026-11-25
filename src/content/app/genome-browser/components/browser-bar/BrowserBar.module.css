@@ -1,8 +1,7 @@
 .browserBar {
   display: grid;
-  grid-template-columns: [browser-reset] auto [feature-summary] 1fr [nav-buttons] auto [location-indicator] auto;
+  grid-template-columns: [browser-reset] auto [feature-summary] 1fr [controls-right] auto;
   column-gap: 20px;
-  width: 100%;
   align-items: center;
   position: relative;
   padding-left: 18px;
@@ -13,6 +12,18 @@
   max-width: 100%;
 }
 
-.browserLocationIndicator {
-  grid-column: location-indicator;
+.controlsRight {
+  grid-column: controls-right;
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
+}
+
+.sequenceViewerJumpButton {
+  --app-icon-size: 24px;
+  --image-button-default-bg-color: var(--color-blue);
+  --image-button-default-svg-color: var(--color-white);
+  --image-button-default-svg-color: var(--color-white);
+  --image-button-disabled-bg-color: var(--color-grey);
+  --image-button-disabled-svg-color: var(--color-white);
 }

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react';
-
 import { useAppSelector } from 'src/store';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 import GenomeBrowserNavigationButtons from '../browser-nav-buttons/GenomeBrowserNavigationButtons';
+import SequenceViewerJumpButton from './SequenceViewerJumpButton';
 
 import { getBrowserActiveFocusObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
@@ -30,10 +29,8 @@ import styles from './BrowserBar.module.css';
 export const BrowserBar = () => {
   const focusObject = useAppSelector(getBrowserActiveFocusObject);
 
-  const browserBarRef = useRef<HTMLDivElement>(null);
-
   return (
-    <div className={styles.browserBar} ref={browserBarRef}>
+    <div className={styles.browserBar}>
       <BrowserReset />
       {focusObject && (
         <FeatureSummaryStrip
@@ -42,8 +39,11 @@ export const BrowserBar = () => {
           variety="minimal"
         />
       )}
-      <GenomeBrowserNavigationButtons />
-      <BrowserLocationIndicator className={styles.browserLocationIndicator} />
+      <div className={styles.controlsRight}>
+        <GenomeBrowserNavigationButtons />
+        <BrowserLocationIndicator className={styles.browserLocationIndicator} />
+        <SequenceViewerJumpButton />
+      </div>
     </div>
   );
 };
