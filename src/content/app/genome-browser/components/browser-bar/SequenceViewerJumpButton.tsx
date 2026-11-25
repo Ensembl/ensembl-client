@@ -62,8 +62,6 @@ const SequenceViewerJumpButton = () => {
     navigate(sequenceViewerUrl);
   };
 
-  const buttonDescription = 'Open in Sequence Viewer';
-
   if (!activeGenomeId || !chrLocation) {
     return null;
   }
@@ -74,6 +72,9 @@ const SequenceViewerJumpButton = () => {
   const shouldDisableButton = currentLocationSize > MAX_VIEWABLE_LOCATION_SIZE;
 
   const componentClasses = classNames(styles.sequenceViewerJumpButton);
+  const buttonDescription = shouldDisableButton
+    ? 'Open in Sequence Viewer (up to 5Mb)'
+    : 'Open in Sequence Viewer';
 
   return (
     <ImageButton
