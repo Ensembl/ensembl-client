@@ -19,6 +19,7 @@ import { useAppSelector } from 'src/store';
 import { getPageMeta } from 'src/shared/state/page-meta/pageMetaSelectors';
 
 import favicon from 'static/favicons/favicon.svg?url';
+import iconPng from 'static/favicons/android-chrome-512x512.png';
 
 const Meta = () => {
   const pageMeta = useAppSelector(getPageMeta);
@@ -27,6 +28,12 @@ const Meta = () => {
     <>
       <title>{pageMeta.title}</title>
       <meta name="description" content={pageMeta.description} />
+      <meta property="og:title" content={pageMeta.title} />
+      <meta property="og:description" content={pageMeta.description} />
+      <meta property="og:site_name" content="Ensembl" />
+      <meta property="og:type" content="website" />
+      <meta property="og:image" content={iconPng} />
+      <meta property="og:image:alt" content="Ensembl logo" />
       <link rel="icon" type="image/svg+xml" href={favicon} />
     </>
   );
