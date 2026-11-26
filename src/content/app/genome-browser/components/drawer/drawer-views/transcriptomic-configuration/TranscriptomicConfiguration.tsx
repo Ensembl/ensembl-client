@@ -18,6 +18,7 @@ import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'src/store';
 import useResolvedGenomeTracks from 'src/content/app/genome-browser/hooks/useResolvedGenomeTracks';
 import { applyTranscriptomicSelections } from 'src/content/app/genome-browser/state/transcriptomic/transcriptomicSlice';
+import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 import {
   filterTranscriptomicSelections,
   getTranscriptomicFilterOptions,
@@ -76,7 +77,9 @@ export default function TranscriptomicConfiguration({
         <>
           <header className={styles.header}>
             <h2>Transcriptomic tracks</h2>
-            <PrimaryButton disabled>Apply</PrimaryButton>
+            <div className={styles.actions}>
+              <PrimaryButton disabled>Apply</PrimaryButton>
+            </div>
           </header>
           {!isError && <SidebarLoader />}
         </>
@@ -171,6 +174,7 @@ export function ConfigurationForm({
         })
       ).unwrap();
       setDraft(applied.selectionIds);
+      dispatch(changeDrawerViewForGenome({ genomeId, drawerView: null }));
     } catch {
       setError(true);
     } finally {
@@ -182,20 +186,22 @@ export function ConfigurationForm({
     <>
       <header className={styles.header}>
         <h2>Transcriptomic tracks</h2>
-        <p role="status" className={styles.status}>
-          {trackCount} of {selectableTrackCount}{' '}
-          {selectableTrackCount === 1 ? 'track' : 'tracks'} selected
-          {hasFilters && (
-            <>
-              {' '}
-              · {hiddenCount} {hiddenCount === 1 ? 'track' : 'tracks'} hidden by
-              filters
-            </>
-          )}
-        </p>
-        <PrimaryButton disabled={!ready || pending} onClick={apply}>
-          {pending ? 'Applying…' : 'Apply'}
-        </PrimaryButton>
+        <div className={styles.actions}>
+          <PrimaryButton disabled={!ready || pending} onClick={apply}>
+            {pending ? 'Applying…' : 'Apply'}
+          </PrimaryButton>
+          <p role="status" className={styles.status}>
+            {trackCount} of {selectableTrackCount}{' '}
+            {selectableTrackCount === 1 ? 'track' : 'tracks'} selected
+            {hasFilters && (
+              <>
+                {' '}
+                · {hiddenCount} {hiddenCount === 1 ? 'track' : 'tracks'} hidden
+                by filters
+              </>
+            )}
+          </p>
+        </div>
       </header>
       {error && (
         <p role="alert">Could not apply selections. Please try again.</p>

@@ -143,8 +143,12 @@ const configure = () =>
       exact: true
     })
     .click();
-const apply = () =>
-  page.getByRole('button', { name: 'Apply', exact: true }).click();
+const apply = async () => {
+  await page.getByRole('button', { name: 'Apply', exact: true }).click();
+  await expect
+    .element(page.getByRole('heading', { name: 'Transcriptomic tracks' }))
+    .not.toBeInTheDocument();
+};
 const trackA = liverRunA.track_products[0].track_id;
 const trackB = liverRunB.track_products[0].track_id;
 
@@ -172,6 +176,7 @@ describe('transcriptomic browser integration', () => {
       .poll(() => toggleTrack.mock.calls)
       .toContainEqual([{ trackId: trackA, isEnabled: true }]);
     toggleTrack.mockClear();
+    await configure();
     await page
       .getByRole('region', { name: 'Track type filter', exact: true })
       .getByRole('checkbox', { name: 'Coverage reverse', exact: true })
@@ -354,6 +359,7 @@ describe('transcriptomic browser integration', () => {
       .poll(() => toggleTrack.mock.calls)
       .toContainEqual([{ trackId: trackA, isEnabled: true }]);
 
+    await configure();
     await page
       .getByRole('region', { name: 'Sex filter', exact: true })
       .getByRole('checkbox', { name: /^male\b/ })
@@ -378,6 +384,7 @@ describe('transcriptomic browser integration', () => {
       .toBeVisible();
 
     // Closing discards draft deselection, filters and expansion, while retaining the applied run.
+    await configure();
     await page.getByRole('checkbox', { name: 'Liver', exact: true }).click();
     await page.getByRole('button', { name: 'Close configuration' }).click();
     await configure();

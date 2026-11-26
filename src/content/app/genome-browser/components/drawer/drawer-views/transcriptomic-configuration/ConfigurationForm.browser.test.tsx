@@ -189,7 +189,7 @@ describe('<ConfigurationForm />', () => {
       .getByRole('button', { name: 'Apply', exact: true })
       .element()
       .getBoundingClientRect();
-    expect(status.right).toBeLessThan(applyButton.left);
+    expect(status.left).toBeGreaterThan(applyButton.right);
     expect(
       Math.abs(
         status.top +
@@ -204,6 +204,10 @@ describe('<ConfigurationForm />', () => {
     const filtersHeader = page
       .getByRole('heading', { name: 'Filters', exact: true, level: 3 })
       .element();
+    expect(applyButton.left).toBe(filtersHeader.getBoundingClientRect().left);
+    expect(applyButton.bottom).toBeLessThanOrEqual(
+      filtersHeader.getBoundingClientRect().top
+    );
     const body = page
       .getByRole('region', { name: 'Track selections', exact: true })
       .element().parentElement!;

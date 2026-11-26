@@ -6,12 +6,17 @@
   container: transcriptomic-panel / inline-size;
 }
 
+.header,
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 270px) minmax(0, 1fr);
+  column-gap: 48px;
+}
+
 .header {
-  display: flex;
   flex-shrink: 0;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  row-gap: 8px;
   padding-block: 4px;
   background: var(--color-white);
 }
@@ -21,17 +26,21 @@
   font-size: 16px;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
 .status {
-  margin: 0 0 0 auto;
-  text-align: right;
+  margin: 0;
 }
 
 .columns {
-  display: grid;
   flex: 1;
   min-height: 0;
-  grid-template-columns: minmax(0, 270px) minmax(0, 1fr);
-  gap: 48px;
+  row-gap: 48px;
   overflow-y: auto;
   overflow-wrap: anywhere;
 }
@@ -189,6 +198,7 @@
 }
 
 @container transcriptomic-panel (width < 600px) {
+  .header,
   .columns {
     grid-template-columns: minmax(0, 1fr);
   }
