@@ -15,7 +15,6 @@
  */
 
 import { render } from 'vitest-browser-react';
-import { userEvent } from 'vitest/browser';
 import { MemoryRouter, useLocation } from 'react-router';
 
 import { SequenceViewerJumpContextProvider } from 'src/content/app/sequence-viewer/contexts/SequenceJumpContext';
@@ -28,7 +27,7 @@ const CurrentLocation = () => {
 };
 
 describe('Sequence navigation', () => {
-  it('opens the selected genomic range as the Genome Browser focus', async () => {
+  it('opens the padded genomic range as the Genome Browser focus', async () => {
     const sequence = `
       <template id="styles"><style></style></template>
       <template id="sequence" data-region-name="13">
@@ -65,13 +64,13 @@ describe('Sequence navigation', () => {
       column.dispatchEvent(
         new KeyboardEvent('keyup', { key: 'Shift', bubbles: true })
       );
-      const button =
-        root.querySelectorAll<HTMLButtonElement>('[popover] button')[1];
-      await userEvent.click(button);
+      await screen
+        .getByRole('button', { name: 'View in genome browser' })
+        .click();
       await expect
         .element(screen.getByTestId('current-location'))
         .toHaveTextContent(
-          '/genome-browser/genome-id?focus=location:13:32272829-32272831&location=13:32272829-32272831'
+          '/genome-browser/genome-id?focus=location:13:32272815-32272845&location=13:32272815-32272845'
         );
     } finally {
       selection.removeAllRanges();
