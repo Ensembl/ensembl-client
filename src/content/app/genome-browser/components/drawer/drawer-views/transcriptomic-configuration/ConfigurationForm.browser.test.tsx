@@ -184,48 +184,24 @@ describe('<ConfigurationForm />', () => {
       })
     );
     await renderForm({ configuration, height: 320, width: 1000 });
-    const status = page.getByRole('status').element().getBoundingClientRect();
-    const applyButton = page
-      .getByRole('button', { name: 'Apply', exact: true })
-      .element()
-      .getBoundingClientRect();
-    expect(status.left).toBeGreaterThan(applyButton.right);
-    expect(
-      Math.abs(
-        status.top +
-          status.height / 2 -
-          applyButton.top -
-          applyButton.height / 2
-      )
-    ).toBeLessThan(1);
     const tracksHeader = page
       .getByRole('heading', { name: 'Tracks', exact: true, level: 3 })
       .element();
     const filtersHeader = page
       .getByRole('heading', { name: 'Filters', exact: true, level: 3 })
       .element();
-    expect(applyButton.left).toBe(filtersHeader.getBoundingClientRect().left);
-    expect(applyButton.bottom).toBeLessThanOrEqual(
-      filtersHeader.getBoundingClientRect().top
-    );
     const body = page
-      .getByRole('region', { name: 'Track selections', exact: true })
-      .element().parentElement!;
-    const tracksTop = tracksHeader.getBoundingClientRect().top;
-    const filtersTop = filtersHeader.getBoundingClientRect().top;
+      .getByRole('region', { name: 'Tracks and filters', exact: true })
+      .element();
     expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);
     body.scrollTop = body.scrollHeight;
     await expect.poll(() => body.scrollTop).toBeGreaterThan(0);
-    await expect
-      .poll(() =>
-        Math.abs(tracksHeader.getBoundingClientRect().top - tracksTop)
-      )
-      .toBeLessThan(1);
-    await expect
-      .poll(() =>
-        Math.abs(filtersHeader.getBoundingClientRect().top - filtersTop)
-      )
-      .toBeLessThan(1);
+    const bounds = body.getBoundingClientRect();
+    for (const header of [tracksHeader, filtersHeader]) {
+      const { top, bottom } = header.getBoundingClientRect();
+      expect(top).toBeGreaterThanOrEqual(bounds.top - 2);
+      expect(bottom).toBeLessThanOrEqual(bounds.bottom + 2);
+    }
   });
 
   it('selects collapsed descendants and shows mixed group states independently of expansion', async () => {

@@ -200,6 +200,8 @@ describe('applyTranscriptomicSelections', () => {
         })
       )
       .unwrap();
+    const previousSettings = store.getState().browser.trackSettings;
+    vi.mocked(updateTrackSettingsForGenome).mockClear();
     vi.spyOn(
       browserStorageService,
       'updateTranscriptomicSelections'
@@ -217,5 +219,10 @@ describe('applyTranscriptomicSelections', () => {
     expect(store.getState().browser.transcriptomic[genomeId]).toEqual([
       liverRunA.selection_id
     ]);
+    expect(store.getState().browser.trackSettings).toEqual(previousSettings);
+    expect(
+      browserStorageService.getTranscriptomicSelections()[genomeId]
+    ).toEqual([liverRunA.selection_id]);
+    expect(updateTrackSettingsForGenome).not.toHaveBeenCalled();
   });
 });

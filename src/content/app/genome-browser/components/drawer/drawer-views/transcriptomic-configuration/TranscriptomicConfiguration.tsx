@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from 'src/store';
 import useResolvedGenomeTracks from 'src/content/app/genome-browser/hooks/useResolvedGenomeTracks';
 import { applyTranscriptomicSelections } from 'src/content/app/genome-browser/state/transcriptomic/transcriptomicSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
+import { hasTrackSettingsForCategories } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import {
   filterTranscriptomicSelections,
   getTranscriptomicFilterOptions,
@@ -37,6 +38,7 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import SidebarLoader from 'src/shared/components/loader/SidebarLoader';
 import ConfigurationGroup from './ConfigurationGroup';
 import ConfigurationOption from './ConfigurationOption';
+import ConfigurationFilter from './ConfigurationFilter';
 import styles from './TranscriptomicConfiguration.module.css';
 
 export default function TranscriptomicConfiguration({
@@ -51,12 +53,7 @@ export default function TranscriptomicConfiguration({
       state.browser.trackSettings[genomeId]?.settingsForIndividualTracks
   );
   const { currentData: configuration, isError, refetch } = configurationQuery;
-  const ready =
-    !!settings &&
-    !!currentData &&
-    currentData.every((category) =>
-      category.track_list.every((track) => !!settings[track.track_id])
-    );
+  const ready = hasTrackSettingsForCategories(currentData, settings);
 
   return (
     <div className={styles.panel}>
@@ -206,7 +203,11 @@ export function ConfigurationForm({
       {error && (
         <p role="alert">Could not apply selections. Please try again.</p>
       )}
-      <div className={styles.columns}>
+      <div
+        className={styles.columns}
+        role="region"
+        aria-label="Tracks and filters"
+      >
         <section aria-label="Track selections">
           <div className={styles.sectionHeader}>
             <h3>Tracks</h3>
@@ -242,57 +243,25 @@ export function ConfigurationForm({
             </TextButton>
           </div>
           <div className={styles.filterGroups}>
-            <ConfigurationGroup label="Track type" expanded={true}>
-              <div className={styles.filterValues}>
-                <div className={styles.filterOptions}>
-                  {productOptions.map(({ value, count }) => (
-                    <ConfigurationOption
-                      key={value}
-                      label={value}
-                      count={count}
-                      checked={selectedProducts.includes(value)}
-                      disabled={pending}
-                      onChange={(checked) =>
-                        changeFilters(
-                          filters,
-                          toggleSelectionIds(selectedProducts, [value], checked)
-                        )
-                      }
-                    />
-                  ))}
-                </div>
-              </div>
-            </ConfigurationGroup>
-            {Object.entries(filterOptions).map(([name, values]) => {
-              const label = name.replaceAll('_', ' ').toLowerCase();
-              return (
-                <ConfigurationGroup key={name} label={label} expanded={true}>
-                  <div className={styles.filterValues}>
-                    <div className={styles.filterOptions}>
-                      {values.map(({ value, count }) => (
-                        <ConfigurationOption
-                          key={value}
-                          label={value}
-                          count={count}
-                          checked={filters[name]?.includes(value) ?? false}
-                          disabled={pending}
-                          onChange={(checked) =>
-                            changeFilters({
-                              ...filters,
-                              [name]: toggleSelectionIds(
-                                filters[name] ?? [],
-                                [value],
-                                checked
-                              )
-                            })
-                          }
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </ConfigurationGroup>
-              );
-            })}
+            <ConfigurationFilter
+              label="Track type"
+              options={productOptions}
+              selectedValues={selectedProducts}
+              disabled={pending}
+              onChange={(values) => changeFilters(filters, values)}
+            />
+            {Object.entries(filterOptions).map(([name, values]) => (
+              <ConfigurationFilter
+                key={name}
+                label={name.replaceAll('_', ' ').toLowerCase()}
+                options={values}
+                selectedValues={filters[name] ?? []}
+                disabled={pending}
+                onChange={(values) =>
+                  changeFilters({ ...filters, [name]: values })
+                }
+              />
+            ))}
           </div>
         </section>
       </div>

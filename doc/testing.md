@@ -22,38 +22,6 @@ outside UTC, use `TZ=UTC npm run test-node`.
 
 ## Transcriptomic tracks
 
-The transcriptomic tests are split by responsibility:
+Tests for transcriptomic filtering and track state run in Node. The configuration panel and its integration with the track list are tested in browser mode.
 
-- `helpers/transcriptomic.test.ts` covers metadata filter rules, API hierarchy
-  order, grouping selections and configured track rows by tissue, and resolving
-  selections to unique track UUIDs.
-- `state/transcriptomic/transcriptomicSlice.test.ts` covers applying/removing
-  membership, visibility settings, per-genome persistence, and rejected saves.
-  It mocks the track-settings storage boundary; IndexedDB serialization is
-  already covered by the storage service's tests.
-- `ConfigurationForm.browser.test.tsx` covers draft selection, mixed checkboxes,
-  collapsing selection groups, filtered counts, clearing selections hidden by
-  filters, and Apply readiness.
-  It renders the loaded form without network requests or the browser shell.
-- `TranscriptomicConfiguration.browser.test.tsx` keeps a few integration checks
-  using real reducers, RTK Query, and browser storage. MSW replaces Track API and
-  a mock replaces the WASM interface. These tests check cached catalogue reuse,
-  UUID switch-on/off calls, independent tissue expansion, reload/genome isolation,
-  and configuration retry.
-
-The shared data in `tests/fixtures/transcriptomic.ts` is deliberately synthetic:
-four runs, three samples, and two tissues. The runs exercise shared samples and
-filter values; filter groups stay open with scrolling value lists. Counts
-match this small catalogue. Named selection IDs differ from synthetic track
-UUIDs to catch switching by the wrong identifier. The factory returns fresh data
-so individual tests can customize it without changing another test's inputs.
-All catalogues use the required tissue hierarchy and parent sample IDs.
-This follows the existing `tests/fixtures` pattern; a full deployment catalogue
-is unnecessary for these client behaviors.
-
-Real-data and visual smoke checks belong in local/review testing against the
-configured API. Do not make automated tests depend on a particular species,
-public dataset size, live service, exact colour, or pixel position. Use accessible
-roles/names for interactions, and test state rules in the smaller unit suites.
-Both runners use `tests/svgrMock.tsx` for SVG component imports; explicit `?url`
-imports remain assets. No additional test dependencies are needed for this feature.
+The tests share a small configuration in `tests/fixtures/transcriptomic.ts`. Browser integration tests use MSW for Track API responses and mock the Genome Browser interface. Check actual track rendering separately in a local or review deployment.

@@ -23,7 +23,10 @@ import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrow
 import useGenomeBrowserIds from './useGenomeBrowserIds';
 import useResolvedGenomeTracks from './useResolvedGenomeTracks';
 
-import { getAllNonFocusTrackSettingsForGenome } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+import {
+  getAllNonFocusTrackSettingsForGenome,
+  hasTrackSettingsForCategories
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 
 import type { GenomeTrackCategory } from 'src/content/app/genome-browser/state/types/tracks';
 import type { TrackSettingsPerTrack } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSlice';
@@ -61,10 +64,9 @@ const useGenomicTracks = () => {
       !genomeBrowser ||
       !trackSettingsForGenome ||
       !genomeTrackCategories ||
-      !genomeTrackCategories.every((category) =>
-        category.track_list.every(
-          (track) => !!trackSettingsForGenome[track.track_id]
-        )
+      !hasTrackSettingsForCategories(
+        genomeTrackCategories,
+        trackSettingsForGenome
       )
     ) {
       return;

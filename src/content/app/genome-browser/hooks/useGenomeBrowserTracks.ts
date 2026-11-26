@@ -29,7 +29,10 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveFocusObject
 } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
-import { getAllTrackSettings } from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
+import {
+  getAllTrackSettings,
+  hasTrackSettingsForCategories
+} from 'src/content/app/genome-browser/state/track-settings/trackSettingsSelectors';
 import { getDisplayedTrackIds } from 'src/content/app/genome-browser/state/displayed-tracks/displayedTracksSelectors';
 import { getSelectedTrackPanelTab } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 
@@ -83,12 +86,7 @@ const useGenomeBrowserTracks = () => {
     if (
       !trackCategories ||
       !genomeId ||
-      (trackSettingsForGenome &&
-        trackCategories.every((category) =>
-          category.track_list.every(
-            (track) => !!trackSettingsForGenome[track.track_id]
-          )
-        ))
+      hasTrackSettingsForCategories(trackCategories, trackSettingsForGenome)
     ) {
       return;
     }
