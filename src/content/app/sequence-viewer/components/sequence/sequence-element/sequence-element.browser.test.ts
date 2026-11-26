@@ -571,17 +571,24 @@ describe('sequence interactions', () => {
         name: 'Copy coordinates'
       });
       const copySequence = page.getByRole('button', { name: 'Copy sequence' });
-      await copyCoordinates.click();
-      await expect
-        .element(page.getByRole('button', { name: 'Copied' }))
-        .toBeDisabled();
-      await copySequence.click();
-      await expect
-        .element(page.getByRole('button', { name: 'Copied' }).nth(1))
-        .toBeDisabled();
-      expect(writeText.mock.calls).toEqual([[expectedRange], ['CGTAC']]);
-      await expect.element(copyCoordinates, { timeout: 3000 }).toBeEnabled();
-      await expect.element(copySequence, { timeout: 3000 }).toBeEnabled();
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+      try {
+        await copyCoordinates.click();
+        await expect
+          .element(page.getByRole('button', { name: 'Copied' }))
+          .toBeDisabled();
+        await copySequence.click();
+        await expect
+          .element(page.getByRole('button', { name: 'Copied' }).nth(1))
+          .toBeDisabled();
+        expect(writeText.mock.calls).toEqual([[expectedRange], ['CGTAC']]);
+
+        vi.advanceTimersByTime(2000);
+        await expect.element(copyCoordinates).toBeEnabled();
+        await expect.element(copySequence).toBeEnabled();
+      } finally {
+        vi.useRealTimers();
+      }
     }
   );
 
