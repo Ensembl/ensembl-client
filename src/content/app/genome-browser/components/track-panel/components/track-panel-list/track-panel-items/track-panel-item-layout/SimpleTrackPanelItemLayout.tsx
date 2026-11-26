@@ -75,6 +75,7 @@ const SimpleTrackPanelItemLayout = (props: Props) => {
           <ImageButton
             status={Status.DEFAULT}
             description="More information"
+            aria-label="More information"
             onClick={onShowMore}
             image={Ellipsis}
           />

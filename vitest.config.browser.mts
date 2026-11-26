@@ -17,7 +17,7 @@
 import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 import viteReactPlugin from '@vitejs/plugin-react';
-import { playwright } from '@vitest/browser-playwright'
+import { playwright } from '@vitest/browser-playwright';
 
 const dirname = import.meta.dirname;
 
@@ -31,15 +31,19 @@ export default defineConfig({
       provider: playwright(),
       enabled: true,
       // at least one instance is required
-      instances: [
-        { browser: 'chromium' },
-      ],
+      instances: [{ browser: 'chromium' }]
     },
     include: ['src/**/*.browser.test.ts(x)?'],
-    setupFiles: ['./tests/setup.ts', './tests/setup-browser.ts'],
+    setupFiles: ['./tests/setup.ts', './tests/setup-browser.ts']
   },
   resolve: {
     alias: [
+      // Stub SVG imports (while preserving ?url asset imports)
+      {
+        find: /^.+\.svg$/,
+        replacement: path.resolve(dirname, './tests/svgrMock.tsx')
+      },
+      
       // Handle absolute imports like "src/..."
       { find: 'src', replacement: path.resolve(dirname, './src') },
 

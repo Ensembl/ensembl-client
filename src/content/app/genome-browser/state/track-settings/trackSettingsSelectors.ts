@@ -20,8 +20,10 @@ import { getBrowserActiveGenomeId } from '../browser-general/browserGeneralSelec
 
 import type {
   TrackSettingsForGenome,
-  TrackSettings
+  TrackSettings,
+  TrackSettingsPerTrack
 } from './trackSettingsSlice';
+import type { GenomeTrackCategory } from '../types/tracks';
 import type { RootState } from 'src/store';
 
 export const getTrackSettingsForTrackId = (
@@ -33,6 +35,16 @@ export const getTrackSettingsForTrackId = (
     allTrackSettingsForGenome?.settingsForIndividualTracks[trackId] ?? null
   );
 };
+
+export const hasTrackSettingsForCategories = (
+  categories: GenomeTrackCategory[] | undefined,
+  settings: TrackSettingsPerTrack | null | undefined
+) =>
+  !!categories &&
+  !!settings &&
+  categories.every((category) =>
+    category.track_list.every((track) => !!settings[track.track_id])
+  );
 
 export const getTrackVisibility = (state: RootState, trackId: string) => {
   const trackSettings = getTrackSettingsForTrackId(state, trackId)?.settings;

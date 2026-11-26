@@ -16,7 +16,7 @@
 
 import { useSelector } from 'react-redux';
 
-import { useGenomeTracksQuery } from 'src/content/app/genome-browser/state/api/genomeBrowserApiSlice';
+import useResolvedGenomeTracks from 'src/content/app/genome-browser/hooks/useResolvedGenomeTracks';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
@@ -33,7 +33,7 @@ type Props = {
 const TrackDetails = (props: Props) => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
-  const { currentData: genomeTrackCategories } = useGenomeTracksQuery(
+  const { currentData: genomeTrackCategories } = useResolvedGenomeTracks(
     activeGenomeId ?? ''
   );
 
@@ -41,12 +41,6 @@ const TrackDetails = (props: Props) => {
     return null; // FIXME — maybe show a spinner?
   }
 
-  // NOTE: fetching the data for all tracks to get the description of one track
-  // is clearly unscalable; but that doesn't matter while we still have a handful of tracks.
-  // We will need to use a dedicated track api endpoint for fetching detailed data for a single track
-  // in the future.
-
-  // eslint-disable-next-line
   const currentTrackData = genomeTrackCategories
     .flatMap(({ track_list }) => track_list)
     .find(({ track_id }) => track_id === props.drawerView.trackId);
@@ -81,12 +75,18 @@ const TrackDetails = (props: Props) => {
       )}
 
       {currentTrackData.sources.map((source) => (
-        <div key={source.name} className={styles.standardLabelValue}>
+        <div
+          key={`${source.name}:${source.url}:${source.details}`}
+          className={styles.standardLabelValue}
+        >
           <div className={styles.value}>
             {source.url ? (
               <ExternalLink to={source.url}>{source.name}</ExternalLink>
             ) : (
               <span>{source.name}</span>
+            )}
+            {source.details && (
+              <div className={styles.trackDescription}>{source.details}</div>
             )}
           </div>
         </div>

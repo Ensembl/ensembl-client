@@ -49,6 +49,7 @@ export type RegulationLegendView = {
 };
 
 export type DrawerView =
+  | { name: 'transcriptomic_configuration' }
   | BookmarksDrawerView
   | GeneDrawerView
   | TranscriptDrawerView

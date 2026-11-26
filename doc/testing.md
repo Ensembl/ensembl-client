@@ -11,7 +11,17 @@ With the adoption of `vitest` browser mode, we can think of our tests as two gro
 - For tests that should run in the browser, end file names in `.browser.test.ts(x)`. For example, `AutosuggestSearchField.browser.test.tsx`
 - For tests that do not need browser environment to run, end file names in just `.test.ts`.
 
+The existing date formatter tests assume UTC. When running the full Node suite
+outside UTC, use `TZ=UTC npm run test-node`.
+
 ## References
+
 - [Documentation of Vitest browser mode](https://vitest.dev/guide/browser/)
 - [Playwright documentation](https://playwright.dev/docs/best-practices), including best practices of UI testing
 - [Github repository for workshop React Component Testing with Vitest](https://github.com/epicweb-dev/react-component-testing-with-vitest) — contains code examples of common testing patterns, as well as a detailed commentary in markdown explaining those examples
+
+## Transcriptomic tracks
+
+Tests for transcriptomic filtering and track state run in Node. The configuration panel and its integration with the track list are tested in browser mode.
+
+The tests share a small configuration in `tests/fixtures/transcriptomic.ts`. Browser integration tests use MSW for Track API responses and mock the Genome Browser interface. Check actual track rendering separately in a local or review deployment.

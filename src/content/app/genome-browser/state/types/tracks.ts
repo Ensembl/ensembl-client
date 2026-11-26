@@ -29,6 +29,7 @@ export type GenomicTrack = {
   sources: Array<{
     name: string;
     url: string | null;
+    details?: string;
   }>;
 };
 

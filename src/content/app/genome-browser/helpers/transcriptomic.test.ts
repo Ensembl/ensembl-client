@@ -1,0 +1,444 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  filterTranscriptomicSelections,
+  getTranscriptomicFilterOptions,
+  getTranscriptomicProductOptions,
+  groupTranscriptomicSelectionHierarchy,
+  groupTranscriptomicTracks,
+  resolveTranscriptomicTracks,
+  toggleSelectionIds
+} from './transcriptomic';
+import {
+  sampleIds,
+  trackLabels,
+  createTranscriptomicConfiguration,
+  liverRunA,
+  liverRunB,
+  liverRunC,
+  brainRun
+} from 'tests/fixtures/transcriptomic';
+import type {
+  TranscriptomicFilters,
+  TranscriptomicSelection
+} from 'src/content/app/genome-browser/state/types/transcriptomic';
+
+const selectionIds = (
+  selections: ReturnType<typeof filterTranscriptomicSelections>
+) => selections.map((s) => s.selection_id);
+
+describe('resolveTranscriptomicTracks', () => {
+  it('keeps distinct track product labels when they share a biological label', () => {
+    const selections = createTranscriptomicConfiguration().selections.map(
+      (selection) => ({
+        ...selection,
+        display_label: 'RUN1'
+      })
+    );
+    expect(
+      resolveTranscriptomicTracks(selections, selectionIds(selections)).map(
+        ({ label }) => label
+      )
+    ).toEqual([
+      'RUN1 · Coverage forward',
+      'RUN1 · Coverage reverse',
+      'RUN1 · Splice junction',
+      'RUN1 · Gene model'
+    ]);
+  });
+
+  it('uses catalogue order and labels, rather than checkbox order', () => {
+    const { selections } = createTranscriptomicConfiguration();
+    const tracks = resolveTranscriptomicTracks(selections, [
+      liverRunB.selection_id,
+      liverRunA.selection_id
+    ]);
+    expect(
+      tracks.map(({ track_id, label, description, sources }) => ({
+        track_id,
+        label,
+        description,
+        sources
+      }))
+    ).toEqual([
+      {
+        track_id: liverRunA.track_products[0].track_id,
+        label: trackLabels.liverRunA,
+        description: liverRunA.track_products[0].description,
+        sources: liverRunA.track_products[0].sources
+      },
+      {
+        track_id: liverRunB.track_products[0].track_id,
+        label: trackLabels.liverRunB,
+        description: liverRunB.track_products[0].description,
+        sources: liverRunB.track_products[0].sources
+      }
+    ]);
+  });
+
+  it('deduplicates UUIDs across selections and includes every selected product', () => {
+    const selections = [
+      liverRunA,
+      {
+        ...liverRunB,
+        track_products: [
+          ...liverRunA.track_products,
+          ...liverRunB.track_products
+        ]
+      }
+    ];
+    expect(
+      resolveTranscriptomicTracks(selections, [
+        liverRunA.selection_id,
+        liverRunB.selection_id
+      ]).map((t) => t.track_id)
+    ).toEqual([
+      liverRunA.track_products[0].track_id,
+      liverRunB.track_products[0].track_id
+    ]);
+    expect(resolveTranscriptomicTracks(selections, [])).toEqual([]);
+  });
+});
+
+describe('groupTranscriptomicTracks', () => {
+  it('groups only configured tracks using hierarchy labels and order', () => {
+    const configuration = createTranscriptomicConfiguration();
+    configuration.selection_hierarchy[1].display_label = 'Liver tissue';
+    const tracks = resolveTranscriptomicTracks(configuration.selections, [
+      liverRunA.selection_id,
+      liverRunB.selection_id,
+      brainRun.selection_id
+    ]);
+    expect(
+      groupTranscriptomicTracks(tracks, configuration).map((group) => ({
+        label: group.label,
+        trackIds: group.tracks.map((track) => track.track_id)
+      }))
+    ).toEqual([
+      { label: 'Brain', trackIds: [brainRun.track_products[0].track_id] },
+      {
+        label: 'Liver tissue',
+        trackIds: [
+          liverRunA.track_products[0].track_id,
+          liverRunB.track_products[0].track_id
+        ]
+      }
+    ]);
+    expect(groupTranscriptomicTracks([], configuration)).toEqual([]);
+  });
+});
+
+describe('filterTranscriptomicSelections', () => {
+  it.each<{
+    label: string;
+    filters: TranscriptomicFilters;
+    expected: TranscriptomicSelection[];
+  }>([
+    {
+      label: 'no active values',
+      filters: { sex: [] },
+      expected: [liverRunA, liverRunB, liverRunC, brainRun]
+    },
+    {
+      label: 'case-insensitive values',
+      filters: { sex: ['FEMALE'] },
+      expected: [liverRunA, liverRunC]
+    },
+    {
+      label: 'OR within a filter',
+      filters: { sex: ['male', 'unknown'] },
+      expected: [liverRunB, brainRun]
+    },
+    {
+      label: 'AND across filters',
+      filters: { sex: ['male', 'unknown'], tissue: ['liver'] },
+      expected: [liverRunB]
+    }
+  ])('matches $label', ({ filters, expected }) => {
+    expect(
+      selectionIds(
+        filterTranscriptomicSelections(
+          createTranscriptomicConfiguration().selections,
+          filters
+        )
+      )
+    ).toEqual(selectionIds(expected));
+  });
+
+  it('excludes runs with missing metadata when the corresponding filter is active', () => {
+    const missing = { ...brainRun, metadata: {} };
+    expect(
+      filterTranscriptomicSelections([missing], { sex: ['unknown'] })
+    ).toEqual([]);
+    expect(filterTranscriptomicSelections([missing], {})).toEqual([missing]);
+  });
+});
+
+describe('getTranscriptomicFilterOptions', () => {
+  it('narrows selections and metadata facets by the visible products', () => {
+    const configuration = createTranscriptomicConfiguration();
+    const selectedProducts = ['Coverage reverse', 'Splice junction'];
+    expect(
+      selectionIds(
+        filterTranscriptomicSelections(
+          configuration.selections,
+          {},
+          selectedProducts
+        )
+      )
+    ).toEqual([liverRunB.selection_id, liverRunC.selection_id]);
+    expect(
+      getTranscriptomicFilterOptions(configuration, {}, selectedProducts).sex
+    ).toEqual([
+      { value: 'female', count: 1 },
+      { value: 'male', count: 1 }
+    ]);
+    expect(
+      selectionIds(
+        filterTranscriptomicSelections(
+          configuration.selections,
+          { sex: ['female'] },
+          selectedProducts
+        )
+      )
+    ).toEqual([liverRunC.selection_id]);
+  });
+
+  it('narrows other groups and counts while allowing alternatives in the active group', () => {
+    const configuration = createTranscriptomicConfiguration();
+    const options = getTranscriptomicFilterOptions(configuration, {
+      sex: ['male']
+    });
+    expect(options.sex).toEqual(configuration.filters.sex);
+    expect(options.tissue).toEqual([{ value: 'liver', count: 1 }]);
+    expect(options.cohort).toEqual([{ value: 'cohort-b', count: 1 }]);
+
+    const combined = getTranscriptomicFilterOptions(configuration, {
+      sex: ['male', 'female'],
+      tissue: ['liver']
+    });
+    expect(combined.sex).toEqual([
+      { value: 'female', count: 2 },
+      { value: 'male', count: 1 }
+    ]);
+    expect(combined.tissue).toEqual([{ value: 'liver', count: 3 }]);
+    expect(combined.cohort.map(({ value }) => value)).toEqual([
+      'cohort-a',
+      'cohort-b',
+      'cohort-c'
+    ]);
+  });
+
+  it('retains checked zero-count values for removal and omits empty groups', () => {
+    const options = getTranscriptomicFilterOptions(
+      createTranscriptomicConfiguration(),
+      { sex: ['male'], tissue: ['brain'] }
+    );
+    expect(options).toEqual({
+      sex: [
+        { value: 'male', count: 0 },
+        { value: 'unknown', count: 1 }
+      ],
+      tissue: [
+        { value: 'liver', count: 1 },
+        { value: 'brain', count: 0 }
+      ]
+    });
+  });
+
+  it('matches case-insensitively, skips missing metadata and preserves the catalogue', () => {
+    const configuration = createTranscriptomicConfiguration();
+    configuration.selections[0].metadata.sex = 'FEMALE';
+    configuration.selections[1].metadata.sex = null;
+    delete configuration.selections[2].metadata.sex;
+    configuration.filters.sex[0].value = 'Female';
+    const original = structuredClone(configuration);
+    const options = getTranscriptomicFilterOptions(configuration, {
+      tissue: ['LIVER']
+    });
+    expect(options.sex).toEqual([{ value: 'Female', count: 1 }]);
+    expect(Object.keys(options)).toEqual(['sex', 'cohort', 'tissue']);
+    expect(configuration).toEqual(original);
+    expect(getTranscriptomicFilterOptions(configuration, {})).toEqual(
+      getTranscriptomicFilterOptions(configuration, { tissue: [] })
+    );
+    expect(
+      getTranscriptomicFilterOptions({ ...configuration, selections: [] }, {})
+    ).toEqual({});
+  });
+});
+
+describe('getTranscriptomicProductOptions', () => {
+  it('uses catalogue labels and counts unique UUIDs matching metadata, including zero counts', () => {
+    const configuration = createTranscriptomicConfiguration();
+    configuration.selections.push({ ...liverRunA, selection_id: 'alias' });
+    expect(
+      getTranscriptomicProductOptions(configuration, { tissue: ['liver'] })
+    ).toEqual([
+      { value: 'Coverage forward', count: 1 },
+      { value: 'Coverage reverse', count: 1 },
+      { value: 'Splice junction', count: 1 },
+      { value: 'Gene model', count: 0 }
+    ]);
+  });
+});
+
+it('merges case-equivalent filter values and counts unique physical tracks', () => {
+  const configuration = createTranscriptomicConfiguration();
+  configuration.filters.tissue.unshift({ value: 'Liver', count: 3 });
+  configuration.selections.push({ ...liverRunA, selection_id: 'alias' });
+  expect(getTranscriptomicFilterOptions(configuration, {}).tissue).toEqual([
+    { value: 'Liver', count: 3 },
+    { value: 'brain', count: 1 }
+  ]);
+});
+
+describe('groupTranscriptomicSelectionHierarchy', () => {
+  it('preserves API group labels/order and removes empty filtered branches', () => {
+    const configuration = createTranscriptomicConfiguration();
+    const hierarchy = configuration.selection_hierarchy;
+    hierarchy[1].display_label = 'API liver label';
+    expect(
+      groupTranscriptomicSelectionHierarchy(
+        configuration.selections,
+        hierarchy
+      ).map((tissue) => tissue.label)
+    ).toEqual(['Brain', 'API liver label']);
+    const matching = filterTranscriptomicSelections(configuration.selections, {
+      sex: ['male']
+    });
+    const groups = groupTranscriptomicSelectionHierarchy(matching, hierarchy);
+    expect(groups.map((tissue) => tissue.label)).toEqual(['API liver label']);
+    expect(groups[0].children).toHaveLength(1);
+    expect(selectionIds(groups[0].children[0].selections)).toEqual([
+      liverRunB.selection_id
+    ]);
+  });
+
+  it('keeps repeated labels separate by their complete hierarchy paths', () => {
+    const configuration = createTranscriptomicConfiguration();
+    const hierarchy = configuration.selection_hierarchy;
+    hierarchy[0].children[0].value = sampleIds.liverOne;
+    hierarchy[0].children[0].display_label = sampleIds.liverOne;
+    const groups = groupTranscriptomicSelectionHierarchy(
+      configuration.selections,
+      hierarchy
+    );
+    expect(groups[0].children[0].key).not.toEqual(groups[1].children[0].key);
+    expect(groups[0].trackIds).toEqual([brainRun.track_products[0].track_id]);
+    expect(groups[1].children[0].selectionIds).toEqual([
+      liverRunA.selection_id,
+      liverRunB.selection_id
+    ]);
+  });
+
+  it('handles arbitrary levels, missing labels, direct aggregates and nested selections', () => {
+    const aggregate = {
+      ...liverRunC,
+      selection_level: 'tissue',
+      metadata: { tissue: 'Liver' }
+    };
+    const hierarchy = [
+      {
+        level: 'study',
+        value: 'study-1',
+        display_label: 'Study label',
+        selection_ids: [aggregate.selection_id],
+        children: [
+          {
+            level: 'condition',
+            value: null,
+            display_label: null,
+            selection_ids: [],
+            children: [
+              {
+                level: 'batch',
+                value: 'batch-1',
+                display_label: 'Batch label',
+                selection_ids: [liverRunA.selection_id],
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ];
+    const selections = [liverRunA, aggregate];
+    const groups = groupTranscriptomicSelectionHierarchy(selections, hierarchy);
+    expect(groups[0].selections).toEqual([aggregate]);
+    expect(groups[0].selectionIds).toEqual([
+      aggregate.selection_id,
+      liverRunA.selection_id
+    ]);
+    expect(groups[0].trackIds).toEqual([
+      aggregate.track_products[0].track_id,
+      liverRunA.track_products[0].track_id
+    ]);
+    expect(groups[0].children[0].label).toBe('Unspecified condition');
+    const filtered = groupTranscriptomicSelectionHierarchy(
+      filterTranscriptomicSelections(selections, { sex: ['female'] }),
+      hierarchy
+    );
+    expect(filtered[0].selections).toEqual([]);
+    expect(filtered[0].trackIds).toEqual([
+      liverRunA.track_products[0].track_id
+    ]);
+    const configuration = {
+      ...createTranscriptomicConfiguration(),
+      selections,
+      selection_hierarchy: hierarchy
+    };
+    expect(
+      groupTranscriptomicTracks(
+        resolveTranscriptomicTracks(selections, groups[0].selectionIds),
+        configuration
+      )[0].tracks.map((track) => track.track_id)
+    ).toEqual(groups[0].trackIds);
+  });
+
+  it('counts a UUID once even if it is referenced by several selections', () => {
+    const configuration = createTranscriptomicConfiguration();
+    const alias = { ...liverRunA, selection_id: 'alias' };
+    configuration.selection_hierarchy[1].selection_ids = [alias.selection_id];
+    const groups = groupTranscriptomicSelectionHierarchy(
+      [liverRunA, alias],
+      configuration.selection_hierarchy
+    );
+    expect(groups[0].trackIds).toEqual([liverRunA.track_products[0].track_id]);
+    expect(groups[0].selectionIds).toHaveLength(2);
+  });
+});
+
+it('group toggles only change their descendant selection IDs', () => {
+  const sampleRuns = [liverRunA.selection_id, liverRunB.selection_id];
+  expect(
+    toggleSelectionIds(
+      [liverRunA.selection_id, liverRunC.selection_id],
+      sampleRuns,
+      false
+    )
+  ).toEqual([liverRunC.selection_id]);
+  expect(
+    new Set(toggleSelectionIds([liverRunC.selection_id], sampleRuns, true))
+  ).toEqual(
+    new Set([
+      liverRunA.selection_id,
+      liverRunB.selection_id,
+      liverRunC.selection_id
+    ])
+  );
+});
