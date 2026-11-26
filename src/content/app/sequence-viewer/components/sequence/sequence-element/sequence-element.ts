@@ -42,8 +42,8 @@
  *   that overlap the coordinate of this letter, and show them
  *   in a popover
  * - Upon selection of a subsequence, the component shows a popover
- *   that has a "Copy" button (to copy the sequence with a FASTA header),
- *   and a button that takes user to genome browser.
+ *   with buttons to copy the coordinates or the sequence and, when
+ *   available, a button to open the range in the genome browser.
  */
 
 import { SequenceInteractions } from './sequence-interactions';
@@ -83,6 +83,16 @@ const staticStyles = `
       --_letter-spacing: 0.1em;
       font-size: 16px;
     }
+  }
+
+  button {
+    padding: 0;
+    appearance: none;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    line-height: 1;
+    cursor: pointer;
   }
 
   .content-visibility-block {
@@ -138,6 +148,7 @@ const staticStyles = `
 
   [popover]:popover-open {
     font-size: var(--body-font-size);
+    font-family: var(--font-family-body);
     background-color: var(--color-black);
     color: var(--color-white);
     border: none;
@@ -153,21 +164,12 @@ const staticStyles = `
     pointer-events: none;
   }
 
-  .sequence-popover-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 12px;
+  .sequence-popover[data-mode="selection"] {
+    min-width: 35ch;
   }
 
-  .sequence-popover button {
-    color: var(--color-white);
-  }
-
-  .sequence-popover button {
-    background: var(--color-blue);
-    border: none;
-    padding: 6px 12px;
-    cursor: pointer;
+  .sequence-popover-copy:disabled {
+    cursor: default;
   }
 
   .sequence-popover {
@@ -183,6 +185,49 @@ const staticStyles = `
     bottom: auto;
     height: max-content;
     align-self: anchor-center;
+  }
+
+  .sequence-popover-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-light-grey);
+  }
+
+  .text-button {
+    color: var(--color-blue);
+    background: transparent;
+    padding: 0;
+    font: 1em / 1 var(--font-family-body);
+  }
+
+  .genome-browser-button-wrapper {
+    align-self: end;
+    display: flex;
+    column-gap: 1rem;
+    align-items: center;
+
+    span {
+      font-weight: var(--font-weight-light);
+      font-size: 12px;
+    }
+  }
+
+  .genome-browser-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    aspect-ratio: 1;
+    background-color: var(--color-blue);
+    
+    img {
+      height: 74%;
+      filter: invert(100%);
+    }
   }
 `;
 

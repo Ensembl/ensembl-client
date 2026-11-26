@@ -524,7 +524,7 @@ describe('sequence interactions', () => {
     {
       name: 'aligned protein annotations',
       lines:
-        sequenceLine(1, 4) +
+        sequenceLine(1, 4).replace('<span>GT</span>', '<span> G T </span>') +
         sequenceLine(101, 104).replace(
           'class="line"',
           'class="line protein-line"'
@@ -534,8 +534,11 @@ describe('sequence interactions', () => {
       expectedRange: '2-6'
     }
   ])(
-    'shows the selected range for $name',
-    ({ lines, regionName, expectedRange }) => {
+    'shows and copies the selected range for $name',
+    async ({ lines, regionName, expectedRange }) => {
+      const writeText = vi
+        .spyOn(navigator.clipboard, 'writeText')
+        .mockResolvedValue(undefined);
       element.sequence = response(lines).replace(
         '<template id="sequence">',
         regionName
@@ -563,6 +566,22 @@ describe('sequence interactions', () => {
           .slice(0, 3)
           .map((node) => node.textContent)
       ).toEqual(['Selected range', expectedRange, '5bp']);
+
+      const copyCoordinates = page.getByRole('button', {
+        name: 'Copy coordinates'
+      });
+      const copySequence = page.getByRole('button', { name: 'Copy sequence' });
+      await copyCoordinates.click();
+      await expect
+        .element(page.getByRole('button', { name: 'Copied' }))
+        .toBeDisabled();
+      await copySequence.click();
+      await expect
+        .element(page.getByRole('button', { name: 'Copied' }).nth(1))
+        .toBeDisabled();
+      expect(writeText.mock.calls).toEqual([[expectedRange], ['CGTAC']]);
+      await expect.element(copyCoordinates, { timeout: 3000 }).toBeEnabled();
+      await expect.element(copySequence, { timeout: 3000 }).toBeEnabled();
     }
   );
 
@@ -988,13 +1007,17 @@ describe('sequence interactions', () => {
     );
     const popover = root.querySelector('[popover]')!;
     expect(popover.getAttribute('data-mode')).toBe('selection');
-    expect(popover.querySelector('button')!.textContent).toBe('Copy');
     expect(
       Array.from(popover.children)
         .slice(0, 3)
         .map((node) => node.textContent)
     ).toEqual(['Selected range', '1-4', '4bp']);
-    expect(popover.querySelectorAll('button')).toHaveLength(2);
+    expect(
+      Array.from(
+        popover.querySelectorAll('button'),
+        (button) => button.textContent
+      )
+    ).toEqual(['Copy coordinates', 'Copy sequence', 'View in genome browser']);
     expect(popover.querySelector('a')).toBeNull();
     letterEvent(element, 'mousemove');
     expect(root.querySelector('[popover]')!.getAttribute('data-mode')).toBe(

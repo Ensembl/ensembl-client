@@ -109,6 +109,7 @@ export type SequenceSelection = {
   start: number;
   end: number;
   length: number;
+  sequence: string;
 };
 
 type SequenceSelectionOptions = {
@@ -167,6 +168,7 @@ export const getSequenceSelection = ({
   let end = -Infinity;
   let length = 0;
   let sequenceOffset = 0;
+  const sequenceParts: string[] = [];
 
   for (const container of root.querySelectorAll<HTMLElement>('.line-middle')) {
     const lineBlock = container.closest<HTMLElement>('.line');
@@ -201,7 +203,8 @@ export const getSequenceSelection = ({
         const from = node === range.startContainer ? range.startOffset : 0;
         const to = node === range.endContainer ? range.endOffset : node.length;
         const selected = node.data.slice(from, to);
-        const selectedLength = selected.replace(/\s/g, '').length;
+        const letters = selected.replace(/\s/g, '');
+        const selectedLength = letters.length;
         if (selectedLength) {
           const offset = node.data.slice(0, from).replace(/\s/g, '').length;
           const first = useMoleculeCoordinates
@@ -212,6 +215,7 @@ export const getSequenceSelection = ({
           start = Math.min(start, first, last);
           end = Math.max(end, first, last);
           length += selectedLength;
+          sequenceParts.push(letters);
 
           const lastOffset = from + selected.trimEnd().length - 1;
           const endRange = document.createRange();
@@ -236,5 +240,5 @@ export const getSequenceSelection = ({
     }
   }
 
-  return { ...position, start, end, length };
+  return { ...position, start, end, length, sequence: sequenceParts.join('') };
 };

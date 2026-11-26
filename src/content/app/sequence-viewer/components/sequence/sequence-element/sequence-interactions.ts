@@ -24,6 +24,7 @@ import {
 } from './sequence-hit-testing';
 import { SequencePopover, type PopoverState } from './sequence-popover';
 
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 import type { SequenceContext } from './sequence-element';
 import type { LetterHit, SequenceSelection } from './sequence-hit-testing';
 
@@ -326,7 +327,10 @@ export class SequenceInteractions {
         : undefined);
     const genomeBrowserLocation =
       sequenceType === 'genomic' && regionName
-        ? { regionName, start: selection.start, end: selection.end }
+        ? getGenomeBrowserLocationForSelection({
+            regionName,
+            ...selection
+          })
         : undefined;
     this.#setState({
       kind: 'selection',
@@ -343,3 +347,29 @@ export class SequenceInteractions {
     }
   }
 }
+
+// Make sure that genome browser location isn't too small: make it at least 30 bases
+// Note: client-side code here doesn't know the lenght of the top-level region;
+// so an edge case is conceivable in which the end coordinate will be greater than region length
+const getGenomeBrowserLocationForSelection = (
+  selectedLocation: GenomicLocation
+) => {
+  let { start, end } = selectedLocation;
+  const currentLength = Math.abs(end - start) + 1;
+
+  const minGenomeBrowserViewportSize = 30;
+
+  if (currentLength < minGenomeBrowserViewportSize) {
+    const flankingLength = Math.ceil(
+      (minGenomeBrowserViewportSize - currentLength) / 2
+    );
+    start = Math.max(start - flankingLength, 1);
+    end = end + flankingLength;
+  }
+
+  return {
+    regionName: selectedLocation.regionName,
+    start,
+    end
+  };
+};
