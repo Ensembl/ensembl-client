@@ -565,7 +565,7 @@ describe('sequence interactions', () => {
         Array.from(popover.children)
           .slice(0, 3)
           .map((node) => node.textContent)
-      ).toEqual(['Selected range', expectedRange, '5bp']);
+      ).toEqual(['Selected range', expectedRange, '5 bp']);
 
       const copyCoordinates = page.getByRole('button', {
         name: 'Copy coordinates'
@@ -624,12 +624,12 @@ describe('sequence interactions', () => {
         Array.from(popover.children)
           .slice(0, 3)
           .map((node) => node.textContent)
-      ).toEqual(['Selected range', '6-10', `5${unit}`]);
+      ).toEqual(['Selected range', '6-10', `5 ${unit}`]);
     }
   );
 
   it.each(['template', 'location context'])(
-    'emits navigation using the region from %s',
+    'emits navigation with a padded interval using the region from %s',
     async (source) => {
       element.sequenceContext =
         source === 'location context'
@@ -672,7 +672,7 @@ describe('sequence interactions', () => {
       await expect.element(button).toBeVisible();
       await button.click();
       expect(events.map((event) => event.detail)).toEqual([
-        { location: { regionName: '13', start: 2001, end: 2003 } }
+        { location: { regionName: '13', start: 1987, end: 2017 } }
       ]);
       expect(events.every((event) => event.bubbles && event.composed)).toBe(
         true
@@ -727,7 +727,7 @@ describe('sequence interactions', () => {
       Array.from(popover.children)
         .slice(0, 3)
         .map((node) => node.textContent)
-    ).toEqual(['Selected range', '1,000-2,003', '1,004bp']);
+    ).toEqual(['Selected range', '1,000-2,003', '1,004 bp']);
   });
 
   it('ignores a selection containing only coordinate gutters', () => {
@@ -1011,11 +1011,11 @@ describe('sequence interactions', () => {
       Array.from(popover.children)
         .slice(0, 3)
         .map((node) => node.textContent)
-    ).toEqual(['Selected range', '1-4', '4bp']);
+    ).toEqual(['Selected range', '1-4', '4 bp']);
     expect(
       Array.from(
         popover.querySelectorAll('button'),
-        (button) => button.textContent
+        (button) => button.getAttribute('aria-label') ?? button.textContent
       )
     ).toEqual(['Copy coordinates', 'Copy sequence', 'View in genome browser']);
     expect(popover.querySelector('a')).toBeNull();

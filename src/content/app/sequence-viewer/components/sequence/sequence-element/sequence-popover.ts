@@ -269,9 +269,11 @@ const createViewInGenomeBrowserButton = ({
 
   const genomeBrowserButton = document.createElement('button');
   genomeBrowserButton.className = 'genome-browser-button';
+  genomeBrowserButton.setAttribute('aria-label', 'View in genome browser');
 
   const image = document.createElement('img');
   image.setAttribute('src', genomeBrowserIconLink);
+  image.alt = '';
   genomeBrowserButton.appendChild(image);
 
   genomeBrowserButton.addEventListener('click', () => {
