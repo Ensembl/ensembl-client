@@ -338,7 +338,9 @@ export class SequenceInteractions {
       sequenceType === 'genomic' && regionName
         ? getGenomeBrowserLocationForSelection({
             regionName,
-            ...selection
+            start: selection.start,
+            end: selection.end,
+            regionLength: metadata?.regionLength
           })
         : undefined;
     const header = getSelectionFastaHeader({
@@ -366,28 +368,32 @@ export class SequenceInteractions {
   }
 }
 
-// Make sure that genome browser location isn't too small: make it at least 30 bases
-// Note: client-side code here doesn't know the lenght of the top-level region;
-// so an edge case is conceivable in which the end coordinate will be greater than region length
-const getGenomeBrowserLocationForSelection = (
-  selectedLocation: GenomicLocation
-) => {
-  let { start, end } = selectedLocation;
-  const currentLength = Math.abs(end - start) + 1;
-
-  const minGenomeBrowserViewportSize = 30;
-
-  if (currentLength < minGenomeBrowserViewportSize) {
-    const flankingLength = Math.ceil(
-      (minGenomeBrowserViewportSize - currentLength) / 2
-    );
-    start = Math.max(start - flankingLength, 1);
-    end = end + flankingLength;
-  }
+const getGenomeBrowserLocationForSelection = ({
+  regionName,
+  start,
+  end,
+  regionLength
+}: GenomicLocation & { regionLength?: number }): GenomicLocation => {
+  // With no region length, the selection end is the last coordinate known to exist.
+  const regionEnd = regionLength ?? Math.max(1, end);
+  const selectionStart = Math.min(Math.max(1, start), regionEnd);
+  const selectionEnd = Math.min(Math.max(selectionStart, end), regionEnd);
+  const selectionLength = selectionEnd - selectionStart + 1;
+  const minViewportSize = 30;
+  const viewportSize = Math.min(
+    Math.max(selectionLength, minViewportSize),
+    regionEnd
+  );
+  const preferredStart =
+    selectionStart - Math.ceil((viewportSize - selectionLength) / 2);
+  const viewportStart = Math.min(
+    Math.max(1, preferredStart),
+    regionEnd - viewportSize + 1
+  );
 
   return {
-    regionName: selectedLocation.regionName,
-    start,
-    end
+    regionName,
+    start: viewportStart,
+    end: viewportStart + viewportSize - 1
   };
 };

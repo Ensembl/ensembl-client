@@ -70,6 +70,7 @@ export type SequenceTemplateMetadata = {
   sequenceType?: TranscriptSequenceView;
   assemblyAccessionId?: string;
   regionName?: string;
+  regionLength?: number;
   featureId?: string;
   strand?: string;
   reverseComplement: boolean;
@@ -264,6 +265,7 @@ const readSequenceTemplateMetadata = (
   dataset: DOMStringMap
 ): SequenceTemplateMetadata => {
   const { sequenceType } = dataset;
+  const regionLength = Number(dataset.regionLength);
 
   return {
     sequenceType:
@@ -275,6 +277,10 @@ const readSequenceTemplateMetadata = (
         : undefined,
     assemblyAccessionId: dataset.assemblyAccession,
     regionName: dataset.regionName,
+    regionLength:
+      Number.isSafeInteger(regionLength) && regionLength > 0
+        ? regionLength
+        : undefined,
     featureId: dataset.featureId,
     strand: dataset.strand,
     reverseComplement: dataset.reverseComplement === 'true'

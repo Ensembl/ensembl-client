@@ -664,11 +664,42 @@ describe('sequence interactions', () => {
     }
   );
 
-  it.each(['template', 'location context'])(
-    'emits navigation with a padded interval using the region from %s',
-    async (source) => {
+  it.each([
+    {
+      name: 'selection away from the region edges',
+      row: [2004, 2001],
+      regionLength: 5000,
+      expectedLocation: { start: 1987, end: 2016 }
+    },
+    {
+      name: 'selection near the start of the region',
+      row: [1, 4],
+      regionLength: 1000,
+      expectedLocation: { start: 1, end: 30 }
+    },
+    {
+      name: 'descending selection near the end of the region',
+      row: [1000, 997],
+      regionLength: 1000,
+      expectedLocation: { start: 971, end: 1000 }
+    },
+    {
+      name: 'region shorter than the minimum viewport',
+      row: [3, 6],
+      regionLength: 8,
+      expectedLocation: { start: 1, end: 8 }
+    },
+    {
+      name: 'location context without a template region length',
+      row: [2004, 2001],
+      regionLength: undefined,
+      expectedLocation: { start: 1974, end: 2003 }
+    }
+  ])(
+    'emits an in-bounds viewport for $name',
+    async ({ row, regionLength, expectedLocation }) => {
       element.sequenceContext =
-        source === 'location context'
+        regionLength === undefined
           ? {
               genomeId: 'genome',
               location: { regionName: '13', start: 1, end: 100 }
@@ -678,10 +709,10 @@ describe('sequence interactions', () => {
               transcript: { stableId: 'transcript' },
               sequenceView: 'genomic'
             };
-      element.sequence = response(sequenceLine(2004, 2001)).replace(
+      element.sequence = response(sequenceLine(row[0], row[1])).replace(
         '<template id="sequence">',
-        source === 'template'
-          ? '<template id="sequence" data-region-name="13">'
+        regionLength !== undefined
+          ? `<template id="sequence" data-region-name="13" data-region-length="${regionLength}">`
           : '<template id="sequence">'
       );
       const root = element.shadowRoot!;
@@ -708,7 +739,7 @@ describe('sequence interactions', () => {
       await expect.element(button).toBeVisible();
       await button.click();
       expect(events.map((event) => event.detail)).toEqual([
-        { location: { regionName: '13', start: 1987, end: 2017 } }
+        { location: { regionName: '13', ...expectedLocation } }
       ]);
       expect(events.every((event) => event.bubbles && event.composed)).toBe(
         true

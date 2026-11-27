@@ -30,7 +30,7 @@ describe('Sequence navigation', () => {
   it('opens the padded genomic range as the Genome Browser focus', async () => {
     const sequence = `
       <template id="styles"><style></style></template>
-      <template id="sequence" data-region-name="13">
+      <template id="sequence" data-region-name="13" data-region-length="114364328">
         <div class="line" data-start="32272832" data-end="32272829">
           <span class="line-middle"><span>AC</span><span>GT</span></span>
         </div>
@@ -70,7 +70,7 @@ describe('Sequence navigation', () => {
       await expect
         .element(screen.getByTestId('current-location'))
         .toHaveTextContent(
-          '/genome-browser/genome-id?focus=location:13:32272815-32272845&location=13:32272815-32272845'
+          '/genome-browser/genome-id?focus=location:13:32272815-32272844&location=13:32272815-32272844'
         );
     } finally {
       selection.removeAllRanges();
