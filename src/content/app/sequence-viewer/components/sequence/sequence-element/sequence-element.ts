@@ -166,6 +166,10 @@ const staticStyles = `
 
   .sequence-popover[data-mode="selection"] {
     min-width: 35ch;
+    position-try-fallbacks:
+      --selection-popover-left,
+      --popover-center-on-line,
+      --selection-popover-left-centered;
   }
 
   .sequence-popover-copy:disabled {
@@ -181,6 +185,20 @@ const staticStyles = `
   }
 
   @position-try --popover-center-on-line {
+    top: auto;
+    bottom: auto;
+    height: max-content;
+    align-self: anchor-center;
+  }
+
+  @position-try --selection-popover-left {
+    left: auto;
+    right: calc(anchor(left) - var(--letter-offset-x));
+  }
+
+  @position-try --selection-popover-left-centered {
+    left: auto;
+    right: calc(anchor(left) - var(--letter-offset-x));
     top: auto;
     bottom: auto;
     height: max-content;
