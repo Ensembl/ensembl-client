@@ -66,6 +66,15 @@ export type SequenceContext = {
     }
 );
 
+export type SequenceTemplateMetadata = {
+  sequenceType?: TranscriptSequenceView;
+  assemblyAccessionId?: string;
+  regionName?: string;
+  featureId?: string;
+  strand?: string;
+  reverseComplement: boolean;
+};
+
 // Safari still doesn't support `user-select: none`,
 // which is the reason for the `-webkit-user-select: none` rule in the styles below
 const staticStyles = `
@@ -251,9 +260,30 @@ const staticStyles = `
 
 const LINES_PER_CHUNK = 100;
 
+const readSequenceTemplateMetadata = (
+  dataset: DOMStringMap
+): SequenceTemplateMetadata => {
+  const { sequenceType } = dataset;
+
+  return {
+    sequenceType:
+      sequenceType === 'genomic' ||
+      sequenceType === 'cdna' ||
+      sequenceType === 'cds' ||
+      sequenceType === 'protein'
+        ? sequenceType
+        : undefined,
+    assemblyAccessionId: dataset.assemblyAccession,
+    regionName: dataset.regionName,
+    featureId: dataset.featureId,
+    strand: dataset.strand,
+    reverseComplement: dataset.reverseComplement === 'true'
+  };
+};
+
 export class Sequence extends HTMLElement {
   #interactions: SequenceInteractions | null = null;
-  #regionName: string | undefined;
+  #templateMetadata: SequenceTemplateMetadata | undefined;
   #visibleRangeReporter: VisibleRangeReporter | null = null;
   sequenceContext: SequenceContext | undefined = undefined;
 
@@ -267,7 +297,7 @@ export class Sequence extends HTMLElement {
       host: this,
       root: this.shadowRoot!,
       getSequenceContext: () => this.sequenceContext,
-      getRegionName: () => this.#regionName
+      getTemplateMetadata: () => this.#templateMetadata
     });
     this.#startVisibleRangeReporting();
   }
@@ -293,7 +323,9 @@ export class Sequence extends HTMLElement {
       throw new Error('No template found in response!');
     }
 
-    this.#regionName = sequenceTemplate.dataset.regionName;
+    this.#templateMetadata = readSequenceTemplateMetadata(
+      sequenceTemplate.dataset
+    );
 
     this.#updateStyles(stylesTemplate);
 

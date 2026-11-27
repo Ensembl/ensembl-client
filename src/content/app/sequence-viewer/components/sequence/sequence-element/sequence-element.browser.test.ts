@@ -512,14 +512,20 @@ describe('sequence interactions', () => {
       name: 'genomic coordinates across a gap',
       lines:
         sequenceLine(32272829, 32272832) + sequenceLine(32273001, 32273004),
-      regionName: '13',
-      expectedRange: '13:32,272,830-32,273,002'
+      attributes:
+        'data-region-name="13" data-sequence-type="genomic" data-assembly-accession="GCA_000001405.29" data-strand="forward"',
+      expectedRange: '13:32,272,830-32,273,002',
+      expectedSequence:
+        '>13 genomic assembly:GCA_000001405.29 location:13:32272830-32273002 strand:+\nCGTAC'
     },
     {
       name: 'descending genomic coordinates',
       lines: sequenceLine(2004, 2001) + sequenceLine(1004, 1001),
-      regionName: undefined,
-      expectedRange: '1,003-2,003'
+      attributes:
+        'data-region-name="13" data-sequence-type="genomic" data-assembly-accession="GCA_000001405.29" data-strand="reverse" data-reverse-complement="true"',
+      expectedRange: '13:1,003-2,003',
+      expectedSequence:
+        '>13 genomic assembly:GCA_000001405.29 location:13:1003-2003 strand:-\nCGTAC'
     },
     {
       name: 'aligned protein annotations',
@@ -530,20 +536,19 @@ describe('sequence interactions', () => {
           'class="line protein-line"'
         ) +
         sequenceLine(5, 8),
-      regionName: undefined,
-      expectedRange: '2-6'
+      attributes: '',
+      expectedRange: '2-6',
+      expectedSequence: 'CGTAC'
     }
   ])(
     'shows and copies the selected range for $name',
-    async ({ lines, regionName, expectedRange }) => {
+    async ({ lines, attributes, expectedRange, expectedSequence }) => {
       const writeText = vi
         .spyOn(navigator.clipboard, 'writeText')
         .mockResolvedValue(undefined);
       element.sequence = response(lines).replace(
         '<template id="sequence">',
-        regionName
-          ? `<template id="sequence" data-region-name="${regionName}">`
-          : '<template id="sequence">'
+        `<template id="sequence" ${attributes}>`
       );
       const root = element.shadowRoot!;
       const columns = root.querySelectorAll(
@@ -581,7 +586,10 @@ describe('sequence interactions', () => {
         await expect
           .element(page.getByRole('button', { name: 'Copied' }).nth(1))
           .toBeDisabled();
-        expect(writeText.mock.calls).toEqual([[expectedRange], ['CGTAC']]);
+        expect(writeText.mock.calls).toEqual([
+          [expectedRange],
+          [expectedSequence]
+        ]);
 
         vi.advanceTimersByTime(2000);
         await expect.element(copyCoordinates).toBeEnabled();
@@ -593,23 +601,42 @@ describe('sequence interactions', () => {
   );
 
   it.each([
-    { view: 'cdna', unit: 'bp' },
-    { view: 'cds', unit: 'bp' },
-    { view: 'protein', unit: 'aa' }
+    {
+      view: 'cdna',
+      unit: 'bp',
+      attributes:
+        'data-feature-id="ENST00000380152.8" data-assembly-accession="GCA_000001405.29"',
+      header: '>ENST00000380152.8 cdna assembly:GCA_000001405.29 6-10'
+    },
+    {
+      view: 'cds',
+      unit: 'bp',
+      attributes:
+        'data-feature-id="ENST00000380152.8" data-assembly-accession="GCA_000001405.29" data-reverse-complement="true"',
+      header:
+        '>ENST00000380152.8 cds assembly:GCA_000001405.29 6-10 reverse complement'
+    },
+    {
+      view: 'protein',
+      unit: 'aa',
+      attributes: 'data-feature-id="ENSP00000369497"',
+      header: '>ENSP00000369497 pep 6-10'
+    }
   ] as const)(
-    'uses molecule-relative positions for $view selections',
-    ({ view, unit }) => {
-      element.sequenceContext = {
-        genomeId: 'genome',
-        transcript: { stableId: 'transcript' },
-        sequenceView: view
-      };
+    'uses molecule-relative positions when copying $view selections',
+    async ({ view, unit, attributes, header }) => {
+      const writeText = vi
+        .spyOn(navigator.clipboard, 'writeText')
+        .mockResolvedValue(undefined);
       // The first line is unselected. Positions continue from the first residue,
       // independently of any genomic coordinates attached to the lines.
       element.sequence = response(
         sequenceLine(32272829, 32272832) +
           sequenceLine(32273001, 32273004) +
           sequenceLine(32273101, 32273104)
+      ).replace(
+        '<template id="sequence">',
+        `<template id="sequence" data-sequence-type="${view}" ${attributes}>`
       );
       const root = element.shadowRoot!;
       const columns = root.querySelectorAll('.line-middle');
@@ -632,6 +659,8 @@ describe('sequence interactions', () => {
           .slice(0, 3)
           .map((node) => node.textContent)
       ).toEqual(['Selected range', '6-10', `5 ${unit}`]);
+      await page.getByRole('button', { name: 'Copy sequence' }).click();
+      expect(writeText).toHaveBeenCalledExactlyOnceWith(`${header}\nCGTAC`);
     }
   );
 

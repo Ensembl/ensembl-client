@@ -41,6 +41,7 @@ export type PopoverState =
       kind: 'selection';
       selection: SequenceSelection;
       sequenceType: TranscriptSequenceView;
+      sequenceToCopy: string;
       genomeBrowserLocation?: GenomicLocation;
     };
 
@@ -166,7 +167,8 @@ export class SequencePopover {
     state: Extract<PopoverState, { kind: 'selection' }>,
     regionName?: string
   ) {
-    const { selection, sequenceType, genomeBrowserLocation } = state;
+    const { selection, sequenceType, sequenceToCopy, genomeBrowserLocation } =
+      state;
 
     const titleElement = document.createElement('div');
     titleElement.textContent = 'Selected range';
@@ -182,7 +184,7 @@ export class SequencePopover {
 
     const buttonsSection = createSelectionPopoverButtons({
       coordinates,
-      sequence: selection.sequence,
+      sequence: sequenceToCopy,
       sequenceType,
       genomeBrowserLocation
     });
