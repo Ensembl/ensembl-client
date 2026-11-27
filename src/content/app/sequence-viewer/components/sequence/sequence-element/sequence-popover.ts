@@ -16,6 +16,8 @@
 
 import { formatNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
+import genomeBrowserIconLink from 'static/icons/icon_launchbar_browser.svg?url';
+
 import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
 import type { TranscriptSequenceView } from 'src/content/app/sequence-viewer/types/transcriptSequenceView';
 import type { LetterHit, SequenceSelection } from './sequence-hit-testing';
@@ -39,6 +41,7 @@ export type PopoverState =
       kind: 'selection';
       selection: SequenceSelection;
       sequenceType: TranscriptSequenceView;
+      sequenceToCopy: string;
       genomeBrowserLocation?: GenomicLocation;
     };
 
@@ -164,42 +167,130 @@ export class SequencePopover {
     state: Extract<PopoverState, { kind: 'selection' }>,
     regionName?: string
   ) {
-    const { selection, sequenceType, genomeBrowserLocation } = state;
-    const title = document.createElement('div');
-    title.textContent = 'Selected range';
-    const location = document.createElement('div');
+    const { selection, sequenceType, sequenceToCopy, genomeBrowserLocation } =
+      state;
+
+    const titleElement = document.createElement('div');
+    titleElement.textContent = 'Selected range';
+
+    const locationWrapper = document.createElement('div');
     const range = `${formatNumber(selection.start)}-${formatNumber(selection.end)}`;
-    location.textContent = regionName ? `${regionName}:${range}` : range;
-    const length = document.createElement('div');
+    const coordinates = regionName ? `${regionName}:${range}` : range;
+    locationWrapper.textContent = coordinates;
+
+    const lengthWrapper = document.createElement('div');
     const unit = sequenceType === 'protein' ? 'aa' : 'bp';
-    length.textContent = `${formatNumber(selection.length)}${unit}`;
-    const controls = document.createElement('div');
-    controls.className = 'sequence-popover-actions';
-    const copy = document.createElement('button');
-    copy.type = 'button';
-    copy.textContent = 'Copy';
-    controls.append(copy);
-    if (sequenceType === 'genomic' && genomeBrowserLocation) {
-      const genomeBrowserButton = document.createElement('button');
-      genomeBrowserButton.type = 'button';
-      genomeBrowserButton.textContent = 'View in genome browser';
-      genomeBrowserButton.addEventListener('click', () => {
-        if (!genomeBrowserLocation) {
-          return;
-        }
-        genomeBrowserButton.dispatchEvent(
-          new CustomEvent<GenomeBrowserNavigationEventDetail>(
-            'genome-browser-navigation',
-            {
-              detail: { location: genomeBrowserLocation },
-              bubbles: true,
-              composed: true
-            }
-          )
-        );
-      });
-      controls.append(genomeBrowserButton);
+    lengthWrapper.textContent = `${formatNumber(selection.length)} ${unit}`;
+
+    const buttonsSection = createSelectionPopoverButtons({
+      coordinates,
+      sequence: sequenceToCopy,
+      sequenceType,
+      genomeBrowserLocation
+    });
+
+    const children = [titleElement, locationWrapper, lengthWrapper];
+    if (buttonsSection) {
+      children.push(buttonsSection);
     }
-    this.#element.append(title, location, length, controls);
+
+    this.#element.append(...children);
   }
 }
+
+const createSelectionPopoverButtons = ({
+  genomeBrowserLocation,
+  sequenceType,
+  coordinates,
+  sequence
+}: {
+  genomeBrowserLocation?: GenomicLocation;
+  sequenceType: TranscriptSequenceView;
+  coordinates: string;
+  sequence: string;
+}) => {
+  const controls = document.createElement('div');
+  controls.className = 'sequence-popover-actions';
+
+  const canCopyToClipboard = globalThis.navigator?.clipboard;
+  let hasChildren = false;
+
+  if (canCopyToClipboard) {
+    controls.append(
+      createCopyButton('Copy coordinates', coordinates),
+      createCopyButton('Copy sequence', sequence)
+    );
+    hasChildren = true;
+  }
+
+  if (sequenceType === 'genomic' && genomeBrowserLocation) {
+    const genomeBrowserButton = createViewInGenomeBrowserButton({
+      genomeBrowserLocation
+    });
+    controls.append(genomeBrowserButton);
+    hasChildren = true;
+  }
+
+  return hasChildren ? controls : null;
+};
+
+const createCopyButton = (label: string, value: string) => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'text-button';
+  button.textContent = label;
+  let resetTimeout: ReturnType<typeof setTimeout> | undefined;
+  button.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      clearTimeout(resetTimeout);
+      button.textContent = 'Copied';
+      button.disabled = true;
+      resetTimeout = setTimeout(() => {
+        button.textContent = label;
+        button.disabled = false;
+      }, 2000);
+    } catch {
+      // Keep the original label so the user can retry a failed write.
+    }
+  });
+  return button;
+};
+
+const createViewInGenomeBrowserButton = ({
+  genomeBrowserLocation
+}: {
+  genomeBrowserLocation: GenomicLocation;
+}) => {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'genome-browser-button-wrapper';
+
+  const label = document.createElement('span');
+  label.textContent = 'View in';
+  wrapper.append(label);
+
+  const genomeBrowserButton = document.createElement('button');
+  genomeBrowserButton.className = 'genome-browser-button';
+  genomeBrowserButton.setAttribute('aria-label', 'View in genome browser');
+
+  const image = document.createElement('img');
+  image.setAttribute('src', genomeBrowserIconLink);
+  image.alt = '';
+  genomeBrowserButton.appendChild(image);
+
+  genomeBrowserButton.addEventListener('click', () => {
+    genomeBrowserButton.dispatchEvent(
+      new CustomEvent<GenomeBrowserNavigationEventDetail>(
+        'genome-browser-navigation',
+        {
+          detail: { location: genomeBrowserLocation },
+          bubbles: true,
+          composed: true
+        }
+      )
+    );
+  });
+
+  wrapper.append(genomeBrowserButton);
+  return wrapper;
+};

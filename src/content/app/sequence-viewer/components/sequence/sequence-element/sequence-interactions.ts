@@ -18,20 +18,25 @@ import {
   fetchOverlapTemplate,
   getOverlapRequestParams
 } from './overlapRequest';
+import { getSelectionFastaHeader } from './sequence-fasta';
 import {
   getLetterInfoFromEvent,
   getSequenceSelection
 } from './sequence-hit-testing';
 import { SequencePopover, type PopoverState } from './sequence-popover';
 
-import type { SequenceContext } from './sequence-element';
+import type { GenomicLocation } from 'src/shared/helpers/genomicLocationHelpers';
+import type {
+  SequenceContext,
+  SequenceTemplateMetadata
+} from './sequence-element';
 import type { LetterHit, SequenceSelection } from './sequence-hit-testing';
 
 type Options = {
   host: HTMLElement;
   root: ShadowRoot;
   getSequenceContext: () => SequenceContext | undefined;
-  getRegionName: () => string | undefined;
+  getTemplateMetadata: () => SequenceTemplateMetadata | undefined;
 };
 
 export class SequenceInteractions {
@@ -194,7 +199,7 @@ export class SequenceInteractions {
     if (state.kind === 'features') {
       this.#highlightLetter(state.letter);
     }
-    this.#popover.render(state, this.options.getRegionName());
+    this.#popover.render(state, this.options.getTemplateMetadata()?.regionName);
   }
 
   #clearHover() {
@@ -300,14 +305,19 @@ export class SequenceInteractions {
     }
   }
 
-  #getSelection(releaseEvent?: PointerEvent) {
+  #getSequenceType() {
     const context = this.options.getSequenceContext();
-    const sequenceType =
-      context && 'transcript' in context ? context.sequenceView : 'genomic';
+    return (
+      this.options.getTemplateMetadata()?.sequenceType ??
+      (context && 'transcript' in context ? context.sequenceView : 'genomic')
+    );
+  }
+
+  #getSelection(releaseEvent?: PointerEvent) {
     return getSequenceSelection({
       root: this.options.root,
       releaseEvent,
-      sequenceType
+      sequenceType: this.#getSequenceType()
     });
   }
 
@@ -317,21 +327,35 @@ export class SequenceInteractions {
     this.#requestController = null;
     this.#clearHover();
     const context = this.options.getSequenceContext();
-    const sequenceType =
-      context && 'transcript' in context ? context.sequenceView : 'genomic';
+    const metadata = this.options.getTemplateMetadata();
+    const sequenceType = this.#getSequenceType();
     const regionName =
-      this.options.getRegionName() ||
+      metadata?.regionName ||
       (context && 'location' in context
         ? context.location.regionName
         : undefined);
     const genomeBrowserLocation =
       sequenceType === 'genomic' && regionName
-        ? { regionName, start: selection.start, end: selection.end }
+        ? getGenomeBrowserLocationForSelection({
+            regionName,
+            start: selection.start,
+            end: selection.end,
+            regionLength: metadata?.regionLength
+          })
         : undefined;
+    const header = getSelectionFastaHeader({
+      metadata,
+      sequenceType,
+      selection
+    });
+    const sequenceToCopy = header
+      ? `${header}\n${selection.sequence}`
+      : selection.sequence;
     this.#setState({
       kind: 'selection',
       selection,
       sequenceType,
+      sequenceToCopy,
       genomeBrowserLocation
     });
   }
@@ -343,3 +367,33 @@ export class SequenceInteractions {
     }
   }
 }
+
+const getGenomeBrowserLocationForSelection = ({
+  regionName,
+  start,
+  end,
+  regionLength
+}: GenomicLocation & { regionLength?: number }): GenomicLocation => {
+  // With no region length, the selection end is the last coordinate known to exist.
+  const regionEnd = regionLength ?? Math.max(1, end);
+  const selectionStart = Math.min(Math.max(1, start), regionEnd);
+  const selectionEnd = Math.min(Math.max(selectionStart, end), regionEnd);
+  const selectionLength = selectionEnd - selectionStart + 1;
+  const minViewportSize = 30;
+  const viewportSize = Math.min(
+    Math.max(selectionLength, minViewportSize),
+    regionEnd
+  );
+  const preferredStart =
+    selectionStart - Math.ceil((viewportSize - selectionLength) / 2);
+  const viewportStart = Math.min(
+    Math.max(1, preferredStart),
+    regionEnd - viewportSize + 1
+  );
+
+  return {
+    regionName,
+    start: viewportStart,
+    end: viewportStart + viewportSize - 1
+  };
+};
